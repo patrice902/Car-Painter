@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
+import { useDebounce } from "use-debounce";
 import * as Yup from "yup";
 import _ from "lodash";
 
@@ -70,6 +71,8 @@ export const LayerProperty = React.memo((props) => {
         : { ...defaultValues },
     [currentLayer, defaultValues, layerData]
   );
+  const [debouncedValues] = useDebounce(initialValues, 100);
+
   const handleClone = useCallback(() => {
     if (currentLayer) onClone(currentLayer);
     focusBoardQuickly();
@@ -146,7 +149,7 @@ export const LayerProperty = React.memo((props) => {
   return (
     <>
       <Formik
-        initialValues={initialValues}
+        initialValues={debouncedValues || initialValues}
         validationSchema={Yup.object({
           layer_order: Yup.number(),
           layer_visible: Yup.number(),
