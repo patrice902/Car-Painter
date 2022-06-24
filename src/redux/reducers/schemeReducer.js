@@ -499,14 +499,4 @@ export const createSharedUser = (payload, callback) => async (dispatch) => {
   }
 };
 
-export const submitToShowroom = (schemeID, formData) => async (dispatch) => {
-  try {
-    dispatch(setSubmittingShowroom(true));
-    await SchemeService.uploadToShowroom(schemeID, formData);
-    dispatch(setSubmittingShowroom(false));
-  } catch (err) {
-    dispatch(setMessage({ message: err.message }));
-  }
-};
-
 export default slice.reducer;

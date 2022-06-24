@@ -243,38 +243,31 @@ export const Header = React.memo((props) => {
     handleShareOptionsClose();
 
     const dataURL = await retrieveTGAPNGDataUrl();
-    let blob = dataURItoBlob(dataURL);
-    var fileOfBlob = new File([blob], `car_file.png`, {
-      type: "image/png",
-    });
-    let formData = new FormData();
-    formData.append("car_file", fileOfBlob);
-    let response = await SchemeService.uploadToShowroom(
-      currentScheme.id,
-      formData
-    );
-    let uploadToShowroomWindow = window.open("", "Upload a paint");
-    uploadToShowroomWindow.document.write(response);
-    // setShowroomFile(fileOfBlob);
-    // showroomFormRef.current.submit();
+    // let blob = dataURItoBlob(dataURL);
+    // var fileOfBlob = new File([blob], `car_file.png`, {
+    //   type: "image/png",
+    // });
+
     // let formData = new FormData();
     // formData.append("car_file", fileOfBlob);
-    // dispatch(submitToShowroom(currentScheme.id, formData));
-  }, [currentScheme.id, retrieveTGAPNGDataUrl]);
+
+    setShowroomFile(dataURL);
+    showroomFormRef.current.submit();
+  }, [retrieveTGAPNGDataUrl]);
 
   return (
     <>
       <AppHeader>
-        {/* <form
+        <form
           ref={showroomFormRef}
-          // style={{ display: "none" }}
+          style={{ display: "none" }}
           action={`https://beta.tradingpaints.com/showroom/upload/${currentScheme.id}`}
           method="post"
           target="_blank"
           enctype="multipart/form-data"
         >
           <input type="hidden" name="car_file" value={showroomFile} />
-        </form> */}
+        </form>
         <CustomButtonGroup variant="outlined">
           <Button onClick={handleOpenShareDialog} startIcon={<ShareIcon />}>
             <Typography variant="subtitle2">Share</Typography>
