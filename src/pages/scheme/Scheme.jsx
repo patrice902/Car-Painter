@@ -34,6 +34,7 @@ import { getUploadListByUserID } from "redux/reducers/uploadReducer";
 import { useBoardSocket, useCapture, useZoom, withKeyEvent } from "hooks";
 import { withWrapper } from "./withWrapper";
 import { LegacyBanner } from "./components/LegacyBanner";
+import { ReconnectionBanner } from "./components/ReconnectionBanner";
 import { getCarRaces } from "redux/reducers/carReducer";
 import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
 import { MouseModes } from "constant";
@@ -86,6 +87,9 @@ const Scheme = React.memo((props) => {
   const pressedKey = useSelector((state) => state.boardReducer.pressedKey);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
   const schemeLoaded = useSelector((state) => state.schemeReducer.loaded);
+  const schemeSocketConnected = useSelector(
+    (state) => state.schemeReducer.socketConnected
+  );
 
   const loadedStatuses = useSelector(
     (state) => state.layerReducer.loadedStatuses
@@ -294,6 +298,7 @@ const Scheme = React.memo((props) => {
                 carMakeID={currentScheme.car_make}
                 onDismiss={hideLegacyBanner}
               />
+              <ReconnectionBanner show={!schemeSocketConnected} />
               <Toolbar
                 stageRef={stageRef}
                 retrieveTGABlobURL={retrieveTGABlobURL}

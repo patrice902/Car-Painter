@@ -21,6 +21,10 @@ class SocketClient {
   static on = (event, handler) => {
     this.socket.on(event, handler);
   };
+
+  static ioOn = (event, handler) => {
+    this.socket.io.on(event, handler);
+  };
 }
 
 export default SocketClient;

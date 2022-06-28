@@ -20,6 +20,20 @@ export const useGeneralSocket = () => {
       SocketClient.emit("room", "general"); // Join General room
     });
 
+    SocketClient.on("connect_error", () => {
+      setTimeout(() => {
+        SocketClient.connect();
+      }, 1000);
+    });
+
+    SocketClient.on("disconnect", (reason) => {
+      if (reason === "io server disconnect") {
+        // the disconnection was initiated by the server, you need to reconnect manually
+        SocketClient.connect();
+      }
+      // else the socket will automatically try to reconnect
+    });
+
     SocketClient.on("client-update-scheme", (response) => {
       dispatch(updateSchemeListItem(response.data));
     });

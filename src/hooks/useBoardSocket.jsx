@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import {
   updateListItem as updateSchemeListItem,
   setCurrent as setCurrentScheme,
+  setSocketConnected,
 } from "redux/reducers/schemeReducer";
 import { setMessage } from "redux/reducers/messageReducer";
 import {
@@ -26,7 +27,28 @@ export const useBoardSocket = () => {
     SocketClient.connect();
 
     SocketClient.on("connect", () => {
+      dispatch(setSocketConnected(true));
       SocketClient.emit("room", params.id);
+    });
+
+    SocketClient.on("connect_error", () => {
+      dispatch(setSocketConnected(false));
+      setTimeout(() => {
+        SocketClient.connect();
+      }, 1000);
+    });
+
+    SocketClient.on("disconnect", (reason) => {
+      dispatch(setSocketConnected(false));
+      if (reason === "io server disconnect") {
+        // the disconnection was initiated by the server, you need to reconnect manually
+        SocketClient.connect();
+      }
+      // else the socket will automatically try to reconnect
+    });
+
+    SocketClient.ioOn("reconnect", () => {
+      document.location.reload(true);
     });
 
     SocketClient.on("client-create-layer", (response) => {

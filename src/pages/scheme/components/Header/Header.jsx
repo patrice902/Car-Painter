@@ -19,9 +19,8 @@ import { dataURItoBlob, focusBoardQuickly } from "helper";
 import { CircularProgress } from "components/MaterialUI";
 import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
-import { submitToShowroom, updateScheme } from "redux/reducers/schemeReducer";
+import { updateScheme } from "redux/reducers/schemeReducer";
 import { SchemeSettingsDialog } from "components/dialogs";
-import SchemeService from "services/schemeService";
 
 export const Header = React.memo((props) => {
   const {
@@ -243,14 +242,6 @@ export const Header = React.memo((props) => {
     handleShareOptionsClose();
 
     const dataURL = await retrieveTGAPNGDataUrl();
-    // let blob = dataURItoBlob(dataURL);
-    // var fileOfBlob = new File([blob], `car_file.png`, {
-    //   type: "image/png",
-    // });
-
-    // let formData = new FormData();
-    // formData.append("car_file", fileOfBlob);
-
     setShowroomFile(dataURL);
     showroomFormRef.current.submit();
   }, [retrieveTGAPNGDataUrl]);

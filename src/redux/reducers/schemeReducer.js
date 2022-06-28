@@ -24,6 +24,7 @@ const initialState = {
   loaded: false,
   saving: false,
   submittingShowroom: false,
+  socketConnected: false,
 };
 
 export const slice = createSlice({
@@ -42,6 +43,9 @@ export const slice = createSlice({
     },
     setLoaded: (state, action) => {
       state.loaded = action.payload;
+    },
+    setSocketConnected: (state, action) => {
+      state.socketConnected = action.payload;
     },
     setList: (state, action) => {
       let list = [...action.payload];
@@ -215,6 +219,7 @@ export const {
   reset,
   setCurrentName,
   setCurrentBaseColor,
+  setSocketConnected,
 } = slice.actions;
 
 export const getSchemeList = (userID) => async (dispatch) => {
