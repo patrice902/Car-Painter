@@ -40,7 +40,12 @@ import { Rotate90DegreesCcw, Search as SearchIcon } from "@material-ui/icons";
 import { focusBoardQuickly } from "helper";
 
 export const Toolbar = React.memo((props) => {
-  const { stageRef, retrieveTGABlobURL, onChangeBoardRotation } = props;
+  const {
+    stageRef,
+    retrieveTGABlobURL,
+    retrieveTGAPNGDataUrl,
+    onChangeBoardRotation,
+  } = props;
   const [zoom, onZoomIn, onZoomOut, onZoomFit] = useZoom(stageRef);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -84,14 +89,16 @@ export const Toolbar = React.memo((props) => {
 
   const applySubmitSimPreview = useCallback(
     async (isCustomNumber = 0) => {
-      const fileOfBlob = await retrieveTGABlobURL(isCustomNumber);
-
       let formData = new FormData();
-      formData.append("file1", fileOfBlob);
+
+      // const fileOfBlob = await retrieveTGABlobURL(isCustomNumber);
+      // formData.append("file1", fileOfBlob);
+      const dataURL = await retrieveTGAPNGDataUrl();
+      formData.append("car_file", dataURL);
 
       dispatch(submitSimPreview(currentScheme.id, isCustomNumber, formData));
     },
-    [retrieveTGABlobURL, dispatch, currentScheme]
+    [retrieveTGAPNGDataUrl, dispatch, currentScheme]
   );
 
   const handleSubmitSimPreview = useCallback(

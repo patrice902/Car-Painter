@@ -302,6 +302,7 @@ const Scheme = React.memo((props) => {
               <Toolbar
                 stageRef={stageRef}
                 retrieveTGABlobURL={retrieveTGABlobURL}
+                retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
                 onChangeBoardRotation={handleChangeBoardRotation}
               />
             </Box>
