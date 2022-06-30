@@ -42,8 +42,8 @@ import { focusBoardQuickly } from "helper";
 export const Toolbar = React.memo((props) => {
   const {
     stageRef,
-    retrieveTGABlobURL,
     retrieveTGAPNGDataUrl,
+    retrieveSpecTGAPNGDataUrl,
     onChangeBoardRotation,
   } = props;
   const [zoom, onZoomIn, onZoomOut, onZoomFit] = useZoom(stageRef);
@@ -62,6 +62,7 @@ export const Toolbar = React.memo((props) => {
     (state) => state.boardReducer.actionHistory
   );
   const currentScheme = useSelector((state) => state.schemeReducer.current);
+  const currentCarMake = useSelector((state) => state.carMakeReducer.current);
   const showLayers = useSelector((state) => state.boardReducer.showLayers);
   const boardRotate = useSelector((state) => state.boardReducer.boardRotate);
   const showProperties = useSelector(
@@ -91,14 +92,23 @@ export const Toolbar = React.memo((props) => {
     async (isCustomNumber = 0) => {
       let formData = new FormData();
 
-      // const fileOfBlob = await retrieveTGABlobURL(isCustomNumber);
-      // formData.append("file1", fileOfBlob);
       const dataURL = await retrieveTGAPNGDataUrl();
       formData.append("car_file", dataURL);
 
+      if (!currentScheme.hide_spec && currentCarMake.car_type !== "Misc") {
+        const specDataURL = await retrieveSpecTGAPNGDataUrl();
+        formData.append("spec_file", specDataURL);
+      }
+
       dispatch(submitSimPreview(currentScheme.id, isCustomNumber, formData));
     },
-    [retrieveTGAPNGDataUrl, dispatch, currentScheme]
+    [
+      retrieveTGAPNGDataUrl,
+      currentScheme,
+      currentCarMake,
+      dispatch,
+      retrieveSpecTGAPNGDataUrl,
+    ]
   );
 
   const handleSubmitSimPreview = useCallback(

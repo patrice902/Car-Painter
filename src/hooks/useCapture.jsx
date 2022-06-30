@@ -22,6 +22,7 @@ import {
   addImageProcess,
   downloadTGA,
   getTGABlob,
+  sleep,
 } from "helper";
 import SchemeService from "services/schemeService";
 
@@ -43,17 +44,12 @@ export const useCapture = (
   const [, currentCarMakeRef] = useReducerRef(
     useSelector((state) => state.carMakeReducer.current)
   );
-  const schemeSaving = useSelector((state) => state.schemeReducer.saving);
   const [, currentLayerRef] = useReducerRef(
     useSelector((state) => state.layerReducer.current)
-  );
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
   );
   const [drawingStatus, drawingStatusRef] = useReducerRef(
     useSelector((state) => state.layerReducer.drawingStatus)
   );
-  const viewMode = useSelector((state) => state.boardReducer.viewMode);
   const [, showPropertiesRef] = useReducerRef(
     useSelector((state) => state.boardReducer.showProperties)
   );
@@ -375,22 +371,51 @@ export const useCapture = (
     ]
   );
 
-  const handleDownloadSpecTGA = useCallback(() => {
+  const handleDownloadSpecTGA = useCallback(async () => {
     if (stageRef.current && currentSchemeRef.current) {
       dispatch(setSaving(true));
       dispatch(setViewMode(ViewModes.SPEC_VIEW));
-    }
-  }, [dispatch, currentSchemeRef, stageRef]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(async () => {
-    if (
-      schemeSaving &&
-      viewMode === ViewModes.SPEC_VIEW &&
-      loadedStatuses[`guide-mask-${schemeFinishBase}`]
-    ) {
+      await sleep(500);
+
+      const { ctx } = await takeScreenshot(false);
+
+      dispatch(setViewMode(ViewModes.NORMAL_VIEW));
+      dispatch(
+        setLoadedStatus({
+          key: `guide-mask-${schemeFinishBase}`,
+          value: false,
+        })
+      );
+      setTimeout(() => dispatch(setSaving(false)), 500);
+
+      downloadTGA(
+        ctx,
+        carMakeSize,
+        carMakeSize,
+        `car_spec_${userRef.current.id}.tga`
+      );
+    }
+  }, [
+    stageRef,
+    currentSchemeRef,
+    dispatch,
+    takeScreenshot,
+    schemeFinishBase,
+    carMakeSize,
+    userRef,
+  ]);
+
+  const retrieveSpecTGAPNGDataUrl = useCallback(async () => {
+    if (stageRef.current && currentSchemeRef.current) {
       try {
-        const { ctx } = await takeScreenshot(false);
+        dispatch(setSaving(true));
+        dispatch(setViewMode(ViewModes.SPEC_VIEW));
+
+        await sleep(500);
+
+        const { canvas } = await takeScreenshot(false);
+        let dataURL = canvas.toDataURL("image/png", 1);
 
         dispatch(setViewMode(ViewModes.NORMAL_VIEW));
         dispatch(
@@ -401,28 +426,14 @@ export const useCapture = (
         );
         setTimeout(() => dispatch(setSaving(false)), 500);
 
-        downloadTGA(
-          ctx,
-          carMakeSize,
-          carMakeSize,
-          `car_spec_${userRef.current.id}.tga`
-        );
+        return dataURL;
       } catch (err) {
         console.log(err);
         dispatch(setMessage({ message: err.message }));
+        return null;
       }
     }
-  }, [
-    dispatch,
-    schemeSaving,
-    viewMode,
-    schemeFinishBase,
-    currentCarMakeRef,
-    loadedStatuses,
-    userRef,
-    takeScreenshot,
-    carMakeSize,
-  ]);
+  }, [stageRef, currentSchemeRef, dispatch, takeScreenshot, schemeFinishBase]);
 
   useEffect(() => {
     if (pauseCapturing && !drawingStatus) {
@@ -432,12 +443,13 @@ export const useCapture = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pauseCapturing, drawingStatus]);
 
-  return [
+  return {
     handleUploadThumbnail,
     handleDownloadTGA,
     handleDownloadSpecTGA,
     retrieveTGAPNGDataUrl,
     retrieveTGABlobURL,
     retrievePNGDataUrl,
-  ];
+    retrieveSpecTGAPNGDataUrl,
+  };
 };

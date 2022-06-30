@@ -66,13 +66,13 @@ const Scheme = React.memo((props) => {
   const activeTransformerRef = useRef(null);
   const hoveredTransformerRef = useRef(null);
 
-  const [
-    onUploadThumbnail,
-    onDownloadTGA,
-    onDownloadSpecTGA,
+  const {
+    handleUploadThumbnail,
+    handleDownloadTGA,
+    handleDownloadSpecTGA,
     retrieveTGAPNGDataUrl,
-    retrieveTGABlobURL,
-  ] = useCapture(
+    retrieveSpecTGAPNGDataUrl,
+  } = useCapture(
     stageRef,
     baseLayerRef,
     mainLayerRef,
@@ -128,10 +128,10 @@ const Scheme = React.memo((props) => {
   );
 
   const handleGoBack = useCallback(async () => {
-    await onUploadThumbnail(false);
+    await handleUploadThumbnail(false);
 
     history.push(previousPath || "/");
-  }, [history, onUploadThumbnail, previousPath]);
+  }, [history, handleUploadThumbnail, previousPath]);
 
   const hideLegacyBanner = useCallback(() => {
     setShowLegacyBanner(false);
@@ -198,14 +198,14 @@ const Scheme = React.memo((props) => {
     ) {
       dispatch(setLoaded(true));
       onZoomFit();
-      setTimeout(onUploadThumbnail, 5000);
+      setTimeout(handleUploadThumbnail, 5000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadedStatuses, schemeLoaded]);
 
   useEffect(() => {
     if (editable) {
-      const thumbnailInterval = setInterval(onUploadThumbnail, 300000);
+      const thumbnailInterval = setInterval(handleUploadThumbnail, 300000);
       return () => {
         clearInterval(thumbnailInterval);
       };
@@ -255,8 +255,8 @@ const Scheme = React.memo((props) => {
           />
           <Header
             editable={editable}
-            onDownloadTGA={onDownloadTGA}
-            onDownloadSpecTGA={onDownloadSpecTGA}
+            onDownloadTGA={handleDownloadTGA}
+            onDownloadSpecTGA={handleDownloadSpecTGA}
             retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
           />
           <Box
@@ -301,8 +301,8 @@ const Scheme = React.memo((props) => {
               <ReconnectionBanner show={!schemeSocketConnected} />
               <Toolbar
                 stageRef={stageRef}
-                retrieveTGABlobURL={retrieveTGABlobURL}
                 retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
+                retrieveSpecTGAPNGDataUrl={retrieveSpecTGAPNGDataUrl}
                 onChangeBoardRotation={handleChangeBoardRotation}
               />
             </Box>
