@@ -21,6 +21,7 @@ import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
 import { updateScheme } from "redux/reducers/schemeReducer";
 import { SchemeSettingsDialog } from "components/dialogs";
+import config from "config";
 
 export const Header = React.memo((props) => {
   const {
@@ -252,7 +253,7 @@ export const Header = React.memo((props) => {
         <form
           ref={showroomFormRef}
           style={{ display: "none" }}
-          action={`https://beta.tradingpaints.com/showroom/upload/${currentScheme.id}`}
+          action={`${config.oldAppURL}/showroom/upload/${currentScheme.id}`}
           method="post"
           target="_blank"
           enctype="multipart/form-data"

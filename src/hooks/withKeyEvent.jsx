@@ -33,7 +33,12 @@ import {
   setBoardRotate,
 } from "redux/reducers/boardReducer";
 import { useZoom } from "hooks";
-import { getZoomedCenterPosition, focusBoard, isInSameSideBar } from "helper";
+import {
+  getZoomedCenterPosition,
+  focusBoard,
+  isInSameSideBar,
+  isWindows,
+} from "helper";
 
 import LayerDeleteDialog from "components/dialogs/LayerDeleteDialog";
 import SchemeService from "services/schemeService";
@@ -269,7 +274,7 @@ export const withKeyEvent = (Component) =>
             dispatch(setMouseMode(MouseModes.ARROW));
           } else if (key === "t" && editable) {
             setDialog(DialogTypes.TEXT);
-          } else if (key === "p" && editable) {
+          } else if (key === "p" && isWindows()) {
             dispatch(setAskingSimPreviewByLatest(true));
           } else if (key === "s" && editable) {
             setDialog(DialogTypes.SHAPE);

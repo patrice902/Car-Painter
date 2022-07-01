@@ -37,7 +37,7 @@ import {
   submitSimPreview,
 } from "redux/reducers/downloaderReducer";
 import { Rotate90DegreesCcw, Search as SearchIcon } from "@material-ui/icons";
-import { focusBoardQuickly } from "helper";
+import { focusBoardQuickly, isWindows } from "helper";
 
 export const Toolbar = React.memo((props) => {
   const {
@@ -69,10 +69,7 @@ export const Toolbar = React.memo((props) => {
     (state) => state.boardReducer.showProperties
   );
   // const viewMode = useSelector((state) => state.boardReducer.viewMode);
-  const isWindows = useMemo(
-    () => window.navigator.userAgent.includes("Win"),
-    []
-  );
+
   const downloaderRunning = useSelector(
     (state) => state.downloaderReducer.iracing
   );
@@ -282,7 +279,7 @@ export const Toolbar = React.memo((props) => {
             >
               <Button
                 variant="default"
-                disabled={!isWindows || simPreviewing}
+                disabled={!isWindows() || simPreviewing}
                 onClick={handleClickSimPreview}
               >
                 {simPreviewing ? (

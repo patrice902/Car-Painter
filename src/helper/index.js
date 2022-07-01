@@ -458,3 +458,5 @@ export const scrollBackOnProjectList = () => {
 export const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
+
+export const isWindows = () => window.navigator.userAgent.includes("Win");

@@ -62,7 +62,8 @@ export const getDownloaderStatus = (onSuccess, onError) => async (
 };
 
 export const submitSimPreview = (schemeID, isCustomNumber, payload) => async (
-  dispatch
+  dispatch,
+  getState
 ) => {
   dispatch(setSimPreviewing(true));
   try {
@@ -80,8 +81,13 @@ export const submitSimPreview = (schemeID, isCustomNumber, payload) => async (
       );
     }
   } catch (err) {
-    console.log("Error: ", err);
-    dispatch(setMessage({ message: err.message }));
+    const iracing = getState().downloaderReducer.iracing;
+    if (!iracing) {
+      dispatch(setMessage({ message: "Downloader is not running!" }));
+    } else {
+      console.log("Error: ", err);
+      dispatch(setMessage({ message: err.message }));
+    }
   }
   dispatch(setSimPreviewing(false));
 };

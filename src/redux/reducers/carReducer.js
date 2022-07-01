@@ -76,7 +76,8 @@ export const setCarRace = (payload, onSuccess, onError) => async (
     }
   } catch (err) {
     console.log("Error: ", err);
-    dispatch(setMessage({ message: err.message }));
+    // dispatch(setMessage({ message: err.message }));
+    dispatch(setMessage({ message: "Racing Failed!" }));
     if (onError) {
       onError();
     }

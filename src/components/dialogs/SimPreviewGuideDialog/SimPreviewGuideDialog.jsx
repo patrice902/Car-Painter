@@ -16,6 +16,7 @@ import { NumberModSwitch } from "components/common";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
+import { isWindows } from "helper";
 
 export const SimPreviewGuideDialog = React.memo((props) => {
   const { open, applying, onApply, onCancel } = props;
@@ -36,7 +37,9 @@ export const SimPreviewGuideDialog = React.memo((props) => {
   }, [isCustomNumber, onApply]);
 
   const handleCheckDownloader = useCallback(() => {
-    dispatch(getDownloaderStatus());
+    if (isWindows()) {
+      dispatch(getDownloaderStatus());
+    }
   }, [dispatch]);
 
   useEffect(() => {

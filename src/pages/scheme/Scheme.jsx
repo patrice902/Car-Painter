@@ -38,7 +38,7 @@ import { ReconnectionBanner } from "./components/ReconnectionBanner";
 import { getCarRaces } from "redux/reducers/carReducer";
 import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
 import { MouseModes } from "constant";
-import { focusBoardQuickly } from "helper";
+import { focusBoardQuickly, isWindows } from "helper";
 
 const Scheme = React.memo((props) => {
   const {
@@ -176,7 +176,9 @@ const Scheme = React.memo((props) => {
                 if (!favoriteSchemeList.length)
                   dispatch(getFavoriteList(user.id));
                 dispatch(getCarRaces(scheme.id));
-                dispatch(getDownloaderStatus());
+                if (isWindows()) {
+                  dispatch(getDownloaderStatus());
+                }
               }
             },
             () => {
@@ -215,7 +217,7 @@ const Scheme = React.memo((props) => {
 
   useInterval(() => {
     dispatch(getDownloaderStatus());
-  }, user && user.id && currentScheme && 10000);
+  }, isWindows() && user && user.id && currentScheme && 10000);
 
   useEffect(() => {
     if (stageRef.current) {

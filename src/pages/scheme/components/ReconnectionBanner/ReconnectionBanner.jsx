@@ -21,11 +21,10 @@ export const ReconnectionBanner = React.memo(({ show }) => {
           border="2px solid navajowhite"
           position="relative"
         >
-          <Typography>Connection Failure, Trying to reconnect...</Typography>
-          <Typography>It'll refresh the page after reconnecting it.</Typography>
+          <Typography>Paint Builder is trying to reconnect.</Typography>
           <Typography>
-            Please try to refresh the page manually if it doesn't reconnect at
-            all.
+            This page will refresh after the connection is restored, or you can
+            attempt to manually refresh the page.
           </Typography>
         </Box>
       ) : (

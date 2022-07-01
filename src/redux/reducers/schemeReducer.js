@@ -24,7 +24,7 @@ const initialState = {
   loaded: false,
   saving: false,
   submittingShowroom: false,
-  socketConnected: false,
+  socketConnected: true,
 };
 
 export const slice = createSlice({
