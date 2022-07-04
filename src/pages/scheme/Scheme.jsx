@@ -71,7 +71,7 @@ const Scheme = React.memo((props) => {
     handleDownloadTGA,
     handleDownloadSpecTGA,
     retrieveTGAPNGDataUrl,
-    retrieveSpecTGAPNGDataUrl,
+    requestSpecTGAPNGDataUrl,
   } = useCapture(
     stageRef,
     baseLayerRef,
@@ -304,7 +304,7 @@ const Scheme = React.memo((props) => {
               <Toolbar
                 stageRef={stageRef}
                 retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
-                retrieveSpecTGAPNGDataUrl={retrieveSpecTGAPNGDataUrl}
+                requestSpecTGAPNGDataUrl={requestSpecTGAPNGDataUrl}
                 onChangeBoardRotation={handleChangeBoardRotation}
               />
             </Box>

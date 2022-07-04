@@ -31,6 +31,8 @@ const initialState = {
   actionHistoryIndex: -1,
   actionHistoryMoving: false,
   viewMode: ViewModes.NORMAL_VIEW,
+  downloadSpecTGA: false,
+  specTGADataURL: null,
 };
 
 export const slice = createSlice({
@@ -95,6 +97,12 @@ export const slice = createSlice({
     setViewMode: (state, action) => {
       state.viewMode = action.payload;
     },
+    setDownloadSpecTGA: (state, action) => {
+      state.downloadSpecTGA = action.payload;
+    },
+    setSpecTGADataURL: (state, action) => {
+      state.specTGADataURL = action.payload;
+    },
   },
 });
 
@@ -116,6 +124,8 @@ export const {
   setActionHistoryMoving,
   reset,
   setViewMode,
+  setDownloadSpecTGA,
+  setSpecTGADataURL,
 } = slice.actions;
 
 export default slice.reducer;

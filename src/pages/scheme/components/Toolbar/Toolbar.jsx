@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DialogTypes } from "constant";
 
@@ -28,6 +28,7 @@ import {
   historyActionUp,
   setShowLayers,
   setShowProperties,
+  setSpecTGADataURL,
   // setViewMode,
 } from "redux/reducers/boardReducer";
 import { useZoom } from "hooks";
@@ -43,13 +44,14 @@ export const Toolbar = React.memo((props) => {
   const {
     stageRef,
     retrieveTGAPNGDataUrl,
-    retrieveSpecTGAPNGDataUrl,
+    requestSpecTGAPNGDataUrl,
     onChangeBoardRotation,
   } = props;
   const [zoom, onZoomIn, onZoomOut, onZoomFit] = useZoom(stageRef);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
+  const [isCustom, setIsCustom] = useState(0);
 
   const dispatch = useDispatch();
   const actionHistoryIndex = useSelector(
@@ -57,6 +59,9 @@ export const Toolbar = React.memo((props) => {
   );
   const actionHistoryMoving = useSelector(
     (state) => state.boardReducer.actionHistoryMoving
+  );
+  const specTGADataURL = useSelector(
+    (state) => state.boardReducer.specTGADataURL
   );
   const actionHistory = useSelector(
     (state) => state.boardReducer.actionHistory
@@ -87,26 +92,51 @@ export const Toolbar = React.memo((props) => {
 
   const applySubmitSimPreview = useCallback(
     async (isCustomNumber = 0) => {
+      setIsCustom(isCustomNumber);
       let formData = new FormData();
 
       const dataURL = await retrieveTGAPNGDataUrl();
       formData.append("car_file", dataURL);
 
       if (!currentScheme.hide_spec && currentCarMake.car_type !== "Misc") {
-        const specDataURL = await retrieveSpecTGAPNGDataUrl();
-        formData.append("spec_file", specDataURL);
+        requestSpecTGAPNGDataUrl();
+      } else {
+        dispatch(submitSimPreview(currentScheme.id, isCustomNumber, formData));
       }
-
-      dispatch(submitSimPreview(currentScheme.id, isCustomNumber, formData));
     },
     [
       retrieveTGAPNGDataUrl,
       currentScheme,
       currentCarMake,
       dispatch,
-      retrieveSpecTGAPNGDataUrl,
+      requestSpecTGAPNGDataUrl,
     ]
   );
+
+  const handleApplySpecTGAToSimPreview = useCallback(async () => {
+    if (specTGADataURL) {
+      let formData = new FormData();
+
+      const dataURL = await retrieveTGAPNGDataUrl();
+      formData.append("car_file", dataURL);
+      formData.append("spec_file", specTGADataURL);
+      dispatch(submitSimPreview(currentScheme.id, isCustom, formData));
+      dispatch(setSpecTGADataURL(null));
+    }
+  }, [
+    currentScheme,
+    dispatch,
+    isCustom,
+    retrieveTGAPNGDataUrl,
+    specTGADataURL,
+  ]);
+
+  useEffect(() => {
+    if (specTGADataURL) {
+      handleApplySpecTGAToSimPreview();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [specTGADataURL]);
 
   const handleSubmitSimPreview = useCallback(
     async (isCustomNumber = 0) => {

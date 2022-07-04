@@ -16,7 +16,12 @@ import {
   updateLayer,
   setLoadedStatus,
 } from "redux/reducers/layerReducer";
-import { setShowProperties, setViewMode } from "redux/reducers/boardReducer";
+import {
+  setDownloadSpecTGA,
+  setShowProperties,
+  setSpecTGADataURL,
+  setViewMode,
+} from "redux/reducers/boardReducer";
 import {
   dataURItoBlob,
   addImageProcess,
@@ -43,6 +48,14 @@ export const useCapture = (
   );
   const [, currentCarMakeRef] = useReducerRef(
     useSelector((state) => state.carMakeReducer.current)
+  );
+  const schemeSaving = useSelector((state) => state.schemeReducer.saving);
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
+  const viewMode = useSelector((state) => state.boardReducer.viewMode);
+  const downloadSpecTGA = useSelector(
+    (state) => state.boardReducer.downloadSpecTGA
   );
   const [, currentLayerRef] = useReducerRef(
     useSelector((state) => state.layerReducer.current)
@@ -371,51 +384,30 @@ export const useCapture = (
     ]
   );
 
-  const handleDownloadSpecTGA = useCallback(async () => {
+  const requestSpecTGAPNGDataUrl = useCallback(async () => {
     if (stageRef.current && currentSchemeRef.current) {
       dispatch(setSaving(true));
       dispatch(setViewMode(ViewModes.SPEC_VIEW));
-
-      await sleep(500);
-
-      const { ctx } = await takeScreenshot(false);
-
-      dispatch(setViewMode(ViewModes.NORMAL_VIEW));
-      dispatch(
-        setLoadedStatus({
-          key: `guide-mask-${schemeFinishBase}`,
-          value: false,
-        })
-      );
-      setTimeout(() => dispatch(setSaving(false)), 500);
-
-      downloadTGA(
-        ctx,
-        carMakeSize,
-        carMakeSize,
-        `car_spec_${userRef.current.id}.tga`
-      );
     }
-  }, [
-    stageRef,
-    currentSchemeRef,
-    dispatch,
-    takeScreenshot,
-    schemeFinishBase,
-    carMakeSize,
-    userRef,
-  ]);
+  }, [dispatch, currentSchemeRef, stageRef]);
 
-  const retrieveSpecTGAPNGDataUrl = useCallback(async () => {
+  const handleDownloadSpecTGA = useCallback(() => {
     if (stageRef.current && currentSchemeRef.current) {
+      dispatch(setSaving(true));
+      dispatch(setDownloadSpecTGA(true));
+      dispatch(setViewMode(ViewModes.SPEC_VIEW));
+    }
+  }, [dispatch, currentSchemeRef, stageRef]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(async () => {
+    if (
+      schemeSaving &&
+      viewMode === ViewModes.SPEC_VIEW &&
+      loadedStatuses[`guide-mask-${schemeFinishBase}`]
+    ) {
       try {
-        dispatch(setSaving(true));
-        dispatch(setViewMode(ViewModes.SPEC_VIEW));
-
-        await sleep(500);
-
-        const { canvas } = await takeScreenshot(false);
-        let dataURL = canvas.toDataURL("image/png", 1);
+        const { ctx, canvas } = await takeScreenshot(false);
 
         dispatch(setViewMode(ViewModes.NORMAL_VIEW));
         dispatch(
@@ -424,16 +416,35 @@ export const useCapture = (
             value: false,
           })
         );
-        setTimeout(() => dispatch(setSaving(false)), 500);
-
-        return dataURL;
+        setTimeout(() => dispatch(setSaving(false)), 1000);
+        if (downloadSpecTGA) {
+          downloadTGA(
+            ctx,
+            carMakeSize,
+            carMakeSize,
+            `car_spec_${userRef.current.id}.tga`
+          );
+        } else {
+          let dataURL = canvas.toDataURL("image/png", 1);
+          dispatch(setSpecTGADataURL(dataURL));
+        }
       } catch (err) {
         console.log(err);
         dispatch(setMessage({ message: err.message }));
-        return null;
       }
     }
-  }, [stageRef, currentSchemeRef, dispatch, takeScreenshot, schemeFinishBase]);
+  }, [
+    dispatch,
+    schemeSaving,
+    viewMode,
+    schemeFinishBase,
+    currentCarMakeRef,
+    loadedStatuses,
+    userRef,
+    takeScreenshot,
+    carMakeSize,
+    downloadSpecTGA,
+  ]);
 
   useEffect(() => {
     if (pauseCapturing && !drawingStatus) {
@@ -450,6 +461,6 @@ export const useCapture = (
     retrieveTGAPNGDataUrl,
     retrieveTGABlobURL,
     retrievePNGDataUrl,
-    retrieveSpecTGAPNGDataUrl,
+    requestSpecTGAPNGDataUrl,
   };
 };
