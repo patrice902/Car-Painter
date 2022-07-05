@@ -39,6 +39,7 @@ import { getCarRaces } from "redux/reducers/carReducer";
 import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
 import { MouseModes } from "constant";
 import { focusBoardQuickly, isWindows } from "helper";
+import { useMemo } from "react";
 
 const Scheme = React.memo((props) => {
   const {
@@ -110,6 +111,7 @@ const Scheme = React.memo((props) => {
   );
 
   const [showLegacyBanner, setShowLegacyBanner] = useState(false);
+  const isInWindows = useMemo(() => isWindows(), []);
 
   const setHoveredJSONItem = useCallback(
     (key, value) => {
@@ -215,9 +217,12 @@ const Scheme = React.memo((props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editable]);
 
-  useInterval(() => {
-    dispatch(getDownloaderStatus());
-  }, isWindows() && user && user.id && currentScheme && 10000);
+  useInterval(
+    () => {
+      dispatch(getDownloaderStatus());
+    },
+    isInWindows && user && user.id && currentScheme ? 10000 : null
+  );
 
   useEffect(() => {
     if (stageRef.current) {

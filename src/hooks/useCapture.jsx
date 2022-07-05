@@ -27,7 +27,6 @@ import {
   addImageProcess,
   downloadTGA,
   getTGABlob,
-  sleep,
 } from "helper";
 import SchemeService from "services/schemeService";
 

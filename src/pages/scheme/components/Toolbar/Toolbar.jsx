@@ -52,6 +52,7 @@ export const Toolbar = React.memo((props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
   const [isCustom, setIsCustom] = useState(0);
+  const [tgaPNGDataUrl, setTgaPNGDataUrl] = useState(null);
 
   const dispatch = useDispatch();
   const actionHistoryIndex = useSelector(
@@ -96,6 +97,7 @@ export const Toolbar = React.memo((props) => {
       let formData = new FormData();
 
       const dataURL = await retrieveTGAPNGDataUrl();
+      setTgaPNGDataUrl(dataURL);
       formData.append("car_file", dataURL);
 
       if (!currentScheme.hide_spec && currentCarMake.car_type !== "Misc") {
@@ -113,23 +115,16 @@ export const Toolbar = React.memo((props) => {
     ]
   );
 
-  const handleApplySpecTGAToSimPreview = useCallback(async () => {
-    if (specTGADataURL) {
+  const handleApplySpecTGAToSimPreview = useCallback(() => {
+    if (tgaPNGDataUrl && specTGADataURL) {
       let formData = new FormData();
 
-      const dataURL = await retrieveTGAPNGDataUrl();
-      formData.append("car_file", dataURL);
+      formData.append("car_file", tgaPNGDataUrl);
       formData.append("spec_file", specTGADataURL);
       dispatch(submitSimPreview(currentScheme.id, isCustom, formData));
       dispatch(setSpecTGADataURL(null));
     }
-  }, [
-    currentScheme,
-    dispatch,
-    isCustom,
-    retrieveTGAPNGDataUrl,
-    specTGADataURL,
-  ]);
+  }, [currentScheme, dispatch, isCustom, tgaPNGDataUrl, specTGADataURL]);
 
   useEffect(() => {
     if (specTGADataURL) {
