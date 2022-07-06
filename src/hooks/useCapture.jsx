@@ -39,6 +39,7 @@ export const useCapture = (
 ) => {
   const dispatch = useDispatch();
   const [pauseCapturing, setPauseCapturing] = useState(false);
+  const [capturing, setCapturing] = useState(false);
   const [, userRef] = useReducerRef(
     useSelector((state) => state.authReducer.user)
   );
@@ -90,6 +91,7 @@ export const useCapture = (
 
   const takeScreenshot = useCallback(
     async (isPNG = true) => {
+      setCapturing(true);
       if (
         currentLayerRef.current &&
         ![LayerTypes.BASE, LayerTypes.CAR].includes(
@@ -203,6 +205,7 @@ export const useCapture = (
       if (carMaskLayerImg && isPNG) {
         ctx.drawImage(carMaskLayerImg, 0, 0, width, height);
       }
+      setCapturing(false);
       return {
         canvas,
         ctx,
@@ -226,25 +229,27 @@ export const useCapture = (
   const uploadThumbnail = useCallback(
     async (dataURL) => {
       try {
-        let blob = dataURItoBlob(dataURL);
-        var fileOfBlob = new File(
-          [blob],
-          `${currentSchemeRef.current.id}.jpg`,
-          {
-            type: "image/jpeg",
-          }
-        );
+        if (!capturing) {
+          let blob = dataURItoBlob(dataURL);
+          var fileOfBlob = new File(
+            [blob],
+            `${currentSchemeRef.current.id}.jpg`,
+            {
+              type: "image/jpeg",
+            }
+          );
 
-        let formData = new FormData();
-        formData.append("files", fileOfBlob);
-        formData.append("schemeID", currentSchemeRef.current.id);
-        dispatch(setCurrentScheme({ thumbnail_updated: 1 }));
-        await SchemeService.uploadThumbnail(formData);
+          let formData = new FormData();
+          formData.append("files", fileOfBlob);
+          formData.append("schemeID", currentSchemeRef.current.id);
+          dispatch(setCurrentScheme({ thumbnail_updated: 1 }));
+          await SchemeService.uploadThumbnail(formData);
+        }
       } catch (err) {
         dispatch(setMessage({ message: err.message }));
       }
     },
-    [dispatch, currentSchemeRef]
+    [dispatch, capturing, currentSchemeRef]
   );
 
   const handleUploadThumbnail = useCallback(
@@ -252,7 +257,8 @@ export const useCapture = (
       if (
         stageRef.current &&
         currentSchemeRef.current &&
-        !currentSchemeRef.current.thumbnail_updated
+        !currentSchemeRef.current.thumbnail_updated &&
+        !capturing
       ) {
         if (drawingStatusRef.current) {
           setPauseCapturing(true);
@@ -276,6 +282,7 @@ export const useCapture = (
     },
     [
       dispatch,
+      capturing,
       currentSchemeRef,
       stageRef,
       drawingStatusRef,
@@ -285,7 +292,7 @@ export const useCapture = (
   );
 
   const retrievePNGDataUrl = useCallback(async () => {
-    if (stageRef.current && currentSchemeRef.current) {
+    if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
         console.log("Getting Thumbnail");
         dispatch(setSaving(true));
@@ -300,10 +307,10 @@ export const useCapture = (
         return null;
       }
     }
-  }, [dispatch, currentSchemeRef, stageRef, takeScreenshot]);
+  }, [dispatch, currentSchemeRef, stageRef, takeScreenshot, capturing]);
 
   const retrieveTGAPNGDataUrl = useCallback(async () => {
-    if (stageRef.current && currentSchemeRef.current) {
+    if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
         dispatch(setSaving(true));
         const { canvas } = await takeScreenshot(false);
@@ -317,11 +324,11 @@ export const useCapture = (
         return null;
       }
     }
-  }, [dispatch, currentSchemeRef, stageRef, takeScreenshot]);
+  }, [dispatch, currentSchemeRef, stageRef, takeScreenshot, capturing]);
 
   const retrieveTGABlobURL = useCallback(
     async (isCustomNumber) => {
-      if (stageRef.current && currentSchemeRef.current) {
+      if (stageRef.current && currentSchemeRef.current && !capturing) {
         try {
           dispatch(setSaving(true));
           const { ctx } = await takeScreenshot(false);
@@ -342,12 +349,20 @@ export const useCapture = (
         }
       }
     },
-    [stageRef, currentSchemeRef, dispatch, takeScreenshot, carMakeSize, userRef]
+    [
+      stageRef,
+      currentSchemeRef,
+      dispatch,
+      takeScreenshot,
+      carMakeSize,
+      userRef,
+      capturing,
+    ]
   );
 
   const handleDownloadTGA = useCallback(
     async (isCustomNumberTGA = false) => {
-      if (stageRef.current && currentSchemeRef.current) {
+      if (stageRef.current && currentSchemeRef.current && !capturing) {
         try {
           dispatch(setSaving(true));
           const { canvas, ctx, carMaskLayerImg } = await takeScreenshot(false);
@@ -380,23 +395,24 @@ export const useCapture = (
       carMakeSize,
       userRef,
       uploadThumbnail,
+      capturing,
     ]
   );
 
   const requestSpecTGAPNGDataUrl = useCallback(async () => {
-    if (stageRef.current && currentSchemeRef.current) {
+    if (stageRef.current && currentSchemeRef.current && !capturing) {
       dispatch(setSaving(true));
       dispatch(setViewMode(ViewModes.SPEC_VIEW));
     }
-  }, [dispatch, currentSchemeRef, stageRef]);
+  }, [dispatch, currentSchemeRef, stageRef, capturing]);
 
   const handleDownloadSpecTGA = useCallback(() => {
-    if (stageRef.current && currentSchemeRef.current) {
+    if (stageRef.current && currentSchemeRef.current && !capturing) {
       dispatch(setSaving(true));
       dispatch(setDownloadSpecTGA(true));
       dispatch(setViewMode(ViewModes.SPEC_VIEW));
     }
-  }, [dispatch, currentSchemeRef, stageRef]);
+  }, [dispatch, currentSchemeRef, stageRef, capturing]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
@@ -446,12 +462,12 @@ export const useCapture = (
   ]);
 
   useEffect(() => {
-    if (pauseCapturing && !drawingStatus) {
+    if (pauseCapturing && !drawingStatus && !capturing) {
       setPauseCapturing(false);
       handleUploadThumbnail();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pauseCapturing, drawingStatus]);
+  }, [pauseCapturing, drawingStatus, capturing]);
 
   return {
     handleUploadThumbnail,

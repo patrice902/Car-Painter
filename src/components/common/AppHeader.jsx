@@ -84,7 +84,7 @@ export const AppHeader = React.memo(({ children }) => {
                 horizontal: "right",
               }}
             >
-              <Box py={4} display="flex" flexDirection="column">
+              <Box py={2} display="flex" flexDirection="column">
                 <NameItem>{getUserName(user)}</NameItem>
                 <StyledLink
                   href="https://tradingpaints.com/messages"
@@ -126,7 +126,7 @@ export const SlashSeparator = styled(Typography)`
 
 const StyledLink = styled(MuiLink)`
   font-size: 13px;
-  font-family: AkkuratMonoLLWeb-Regular;
+  font-family: CircularXXWeb-Regular;
   font-weight: 500;
   color: white;
   text-decoration: none;

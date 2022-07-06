@@ -71,7 +71,7 @@ export const TitleBar = React.memo((props) => {
       px={1}
       my={1}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box display="flex" alignItems="center" flexGrow={1}>
         <Box mr={1}>
           <LightTooltip title="Back" arrow>
             <IconButton onClick={onBack}>
@@ -87,7 +87,7 @@ export const TitleBar = React.memo((props) => {
           inputProps={{ maxLength: "50" }}
         />
       </Box>
-      <Box display="flex">
+      <Box display="flex" marginLeft="4px">
         {currentScheme && name !== currentScheme.name ? (
           <LightTooltip title="Discard Change" arrow>
             <IconButton onClick={handleDiscardName} color="secondary">

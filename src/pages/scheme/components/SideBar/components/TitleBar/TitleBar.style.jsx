@@ -9,6 +9,7 @@ export const CustomIcon = styled(FontAwesomeIcon)`
 
 export const NameInput = styled(TextField)`
   width: ${(props) => props.width};
+  flex-grow: 1;
   .MuiInputBase-input {
     font-family: "CircularXXWeb-Bold";
   }
