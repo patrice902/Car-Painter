@@ -8,7 +8,7 @@ const CustomeTextField = styled(TextField)`
   margin: 0;
   .MuiInputBase-input {
     height: 1.5rem;
-    font-family: CircularXXWeb;
+    font-family: CircularXXWeb-Regular;
   }
   [disabled] {
     color: white;

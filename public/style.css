@@ -28,7 +28,7 @@
 /* complete */
 
 @font-face {
-  font-family: "CircularXXWeb";
+  font-family: "CircularXXWeb-Regular";
   src: url("./fonts/CircularXXWeb-Regular.woff2") format("woff2"),
        url("./fonts/CircularXXWeb-Regular.woff") format("woff");
 }
