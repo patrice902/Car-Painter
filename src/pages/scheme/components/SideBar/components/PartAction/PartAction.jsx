@@ -31,8 +31,9 @@ export const PartAction = React.memo((props) => {
   }, [setAnchorEl]);
 
   return (
-    <Box display="flex">
+    <Box display="flex" justifyContent="flex-end">
       <IconButton
+        size="small"
         onClick={onExpandClick}
         className={clsx(classes.expand, {
           [classes.expandOpen]: expanded,
@@ -44,14 +45,14 @@ export const PartAction = React.memo((props) => {
         <></>
       ) : actions.length === 1 ? (
         <LightTooltip title={actions[0].title} arrow>
-          <IconButton onClick={actions[0].onClick} variant="text">
+          <IconButton size="small" onClick={actions[0].onClick} variant="text">
             <AddIcon />
           </IconButton>
         </LightTooltip>
       ) : (
         <>
           <LightTooltip title={EnglishLang.INSERT_LOGO_OR_TEXT} arrow>
-            <IconButton onClick={handlePoperOpen}>
+            <IconButton size="small" onClick={handlePoperOpen}>
               <AddIcon />
             </IconButton>
           </LightTooltip>
@@ -79,6 +80,7 @@ export const PartAction = React.memo((props) => {
               {actions.map((action, index) => (
                 <CustomIconButton
                   variant="text"
+                  size="small"
                   key={index}
                   onClick={() => {
                     handleClosePoper();

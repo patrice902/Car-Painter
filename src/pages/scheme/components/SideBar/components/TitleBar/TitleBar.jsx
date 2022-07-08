@@ -68,7 +68,7 @@ export const TitleBar = React.memo((props) => {
       display="flex"
       justifyContent="space-between"
       alignItems="center"
-      px={1}
+      pl={1}
       my={1}
     >
       <Box display="flex" alignItems="center" flexGrow={1}>

@@ -28,65 +28,41 @@
 /* complete */
 
 @font-face {
-  font-family: "CircularXXWeb-Regular";
-  src: url("./fonts/CircularXXWeb-Regular.woff") format("woff");
-}
-
-@font-face {
-  font-family: "CircularXXWeb-Regular";
-  src: url("./fonts/CircularXXWeb-Regular.woff2") format("woff2");
+  font-family: "CircularXXWeb";
+  src: url("./fonts/CircularXXWeb-Regular.woff2") format("woff2"),
+       url("./fonts/CircularXXWeb-Regular.woff") format("woff");
 }
 
 @font-face {
   font-family: "CircularXXWeb-Bold";
-  src: url("./fonts/CircularXXWeb-Bold.woff") format("woff");
-}
-
-@font-face {
-  font-family: "CircularXXWeb-Bold";
-  src: url("./fonts/CircularXXWeb-Bold.woff2") format("woff2");
+  src: url("./fonts/CircularXXWeb-Bold.woff2") format("woff2"),
+        url("./fonts/CircularXXWeb-Bold.woff") format("woff");
 }
 
 /* subset */
 
 @font-face {
   font-family: "CircularXXSub-RegularSubset";
-  src: url("./fonts/CircularXXSub-RegularSubset.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "CircularXXSub-RegularSubset";
-  src: url("./fonts/CircularXXSub-RegularSubset.woff") format("woff");
+  src: url("./fonts/CircularXXSub-RegularSubset.woff2") format("woff2"),
+      url("./fonts/CircularXXSub-RegularSubset.woff") format("woff");
 }
 
 @font-face {
   font-family: "CircularXXSub-BoldSubset";
-  src: url("./fonts/CircularXXSub-BoldSubset.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "CircularXXSub-BoldSubset";
-  src: url("./fonts/CircularXXSub-BoldSubset.woff") format("woff");
+  src: url("./fonts/CircularXXSub-BoldSubset.woff2") format("woff2"),
+      url("./fonts/CircularXXSub-BoldSubset.woff") format("woff");
 }
 
 @font-face {
   font-family: "AkkuratMonoLLWeb-Regular";
-  src: url("./fonts/AkkuratMonoLLWeb-Regular.woff") format("woff");
-}
-
-@font-face {
-  font-family: "AkkuratMonoLLWeb-Regular";
-  src: url("./fonts/AkkuratMonoLLWeb-Regular.woff2") format("woff2");
+  src: url("./fonts/AkkuratMonoLLWeb-Regular.woff2") format("woff2"),
+        url("./fonts/AkkuratMonoLLWeb-Regular.woff") format("woff");
 }
 
 @font-face {
   font-family: "AkkuratMonoLLSub-RegularSubset";
-  src: url("./fonts/AkkuratMonoLLSub-RegularSubset.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "AkkuratMonoLLSub-RegularSubset";
-  src: url("./fonts/AkkuratMonoLLSub-RegularSubset.woff") format("woff");
+  src: url("./fonts/AkkuratMonoLLSub-RegularSubset.woff2") format("woff2"),
+        url("./fonts/AkkuratMonoLLSub-RegularSubset.woff") format("woff");
 }
 
 body {

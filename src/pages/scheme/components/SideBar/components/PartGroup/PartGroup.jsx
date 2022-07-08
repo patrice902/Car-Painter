@@ -11,8 +11,9 @@ import {
 } from "redux/reducers/layerReducer";
 import { setMouseMode } from "redux/reducers/boardReducer";
 
-import { Box, Card, Collapse } from "@material-ui/core";
-import { CustomCardHeader, CustomCardContent } from "./PartGroup.style";
+import { Box, Card, Collapse, Typography } from "@material-ui/core";
+import { LightTooltip } from "components/common";
+import { HeaderTitle, CustomCardContent } from "./PartGroup.style";
 
 import { PartItem } from "../PartItem";
 import { PartAction } from "../PartAction";
@@ -118,16 +119,23 @@ export const PartGroup = (props) => {
   return (
     <Box mb={2}>
       <Card>
-        <CustomCardHeader
-          title={title}
-          action={
-            <PartAction
-              expanded={expanded}
-              actions={!disabled ? actions : undefined}
-              onExpandClick={handleExpandClick}
-            />
-          }
-        />
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          position="relative"
+          padding="16px 16px 16px 45px"
+          height="52px"
+        >
+          <LightTooltip title={title} arrow>
+            <HeaderTitle>{title}</HeaderTitle>
+          </LightTooltip>
+          <PartAction
+            expanded={expanded}
+            actions={!disabled ? actions : undefined}
+            onExpandClick={handleExpandClick}
+          />
+        </Box>
         <Collapse in={expanded}>
           <CustomCardContent>
             <ReactSortable

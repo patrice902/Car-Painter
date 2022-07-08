@@ -276,29 +276,44 @@ export const DrawerBar = React.memo(
           createLayerFromUpload(
             currentScheme.id,
             upload,
-            getZoomedCenterPosition(stageRef, frameSize, zoom)
+            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
           )
         );
         setDialog(null);
         focusBoard();
       },
-      [dispatch, setDialog, currentScheme.id, stageRef, frameSize, zoom]
+      [
+        dispatch,
+        setDialog,
+        currentScheme.id,
+        stageRef,
+        frameSize,
+        zoom,
+        boardRotate,
+      ]
     );
     const handleCreateText = useCallback(
       (values) => {
         dispatch(setMouseMode(MouseModes.DEFAULT));
-        console.log(getZoomedCenterPosition(stageRef, frameSize, zoom));
         dispatch(
           createTextLayer(
             currentScheme.id,
             values,
-            getZoomedCenterPosition(stageRef, frameSize, zoom)
+            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
           )
         );
         setDialog(null);
         focusBoard();
       },
-      [dispatch, setDialog, currentScheme.id, stageRef, frameSize, zoom]
+      [
+        dispatch,
+        setDialog,
+        currentScheme.id,
+        stageRef,
+        frameSize,
+        zoom,
+        boardRotate,
+      ]
     );
 
     const handleApplySettings = useCallback(

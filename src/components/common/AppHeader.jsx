@@ -32,7 +32,7 @@ export const AppHeader = React.memo(({ children }) => {
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      padding="15px"
+      padding="8px 15px"
       bgcolor="black"
     >
       <Box
@@ -119,9 +119,9 @@ export const AppHeader = React.memo(({ children }) => {
 
 export const SlashSeparator = styled(Typography)`
   color: #666;
-  font-size: 46px;
+  font-size: 40px;
   font-weight: 400;
-  margin: 0 5px;
+  margin: -7px 5px 0;
 `;
 
 const StyledLink = styled(MuiLink)`

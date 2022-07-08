@@ -268,7 +268,7 @@ const Scheme = React.memo((props) => {
           />
           <Box
             width="100%"
-            height="calc(100% - 70px)"
+            height="calc(100% - 56px)"
             display="flex"
             justifyContent="space-between"
           >
