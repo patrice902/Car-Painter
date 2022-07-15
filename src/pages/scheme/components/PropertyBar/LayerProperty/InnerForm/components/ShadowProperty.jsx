@@ -73,6 +73,7 @@ export const ShadowProperty = React.memo((props) => {
   );
 
   if (
+    !AllowedLayerTypes ||
     layerDataProperties.every(
       (value) => !AllowedLayerTypes.includes("layer_data." + value)
     )

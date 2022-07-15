@@ -1,4 +1,5 @@
 export { SchemeSettingsDialog } from "./SchemeSettingsDialog";
+export { SharingDialog } from "./SharingDialog";
 export { BasePaintDialog } from "./BasePaintDialog";
 export { ConfirmDialog } from "./ConfirmDialog";
 export { CreateProjectDialog } from "./CreateProjectDialog";

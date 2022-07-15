@@ -4,13 +4,10 @@ import styled from "styled-components/macro";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 
-import { Box, IconButton, Typography, Button } from "components/MaterialUI";
-import { LightTooltip } from "components/common";
+import { Box, Typography, Button } from "components/MaterialUI";
 import { CreateProjectDialog } from "components/dialogs";
 
 import { createScheme } from "redux/reducers/schemeReducer";
-import { signOut } from "redux/reducers/authReducer";
-import { LogOut as LogOutIcon } from "react-feather";
 import { Add as AddIcon } from "@material-ui/icons";
 
 const tabURLs = ["mine", "shared", "favorite"];
@@ -76,10 +73,6 @@ export const LeftBar = React.memo(({ tabValue, setTabValue }) => {
     setDialog("CreateProjectDialog");
   }, []);
 
-  const handleLogOut = useCallback(() => {
-    dispatch(signOut());
-  }, [dispatch]);
-
   const handleClickTabItem = useCallback(
     (tabIndex) => {
       window.history.replaceState({}, "", tabURLs[tabIndex]);
@@ -114,11 +107,6 @@ export const LeftBar = React.memo(({ tabValue, setTabValue }) => {
         >
           <Typography variant="subtitle1"> New</Typography>
         </GreyButton>
-        <LightTooltip title="Log Out" arrow>
-          <IconButton onClick={handleLogOut} size="small">
-            <LogOutIcon />
-          </IconButton>
-        </LightTooltip>
       </Box>
       <Box display="flex" flexDirection="column">
         <Tab

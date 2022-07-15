@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DialogTypes } from "constant";
 
@@ -6,7 +6,7 @@ import { Typography, Box, Button, Popover } from "components/MaterialUI";
 import {
   DropDownIcon,
   ShareIcon,
-  DownloadButton,
+  DropDownButton,
   CustomButtonGroup,
 } from "./Header.style";
 import { AppHeader } from "components/common";
@@ -20,8 +20,7 @@ import { CircularProgress } from "components/MaterialUI";
 import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
 import { updateScheme } from "redux/reducers/schemeReducer";
-import { SchemeSettingsDialog } from "components/dialogs";
-import config from "config";
+import { SharingDialog } from "components/dialogs";
 
 export const Header = React.memo((props) => {
   const {
@@ -34,9 +33,8 @@ export const Header = React.memo((props) => {
   const [raceAnchorEl, setRaceAnchorEl] = useState(null);
   const [shareAnchorEl, setShareAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
-  const [showroomFile, setShowroomFile] = useState(null);
   const [applyingRace, setApplyingRace] = useState(false);
-  const showroomFormRef = useRef();
+  const [sharingTab, setSharingTab] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -226,10 +224,6 @@ export const Header = React.memo((props) => {
     handleRaceOptionsClose();
   };
 
-  const handleOpenShareDialog = () => {
-    setDialog(DialogTypes.SETTINGS);
-  };
-
   const onRaceUpdate = useCallback(() => {
     if (currentScheme.dismiss_race_confirm) {
       handleApplyRace();
@@ -239,43 +233,35 @@ export const Header = React.memo((props) => {
     focusBoardQuickly();
   }, [currentScheme, handleApplyRace]);
 
+  const handleOpenShareDialog = () => {
+    handleShareOptionsClose();
+    setSharingTab(0);
+    setDialog(DialogTypes.SHARING);
+  };
+
   const handleSubmitToShowroom = useCallback(async () => {
     handleShareOptionsClose();
-
-    const dataURL = await retrieveTGAPNGDataUrl();
-    setShowroomFile(dataURL);
-    showroomFormRef.current.submit();
-  }, [retrieveTGAPNGDataUrl]);
+    setSharingTab(1);
+    setDialog(DialogTypes.SHARING);
+  }, []);
 
   return (
     <>
       <AppHeader>
-        <form
-          ref={showroomFormRef}
-          style={{ display: "none" }}
-          action={`${config.oldAppURL}/showroom/upload/${currentScheme.id}`}
-          method="post"
-          target="_blank"
-          enctype="multipart/form-data"
-        >
-          <input type="hidden" name="car_file" value={showroomFile} />
-        </form>
-        <CustomButtonGroup variant="outlined">
-          <Button onClick={handleOpenShareDialog} startIcon={<ShareIcon />}>
-            <Typography variant="subtitle2">Share</Typography>
-          </Button>
-          <Button
+        <Box mr={1} height="100%" display="flex" alignItems="center">
+          <DropDownButton
             aria-controls="share-options-menu"
             aria-haspopup="true"
-            size="small"
+            startIcon={<ShareIcon />}
+            endIcon={<DropDownIcon />}
             onClick={handleOpenShareOptions}
           >
-            <DropDownIcon />
-          </Button>
-        </CustomButtonGroup>
+            <Typography variant="subtitle2">Share</Typography>
+          </DropDownButton>
+        </Box>
 
         <Box mr={1} height="100%" display="flex" alignItems="center">
-          <DownloadButton
+          <DropDownButton
             aria-controls="tga-options-menu"
             aria-haspopup="true"
             onClick={handleOpenTGAOptions}
@@ -283,7 +269,7 @@ export const Header = React.memo((props) => {
             endIcon={<DropDownIcon />}
           >
             <Typography variant="subtitle2">Download</Typography>
-          </DownloadButton>
+          </DropDownButton>
         </Box>
 
         {primaryRaceNumber > -1 ? (
@@ -341,7 +327,10 @@ export const Header = React.memo((props) => {
             horizontal: "right",
           }}
         >
-          <Box py={1}>
+          <Box display="flex" flexDirection="column" py={1}>
+            <Button onClick={handleOpenShareDialog}>
+              <Typography variant="subtitle2">Share</Typography>
+            </Button>
             <Button onClick={handleSubmitToShowroom}>
               <Typography variant="subtitle2">Submit to Showroom</Typography>
             </Button>
@@ -416,10 +405,11 @@ export const Header = React.memo((props) => {
         onCancel={handleCloseDialog}
         onConfirm={handleConfirmRace}
       />
-      <SchemeSettingsDialog
+      <SharingDialog
         editable={editable}
-        open={dialog === DialogTypes.SETTINGS}
-        tab={1}
+        open={dialog === DialogTypes.SHARING}
+        tab={sharingTab}
+        retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
         onCancel={handleCloseDialog}
       />
     </>

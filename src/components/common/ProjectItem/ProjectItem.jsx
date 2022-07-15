@@ -149,6 +149,7 @@ export const ProjectItem = React.memo((props) => {
       })
     );
     onOpenScheme(scheme.id, sharedID);
+    return false;
   }, [dispatch, onOpenScheme, scheme, sharedID]);
 
   const schemeThumbnailURL = useCallback((id) => {
@@ -169,14 +170,15 @@ export const ProjectItem = React.memo((props) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <ImageWithLoad
-        src={schemeThumbnailURL(scheme.id) + "?date=" + scheme.date_modified}
-        altSrc={legacySchemeThumbnailURL(scheme.id)}
-        fallbackSrc={ShowroomNoCar}
-        minHeight="200px"
-        alt={scheme.name}
-        onClick={handleOpenScheme}
-      />
+      <a href={`/project/${scheme.id}`} onClick={handleOpenScheme}>
+        <ImageWithLoad
+          src={schemeThumbnailURL(scheme.id) + "?date=" + scheme.date_modified}
+          altSrc={legacySchemeThumbnailURL(scheme.id)}
+          fallbackSrc={ShowroomNoCar}
+          minHeight="200px"
+          alt={scheme.name}
+        />
+      </a>
       <Box display="flex" justifyContent="space-between">
         <Box
           display="flex"
@@ -205,10 +207,12 @@ export const ProjectItem = React.memo((props) => {
           )}
           <Box mb={1}>
             <BreakableTypography
+              component="a"
               variant="subtitle1"
               className="cursor-pointer"
-              onClick={handleOpenScheme}
               noWrap
+              href={`/project/${scheme.id}`}
+              onClick={handleOpenScheme}
             >
               {reduceString(scheme.name, 50)}
             </BreakableTypography>
@@ -249,69 +253,70 @@ export const ProjectItem = React.memo((props) => {
             <></>
           )}
         </Box>
-        {hovered ? (
-          <Box display="flex" alignItems="center">
-            {favoriteInPrgoress ? (
-              <CircularProgress size={30} />
-            ) : (
-              <IconButton onClick={handleToggleFavorite}>
-                {isFavorite ? (
-                  <FontAwesomeIcon icon={faStarOn} size="sm" />
-                ) : (
-                  <FontAwesomeIcon icon={faStarOff} size="sm" />
-                )}
-              </IconButton>
-            )}
-            {showActionMenu && (
-              <>
-                <IconButton
-                  aria-haspopup="true"
-                  aria-controls={`action-menu-${scheme.id}`}
-                  onClick={handleActionMenuClick}
-                >
-                  <ActionIcon />
+
+        <Box display="flex" alignItems="center">
+          {favoriteInPrgoress ? (
+            <CircularProgress size={30} />
+          ) : (
+            <>
+              {hovered || isFavorite ? (
+                <IconButton onClick={handleToggleFavorite}>
+                  {isFavorite ? (
+                    <FontAwesomeIcon icon={faStarOn} size="sm" />
+                  ) : (
+                    <FontAwesomeIcon icon={faStarOff} size="sm" />
+                  )}
                 </IconButton>
-                <Menu
-                  id={`action-menu-${scheme.id}`}
-                  elevation={0}
-                  getContentAnchorEl={null}
-                  anchorEl={actionMenuEl}
-                  keepMounted
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(actionMenuEl)}
-                  onClose={handleActionMenuClose}
-                >
-                  {onCloneProject && (
-                    <MenuItem onClick={handleCloneProject}>Clone</MenuItem>
-                  )}
+              ) : (
+                <></>
+              )}
+            </>
+          )}
+          {showActionMenu && hovered && (
+            <>
+              <IconButton
+                aria-haspopup="true"
+                aria-controls={`action-menu-${scheme.id}`}
+                onClick={handleActionMenuClick}
+              >
+                <ActionIcon />
+              </IconButton>
+              <Menu
+                id={`action-menu-${scheme.id}`}
+                elevation={0}
+                getContentAnchorEl={null}
+                anchorEl={actionMenuEl}
+                keepMounted
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                open={Boolean(actionMenuEl)}
+                onClose={handleActionMenuClose}
+              >
+                {onCloneProject && (
+                  <MenuItem onClick={handleCloneProject}>Clone</MenuItem>
+                )}
 
-                  {onAccept && (
-                    <MenuItem onClick={handleAccept}>Accept</MenuItem>
-                  )}
+                {onAccept && <MenuItem onClick={handleAccept}>Accept</MenuItem>}
 
-                  {onDelete && (
-                    <MenuItem onClick={handleDelete}>
-                      {shared && !accepted
-                        ? "Reject"
-                        : shared && accepted
-                        ? "Remove"
-                        : "Delete"}
-                    </MenuItem>
-                  )}
-                </Menu>
-              </>
-            )}
-          </Box>
-        ) : (
-          <></>
-        )}
+                {onDelete && (
+                  <MenuItem onClick={handleDelete}>
+                    {shared && !accepted
+                      ? "Reject"
+                      : shared && accepted
+                      ? "Remove"
+                      : "Delete"}
+                  </MenuItem>
+                )}
+              </Menu>
+            </>
+          )}
+        </Box>
       </Box>
       <ConfirmDialog
         text={deleteMessage}

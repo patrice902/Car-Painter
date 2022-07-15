@@ -27,8 +27,9 @@ export const ExtraProperty = React.memo((props) => {
   );
 
   if (
-    !AllowedLayerTypes.includes("clone") &&
-    !AllowedLayerTypes.includes("delete")
+    !AllowedLayerTypes ||
+    (!AllowedLayerTypes.includes("clone") &&
+      !AllowedLayerTypes.includes("delete"))
   )
     return <></>;
   return (

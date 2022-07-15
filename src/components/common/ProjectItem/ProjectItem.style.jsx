@@ -8,6 +8,9 @@ import { faStar as faStarOff } from "@fortawesome/free-regular-svg-icons";
 export const BreakableTypography = styled(Typography)`
   word-break: break-word;
   line-height: 1.2;
+  color: white;
+  text-decoration: none;
+  display: block;
 `;
 
 export { ActionIcon, faStarOn, faStarOff };

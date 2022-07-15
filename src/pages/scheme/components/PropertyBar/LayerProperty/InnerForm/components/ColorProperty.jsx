@@ -55,21 +55,24 @@ export const ColorProperty = React.memo((props) => {
   );
   const showColor = useMemo(
     () =>
-      AllowedLayerTypes.includes("layer_data.color") &&
-      values.layer_type !== LayerTypes.TEXT &&
-      (values.layer_type !== LayerTypes.LOGO ||
-        (foundLogo && foundLogo.enable_color)),
+      !AllowedLayerTypes ||
+      (AllowedLayerTypes.includes("layer_data.color") &&
+        values.layer_type !== LayerTypes.TEXT &&
+        (values.layer_type !== LayerTypes.LOGO ||
+          (foundLogo && foundLogo.enable_color))),
     [AllowedLayerTypes, foundLogo, values.layer_type]
   );
   const showBlendType = useMemo(
-    () => AllowedLayerTypes.includes("layer_data.blendType"),
+    () =>
+      !AllowedLayerTypes || AllowedLayerTypes.includes("layer_data.blendType"),
     [AllowedLayerTypes]
   );
   const showFinish = useMemo(
     () =>
-      !currentScheme.hide_spec &&
-      AllowedLayerTypes.includes("layer_data.finish") &&
-      currentCarMake.car_type !== "Misc",
+      !AllowedLayerTypes ||
+      (!currentScheme.hide_spec &&
+        AllowedLayerTypes.includes("layer_data.finish") &&
+        currentCarMake.car_type !== "Misc"),
     [AllowedLayerTypes, currentScheme.hide_spec, currentCarMake.car_type]
   );
 

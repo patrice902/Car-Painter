@@ -8,4 +8,7 @@ export const NameField = styled(TextField)`
   .MuiInputBase-root {
     height: 56px;
   }
+  .MuiInputBase-input {
+    font-family: CircularXXWeb-Regular;
+  }
 `;

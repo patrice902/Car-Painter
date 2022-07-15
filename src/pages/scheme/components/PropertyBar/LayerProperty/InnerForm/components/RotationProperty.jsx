@@ -156,6 +156,7 @@ export const RotationProperty = React.memo((props) => {
   }, [currentLayer, onLayerDataMultiUpdate, stageRef, values.layer_data]);
 
   if (
+    !AllowedLayerTypes ||
     layerDataProperties.every(
       (value) => !AllowedLayerTypes.includes("layer_data." + value)
     )

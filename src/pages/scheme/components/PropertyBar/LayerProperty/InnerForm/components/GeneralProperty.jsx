@@ -59,10 +59,11 @@ export const GeneralProperty = React.memo((props) => {
   );
 
   if (
-    layerDataProperties.every(
+    !AllowedLayerTypes ||
+    (layerDataProperties.every(
       (value) => !AllowedLayerTypes.includes("layer_data." + value)
     ) &&
-    layerProperties.every((value) => !AllowedLayerTypes.includes(value))
+      layerProperties.every((value) => !AllowedLayerTypes.includes(value)))
   )
     return <></>;
   return (

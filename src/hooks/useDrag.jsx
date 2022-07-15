@@ -3,6 +3,7 @@ import Konva from "konva";
 import { PaintingGuides } from "constant";
 import { mathRound2 } from "helper";
 import { useReducerRef } from "./useReducerRef";
+import { useSelector } from "react-redux";
 
 export const useDrag = ({
   stageRef,
@@ -25,6 +26,7 @@ export const useDrag = ({
   const [dragging, setDragging] = useState(false);
   const [, layerRef] = useReducerRef(layer);
   const [, cloningLayerRef] = useReducerRef(cloningLayer);
+  const pressedKey = useSelector((state) => state.boardReducer.pressedKey);
 
   const GUIDELINE_OFFSET = useMemo(
     () => (guideData ? Math.max(guideData.grid_padding / 10, 2) : 10),
@@ -318,6 +320,9 @@ export const useDrag = ({
     if (onDragStart) onDragStart(layerRef.current);
     if (onSetTransformingLayer) {
       onSetTransformingLayer(layerRef.current);
+    }
+    if (pressedKey !== "alt") {
+      onSelect();
     }
   };
 

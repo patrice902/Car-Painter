@@ -51,6 +51,7 @@ export const NameProperty = React.memo((props) => {
   }
 
   if (
+    !AllowedLayerTypes ||
     layerDataProperties.every(
       (value) => !AllowedLayerTypes.includes("layer_data." + value)
     )

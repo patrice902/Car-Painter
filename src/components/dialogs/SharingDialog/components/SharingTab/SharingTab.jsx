@@ -3,7 +3,7 @@ import { Formik } from "formik";
 
 import { InnerForm } from "./InnerForm";
 
-export const SharingSetting = React.memo((props) => {
+export const SharingTab = React.memo((props) => {
   const {
     editable,
     owner,

@@ -57,6 +57,7 @@ export const StrokeProperty = React.memo((props) => {
   );
 
   if (
+    !AllowedLayerTypes ||
     layerDataProperties.every(
       (value) => !AllowedLayerTypes.includes("layer_data." + value)
     )

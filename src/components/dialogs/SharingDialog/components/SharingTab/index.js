@@ -1,0 +1,1 @@
+export { SharingTab } from "./SharingTab";

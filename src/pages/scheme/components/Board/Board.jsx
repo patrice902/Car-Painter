@@ -1,6 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { Stage, Layer, Rect, Shape } from "react-konva";
-import { useSelector, useDispatch } from "react-redux";
+import {
+  useSelector,
+  useDispatch,
+  ReactReduxContext,
+  Provider,
+} from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
 
 import { MouseModes, ViewModes, FinishOptions } from "constant";
@@ -227,316 +232,327 @@ export const Board = React.memo(
           position="relative"
           ref={wrapperRef}
         >
-          <Stage
-            width={wrapperWidth}
-            height={wrapperHeight}
-            onMousedown={onMouseDown}
-            onTouchStart={onMouseDown}
-            onContentMousedown={onContentMouseDown}
-            onContentMousemove={onMouseMove}
-            onContentMouseup={onMouseUp}
-            onDblClick={onDoubleClick}
-            onWheel={handleZoomStage}
-            scaleX={zoom || 1}
-            scaleY={zoom || 1}
-            rotation={boardRotate}
-            x={wrapperWidth / 2 || 0}
-            y={wrapperHeight / 2 || 0}
-            offsetX={frameSize.width / 2}
-            offsetY={frameSize.height / 2}
-            ref={stageRef}
-            draggable={mouseMode === MouseModes.DEFAULT}
-            onDragEnd={onDragEnd}
-            style={{
-              cursor:
-                mouseMode === MouseModes.DEFAULT ? "default" : "crosshair",
-            }}
-          >
-            <Layer ref={baseLayerRef} listening={false}>
-              {/* Background */}
-              <Rect
-                x={0}
-                y={0}
-                width={frameSize.width}
-                height={frameSize.height}
-                fill={
-                  currentScheme.base_color === "transparent"
-                    ? currentScheme.base_color
-                    : "#" + currentScheme.base_color
-                }
-                listening={false}
-              />
-              {viewMode === ViewModes.SPEC_VIEW && (
-                <SpecPaintingGuideCarMask
-                  legacyMode={currentScheme.legacy_mode}
-                  carMake={currentCarMake}
-                  loadedStatuses={loadedStatuses}
-                  finishBase={schemeFinishBase}
-                  handleImageSize={handleImageSize}
-                  onLoadLayer={handleLoadLayer}
-                />
-              )}
-              <BasePaints
-                specMode={viewMode === ViewModes.SPEC_VIEW}
-                legacyMode={currentScheme.legacy_mode}
-                carMake={currentCarMake}
-                layers={layerList}
-                loadedStatuses={loadedStatuses}
-                handleImageSize={handleImageSize}
-                onLoadLayer={handleLoadLayer}
-              />
-            </Layer>
-            {!currentScheme.guide_data.show_sponsor_block_on_top ||
-            !currentScheme.guide_data.show_number_block_on_top ? (
-              <Layer listening={false}>
-                {!currentScheme.guide_data.show_sponsor_block_on_top ? (
-                  <PaintingGuideSponsor
-                    legacyMode={currentScheme.legacy_mode}
-                    carMake={currentCarMake}
-                    paintingGuides={paintingGuides}
-                    guideData={currentScheme.guide_data}
-                    loadedStatuses={loadedStatuses}
-                    handleImageSize={handleImageSize}
-                    onLoadLayer={handleLoadLayer}
-                  />
-                ) : (
-                  <></>
-                )}
-                {!currentScheme.guide_data.show_number_block_on_top ? (
-                  <PaintingGuideNumber
-                    legacyMode={currentScheme.legacy_mode}
-                    carMake={currentCarMake}
-                    paintingGuides={paintingGuides}
-                    guideData={currentScheme.guide_data}
-                    loadedStatuses={loadedStatuses}
-                    handleImageSize={handleImageSize}
-                    onLoadLayer={handleLoadLayer}
-                  />
-                ) : (
-                  <></>
-                )}
-              </Layer>
-            ) : (
-              <></>
-            )}
-
-            <Layer ref={mainLayerRef}>
-              {!currentScheme.guide_data.show_carparts_on_top ? (
-                <CarParts
-                  layers={layerList}
-                  specMode={viewMode === ViewModes.SPEC_VIEW}
-                  legacyMode={currentScheme.legacy_mode}
-                  carMake={currentCarMake}
-                  loadedStatuses={loadedStatuses}
-                  handleImageSize={handleImageSize}
-                  onLoadLayer={handleLoadLayer}
-                />
-              ) : (
-                <></>
-              )}
-
-              <Overlays
-                stageRef={stageRef}
-                editable={editable}
-                specMode={viewMode === ViewModes.SPEC_VIEW}
-                layers={layerList}
-                frameSize={frameSize}
-                boardRotate={boardRotate}
-                currentLayer={currentLayer}
-                cloningLayer={cloningLayer}
-                cloningQueue={cloningQueue}
-                mouseMode={mouseMode}
-                loadedStatuses={loadedStatuses}
-                paintingGuides={paintingGuides}
-                guideData={currentScheme.guide_data}
-                handleImageSize={handleImageSize}
-                onSelect={handleLayerSelect}
-                onChange={handleLayerDataChange}
-                onHover={handleHoverLayer}
-                onLoadLayer={handleLoadLayer}
-                onDragStart={onLayerDragStart}
-                onDragEnd={onLayerDragEnd}
-                onCloneMove={handleCloneMoveLayer}
-                onDblClick={handleDblClickLayer}
-                onSetTransformingLayer={setTransformingLayer}
-              />
-              <Shapes
-                stageRef={stageRef}
-                editable={editable}
-                frameSize={frameSize}
-                specMode={viewMode === ViewModes.SPEC_VIEW}
-                layers={layerList}
-                drawingLayer={drawingLayerRef.current}
-                boardRotate={boardRotate}
-                mouseMode={mouseMode}
-                currentLayer={currentLayer}
-                cloningLayer={cloningLayer}
-                cloningQueue={cloningQueue}
-                loadedStatuses={loadedStatuses}
-                paintingGuides={paintingGuides}
-                guideData={currentScheme.guide_data}
-                onSelect={handleLayerSelect}
-                onChange={handleLayerDataChange}
-                onHover={handleHoverLayer}
-                onLoadLayer={handleLoadLayer}
-                onDragStart={onLayerDragStart}
-                onDragEnd={onLayerDragEnd}
-                onDblClick={handleDblClickLayer}
-                onCloneMove={handleCloneMoveLayer}
-                onSetTransformingLayer={setTransformingLayer}
-              />
-              <LogosAndTexts
-                stageRef={stageRef}
-                editable={editable}
-                specMode={viewMode === ViewModes.SPEC_VIEW}
-                layers={layerList}
-                fonts={fontList}
-                loadedFontList={loadedFontList}
-                frameSize={frameSize}
-                mouseMode={mouseMode}
-                boardRotate={boardRotate}
-                loadedStatuses={loadedStatuses}
-                currentLayer={currentLayer}
-                cloningLayer={cloningLayer}
-                cloningQueue={cloningQueue}
-                paintingGuides={paintingGuides}
-                guideData={currentScheme.guide_data}
-                onSelect={handleLayerSelect}
-                onChange={handleLayerDataChange}
-                onFontLoad={handleAddFont}
-                onHover={handleHoverLayer}
-                onLoadLayer={handleLoadLayer}
-                onDragStart={onLayerDragStart}
-                onDragEnd={onLayerDragEnd}
-                onDblClick={handleDblClickLayer}
-                onCloneMove={handleCloneMoveLayer}
-                onSetTransformingLayer={setTransformingLayer}
-              />
-              {currentScheme.guide_data.show_carparts_on_top ? (
-                <CarParts
-                  layers={layerList}
-                  specMode={viewMode === ViewModes.SPEC_VIEW}
-                  legacyMode={currentScheme.legacy_mode}
-                  carMake={currentCarMake}
-                  loadedStatuses={loadedStatuses}
-                  handleImageSize={handleImageSize}
-                  onLoadLayer={handleLoadLayer}
-                />
-              ) : (
-                <></>
-              )}
-            </Layer>
-            <Layer ref={carMaskLayerRef} listening={false}>
-              <PaintingGuideCarMask
-                specMode={viewMode === ViewModes.SPEC_VIEW}
-                legacyMode={currentScheme.legacy_mode}
-                carMake={currentCarMake}
-                paintingGuides={paintingGuides}
-                loadedStatuses={loadedStatuses}
-                guideData={currentScheme.guide_data}
-                handleImageSize={handleImageSize}
-                onLoadLayer={handleLoadLayer}
-              />
-            </Layer>
-            {currentScheme.guide_data.show_sponsor_block_on_top ||
-            currentScheme.guide_data.show_number_block_on_top ? (
-              <Layer listening={false}>
-                {currentScheme.guide_data.show_sponsor_block_on_top ? (
-                  <PaintingGuideSponsor
-                    legacyMode={currentScheme.legacy_mode}
-                    carMake={currentCarMake}
-                    paintingGuides={paintingGuides}
-                    guideData={currentScheme.guide_data}
-                    loadedStatuses={loadedStatuses}
-                    handleImageSize={handleImageSize}
-                    onLoadLayer={handleLoadLayer}
-                  />
-                ) : (
-                  <></>
-                )}
-                {currentScheme.guide_data.show_number_block_on_top ? (
-                  <PaintingGuideNumber
-                    legacyMode={currentScheme.legacy_mode}
-                    carMake={currentCarMake}
-                    paintingGuides={paintingGuides}
-                    guideData={currentScheme.guide_data}
-                    loadedStatuses={loadedStatuses}
-                    handleImageSize={handleImageSize}
-                    onLoadLayer={handleLoadLayer}
-                  />
-                ) : (
-                  <></>
-                )}
-              </Layer>
-            ) : (
-              <></>
-            )}
-            <Layer name="layer-guide-top">
-              <PaintingGuideTop
-                legacyMode={currentScheme.legacy_mode}
-                carMake={currentCarMake}
-                paintingGuides={paintingGuides}
-                loadedStatuses={loadedStatuses}
-                frameSize={frameSize}
-                guideData={currentScheme.guide_data}
-                handleImageSize={handleImageSize}
-                onLoadLayer={handleLoadLayer}
-              />
-            </Layer>
-
-            {/* Clipping/Transforming Layer */}
-            <Layer>
-              <Shape
-                x={-frameSize.width}
-                y={-frameSize.height}
-                width={frameSize.width * 3}
-                height={frameSize.height * 3}
-                sceneFunc={(ctx) => {
-                  // draw background
-                  ctx.fillStyle = "rgba(40, 40, 40, 0.7)";
-                  ctx.fillRect(0, 0, frameSize.width * 3, frameSize.height * 3);
-
-                  ctx.globalCompositeOperation = "destination-out";
-                  ctx.fillStyle = "black";
-                  ctx.fillRect(
-                    frameSize.width,
-                    frameSize.height,
-                    frameSize.width,
-                    frameSize.height
-                  );
+          <ReactReduxContext.Consumer>
+            {({ store }) => (
+              <Stage
+                width={wrapperWidth}
+                height={wrapperHeight}
+                onMousedown={onMouseDown}
+                onTouchStart={onMouseDown}
+                onContentMousedown={onContentMouseDown}
+                onContentMousemove={onMouseMove}
+                onContentMouseup={onMouseUp}
+                onDblClick={onDoubleClick}
+                onWheel={handleZoomStage}
+                scaleX={zoom || 1}
+                scaleY={zoom || 1}
+                rotation={boardRotate}
+                x={wrapperWidth / 2 || 0}
+                y={wrapperHeight / 2 || 0}
+                offsetX={frameSize.width / 2}
+                offsetY={frameSize.height / 2}
+                ref={stageRef}
+                draggable={mouseMode === MouseModes.DEFAULT}
+                onDragEnd={onDragEnd}
+                style={{
+                  cursor:
+                    mouseMode === MouseModes.DEFAULT ? "default" : "crosshair",
                 }}
-                listening={false}
-              />
-
-              {editable ? (
-                <TransformerComponent
-                  trRef={activeTransformerRef}
-                  selectedLayer={currentLayer}
-                  pressedKey={pressedKey}
-                  zoom={zoom}
-                />
-              ) : (
-                <></>
-              )}
-
-              {hoveredLayerJSON &&
-              (!currentLayer ||
-                !hoveredLayerJSON[currentLayer.id] ||
-                !editable) ? (
-                <TransformerComponent
-                  trRef={hoveredTransformerRef}
-                  selectedLayer={layerList.find(
-                    (item) => hoveredLayerJSON[item.id]
+              >
+                <Provider store={store}>
+                  <Layer ref={baseLayerRef} listening={false}>
+                    {/* Background */}
+                    <Rect
+                      x={0}
+                      y={0}
+                      width={frameSize.width}
+                      height={frameSize.height}
+                      fill={
+                        currentScheme.base_color === "transparent"
+                          ? currentScheme.base_color
+                          : "#" + currentScheme.base_color
+                      }
+                      listening={false}
+                    />
+                    {viewMode === ViewModes.SPEC_VIEW && (
+                      <SpecPaintingGuideCarMask
+                        legacyMode={currentScheme.legacy_mode}
+                        carMake={currentCarMake}
+                        loadedStatuses={loadedStatuses}
+                        finishBase={schemeFinishBase}
+                        handleImageSize={handleImageSize}
+                        onLoadLayer={handleLoadLayer}
+                      />
+                    )}
+                    <BasePaints
+                      specMode={viewMode === ViewModes.SPEC_VIEW}
+                      legacyMode={currentScheme.legacy_mode}
+                      carMake={currentCarMake}
+                      layers={layerList}
+                      loadedStatuses={loadedStatuses}
+                      handleImageSize={handleImageSize}
+                      onLoadLayer={handleLoadLayer}
+                    />
+                  </Layer>
+                  {!currentScheme.guide_data.show_sponsor_block_on_top ||
+                  !currentScheme.guide_data.show_number_block_on_top ? (
+                    <Layer listening={false}>
+                      {!currentScheme.guide_data.show_sponsor_block_on_top ? (
+                        <PaintingGuideSponsor
+                          legacyMode={currentScheme.legacy_mode}
+                          carMake={currentCarMake}
+                          paintingGuides={paintingGuides}
+                          guideData={currentScheme.guide_data}
+                          loadedStatuses={loadedStatuses}
+                          handleImageSize={handleImageSize}
+                          onLoadLayer={handleLoadLayer}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                      {!currentScheme.guide_data.show_number_block_on_top ? (
+                        <PaintingGuideNumber
+                          legacyMode={currentScheme.legacy_mode}
+                          carMake={currentCarMake}
+                          paintingGuides={paintingGuides}
+                          guideData={currentScheme.guide_data}
+                          loadedStatuses={loadedStatuses}
+                          handleImageSize={handleImageSize}
+                          onLoadLayer={handleLoadLayer}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                    </Layer>
+                  ) : (
+                    <></>
                   )}
-                  hoveredTransform={true}
-                  pressedKey={pressedKey}
-                  zoom={zoom}
-                />
-              ) : (
-                <></>
-              )}
-            </Layer>
-          </Stage>
+
+                  <Layer ref={mainLayerRef}>
+                    {!currentScheme.guide_data.show_carparts_on_top ? (
+                      <CarParts
+                        layers={layerList}
+                        specMode={viewMode === ViewModes.SPEC_VIEW}
+                        legacyMode={currentScheme.legacy_mode}
+                        carMake={currentCarMake}
+                        loadedStatuses={loadedStatuses}
+                        handleImageSize={handleImageSize}
+                        onLoadLayer={handleLoadLayer}
+                      />
+                    ) : (
+                      <></>
+                    )}
+
+                    <Overlays
+                      stageRef={stageRef}
+                      editable={editable}
+                      specMode={viewMode === ViewModes.SPEC_VIEW}
+                      layers={layerList}
+                      frameSize={frameSize}
+                      boardRotate={boardRotate}
+                      currentLayer={currentLayer}
+                      cloningLayer={cloningLayer}
+                      cloningQueue={cloningQueue}
+                      mouseMode={mouseMode}
+                      loadedStatuses={loadedStatuses}
+                      paintingGuides={paintingGuides}
+                      guideData={currentScheme.guide_data}
+                      handleImageSize={handleImageSize}
+                      onSelect={handleLayerSelect}
+                      onChange={handleLayerDataChange}
+                      onHover={handleHoverLayer}
+                      onLoadLayer={handleLoadLayer}
+                      onDragStart={onLayerDragStart}
+                      onDragEnd={onLayerDragEnd}
+                      onCloneMove={handleCloneMoveLayer}
+                      onDblClick={handleDblClickLayer}
+                      onSetTransformingLayer={setTransformingLayer}
+                    />
+                    <Shapes
+                      stageRef={stageRef}
+                      editable={editable}
+                      frameSize={frameSize}
+                      specMode={viewMode === ViewModes.SPEC_VIEW}
+                      layers={layerList}
+                      drawingLayer={drawingLayerRef.current}
+                      boardRotate={boardRotate}
+                      mouseMode={mouseMode}
+                      currentLayer={currentLayer}
+                      cloningLayer={cloningLayer}
+                      cloningQueue={cloningQueue}
+                      loadedStatuses={loadedStatuses}
+                      paintingGuides={paintingGuides}
+                      guideData={currentScheme.guide_data}
+                      onSelect={handleLayerSelect}
+                      onChange={handleLayerDataChange}
+                      onHover={handleHoverLayer}
+                      onLoadLayer={handleLoadLayer}
+                      onDragStart={onLayerDragStart}
+                      onDragEnd={onLayerDragEnd}
+                      onDblClick={handleDblClickLayer}
+                      onCloneMove={handleCloneMoveLayer}
+                      onSetTransformingLayer={setTransformingLayer}
+                    />
+                    <LogosAndTexts
+                      stageRef={stageRef}
+                      editable={editable}
+                      specMode={viewMode === ViewModes.SPEC_VIEW}
+                      layers={layerList}
+                      fonts={fontList}
+                      loadedFontList={loadedFontList}
+                      frameSize={frameSize}
+                      mouseMode={mouseMode}
+                      boardRotate={boardRotate}
+                      loadedStatuses={loadedStatuses}
+                      currentLayer={currentLayer}
+                      cloningLayer={cloningLayer}
+                      cloningQueue={cloningQueue}
+                      paintingGuides={paintingGuides}
+                      guideData={currentScheme.guide_data}
+                      onSelect={handleLayerSelect}
+                      onChange={handleLayerDataChange}
+                      onFontLoad={handleAddFont}
+                      onHover={handleHoverLayer}
+                      onLoadLayer={handleLoadLayer}
+                      onDragStart={onLayerDragStart}
+                      onDragEnd={onLayerDragEnd}
+                      onDblClick={handleDblClickLayer}
+                      onCloneMove={handleCloneMoveLayer}
+                      onSetTransformingLayer={setTransformingLayer}
+                    />
+                    {currentScheme.guide_data.show_carparts_on_top ? (
+                      <CarParts
+                        layers={layerList}
+                        specMode={viewMode === ViewModes.SPEC_VIEW}
+                        legacyMode={currentScheme.legacy_mode}
+                        carMake={currentCarMake}
+                        loadedStatuses={loadedStatuses}
+                        handleImageSize={handleImageSize}
+                        onLoadLayer={handleLoadLayer}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Layer>
+                  <Layer ref={carMaskLayerRef} listening={false}>
+                    <PaintingGuideCarMask
+                      specMode={viewMode === ViewModes.SPEC_VIEW}
+                      legacyMode={currentScheme.legacy_mode}
+                      carMake={currentCarMake}
+                      paintingGuides={paintingGuides}
+                      loadedStatuses={loadedStatuses}
+                      guideData={currentScheme.guide_data}
+                      handleImageSize={handleImageSize}
+                      onLoadLayer={handleLoadLayer}
+                    />
+                  </Layer>
+                  {currentScheme.guide_data.show_sponsor_block_on_top ||
+                  currentScheme.guide_data.show_number_block_on_top ? (
+                    <Layer listening={false}>
+                      {currentScheme.guide_data.show_sponsor_block_on_top ? (
+                        <PaintingGuideSponsor
+                          legacyMode={currentScheme.legacy_mode}
+                          carMake={currentCarMake}
+                          paintingGuides={paintingGuides}
+                          guideData={currentScheme.guide_data}
+                          loadedStatuses={loadedStatuses}
+                          handleImageSize={handleImageSize}
+                          onLoadLayer={handleLoadLayer}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                      {currentScheme.guide_data.show_number_block_on_top ? (
+                        <PaintingGuideNumber
+                          legacyMode={currentScheme.legacy_mode}
+                          carMake={currentCarMake}
+                          paintingGuides={paintingGuides}
+                          guideData={currentScheme.guide_data}
+                          loadedStatuses={loadedStatuses}
+                          handleImageSize={handleImageSize}
+                          onLoadLayer={handleLoadLayer}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                    </Layer>
+                  ) : (
+                    <></>
+                  )}
+                  <Layer name="layer-guide-top">
+                    <PaintingGuideTop
+                      legacyMode={currentScheme.legacy_mode}
+                      carMake={currentCarMake}
+                      paintingGuides={paintingGuides}
+                      loadedStatuses={loadedStatuses}
+                      frameSize={frameSize}
+                      guideData={currentScheme.guide_data}
+                      handleImageSize={handleImageSize}
+                      onLoadLayer={handleLoadLayer}
+                    />
+                  </Layer>
+
+                  {/* Clipping/Transforming Layer */}
+                  <Layer>
+                    <Shape
+                      x={-frameSize.width}
+                      y={-frameSize.height}
+                      width={frameSize.width * 3}
+                      height={frameSize.height * 3}
+                      sceneFunc={(ctx) => {
+                        // draw background
+                        ctx.fillStyle = "rgba(40, 40, 40, 0.7)";
+                        ctx.fillRect(
+                          0,
+                          0,
+                          frameSize.width * 3,
+                          frameSize.height * 3
+                        );
+
+                        ctx.globalCompositeOperation = "destination-out";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(
+                          frameSize.width,
+                          frameSize.height,
+                          frameSize.width,
+                          frameSize.height
+                        );
+                      }}
+                      listening={false}
+                    />
+
+                    {editable ? (
+                      <TransformerComponent
+                        trRef={activeTransformerRef}
+                        selectedLayer={currentLayer}
+                        pressedKey={pressedKey}
+                        zoom={zoom}
+                      />
+                    ) : (
+                      <></>
+                    )}
+
+                    {hoveredLayerJSON &&
+                    (!currentLayer ||
+                      !hoveredLayerJSON[currentLayer.id] ||
+                      !editable) ? (
+                      <TransformerComponent
+                        trRef={hoveredTransformerRef}
+                        selectedLayer={layerList.find(
+                          (item) => hoveredLayerJSON[item.id]
+                        )}
+                        hoveredTransform={true}
+                        pressedKey={pressedKey}
+                        zoom={zoom}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Layer>
+                </Provider>
+              </Stage>
+            )}
+          </ReactReduxContext.Consumer>
         </Box>
         {schemeSaving || !schemeLoaded ? (
           <Box

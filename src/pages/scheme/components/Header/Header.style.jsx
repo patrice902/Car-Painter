@@ -13,7 +13,7 @@ export const CustomButtonGroup = styled(ButtonGroup)`
   margin: 0 8px;
 `;
 
-export const DownloadButton = styled(Button)`
+export const DropDownButton = styled(Button)`
   padding-left: 12px;
   height: 30px;
   & .MuiButton-startIcon svg {
