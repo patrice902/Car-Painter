@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import styled from "styled-components/macro";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
 import {
   Box,
-  Button,
   FormControl as MuiFormControl,
   Typography,
   InputLabel,
@@ -22,16 +21,7 @@ import { focusBoardQuickly } from "helper";
 const FormControl = styled(MuiFormControl)(spacing);
 
 export const FontProperty = React.memo((props) => {
-  const {
-    editable,
-    errors,
-    isValid,
-    checkLayerDataDirty,
-    setFieldValue,
-    values,
-    fontList,
-    onLayerDataUpdate,
-  } = props;
+  const { editable, errors, values, fontList, onDataFieldChange } = props;
   const layerDataProperties = ["font", "size"];
   const [expanded, setExpanded] = useState(true);
   const AllowedLayerTypes = useMemo(
@@ -42,26 +32,6 @@ export const FontProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleChangeFont = useCallback(
-    (fontID) => onLayerDataUpdate("font", fontID),
-    [onLayerDataUpdate]
-  );
-
-  const handleChangeSize = useCallback(
-    (value) => setFieldValue("layer_data.size", value),
-    [setFieldValue]
-  );
-
-  const handleColorInstantChange = useCallback(
-    (color) => onLayerDataUpdate("color", color),
-    [onLayerDataUpdate]
-  );
-
-  const handleColorChange = useCallback(
-    (color) => setFieldValue("layer_data.color", color),
-    [setFieldValue]
   );
 
   if (
@@ -90,7 +60,7 @@ export const FontProperty = React.memo((props) => {
               <FontSelect
                 value={values.layer_data.font}
                 disabled={!editable}
-                onChange={handleChangeFont}
+                onChange={(fontID) => onDataFieldChange("font", fontID)}
                 fontList={fontList}
               />
             </FormControl>
@@ -109,8 +79,8 @@ export const FontProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.color}
                     disabled={!editable}
-                    onChange={handleColorInstantChange}
-                    onInputChange={handleColorChange}
+                    onChange={(color) => onDataFieldChange("color", color)}
+                    onInputChange={(color) => onDataFieldChange("color", color)}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.color
                     )}
@@ -130,22 +100,8 @@ export const FontProperty = React.memo((props) => {
                 min={6}
                 max={512}
                 value={values.layer_data.size}
-                setValue={handleChangeSize}
+                setValue={(value) => onDataFieldChange("size", value)}
               />
-            </Box>
-          ) : (
-            <></>
-          )}
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
             </Box>
           ) : (
             <></>

@@ -5,7 +5,6 @@ import { focusBoardQuickly, mathRound2 } from "helper";
 import {
   Grid,
   Box,
-  Button,
   Typography,
   Accordion,
   AccordionSummary,
@@ -18,11 +17,8 @@ export const CornerProperty = React.memo((props) => {
   const {
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
-    handleChange,
-    setFieldValue,
+    onDataFieldChange,
     touched,
     values,
   } = props;
@@ -86,7 +82,12 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerTopLeft
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange(
+                      "cornerTopLeft",
+                      Number(e.target.value) || 0
+                    )
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -120,7 +121,12 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerTopRight
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange(
+                      "cornerTopRight",
+                      Number(e.target.value) || 0
+                    )
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -154,7 +160,12 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerBottomLeft
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange(
+                      "cornerBottomLeft",
+                      Number(e.target.value) || 0
+                    )
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -188,7 +199,12 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerBottomRight
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange(
+                      "cornerBottomRight",
+                      Number(e.target.value) || 0
+                    )
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -201,20 +217,6 @@ export const CornerProperty = React.memo((props) => {
               )}
             </Grid>
           </Grid>
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
         </Box>
       </AccordionDetails>
     </Accordion>

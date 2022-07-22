@@ -55,6 +55,22 @@ export const InnerForm = React.memo(
       },
       [formProps.values, currentLayer]
     );
+    const handleDataFieldChange = useCallback(
+      (field, value) => {
+        formProps.setFieldValue(`layer_data.${field}`, value);
+        onLayerDataUpdate(field, value);
+      },
+      [formProps, onLayerDataUpdate]
+    );
+    const handleLayerDataMultiUpdate = useCallback(
+      (valueMap) => {
+        for (let itemKey of Object.keys(valueMap)) {
+          formProps.setFieldValue(`layer_data.${itemKey}`, valueMap[itemKey]);
+        }
+        onLayerDataMultiUpdate(valueMap);
+      },
+      [formProps, onLayerDataMultiUpdate]
+    );
 
     return (
       <Form onSubmit={formProps.handleSubmit} noValidate>
@@ -64,18 +80,21 @@ export const InnerForm = React.memo(
           user={user}
           layerType={currentLayer && currentLayer.layer_type}
           checkLayerDataDirty={checkLayerDataDirty}
+          onDataFieldChange={handleDataFieldChange}
         />
         <GeneralProperty
           {...formProps}
           editable={editable}
           toggleField={toggleField}
           checkLayerDataDirty={checkLayerDataDirty}
+          onDataFieldChange={handleDataFieldChange}
         />
         <FontProperty
           {...formProps}
           editable={editable}
           fontList={fontList}
           onLayerDataUpdate={onLayerDataUpdate}
+          onDataFieldChange={handleDataFieldChange}
           checkLayerDataDirty={checkLayerDataDirty}
         />
         <ColorProperty
@@ -84,11 +103,13 @@ export const InnerForm = React.memo(
           currentCarMake={currentCarMake}
           onLayerDataUpdate={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
+          onDataFieldChange={handleDataFieldChange}
         />
         <BackgroundProperty
           {...formProps}
           editable={editable}
           onLayerDataUpdate={onLayerDataUpdate}
+          onDataFieldChange={handleDataFieldChange}
           checkLayerDataDirty={checkLayerDataDirty}
         />
         <StrokeProperty
@@ -96,6 +117,7 @@ export const InnerForm = React.memo(
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
+          onDataFieldChange={handleDataFieldChange}
         />
         <SizeProperty
           {...formProps}
@@ -104,11 +126,14 @@ export const InnerForm = React.memo(
           currentLayer={currentLayer}
           pressedKey={pressedKey}
           checkLayerDataDirty={checkLayerDataDirty}
+          onDataFieldChange={handleDataFieldChange}
+          onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
         />
         <PositionProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
+          onDataFieldChange={handleDataFieldChange}
         />
         <RotationProperty
           {...formProps}
@@ -118,12 +143,14 @@ export const InnerForm = React.memo(
           toggleField={toggleField}
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
-          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
+          onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
+          onDataFieldChange={handleDataFieldChange}
         />
         <SkewProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
+          onDataFieldChange={handleDataFieldChange}
         />
         <ShadowProperty
           {...formProps}
@@ -131,11 +158,15 @@ export const InnerForm = React.memo(
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
           onApply={formProps.handleSubmit}
+          onDataFieldChange={handleDataFieldChange}
+          onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
         />
         <CornerProperty
-          editable={editable}
           {...formProps}
+          editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
+          onLayerDataUpdate={onLayerDataUpdate}
+          onDataFieldChange={handleDataFieldChange}
         />
         <ExtraProperty
           {...formProps}

@@ -9,7 +9,6 @@ import {
 
 import {
   Box,
-  Button,
   Typography,
   Accordion,
   AccordionSummary,
@@ -31,11 +30,8 @@ import { LabelTypography } from "../../../PropertyBar.style";
 export const RotationProperty = React.memo((props) => {
   const {
     editable,
-    isValid,
-    checkLayerDataDirty,
     stageRef,
     currentLayer,
-    setFieldValue,
     values,
     onLayerDataMultiUpdate,
   } = props;
@@ -69,13 +65,18 @@ export const RotationProperty = React.memo((props) => {
           boundBox,
           newRot - boundBox.rotation
         );
-
-        setFieldValue("layer_data.left", newBoundBox.x);
-        setFieldValue("layer_data.top", newBoundBox.y);
+        onLayerDataMultiUpdate({
+          left: newBoundBox.x,
+          top: newBoundBox.y,
+          rotation: value,
+        });
+      } else {
+        onLayerDataMultiUpdate({
+          rotation: value,
+        });
       }
-      setFieldValue("layer_data.rotation", value);
     },
-    [currentLayer, setFieldValue, stageRef]
+    [currentLayer, stageRef, onLayerDataMultiUpdate]
   );
 
   const handleRotate90 = useCallback(
@@ -286,20 +287,6 @@ export const RotationProperty = React.memo((props) => {
                   </>
                 )}
               </IconButton>
-            </Box>
-          ) : (
-            <></>
-          )}
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
             </Box>
           ) : (
             <></>

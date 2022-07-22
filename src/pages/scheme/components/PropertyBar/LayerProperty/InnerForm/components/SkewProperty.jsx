@@ -4,7 +4,6 @@ import { focusBoardQuickly, mathRound2 } from "helper";
 
 import {
   Box,
-  Button,
   Typography,
   Accordion,
   AccordionSummary,
@@ -18,13 +17,10 @@ export const SkewProperty = React.memo((props) => {
   const {
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
-    handleChange,
-    setFieldValue,
     touched,
     values,
+    onDataFieldChange,
   } = props;
   const layerDataProperties = ["skewX", "skewY"];
   const [expanded, setExpanded] = useState(true);
@@ -84,7 +80,9 @@ export const SkewProperty = React.memo((props) => {
                     errors.layer_data.skewX
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange("skewX", Number(e.target.value) || 0)
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -121,7 +119,9 @@ export const SkewProperty = React.memo((props) => {
                     errors.layer_data.skewY
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange("skewY", Number(e.target.value) || 0)
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -134,20 +134,6 @@ export const SkewProperty = React.memo((props) => {
               )}
             </Grid>
           </Grid>
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
         </Box>
       </AccordionDetails>
     </Accordion>

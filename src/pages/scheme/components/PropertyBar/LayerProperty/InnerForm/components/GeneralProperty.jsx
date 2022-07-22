@@ -1,9 +1,8 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
 import {
   Box,
-  Button,
   Typography,
   IconButton,
   Accordion,
@@ -26,14 +25,11 @@ export const GeneralProperty = React.memo((props) => {
   const {
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
-    handleChange,
-    setFieldValue,
     touched,
     values,
     toggleField,
+    onDataFieldChange,
   } = props;
   const layerDataProperties = ["text", "numPoints", "angle", "opacity"];
   const layerProperties = ["layer_visible", "layer_locked"];
@@ -46,16 +42,6 @@ export const GeneralProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleChangeAngle = useCallback(
-    (value) => setFieldValue("layer_data.angle", value),
-    [setFieldValue]
-  );
-
-  const handleChangeOpacity = useCallback(
-    (value) => setFieldValue("layer_data.opacity", value),
-    [setFieldValue]
   );
 
   if (
@@ -100,7 +86,7 @@ export const GeneralProperty = React.memo((props) => {
                   errors.layer_data.text
                 }
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => onDataFieldChange("text", e.target.value)}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -134,7 +120,9 @@ export const GeneralProperty = React.memo((props) => {
                   errors.layer_data.numPoints
                 }
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) =>
+                  onDataFieldChange("numPoints", Number(e.target.value) || 0)
+                }
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -155,7 +143,7 @@ export const GeneralProperty = React.memo((props) => {
                 max={360}
                 small
                 value={Math.round(values.layer_data.angle)}
-                setValue={handleChangeAngle}
+                setValue={(value) => onDataFieldChange("angle", value)}
               />
             </Grid>
           ) : (
@@ -171,7 +159,7 @@ export const GeneralProperty = React.memo((props) => {
                 step={0.01}
                 small
                 value={values.layer_data.opacity}
-                setValue={handleChangeOpacity}
+                setValue={(value) => onDataFieldChange("opacity", value)}
               />
             </Grid>
           ) : (
@@ -233,20 +221,6 @@ export const GeneralProperty = React.memo((props) => {
                 </IconButton>
               </Box>
             </Grid>
-          ) : (
-            <></>
-          )}
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
           ) : (
             <></>
           )}

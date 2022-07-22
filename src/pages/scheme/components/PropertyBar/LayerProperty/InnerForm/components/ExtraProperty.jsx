@@ -5,17 +5,7 @@ import { AllowedLayerProps, LayerTypes } from "constant";
 import { Box, Button } from "@material-ui/core";
 
 export const ExtraProperty = React.memo((props) => {
-  const {
-    editable,
-    errors,
-    handleBlur,
-    handleChange,
-    setFieldValue,
-    touched,
-    values,
-    onClone,
-    onDelete,
-  } = props;
+  const { editable, values, onClone, onDelete } = props;
   const AllowedLayerTypes = useMemo(
     () =>
       !values.layer_type

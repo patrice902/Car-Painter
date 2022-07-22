@@ -4,7 +4,6 @@ import { focusBoardQuickly, mathRound2 } from "helper";
 
 import {
   Box,
-  Button,
   Typography,
   Grid,
   Accordion,
@@ -21,14 +20,11 @@ export const ShadowProperty = React.memo((props) => {
   const {
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
-    handleChange,
-    setFieldValue,
     touched,
     values,
-    onApply,
+    onDataFieldChange,
+    onLayerDataMultiUpdate,
   } = props;
   const layerDataProperties = [
     "shadowColor",
@@ -49,27 +45,20 @@ export const ShadowProperty = React.memo((props) => {
   );
 
   const handleColorChange = useCallback(
-    (value, applyNow = true) => {
+    (value) => {
       if (
         !values.layer_data.shadowColor ||
         values.layer_data.shadowColor === "transparent"
       ) {
-        setFieldValue("layer_data.shadowBlur", DefaultBlurToSet);
+        onLayerDataMultiUpdate({
+          shadowBlur: DefaultBlurToSet,
+          shadowColor: value,
+        });
+      } else {
+        onDataFieldChange("shadowColor", value);
       }
-      setFieldValue("layer_data.shadowColor", value);
-      if (applyNow) onApply(values);
     },
-    [values, setFieldValue, onApply]
-  );
-
-  const handleColorChangeOnly = useCallback(
-    (value) => handleColorChange(value, false),
-    [handleColorChange]
-  );
-
-  const handleChangeShadowOpacity = useCallback(
-    (value) => setFieldValue("layer_data.shadowOpacity", value),
-    [setFieldValue]
+    [values.layer_data.shadowColor, onLayerDataMultiUpdate, onDataFieldChange]
   );
 
   if (
@@ -106,7 +95,7 @@ export const ShadowProperty = React.memo((props) => {
                   value={values.layer_data.shadowColor}
                   disabled={!editable}
                   onChange={handleColorChange}
-                  onInputChange={handleColorChangeOnly}
+                  onInputChange={handleColorChange}
                   error={Boolean(
                     errors.layer_data && errors.layer_data.shadowColor
                   )}
@@ -129,7 +118,7 @@ export const ShadowProperty = React.memo((props) => {
                 small
                 value={values.layer_data.shadowOpacity}
                 disabled={!editable}
-                setValue={handleChangeShadowOpacity}
+                setValue={(value) => onDataFieldChange("shadowOpacity", value)}
               />
             </Box>
           ) : (
@@ -156,7 +145,9 @@ export const ShadowProperty = React.memo((props) => {
                 errors.layer_data.shadowBlur
               }
               onBlur={handleBlur}
-              onChange={handleChange}
+              onChange={(e) =>
+                onDataFieldChange("shadowBlur", Number(e.target.value) || 0)
+              }
               fullWidth
               margin="normal"
               mb={4}
@@ -190,7 +181,12 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data.shadowOffsetX
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange(
+                      "shadowOffsetX",
+                      Number(e.target.value) || 0
+                    )
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -224,7 +220,12 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data.shadowOffsetY
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange(
+                      "shadowOffsetY",
+                      Number(e.target.value) || 0
+                    )
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -237,20 +238,6 @@ export const ShadowProperty = React.memo((props) => {
               )}
             </Grid>
           </Grid>
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
         </Box>
       </AccordionDetails>
     </Accordion>

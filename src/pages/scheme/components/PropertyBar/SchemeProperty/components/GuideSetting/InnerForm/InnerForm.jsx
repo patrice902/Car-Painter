@@ -28,14 +28,14 @@ export const InnerForm = React.memo(
       [onChangePaintingGuides, paintingGuides]
     );
 
-    const handleChangeGridPadding = useCallback(
-      (value) => formProps.setFieldValue("grid_padding", value),
-      [formProps]
-    );
-
-    const handleChangeGridStroke = useCallback(
-      (value) => formProps.setFieldValue("grid_stroke", value),
-      [formProps]
+    const onApplySettings = useCallback(
+      (valueMap) => {
+        for (let itemKey of Object.keys(valueMap)) {
+          formProps.setFieldValue(itemKey, valueMap[itemKey]);
+        }
+        onApply(valueMap);
+      },
+      [formProps, onApply]
     );
 
     return (
@@ -50,6 +50,7 @@ export const InnerForm = React.memo(
             fields={["carmask_color", "carmask_opacity"]}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
+            onApplySettings={onApplySettings}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
           />
@@ -62,6 +63,7 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
+            onApplySettings={onApplySettings}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -78,10 +80,9 @@ export const InnerForm = React.memo(
                         checked={formProps.values.show_wireframe}
                         disabled={!editable}
                         onChange={(event) =>
-                          formProps.setFieldValue(
-                            "show_wireframe",
-                            event.target.checked
-                          )
+                          onApplySettings({
+                            show_wireframe: event.target.checked,
+                          })
                         }
                       />
                     }
@@ -106,6 +107,7 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
+            onApplySettings={onApplySettings}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -123,10 +125,9 @@ export const InnerForm = React.memo(
                           checked={formProps.values.show_sponsor}
                           disabled={!editable}
                           onChange={(event) =>
-                            formProps.setFieldValue(
-                              "show_sponsor",
-                              event.target.checked
-                            )
+                            onApplySettings({
+                              show_sponsor: event.target.checked,
+                            })
                           }
                         />
                       }
@@ -148,10 +149,9 @@ export const InnerForm = React.memo(
                           checked={formProps.values.show_sponsor_block_on_top}
                           disabled={!editable}
                           onChange={(event) =>
-                            formProps.setFieldValue(
-                              "show_sponsor_block_on_top",
-                              event.target.checked
-                            )
+                            onApplySettings({
+                              show_sponsor_block_on_top: event.target.checked,
+                            })
                           }
                         />
                       }
@@ -177,6 +177,7 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
+            onApplySettings={onApplySettings}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -194,10 +195,9 @@ export const InnerForm = React.memo(
                           checked={formProps.values.show_numberBlocks}
                           disabled={!editable}
                           onChange={(event) =>
-                            formProps.setFieldValue(
-                              "show_numberBlocks",
-                              event.target.checked
-                            )
+                            onApplySettings({
+                              show_numberBlocks: event.target.checked,
+                            })
                           }
                         />
                       }
@@ -219,10 +219,9 @@ export const InnerForm = React.memo(
                           checked={formProps.values.show_number_block_on_top}
                           disabled={!editable}
                           onChange={(event) =>
-                            formProps.setFieldValue(
-                              "show_number_block_on_top",
-                              event.target.checked
-                            )
+                            onApplySettings({
+                              show_number_block_on_top: event.target.checked,
+                            })
                           }
                         />
                       }
@@ -250,6 +249,7 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
+            onApplySettings={onApplySettings}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -263,7 +263,11 @@ export const InnerForm = React.memo(
                       step={1}
                       value={formProps.values.grid_padding}
                       disabled={!editable}
-                      setValue={handleChangeGridPadding}
+                      setValue={(value) =>
+                        onApplySettings({
+                          grid_padding: value,
+                        })
+                      }
                       small
                     />
                   </Box>
@@ -277,7 +281,11 @@ export const InnerForm = React.memo(
                       step={0.01}
                       value={formProps.values.grid_stroke}
                       disabled={!editable}
-                      setValue={handleChangeGridStroke}
+                      setValue={(value) =>
+                        onApplySettings({
+                          grid_stroke: value,
+                        })
+                      }
                       small
                     />
                   </Box>
@@ -295,10 +303,9 @@ export const InnerForm = React.memo(
                           checked={formProps.values.show_grid}
                           disabled={!editable}
                           onChange={(event) =>
-                            formProps.setFieldValue(
-                              "show_grid",
-                              event.target.checked
-                            )
+                            onApplySettings({
+                              show_grid: event.target.checked,
+                            })
                           }
                         />
                       }
@@ -316,10 +323,9 @@ export const InnerForm = React.memo(
                         checked={formProps.values.snap_grid}
                         disabled={!editable}
                         onChange={(event) =>
-                          formProps.setFieldValue(
-                            "snap_grid",
-                            event.target.checked
-                          )
+                          onApplySettings({
+                            snap_grid: event.target.checked,
+                          })
                         }
                       />
                     }
@@ -335,6 +341,7 @@ export const InnerForm = React.memo(
             fields={["show_carparts_on_top"]}
             editable={editable}
             initialValues={initialValues}
+            onApplySettings={onApplySettings}
             {...formProps}
             extraChildren={
               <Grid item xs={12} sm={12}>
@@ -350,10 +357,9 @@ export const InnerForm = React.memo(
                         checked={formProps.values.show_carparts_on_top}
                         disabled={!editable}
                         onChange={(event) =>
-                          formProps.setFieldValue(
-                            "show_carparts_on_top",
-                            event.target.checked
-                          )
+                          onApplySettings({
+                            show_carparts_on_top: event.target.checked,
+                          })
                         }
                       />
                     }

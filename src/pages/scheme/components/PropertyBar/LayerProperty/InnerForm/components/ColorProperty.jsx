@@ -4,7 +4,6 @@ import { AllowedLayerProps, LayerTypes, FinishOptions } from "constant";
 
 import {
   Box,
-  Button,
   Typography,
   Grid,
   Select,
@@ -21,17 +20,7 @@ import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
 
 export const ColorProperty = React.memo((props) => {
-  const {
-    editable,
-    currentCarMake,
-    errors,
-    isValid,
-    checkLayerDataDirty,
-    setFieldValue,
-    values,
-    onLayerDataUpdate,
-  } = props;
-  const layerDataProperties = ["color", "blendType", "finish"];
+  const { editable, currentCarMake, errors, values, onDataFieldChange } = props;
   const [expanded, setExpanded] = useState(true);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
   const logoList = useSelector((state) => state.logoReducer.list);
@@ -76,16 +65,6 @@ export const ColorProperty = React.memo((props) => {
     [AllowedLayerTypes, currentScheme.hide_spec, currentCarMake.car_type]
   );
 
-  const handleColorInstantChange = useCallback(
-    (color) => onLayerDataUpdate("color", color),
-    [onLayerDataUpdate]
-  );
-
-  const handleColorChange = useCallback(
-    (color) => setFieldValue("layer_data.color", color),
-    [setFieldValue]
-  );
-
   if (!showColor && !showBlendType && !showFinish) return <></>;
 
   return (
@@ -115,8 +94,8 @@ export const ColorProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.color}
                     disabled={!editable}
-                    onChange={handleColorInstantChange}
-                    onInputChange={handleColorChange}
+                    onChange={(color) => onDataFieldChange("color", color)}
+                    onInputChange={(color) => onDataFieldChange("color", color)}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.color
                     )}
@@ -149,7 +128,7 @@ export const ColorProperty = React.memo((props) => {
                     value={values.layer_data.blendType}
                     disabled={!editable}
                     onChange={(event) =>
-                      onLayerDataUpdate("blendType", event.target.value)
+                      onDataFieldChange("blendType", event.target.value)
                     }
                     fullWidth
                   >
@@ -194,7 +173,7 @@ export const ColorProperty = React.memo((props) => {
                     value={values.layer_data.finish}
                     disabled={!editable}
                     onChange={(event) =>
-                      onLayerDataUpdate("finish", event.target.value)
+                      onDataFieldChange("finish", event.target.value)
                     }
                     fullWidth
                   >
@@ -206,20 +185,6 @@ export const ColorProperty = React.memo((props) => {
                   </Select>
                 </Grid>
               </Grid>
-            </Box>
-          ) : (
-            <></>
-          )}
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
             </Box>
           ) : (
             <></>

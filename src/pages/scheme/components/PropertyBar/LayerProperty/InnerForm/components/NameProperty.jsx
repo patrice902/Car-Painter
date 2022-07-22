@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import styled from "styled-components/macro";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
-import { Box, Button, TextField } from "@material-ui/core";
+import { Box, TextField } from "@material-ui/core";
 
 const CustomeTextField = styled(TextField)`
   margin: 0;
@@ -20,13 +20,11 @@ export const NameProperty = React.memo((props) => {
     user,
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
-    handleChange,
     touched,
     values,
     layerType,
+    onDataFieldChange,
   } = props;
   const layerDataProperties = ["name"];
   const AllowedLayerTypes = useMemo(
@@ -46,9 +44,6 @@ export const NameProperty = React.memo((props) => {
     },
     [user]
   );
-  if (JSON.stringify(errors) !== "{}") {
-    console.log(errors);
-  }
 
   if (
     !AllowedLayerTypes ||
@@ -83,7 +78,7 @@ export const NameProperty = React.memo((props) => {
               errors.layer_data.name
             }
             onBlur={handleBlur}
-            onChange={handleChange}
+            onChange={(e) => onDataFieldChange("name", e.target.value)}
             fullWidth
             margin="normal"
             mb={4}
@@ -91,16 +86,6 @@ export const NameProperty = React.memo((props) => {
               shrink: true,
             }}
           />
-
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box height="30px">
-              <Button type="submit" color="primary" variant="outlined">
-                Apply
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
         </Box>
       ) : (
         <></>

@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
 
 import {
   Box,
-  Button,
   Typography,
   Grid,
   Accordion,
@@ -20,15 +19,7 @@ import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
 
 export const StrokeProperty = React.memo((props) => {
-  const {
-    editable,
-    errors,
-    isValid,
-    checkLayerDataDirty,
-    setFieldValue,
-    values,
-    onLayerDataUpdate,
-  } = props;
+  const { editable, errors, values, onDataFieldChange } = props;
   const layerDataProperties = ["stroke", "scolor", "strokeType"];
   const [expanded, setExpanded] = useState(true);
   const AllowedLayerTypes = useMemo(
@@ -39,21 +30,6 @@ export const StrokeProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleChangeStrokeWidth = useCallback(
-    (value) => setFieldValue("layer_data.stroke", value),
-    [setFieldValue]
-  );
-
-  const handleChangeScolorInstantly = useCallback(
-    (color) => onLayerDataUpdate("scolor", color),
-    [onLayerDataUpdate]
-  );
-
-  const handleChangeScolorOnly = useCallback(
-    (color) => setFieldValue("layer_data.scolor", color),
-    [setFieldValue]
   );
 
   if (
@@ -94,8 +70,10 @@ export const StrokeProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.scolor}
                     disabled={!editable}
-                    onChange={handleChangeScolorInstantly}
-                    onInputChange={handleChangeScolorOnly}
+                    onChange={(color) => onDataFieldChange("scolor", color)}
+                    onInputChange={(color) =>
+                      onDataFieldChange("scolor", color)
+                    }
                     error={Boolean(
                       errors.layer_data && errors.layer_data.scolor
                     )}
@@ -116,7 +94,7 @@ export const StrokeProperty = React.memo((props) => {
                 small
                 value={values.layer_data.stroke}
                 disabled={!editable}
-                setValue={handleChangeStrokeWidth}
+                setValue={(value) => onDataFieldChange("stroke", value)}
               />
             </Box>
           ) : (
@@ -137,7 +115,7 @@ export const StrokeProperty = React.memo((props) => {
                     value={values.layer_data.strokeType}
                     disabled={!editable}
                     onChange={(event) =>
-                      onLayerDataUpdate("strokeType", event.target.value)
+                      onDataFieldChange("strokeType", event.target.value)
                     }
                     fullWidth
                   >
@@ -147,20 +125,6 @@ export const StrokeProperty = React.memo((props) => {
                   </Select>
                 </Grid>
               </Grid>
-            </Box>
-          ) : (
-            <></>
-          )}
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
             </Box>
           ) : (
             <></>

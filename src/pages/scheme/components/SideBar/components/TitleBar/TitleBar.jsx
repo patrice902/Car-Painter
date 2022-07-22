@@ -6,14 +6,11 @@ import { Box, IconButton, useMediaQuery } from "@material-ui/core";
 import { SchemeSettingsDialog } from "components/dialogs";
 import { LightTooltip } from "components/common";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import {
-  Save as SaveIcon,
-  SettingsBackupRestore as BackUpIcon,
-  Settings as SettingsIcon,
-} from "@material-ui/icons";
+import { Settings as SettingsIcon } from "@material-ui/icons";
 import { CustomIcon, NameInput } from "./TitleBar.style";
 
 import { updateScheme } from "redux/reducers/schemeReducer";
+import { useDebouncedCallback } from "use-debounce";
 import { focusBoardQuickly } from "helper";
 
 export const TitleBar = React.memo((props) => {
@@ -32,30 +29,17 @@ export const TitleBar = React.memo((props) => {
     focusBoardQuickly();
   }, []);
 
+  const handleSaveName = useDebouncedCallback(() => {
+    dispatch(updateScheme({ id: currentScheme.id, name }, true, false));
+  }, 1000);
+
   const handleNameChange = useCallback(
     (event) => {
       setName(event.target.value);
-    },
-    [setName]
-  );
-  const handleSaveName = useCallback(() => {
-    dispatch(updateScheme({ id: currentScheme.id, name }, true, false));
-    focusBoardQuickly();
-  }, [dispatch, currentScheme, name]);
-  const handleNameKeyDown = useCallback(
-    (event) => {
-      if (event.keyCode === 13) {
-        event.preventDefault();
-        handleSaveName();
-      }
+      handleSaveName();
     },
     [handleSaveName]
   );
-
-  const handleDiscardName = useCallback(() => {
-    setName(currentScheme.name);
-    focusBoardQuickly();
-  }, [setName, currentScheme]);
 
   useEffect(() => {
     if (currentScheme) {
@@ -83,30 +67,10 @@ export const TitleBar = React.memo((props) => {
         <NameInput
           value={name}
           onChange={handleNameChange}
-          onKeyDown={handleNameKeyDown}
           inputProps={{ maxLength: "50" }}
         />
       </Box>
       <Box display="flex" marginLeft="4px">
-        {currentScheme && name !== currentScheme.name ? (
-          <LightTooltip title="Discard Change" arrow>
-            <IconButton onClick={handleDiscardName} color="secondary">
-              <BackUpIcon />
-            </IconButton>
-          </LightTooltip>
-        ) : (
-          <></>
-        )}
-        {currentScheme && name !== currentScheme.name ? (
-          <LightTooltip title="Save" arrow>
-            <IconButton onClick={handleSaveName}>
-              <SaveIcon />
-            </IconButton>
-          </LightTooltip>
-        ) : (
-          <></>
-        )}
-
         {overTablet && (
           <LightTooltip title="Settings" arrow>
             <IconButton ml={2} onClick={() => setDialog(DialogTypes.SETTINGS)}>

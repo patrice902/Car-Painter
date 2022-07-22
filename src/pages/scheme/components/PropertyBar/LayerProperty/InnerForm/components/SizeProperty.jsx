@@ -4,7 +4,6 @@ import { focusBoardQuickly, mathRound2 } from "helper";
 
 import {
   Box,
-  Button,
   Typography,
   Accordion,
   AccordionSummary,
@@ -18,16 +17,15 @@ export const SizeProperty = React.memo((props) => {
   const {
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
     handleChange,
-    setFieldValue,
     touched,
     values,
     toggleLayerDataField,
     currentLayer,
     pressedKey,
+    onDataFieldChange,
+    onLayerDataMultiUpdate,
   } = props;
   const layerDataProperties = [
     "width",
@@ -56,18 +54,22 @@ export const SizeProperty = React.memo((props) => {
     (event) => {
       let value = parseFloat(event.target.value) || 0;
       if (values.layer_data.sizeLocked) {
-        setFieldValue(
-          "layer_data.height",
+        const height =
           (value * currentLayer.layer_data.height) /
-            currentLayer.layer_data.width
-        );
+          currentLayer.layer_data.width;
+        onLayerDataMultiUpdate({
+          width: value,
+          height,
+        });
+      } else {
+        onDataFieldChange("width", value);
       }
-      setFieldValue("layer_data.width", parseFloat(event.target.value) || 0);
     },
     [
       currentLayer.layer_data.height,
       currentLayer.layer_data.width,
-      setFieldValue,
+      onDataFieldChange,
+      onLayerDataMultiUpdate,
       values.layer_data.sizeLocked,
     ]
   );
@@ -75,18 +77,22 @@ export const SizeProperty = React.memo((props) => {
     (event) => {
       let value = parseFloat(event.target.value) || 0;
       if (values.layer_data.sizeLocked) {
-        setFieldValue(
-          "layer_data.width",
+        const width =
           (value * currentLayer.layer_data.width) /
-            currentLayer.layer_data.height
-        );
+          currentLayer.layer_data.height;
+        onLayerDataMultiUpdate({
+          width,
+          height: value,
+        });
+      } else {
+        onDataFieldChange("height", value);
       }
-      setFieldValue("layer_data.height", parseFloat(event.target.value) || 0);
     },
     [
       currentLayer.layer_data.height,
       currentLayer.layer_data.width,
-      setFieldValue,
+      onDataFieldChange,
+      onLayerDataMultiUpdate,
       values.layer_data.sizeLocked,
     ]
   );
@@ -94,18 +100,22 @@ export const SizeProperty = React.memo((props) => {
     (event) => {
       let value = parseFloat(event.target.value) || 0;
       if (values.layer_data.sizeLocked) {
-        setFieldValue(
-          "layer_data.scaleY",
+        const scaleY =
           (value * currentLayer.layer_data.scaleY) /
-            currentLayer.layer_data.scaleX
-        );
+          currentLayer.layer_data.scaleX;
+        onLayerDataMultiUpdate({
+          scaleY,
+          scaleX: value,
+        });
+      } else {
+        onDataFieldChange("scaleX", value);
       }
-      setFieldValue("layer_data.scaleX", parseFloat(event.target.value) || 0);
     },
     [
       currentLayer.layer_data.scaleX,
       currentLayer.layer_data.scaleY,
-      setFieldValue,
+      onDataFieldChange,
+      onLayerDataMultiUpdate,
       values.layer_data.sizeLocked,
     ]
   );
@@ -113,18 +123,22 @@ export const SizeProperty = React.memo((props) => {
     (event) => {
       let value = parseFloat(event.target.value) || 0;
       if (values.layer_data.sizeLocked) {
-        setFieldValue(
-          "layer_data.scaleX",
+        const scaleX =
           (value * currentLayer.layer_data.scaleX) /
-            currentLayer.layer_data.scaleY
-        );
+          currentLayer.layer_data.scaleY;
+        onLayerDataMultiUpdate({
+          scaleX,
+          scaleY: value,
+        });
+      } else {
+        onDataFieldChange("scaleY", value);
       }
-      setFieldValue("layer_data.scaleY", parseFloat(event.target.value) || 0);
     },
     [
       currentLayer.layer_data.scaleX,
       currentLayer.layer_data.scaleY,
-      setFieldValue,
+      onDataFieldChange,
+      onLayerDataMultiUpdate,
       values.layer_data.sizeLocked,
     ]
   );
@@ -133,21 +147,22 @@ export const SizeProperty = React.memo((props) => {
     (event) => {
       let value = parseFloat(event.target.value) || 0;
       if (values.layer_data.sizeLocked) {
-        setFieldValue(
-          "layer_data.outerRadius",
+        const outerRadius =
           (value * currentLayer.layer_data.outerRadius) /
-            currentLayer.layer_data.innerRadius
-        );
+          currentLayer.layer_data.innerRadius;
+        onLayerDataMultiUpdate({
+          outerRadius,
+          innerRadius: value,
+        });
+      } else {
+        onDataFieldChange("innerRadius", value);
       }
-      setFieldValue(
-        "layer_data.innerRadius",
-        parseFloat(event.target.value) || 0
-      );
     },
     [
       currentLayer.layer_data.innerRadius,
       currentLayer.layer_data.outerRadius,
-      setFieldValue,
+      onDataFieldChange,
+      onLayerDataMultiUpdate,
       values.layer_data.sizeLocked,
     ]
   );
@@ -155,21 +170,22 @@ export const SizeProperty = React.memo((props) => {
     (event) => {
       let value = parseFloat(event.target.value) || 0;
       if (values.layer_data.sizeLocked) {
-        setFieldValue(
-          "layer_data.innerRadius",
+        const innerRadius =
           (value * currentLayer.layer_data.innerRadius) /
-            currentLayer.layer_data.outerRadius
-        );
+          currentLayer.layer_data.outerRadius;
+        onLayerDataMultiUpdate({
+          innerRadius,
+          outerRadius: value,
+        });
+      } else {
+        onDataFieldChange("outerRadius", value);
       }
-      setFieldValue(
-        "layer_data.outerRadius",
-        parseFloat(event.target.value) || 0
-      );
     },
     [
       currentLayer.layer_data.innerRadius,
       currentLayer.layer_data.outerRadius,
-      setFieldValue,
+      onDataFieldChange,
+      onLayerDataMultiUpdate,
       values.layer_data.sizeLocked,
     ]
   );
@@ -561,20 +577,6 @@ export const SizeProperty = React.memo((props) => {
                 shrink: true,
               }}
             />
-          ) : (
-            <></>
-          )}
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
           ) : (
             <></>
           )}

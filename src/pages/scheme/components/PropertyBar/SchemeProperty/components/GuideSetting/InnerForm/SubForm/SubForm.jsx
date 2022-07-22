@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 
 import {
   Accordion,
   AccordionDetails,
   Box,
-  Button,
   Typography,
   Grid,
   IconButton,
@@ -26,37 +25,20 @@ export const SubForm = React.memo((props) => {
     colorKey,
     opacityKey,
     errors,
-    isValid,
-    setFieldValue,
     values,
     extraChildren,
-    fields,
-    initialValues,
     guideID,
     paintingGuides,
     onToggleGuideVisible,
+    onApplySettings,
   } = props;
   const [expanded, setExpanded] = useState(true);
-  const isCustomDirty = useMemo(
-    () => fields.some((item) => values[item] !== initialValues[item]),
-    [values, fields, initialValues]
-  );
   const guideVisible = useMemo(
     () =>
       paintingGuides && guideID
         ? paintingGuides.indexOf(guideID) !== -1
         : false,
     [guideID, paintingGuides]
-  );
-
-  const handleChangeOpacity = useCallback(
-    (value) => setFieldValue(opacityKey, value),
-    [opacityKey, setFieldValue]
-  );
-
-  const handleChangeColor = useCallback(
-    (color) => setFieldValue(colorKey, color),
-    [colorKey, setFieldValue]
   );
 
   return (
@@ -127,8 +109,16 @@ export const SubForm = React.memo((props) => {
                       <ColorPickerInput
                         disabled={!editable}
                         value={values[colorKey]}
-                        onChange={handleChangeColor}
-                        onInputChange={handleChangeColor}
+                        onChange={(value) =>
+                          onApplySettings({
+                            [colorKey]: value,
+                          })
+                        }
+                        onInputChange={(value) =>
+                          onApplySettings({
+                            [colorKey]: value,
+                          })
+                        }
                         error={Boolean(errors[colorKey])}
                         helperText={errors[colorKey]}
                       />
@@ -148,7 +138,11 @@ export const SubForm = React.memo((props) => {
                         step={0.1}
                         marks
                         value={values[opacityKey]}
-                        setValue={handleChangeOpacity}
+                        setValue={(value) =>
+                          onApplySettings({
+                            [opacityKey]: value,
+                          })
+                        }
                         small
                       />
                     </Box>
@@ -162,19 +156,6 @@ export const SubForm = React.memo((props) => {
             )}
             {extraChildren}
           </Grid>
-          {isCustomDirty ? (
-            <Button
-              type="submit"
-              color="primary"
-              variant="outlined"
-              fullWidth
-              disabled={!isValid}
-            >
-              Apply
-            </Button>
-          ) : (
-            <></>
-          )}
         </Box>
       </AccordionDetails>
     </Accordion>

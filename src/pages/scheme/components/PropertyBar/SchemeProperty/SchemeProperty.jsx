@@ -1,11 +1,11 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { useSelector, useDispatch } from "react-redux";
+import { useDebouncedCallback } from "use-debounce";
 import { GuidesSetting } from "./components";
 
 import { updateScheme } from "redux/reducers/schemeReducer";
 import { setPaintingGuides } from "redux/reducers/boardReducer";
-import { focusBoardQuickly } from "helper";
 
 export const SchemeProperty = React.memo((props) => {
   const { editable } = props;
@@ -17,28 +17,21 @@ export const SchemeProperty = React.memo((props) => {
     (state) => state.boardReducer.paintingGuides
   );
 
-  const handleApplyGuideSettings = useCallback(
-    (guide_data) => {
-      dispatch(
-        updateScheme({
-          ...currentScheme,
-          guide_data: {
-            ...currentScheme.guide_data,
-            ...guide_data,
-          },
-        })
-      );
-      focusBoardQuickly();
-    },
-    [dispatch, currentScheme]
-  );
-  const handleChangePaintingGuides = useCallback(
-    (newFormats) => {
-      dispatch(setPaintingGuides(newFormats));
-      focusBoardQuickly();
-    },
-    [dispatch]
-  );
+  const handleApplyGuideSettings = useDebouncedCallback((guide_data) => {
+    dispatch(
+      updateScheme({
+        ...currentScheme,
+        guide_data: {
+          ...currentScheme.guide_data,
+          ...guide_data,
+        },
+      })
+    );
+  }, 300);
+  const handleChangePaintingGuides = useDebouncedCallback((newFormats) => {
+    dispatch(setPaintingGuides(newFormats));
+  }, 300);
+
   return (
     <>
       <GuidesSetting

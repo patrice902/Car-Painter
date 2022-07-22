@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
 
 import {
   Box,
-  Button,
   Typography,
   Grid,
   Accordion,
@@ -22,13 +21,9 @@ export const BackgroundProperty = React.memo((props) => {
     editable,
     errors,
     handleBlur,
-    handleChange,
-    isValid,
-    checkLayerDataDirty,
-    setFieldValue,
     touched,
     values,
-    onLayerDataUpdate,
+    onDataFieldChange,
   } = props;
   const layerDataProperties = ["bgColor", "paddingX", "paddingY"];
   const [expanded, setExpanded] = useState(true);
@@ -40,16 +35,6 @@ export const BackgroundProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleBGColorInstantChange = useCallback(
-    (color) => onLayerDataUpdate("bgColor", color),
-    [onLayerDataUpdate]
-  );
-
-  const handleBGColorChange = useCallback(
-    (color) => setFieldValue("layer_data.bgColor", color),
-    [setFieldValue]
   );
 
   if (
@@ -86,8 +71,10 @@ export const BackgroundProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.bgColor}
                     disabled={!editable}
-                    onChange={handleBGColorInstantChange}
-                    onInputChange={handleBGColorChange}
+                    onChange={(color) => onDataFieldChange("bgColor", color)}
+                    onInputChange={(color) =>
+                      onDataFieldChange("bgColor", color)
+                    }
                     error={Boolean(
                       errors.layer_data && errors.layer_data.bgColor
                     )}
@@ -120,7 +107,9 @@ export const BackgroundProperty = React.memo((props) => {
                     errors.layer_data.paddingX
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange("paddingX", Number(e.target.value) || 0)
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -154,7 +143,9 @@ export const BackgroundProperty = React.memo((props) => {
                     errors.layer_data.paddingY
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange("paddingY", Number(e.target.value) || 0)
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -167,20 +158,6 @@ export const BackgroundProperty = React.memo((props) => {
               )}
             </Grid>
           </Grid>
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
         </Box>
       </AccordionDetails>
     </Accordion>

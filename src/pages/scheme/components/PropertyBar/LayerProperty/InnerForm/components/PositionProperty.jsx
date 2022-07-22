@@ -4,7 +4,6 @@ import { focusBoardQuickly, mathRound2 } from "helper";
 
 import {
   Box,
-  Button,
   Typography,
   Grid,
   Accordion,
@@ -18,13 +17,10 @@ export const PositionProperty = React.memo((props) => {
   const {
     editable,
     errors,
-    isValid,
-    checkLayerDataDirty,
     handleBlur,
-    handleChange,
-    setFieldValue,
     touched,
     values,
+    onDataFieldChange,
   } = props;
   const layerDataProperties = ["left", "top"];
   const [expanded, setExpanded] = useState(true);
@@ -81,7 +77,9 @@ export const PositionProperty = React.memo((props) => {
                     errors.layer_data.left
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange("left", Number(e.target.value) || 0)
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -115,7 +113,9 @@ export const PositionProperty = React.memo((props) => {
                     errors.layer_data.top
                   }
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    onDataFieldChange("top", Number(e.target.value) || 0)
+                  }
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -128,20 +128,6 @@ export const PositionProperty = React.memo((props) => {
               )}
             </Grid>
           </Grid>
-          {editable && isValid && checkLayerDataDirty(layerDataProperties) ? (
-            <Box mt={2} width="100%">
-              <Button
-                type="submit"
-                color="primary"
-                variant="outlined"
-                fullWidth
-              >
-                Apply
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
         </Box>
       </AccordionDetails>
     </Accordion>
