@@ -12,3 +12,4 @@ export { UploadDialog } from "./UploadDialog";
 export { YesNoDialog } from "./YesNoDialog";
 export { ZoomPopover } from "./ZoomPopover";
 export { SimPreviewGuideDialog } from "./SimPreviewGuideDialog";
+export { BoardContextMenu } from "./BoardContextMenu";

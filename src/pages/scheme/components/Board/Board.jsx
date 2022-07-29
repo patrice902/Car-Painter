@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Stage, Layer, Rect, Shape } from "react-konva";
 import {
   useSelector,
@@ -45,6 +45,7 @@ import {
 } from "redux/reducers/layerReducer";
 import { useDrawHelper } from "hooks";
 import { v4 as uuidv4 } from "uuid";
+import { BoardContextMenu } from "components/dialogs";
 
 export const Board = React.memo(
   ({
@@ -58,6 +59,8 @@ export const Board = React.memo(
     activeTransformerRef,
     hoveredTransformerRef,
     setTransformingLayer,
+    onDeleteLayer,
+    onCloneLayer,
   }) => {
     const scaleBy = 1.2;
     const [
@@ -70,6 +73,7 @@ export const Board = React.memo(
       onLayerDragStart,
       onLayerDragEnd,
       onDragEnd,
+      onContextMenu,
     ] = useDrawHelper(stageRef);
 
     const dispatch = useDispatch();
@@ -101,11 +105,17 @@ export const Board = React.memo(
       (state) => state.layerReducer.loadedStatuses
     );
 
+    const [wrapperPosition, setWrapperPosition] = useState({ x: 0, y: 56 });
     const {
       width: wrapperWidth,
       height: wrapperHeight,
       ref: wrapperRef,
-    } = useResizeDetector();
+    } = useResizeDetector({
+      onResize: () => {
+        const boundingRect = wrapperRef.current.getBoundingClientRect();
+        setWrapperPosition({ x: boundingRect.x, y: boundingRect.y });
+      },
+    });
 
     const schemeFinishBase = useMemo(() => {
       const foundFinish = FinishOptions.find(
@@ -242,6 +252,7 @@ export const Board = React.memo(
                 onContentMousedown={onContentMouseDown}
                 onContentMousemove={onMouseMove}
                 onContentMouseup={onMouseUp}
+                onContextMenu={onContextMenu}
                 onDblClick={onDoubleClick}
                 onWheel={handleZoomStage}
                 scaleX={zoom || 1}
@@ -553,6 +564,12 @@ export const Board = React.memo(
               </Stage>
             )}
           </ReactReduxContext.Consumer>
+          <BoardContextMenu
+            stageRef={stageRef}
+            wrapperPosition={wrapperPosition}
+            onDeleteLayer={onDeleteLayer}
+            onCloneLayer={onCloneLayer}
+          />
         </Box>
         {schemeSaving || !schemeLoaded ? (
           <Box

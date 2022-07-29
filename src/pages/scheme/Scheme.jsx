@@ -298,6 +298,8 @@ const Scheme = React.memo((props) => {
                 activeTransformerRef={activeTransformerRef}
                 hoveredTransformerRef={hoveredTransformerRef}
                 setTransformingLayer={setTransformingLayer}
+                onDeleteLayer={onDeleteLayer}
+                onCloneLayer={onCloneLayer}
               />
               <BoardGuide />
               <LegacyBanner

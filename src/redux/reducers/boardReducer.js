@@ -33,6 +33,7 @@ const initialState = {
   viewMode: ViewModes.NORMAL_VIEW,
   downloadSpecTGA: false,
   specTGADataURL: null,
+  contextMenu: null,
 };
 
 export const slice = createSlice({
@@ -103,6 +104,9 @@ export const slice = createSlice({
     setSpecTGADataURL: (state, action) => {
       state.specTGADataURL = action.payload;
     },
+    setContextMenu: (state, action) => {
+      state.contextMenu = action.payload;
+    },
   },
 });
 
@@ -126,6 +130,7 @@ export const {
   setViewMode,
   setDownloadSpecTGA,
   setSpecTGADataURL,
+  setContextMenu,
 } = slice.actions;
 
 export default slice.reducer;

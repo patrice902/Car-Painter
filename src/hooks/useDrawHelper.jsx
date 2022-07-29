@@ -14,7 +14,11 @@ import {
   removeDuplicatedPointFromEnd,
 } from "helper";
 
-import { setMouseMode, setPaintingGuides } from "redux/reducers/boardReducer";
+import {
+  setContextMenu,
+  setMouseMode,
+  setPaintingGuides,
+} from "redux/reducers/boardReducer";
 import {
   setCurrent as setCurrentLayer,
   createShape,
@@ -71,6 +75,13 @@ export const useDrawHelper = (stageRef) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawingStatus]);
+
+  useEffect(() => {
+    if (!currentLayer) {
+      dispatch(setContextMenu(null));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLayer]);
 
   useInterval(() => {
     if (mouseMode !== MouseModes.DEFAULT) {
@@ -333,6 +344,23 @@ export const useDrawHelper = (stageRef) => {
 
   const handleDragEnd = useCallback(() => {}, []);
 
+  const handleContextMenu = useCallback(
+    (e) => {
+      e.evt.preventDefault(true);
+      const stage = e.target.getStage();
+      if (e.target !== stage) {
+        const position = stage.getPointerPosition();
+        dispatch(
+          setContextMenu({
+            x: position.x,
+            y: position.y,
+          })
+        );
+      }
+    },
+    [dispatch]
+  );
+
   return [
     drawingLayerRef,
     handleMouseDown,
@@ -343,5 +371,6 @@ export const useDrawHelper = (stageRef) => {
     handleLayerDragStart,
     handleLayerDragEnd,
     handleDragEnd,
+    handleContextMenu,
   ];
 };
