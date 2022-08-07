@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
@@ -12,6 +12,7 @@ import {
   AccordionDetails,
 } from "components/MaterialUI";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { useDebouncedCallback } from "use-debounce";
 
 import { ColorPickerInput } from "components/common";
 import { LabelTypography, SmallTextField } from "../../../PropertyBar.style";
@@ -23,6 +24,7 @@ export const BackgroundProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
+    setFieldValue,
     onDataFieldChange,
   } = props;
   const layerDataProperties = ["bgColor", "paddingX", "paddingY"];
@@ -35,6 +37,46 @@ export const BackgroundProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
+  );
+
+  const handleBgColorChangeDebounced = useDebouncedCallback((value) => {
+    onDataFieldChange("bgColor", value);
+  }, 1000);
+
+  const handleBgColorChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.bgColor`, value);
+      handleBgColorChangeDebounced(value);
+    },
+    [handleBgColorChangeDebounced, setFieldValue]
+  );
+
+  const handlePaddingXChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("paddingX", Number(value) || 0),
+    1000
+  );
+
+  const handlePaddingXChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.paddingX`, value);
+      handlePaddingXChangeDebounced(value);
+    },
+    [handlePaddingXChangeDebounced, setFieldValue]
+  );
+
+  const handlePaddingYChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("paddingY", value),
+    1000
+  );
+
+  const handlePaddingYChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.paddingY`, value);
+      handlePaddingYChangeDebounced(value);
+    },
+    [handlePaddingYChangeDebounced, setFieldValue]
   );
 
   if (
@@ -71,10 +113,8 @@ export const BackgroundProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.bgColor}
                     disabled={!editable}
-                    onChange={(color) => onDataFieldChange("bgColor", color)}
-                    onInputChange={(color) =>
-                      onDataFieldChange("bgColor", color)
-                    }
+                    onChange={handleBgColorChange}
+                    onInputChange={handleBgColorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.bgColor
                     )}
@@ -107,9 +147,7 @@ export const BackgroundProperty = React.memo((props) => {
                     errors.layer_data.paddingX
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange("paddingX", Number(e.target.value) || 0)
-                  }
+                  onChange={handlePaddingXChange}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -143,9 +181,7 @@ export const BackgroundProperty = React.memo((props) => {
                     errors.layer_data.paddingY
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange("paddingY", Number(e.target.value) || 0)
-                  }
+                  onChange={handlePaddingYChange}
                   fullWidth
                   margin="normal"
                   mb={4}

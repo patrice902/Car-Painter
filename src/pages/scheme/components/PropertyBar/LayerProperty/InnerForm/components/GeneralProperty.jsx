@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
 import {
@@ -20,6 +20,7 @@ import {
 } from "@material-ui/icons";
 import { LabelTypography, SmallTextField } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 export const GeneralProperty = React.memo((props) => {
   const {
@@ -29,6 +30,7 @@ export const GeneralProperty = React.memo((props) => {
     touched,
     values,
     toggleField,
+    setFieldValue,
     onDataFieldChange,
   } = props;
   const layerDataProperties = ["text", "numPoints", "angle", "opacity"];
@@ -43,6 +45,79 @@ export const GeneralProperty = React.memo((props) => {
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
   );
+
+  const handleFontChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("text", value),
+    1000
+  );
+
+  const handleFontChange = useCallback(
+    (e) => {
+      setFieldValue(`layer_data.text`, e.target.value);
+      handleFontChangeDebounced(e.target.value);
+    },
+    [handleFontChangeDebounced, setFieldValue]
+  );
+
+  const handleNumPointsChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("numPoints", Number(value) || 0),
+    1000
+  );
+
+  const handleNumPointsChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.numPoints`, value);
+      handleNumPointsChangeDebounced(value);
+    },
+    [handleNumPointsChangeDebounced, setFieldValue]
+  );
+
+  const handleAngleChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("angle", value),
+    1000
+  );
+
+  const handleAngleChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.angle`, value);
+      handleAngleChangeDebounced(value);
+    },
+    [handleAngleChangeDebounced, setFieldValue]
+  );
+
+  const handleOpacityChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("opacity", value),
+    1000
+  );
+
+  const handleOpacityChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.opacity`, value);
+      handleOpacityChangeDebounced(value);
+    },
+    [handleOpacityChangeDebounced, setFieldValue]
+  );
+
+  const handleToggleVisibleDebounced = useDebouncedCallback(
+    () => toggleField("layer_visible"),
+    1000
+  );
+
+  const handleToggleVisible = useCallback(() => {
+    setFieldValue(`layer_visible`, !values.layer_visible);
+    handleToggleVisibleDebounced();
+  }, [handleToggleVisibleDebounced, setFieldValue, values.layer_visible]);
+
+  const handleToggleLockedDebounced = useDebouncedCallback(
+    () => toggleField("layer_locked"),
+    1000
+  );
+
+  const handleToggleLocked = useCallback(() => {
+    setFieldValue(`layer_locked`, !values.layer_locked);
+    handleToggleLockedDebounced();
+  }, [handleToggleLockedDebounced, setFieldValue, values.layer_locked]);
 
   if (
     !AllowedLayerTypes ||
@@ -86,7 +161,7 @@ export const GeneralProperty = React.memo((props) => {
                   errors.layer_data.text
                 }
                 onBlur={handleBlur}
-                onChange={(e) => onDataFieldChange("text", e.target.value)}
+                onChange={handleFontChange}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -120,9 +195,7 @@ export const GeneralProperty = React.memo((props) => {
                   errors.layer_data.numPoints
                 }
                 onBlur={handleBlur}
-                onChange={(e) =>
-                  onDataFieldChange("numPoints", Number(e.target.value) || 0)
-                }
+                onChange={handleNumPointsChange}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -143,7 +216,7 @@ export const GeneralProperty = React.memo((props) => {
                 max={360}
                 small
                 value={Math.round(values.layer_data.angle)}
-                setValue={(value) => onDataFieldChange("angle", value)}
+                setValue={handleAngleChange}
               />
             </Grid>
           ) : (
@@ -159,7 +232,7 @@ export const GeneralProperty = React.memo((props) => {
                 step={0.01}
                 small
                 value={values.layer_data.opacity}
-                setValue={(value) => onDataFieldChange("opacity", value)}
+                setValue={handleOpacityChange}
               />
             </Grid>
           ) : (
@@ -179,7 +252,7 @@ export const GeneralProperty = React.memo((props) => {
                 </LabelTypography>
                 <IconButton
                   disabled={!editable}
-                  onClick={() => toggleField("layer_visible")}
+                  onClick={handleToggleVisible}
                   size="small"
                 >
                   {values.layer_visible ? (
@@ -214,7 +287,7 @@ export const GeneralProperty = React.memo((props) => {
                 </LabelTypography>
                 <IconButton
                   disabled={!editable}
-                  onClick={() => toggleField("layer_locked")}
+                  onClick={handleToggleLocked}
                   size="small"
                 >
                   {values.layer_locked ? <LockIcon /> : <LockOpenIcon />}

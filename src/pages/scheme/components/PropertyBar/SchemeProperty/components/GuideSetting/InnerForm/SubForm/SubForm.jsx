@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 
 import {
   Accordion,
@@ -17,6 +17,7 @@ import { ColorPickerInput, SliderInput } from "components/common";
 import { CustomAccordionSummary } from "./styles";
 import { LabelTypography } from "pages/scheme/components/PropertyBar/PropertyBar.style";
 import { focusBoardQuickly } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 export const SubForm = React.memo((props) => {
   const {
@@ -29,8 +30,9 @@ export const SubForm = React.memo((props) => {
     extraChildren,
     guideID,
     paintingGuides,
+    setFieldValue,
     onToggleGuideVisible,
-    onApplySettings,
+    onApply,
   } = props;
   const [expanded, setExpanded] = useState(true);
   const guideVisible = useMemo(
@@ -39,6 +41,35 @@ export const SubForm = React.memo((props) => {
         ? paintingGuides.indexOf(guideID) !== -1
         : false,
     [guideID, paintingGuides]
+  );
+
+  const handleToggleGuideVisible = useCallback(
+    () => onToggleGuideVisible(guideID),
+    [guideID, onToggleGuideVisible]
+  );
+
+  const handleColorChangeDebounced = useDebouncedCallback(onApply, 300);
+
+  const handleColorChange = useCallback(
+    (value) => {
+      setFieldValue(colorKey, value);
+      handleColorChangeDebounced({
+        [colorKey]: value,
+      });
+    },
+    [colorKey, handleColorChangeDebounced, setFieldValue]
+  );
+
+  const handleOpacityChangeDebounced = useDebouncedCallback(onApply, 300);
+
+  const handleOpacityChange = useCallback(
+    (value) => {
+      setFieldValue(opacityKey, value);
+      handleOpacityChangeDebounced({
+        [opacityKey]: value,
+      });
+    },
+    [opacityKey, handleOpacityChangeDebounced, setFieldValue]
   );
 
   return (
@@ -73,7 +104,7 @@ export const SubForm = React.memo((props) => {
                 </LabelTypography>
                 <IconButton
                   disabled={!editable}
-                  onClick={() => onToggleGuideVisible(guideID)}
+                  onClick={handleToggleGuideVisible}
                   size="small"
                   style={{ padding: "9px" }}
                 >
@@ -109,16 +140,8 @@ export const SubForm = React.memo((props) => {
                       <ColorPickerInput
                         disabled={!editable}
                         value={values[colorKey]}
-                        onChange={(value) =>
-                          onApplySettings({
-                            [colorKey]: value,
-                          })
-                        }
-                        onInputChange={(value) =>
-                          onApplySettings({
-                            [colorKey]: value,
-                          })
-                        }
+                        onChange={handleColorChange}
+                        onInputChange={handleColorChange}
                         error={Boolean(errors[colorKey])}
                         helperText={errors[colorKey]}
                       />
@@ -138,11 +161,7 @@ export const SubForm = React.memo((props) => {
                         step={0.1}
                         marks
                         value={values[opacityKey]}
-                        setValue={(value) =>
-                          onApplySettings({
-                            [opacityKey]: value,
-                          })
-                        }
+                        setValue={handleOpacityChange}
                         small
                       />
                     </Box>

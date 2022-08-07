@@ -16,6 +16,7 @@ import {
   parseLayer,
   rotatePoint,
   stringifyLayer,
+  mergeTwoLayer,
 } from "helper";
 import LayerService from "services/layerService";
 import { setMessage } from "./messageReducer";
@@ -68,11 +69,13 @@ export const slice = createSlice({
         (item) => item.id === action.payload.id
       );
       if (foundIndex !== -1) {
-        layerList[foundIndex] = parseLayer({
-          ...layerList[foundIndex],
-          ...action.payload,
-        });
+        const newScheme = mergeTwoLayer(layerList[foundIndex], action.payload);
+        layerList[foundIndex] = newScheme;
         state.list = layerList;
+
+        if (state.current && state.current.id === newScheme.id) {
+          state.current = newScheme;
+        }
       }
     },
     deleteItemsByUploadID: (state, action) => {
@@ -112,7 +115,7 @@ export const slice = createSlice({
       state.current = parseLayer(action.payload);
     },
     mergeCurrent: (state, action) => {
-      state.current = parseLayer({ ...state.current, ...action.payload });
+      state.current = mergeTwoLayer(state.current, action.payload);
     },
     clearCurrent: (state) => {
       state.current = null;

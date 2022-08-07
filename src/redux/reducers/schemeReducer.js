@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { createSlice } from "@reduxjs/toolkit";
 import { HistoryActions } from "constant";
-import { parseScheme } from "helper";
+import { mergeTwoScheme, parseScheme } from "helper";
 import SchemeService from "services/schemeService";
 import SharedSchemeService from "services/sharedSchemeService";
 import FavoriteSchemeService from "services/favoriteSchemeService";
@@ -75,15 +75,10 @@ export const slice = createSlice({
         (item) => item.id === action.payload.id
       );
       if (foundIndex !== -1) {
-        let scheme = { ...schemeList[foundIndex], ...action.payload };
-        if (
-          scheme &&
-          (typeof scheme.guide_data === "string" || !scheme.guide_data)
-        ) {
-          scheme.guide_data = JSON.parse(scheme.guide_data) || {};
-        }
-
-        schemeList[foundIndex] = scheme;
+        schemeList[foundIndex] = mergeTwoScheme(
+          schemeList[foundIndex],
+          action.payload
+        );
         state.list = schemeList;
       }
     },
@@ -315,11 +310,20 @@ export const updateScheme = (
       date_modified: Math.round(new Date().getTime() / 1000),
       last_modified_by: currentUser.id,
     };
+    let foundScheme;
     if (currentScheme && currentScheme.id === payload.id) {
+      foundScheme = currentScheme;
       updatedScheme = {
         ...currentScheme,
         ...payloadForSocket,
       };
+      if (payloadForSocket.guide_data) {
+        updatedScheme.guide_data = {
+          ...currentScheme.guide_data,
+          ...payloadForSocket.guide_data,
+        };
+      }
+
       if (update_thumbnail) {
         updatedScheme.thumbnail_updated = 0;
         updatedScheme.race_updated = 0;
@@ -327,11 +331,17 @@ export const updateScheme = (
       dispatch(setCurrent(updatedScheme));
     } else {
       const schemeList = getState().schemeReducer.list;
-      const foundScheme = schemeList.find((item) => item.id === payload.id);
+      foundScheme = schemeList.find((item) => item.id === payload.id);
       updatedScheme = {
         ...foundScheme,
         ...payloadForSocket,
       };
+      if (payloadForSocket.guide_data) {
+        updatedScheme.guide_data = {
+          ...currentScheme.guide_data,
+          ...payloadForSocket.guide_data,
+        };
+      }
     }
     if (payloadForSocket.guide_data) {
       payloadForSocket.guide_data = JSON.stringify(payloadForSocket.guide_data);

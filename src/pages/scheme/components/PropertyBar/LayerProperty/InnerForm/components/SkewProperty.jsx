@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
 
@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { SmallTextField } from "../../../PropertyBar.style";
+import { useDebouncedCallback } from "use-debounce";
 
 export const SkewProperty = React.memo((props) => {
   const {
@@ -20,6 +21,7 @@ export const SkewProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
+    setFieldValue,
     onDataFieldChange,
   } = props;
   const layerDataProperties = ["skewX", "skewY"];
@@ -32,6 +34,34 @@ export const SkewProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
+  );
+
+  const handleSkewXChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("skewX", value),
+    1000
+  );
+
+  const handleSkewXChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.skewX`, value);
+      handleSkewXChangeDebounced(value);
+    },
+    [handleSkewXChangeDebounced, setFieldValue]
+  );
+
+  const handleSkewYChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("skewY", value),
+    1000
+  );
+
+  const handleSkewYChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.skewY`, value);
+      handleSkewYChangeDebounced(value);
+    },
+    [handleSkewYChangeDebounced, setFieldValue]
   );
 
   if (
@@ -80,9 +110,7 @@ export const SkewProperty = React.memo((props) => {
                     errors.layer_data.skewX
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange("skewX", Number(e.target.value) || 0)
-                  }
+                  onChange={handleSkewXChange}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -119,9 +147,7 @@ export const SkewProperty = React.memo((props) => {
                     errors.layer_data.skewY
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange("skewY", Number(e.target.value) || 0)
-                  }
+                  onChange={handleSkewYChange}
                   fullWidth
                   margin="normal"
                   mb={4}

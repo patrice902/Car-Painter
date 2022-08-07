@@ -52,7 +52,16 @@ class LayerService {
 
   static async updateById(id, payload) {
     const layer = await this.getById(id);
-    await layer.save(payload);
+    const layerInfo = layer.toJSON();
+    const updatingInfo = { ...payload };
+
+    if (payload.layer_data) {
+      updatingInfo.layer_data = JSON.stringify({
+        ...JSON.parse(layerInfo.layer_data),
+        ...JSON.parse(payload.layer_data),
+      });
+    }
+    await layer.save(updatingInfo, { patch: true });
     return layer;
   }
 

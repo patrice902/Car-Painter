@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
-import { useDebounce, useDebouncedCallback } from "use-debounce";
+import { useDebounce } from "use-debounce";
 import * as Yup from "yup";
 import _ from "lodash";
 
@@ -100,35 +100,38 @@ export const LayerProperty = React.memo((props) => {
     },
     [dispatch, currentLayer]
   );
-  const handleLayerDataUpdate = useDebouncedCallback((key, value) => {
-    dispatch(
-      updateLayer({
-        id: currentLayer.id,
-        layer_data: {
-          ...currentLayer.layer_data,
-          [key]: value,
-        },
-      })
-    );
-  }, 1000);
-  const handleLayerDataMultiUpdate = useDebouncedCallback((updatedValues) => {
-    dispatch(
-      updateLayer({
-        id: currentLayer.id,
-        layer_data: {
-          ...currentLayer.layer_data,
-          ...updatedValues,
-        },
-      })
-    );
-  }, 1000);
+  const handleLayerDataUpdate = useCallback(
+    (key, value) => {
+      dispatch(
+        updateLayer({
+          id: currentLayer.id,
+          layer_data: {
+            [key]: value,
+          },
+        })
+      );
+    },
+    [currentLayer, dispatch]
+  );
+  const handleLayerDataMultiUpdate = useCallback(
+    (updatedValues) => {
+      dispatch(
+        updateLayer({
+          id: currentLayer.id,
+          layer_data: {
+            ...updatedValues,
+          },
+        })
+      );
+    },
+    [currentLayer, dispatch]
+  );
   const toggleLayerDataField = useCallback(
     (field) => {
       dispatch(
         updateLayer({
           id: currentLayer.id,
           layer_data: {
-            ...currentLayer.layer_data,
             [field]: currentLayer.layer_data[field] ? 0 : 1,
           },
         })

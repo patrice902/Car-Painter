@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import styled from "styled-components/macro";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
@@ -17,11 +17,19 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { FontSelect, ColorPickerInput, SliderInput } from "components/common";
 import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 const FormControl = styled(MuiFormControl)(spacing);
 
 export const FontProperty = React.memo((props) => {
-  const { editable, errors, values, fontList, onDataFieldChange } = props;
+  const {
+    editable,
+    errors,
+    values,
+    fontList,
+    setFieldValue,
+    onDataFieldChange,
+  } = props;
   const layerDataProperties = ["font", "size"];
   const [expanded, setExpanded] = useState(true);
   const AllowedLayerTypes = useMemo(
@@ -32,6 +40,45 @@ export const FontProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
+  );
+
+  const handleFontChangeDebounced = useDebouncedCallback(
+    (fontID) => onDataFieldChange("font", fontID),
+    1000
+  );
+
+  const handleFontChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.font`, value);
+      handleFontChangeDebounced(value);
+    },
+    [handleFontChangeDebounced, setFieldValue]
+  );
+
+  const handleColorChangeDebounced = useDebouncedCallback(
+    (color) => onDataFieldChange("color", color),
+    1000
+  );
+
+  const handleColorChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.color`, value);
+      handleColorChangeDebounced(value);
+    },
+    [handleColorChangeDebounced, setFieldValue]
+  );
+
+  const handleSizeChangeDebounced = useDebouncedCallback(
+    (size) => onDataFieldChange("size", size),
+    1000
+  );
+
+  const handleSizeChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.size`, value);
+      handleSizeChangeDebounced(value);
+    },
+    [handleSizeChangeDebounced, setFieldValue]
   );
 
   if (
@@ -60,7 +107,7 @@ export const FontProperty = React.memo((props) => {
               <FontSelect
                 value={values.layer_data.font}
                 disabled={!editable}
-                onChange={(fontID) => onDataFieldChange("font", fontID)}
+                onChange={handleFontChange}
                 fontList={fontList}
               />
             </FormControl>
@@ -79,8 +126,8 @@ export const FontProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.color}
                     disabled={!editable}
-                    onChange={(color) => onDataFieldChange("color", color)}
-                    onInputChange={(color) => onDataFieldChange("color", color)}
+                    onChange={handleColorChange}
+                    onInputChange={handleColorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.color
                     )}
@@ -100,7 +147,7 @@ export const FontProperty = React.memo((props) => {
                 min={6}
                 max={512}
                 value={values.layer_data.size}
-                setValue={(value) => onDataFieldChange("size", value)}
+                setValue={handleSizeChange}
               />
             </Box>
           ) : (

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { AllowedLayerProps, LayerTypes, MouseModes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 import {
   Box,
@@ -18,12 +19,13 @@ export const SizeProperty = React.memo((props) => {
     editable,
     errors,
     handleBlur,
-    handleChange,
     touched,
     values,
     toggleLayerDataField,
     currentLayer,
     pressedKey,
+    setFieldValue,
+    setMultiFieldValue,
     onDataFieldChange,
     onLayerDataMultiUpdate,
   } = props;
@@ -50,149 +52,188 @@ export const SizeProperty = React.memo((props) => {
   );
   const pressingShiftKey = useMemo(() => pressedKey === "shift", [pressedKey]);
 
+  const handleChangeWidthDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
   const handleChangeWidth = useCallback(
-    (event) => {
-      let value = parseFloat(event.target.value) || 0;
+    (e) => {
+      let value = parseFloat(e.target.value) || 0;
+      let updatingMap = {
+        width: value,
+      };
       if (values.layer_data.sizeLocked) {
-        const height =
+        updatingMap.height =
           (value * currentLayer.layer_data.height) /
           currentLayer.layer_data.width;
-        onLayerDataMultiUpdate({
-          width: value,
-          height,
-        });
-      } else {
-        onDataFieldChange("width", value);
       }
+      setMultiFieldValue(updatingMap);
+      handleChangeWidthDebounced(updatingMap);
     },
-    [
-      currentLayer.layer_data.height,
-      currentLayer.layer_data.width,
-      onDataFieldChange,
-      onLayerDataMultiUpdate,
-      values.layer_data.sizeLocked,
-    ]
+    [currentLayer, handleChangeWidthDebounced, setMultiFieldValue, values]
   );
+
+  const handleChangeHeightDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
   const handleChangeHeight = useCallback(
-    (event) => {
-      let value = parseFloat(event.target.value) || 0;
+    (e) => {
+      let value = parseFloat(e.target.value) || 0;
+      let updatingMap = {
+        height: value,
+      };
       if (values.layer_data.sizeLocked) {
-        const width =
+        updatingMap.width =
           (value * currentLayer.layer_data.width) /
           currentLayer.layer_data.height;
-        onLayerDataMultiUpdate({
-          width,
-          height: value,
-        });
-      } else {
-        onDataFieldChange("height", value);
       }
+      setMultiFieldValue(updatingMap);
+      handleChangeHeightDebounced(updatingMap);
     },
-    [
-      currentLayer.layer_data.height,
-      currentLayer.layer_data.width,
-      onDataFieldChange,
-      onLayerDataMultiUpdate,
-      values.layer_data.sizeLocked,
-    ]
+    [currentLayer, handleChangeHeightDebounced, setMultiFieldValue, values]
   );
+
+  const handleChangeScaleXDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
   const handleChangeScaleX = useCallback(
-    (event) => {
-      let value = parseFloat(event.target.value) || 0;
+    (e) => {
+      let value = parseFloat(e.target.value) || 0;
+      let updatingMap = {
+        scaleX: value,
+      };
       if (values.layer_data.sizeLocked) {
-        const scaleY =
+        updatingMap.scaleY =
           (value * currentLayer.layer_data.scaleY) /
           currentLayer.layer_data.scaleX;
-        onLayerDataMultiUpdate({
-          scaleY,
-          scaleX: value,
-        });
-      } else {
-        onDataFieldChange("scaleX", value);
       }
+      setMultiFieldValue(updatingMap);
+      handleChangeScaleXDebounced(updatingMap);
     },
-    [
-      currentLayer.layer_data.scaleX,
-      currentLayer.layer_data.scaleY,
-      onDataFieldChange,
-      onLayerDataMultiUpdate,
-      values.layer_data.sizeLocked,
-    ]
+    [currentLayer, handleChangeScaleXDebounced, setMultiFieldValue, values]
   );
+
+  const handleChangeScaleYDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
   const handleChangeScaleY = useCallback(
-    (event) => {
-      let value = parseFloat(event.target.value) || 0;
+    (e) => {
+      let value = parseFloat(e.target.value) || 0;
+      let updatingMap = {
+        scaleY: value,
+      };
       if (values.layer_data.sizeLocked) {
-        const scaleX =
+        updatingMap.scaleX =
           (value * currentLayer.layer_data.scaleX) /
           currentLayer.layer_data.scaleY;
-        onLayerDataMultiUpdate({
-          scaleX,
-          scaleY: value,
-        });
-      } else {
-        onDataFieldChange("scaleY", value);
       }
+      setMultiFieldValue(updatingMap);
+      handleChangeScaleYDebounced(updatingMap);
     },
-    [
-      currentLayer.layer_data.scaleX,
-      currentLayer.layer_data.scaleY,
-      onDataFieldChange,
-      onLayerDataMultiUpdate,
-      values.layer_data.sizeLocked,
-    ]
+    [currentLayer, handleChangeScaleYDebounced, setMultiFieldValue, values]
+  );
+
+  const handleChangeInnerRadiusDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
   );
 
   const handleChangeInnerRadius = useCallback(
-    (event) => {
-      let value = parseFloat(event.target.value) || 0;
+    (e) => {
+      let value = parseFloat(e.target.value) || 0;
+      let updatingMap = {
+        innerRadius: value,
+      };
       if (values.layer_data.sizeLocked) {
-        const outerRadius =
+        updatingMap.outerRadius =
           (value * currentLayer.layer_data.outerRadius) /
           currentLayer.layer_data.innerRadius;
-        onLayerDataMultiUpdate({
-          outerRadius,
-          innerRadius: value,
-        });
-      } else {
-        onDataFieldChange("innerRadius", value);
       }
+      setMultiFieldValue(updatingMap);
+      handleChangeInnerRadiusDebounced(updatingMap);
     },
-    [
-      currentLayer.layer_data.innerRadius,
-      currentLayer.layer_data.outerRadius,
-      onDataFieldChange,
-      onLayerDataMultiUpdate,
-      values.layer_data.sizeLocked,
-    ]
-  );
-  const handleChangeOuterRadius = useCallback(
-    (event) => {
-      let value = parseFloat(event.target.value) || 0;
-      if (values.layer_data.sizeLocked) {
-        const innerRadius =
-          (value * currentLayer.layer_data.innerRadius) /
-          currentLayer.layer_data.outerRadius;
-        onLayerDataMultiUpdate({
-          innerRadius,
-          outerRadius: value,
-        });
-      } else {
-        onDataFieldChange("outerRadius", value);
-      }
-    },
-    [
-      currentLayer.layer_data.innerRadius,
-      currentLayer.layer_data.outerRadius,
-      onDataFieldChange,
-      onLayerDataMultiUpdate,
-      values.layer_data.sizeLocked,
-    ]
+    [currentLayer, handleChangeInnerRadiusDebounced, setMultiFieldValue, values]
   );
 
-  const handleToggleSizeLocked = useCallback(
+  const handleChangeOuterRadiusDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
+  const handleChangeOuterRadius = useCallback(
+    (e) => {
+      let value = parseFloat(e.target.value) || 0;
+      let updatingMap = {
+        outerRadius: value,
+      };
+      if (values.layer_data.sizeLocked) {
+        updatingMap.innerRadius =
+          (value * currentLayer.layer_data.innerRadius) /
+          currentLayer.layer_data.outerRadius;
+      }
+      setMultiFieldValue(updatingMap);
+      handleChangeOuterRadiusDebounced(updatingMap);
+    },
+    [currentLayer, handleChangeOuterRadiusDebounced, setMultiFieldValue, values]
+  );
+
+  const handleToggleSizeLockedDebounced = useDebouncedCallback(
     () => toggleLayerDataField("sizeLocked"),
-    [toggleLayerDataField]
+    1000
+  );
+
+  const handleToggleSizeLocked = useCallback(() => {
+    setFieldValue(`layer_data.sizeLocked`, !values.layer_data.sizeLocked);
+    handleToggleSizeLockedDebounced();
+  }, [handleToggleSizeLockedDebounced, setFieldValue, values]);
+
+  const handleRadiusChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("radius", value),
+    1000
+  );
+
+  const handleRadiusChange = useCallback(
+    (e) => {
+      let value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.radius`, value);
+      handleRadiusChangeDebounced(value);
+    },
+    [handleRadiusChangeDebounced, setFieldValue]
+  );
+
+  const handlePointerWidthChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("pointerWidth", value),
+    1000
+  );
+
+  const handlePointerWidthChange = useCallback(
+    (e) => {
+      let value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.pointerWidth`, value);
+      handlePointerWidthChangeDebounced(value);
+    },
+    [handlePointerWidthChangeDebounced, setFieldValue]
+  );
+
+  const handlePointerLengthChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("pointerLength", value),
+    1000
+  );
+
+  const handlePointerLengthChange = useCallback(
+    (e) => {
+      let value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.pointerLength`, value);
+      handlePointerLengthChangeDebounced(value);
+    },
+    [handlePointerLengthChangeDebounced, setFieldValue]
   );
 
   if (
@@ -505,7 +546,7 @@ export const SizeProperty = React.memo((props) => {
                 errors.layer_data.radius
               }
               onBlur={handleBlur}
-              onChange={handleChange}
+              onChange={handleRadiusChange}
               fullWidth
               margin="normal"
               mb={4}
@@ -537,7 +578,7 @@ export const SizeProperty = React.memo((props) => {
                 errors.layer_data.pointerWidth
               }
               onBlur={handleBlur}
-              onChange={handleChange}
+              onChange={handlePointerWidthChange}
               fullWidth
               margin="normal"
               mb={4}
@@ -569,7 +610,7 @@ export const SizeProperty = React.memo((props) => {
                 errors.layer_data.pointerLength
               }
               onBlur={handleBlur}
-              onChange={handleChange}
+              onChange={handlePointerLengthChange}
               fullWidth
               margin="normal"
               mb={4}

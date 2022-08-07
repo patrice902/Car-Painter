@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
 
@@ -17,9 +17,10 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { ColorPickerInput, SliderInput } from "components/common";
 import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 export const StrokeProperty = React.memo((props) => {
-  const { editable, errors, values, onDataFieldChange } = props;
+  const { editable, errors, values, setFieldValue, onDataFieldChange } = props;
   const layerDataProperties = ["stroke", "scolor", "strokeType"];
   const [expanded, setExpanded] = useState(true);
   const AllowedLayerTypes = useMemo(
@@ -30,6 +31,46 @@ export const StrokeProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
+  );
+
+  const handleScolorChangeDebounced = useDebouncedCallback(
+    (color) => onDataFieldChange("scolor", color),
+    1000
+  );
+
+  const handleScolorChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.scolor`, value);
+      handleScolorChangeDebounced(value);
+    },
+    [handleScolorChangeDebounced, setFieldValue]
+  );
+
+  const handleStrokeChangeDebounced = useDebouncedCallback(
+    (color) => onDataFieldChange("stroke", color),
+    1000
+  );
+
+  const handleStrokeChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.stroke`, value);
+      handleStrokeChangeDebounced(value);
+    },
+    [handleStrokeChangeDebounced, setFieldValue]
+  );
+
+  const handleStrokeTypeChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("strokeType", value),
+    1000
+  );
+
+  const handleStrokeTypeChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      setFieldValue(`layer_data.strokeType`, value);
+      handleStrokeTypeChangeDebounced(value);
+    },
+    [handleStrokeTypeChangeDebounced, setFieldValue]
   );
 
   if (
@@ -70,10 +111,8 @@ export const StrokeProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.scolor}
                     disabled={!editable}
-                    onChange={(color) => onDataFieldChange("scolor", color)}
-                    onInputChange={(color) =>
-                      onDataFieldChange("scolor", color)
-                    }
+                    onChange={handleScolorChange}
+                    onInputChange={handleScolorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.scolor
                     )}
@@ -94,7 +133,7 @@ export const StrokeProperty = React.memo((props) => {
                 small
                 value={values.layer_data.stroke}
                 disabled={!editable}
-                setValue={(value) => onDataFieldChange("stroke", value)}
+                setValue={handleStrokeChange}
               />
             </Box>
           ) : (
@@ -114,9 +153,7 @@ export const StrokeProperty = React.memo((props) => {
                     variant="outlined"
                     value={values.layer_data.strokeType}
                     disabled={!editable}
-                    onChange={(event) =>
-                      onDataFieldChange("strokeType", event.target.value)
-                    }
+                    onChange={handleStrokeTypeChange}
                     fullWidth
                   >
                     <MenuItem value="inside">Inside</MenuItem>

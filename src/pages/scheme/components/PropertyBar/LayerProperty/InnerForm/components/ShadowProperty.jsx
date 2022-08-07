@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 import {
   Box,
@@ -14,6 +15,7 @@ import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
 import { ColorPickerInput, SliderInput } from "components/common";
 import { LabelTypography, SmallTextField } from "../../../PropertyBar.style";
+import { useCallback } from "react";
 
 export const ShadowProperty = React.memo((props) => {
   const DefaultBlurToSet = 10;
@@ -23,6 +25,8 @@ export const ShadowProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
+    setFieldValue,
+    setMultiFieldValue,
     onDataFieldChange,
     onLayerDataMultiUpdate,
   } = props;
@@ -44,21 +48,83 @@ export const ShadowProperty = React.memo((props) => {
     [values]
   );
 
+  const handleColorChangeDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
   const handleColorChange = useCallback(
     (value) => {
+      let updatingMap = {
+        shadowColor: value,
+      };
+
       if (
         !values.layer_data.shadowColor ||
         values.layer_data.shadowColor === "transparent"
       ) {
-        onLayerDataMultiUpdate({
-          shadowBlur: DefaultBlurToSet,
-          shadowColor: value,
-        });
-      } else {
-        onDataFieldChange("shadowColor", value);
+        updatingMap.shadowBlur = DefaultBlurToSet;
       }
+
+      setMultiFieldValue(updatingMap);
+      handleColorChangeDebounced(updatingMap);
     },
-    [values.layer_data.shadowColor, onLayerDataMultiUpdate, onDataFieldChange]
+    [handleColorChangeDebounced, setMultiFieldValue, values]
+  );
+
+  const handleShadowOpacityChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("shadowOpacity", value),
+    1000
+  );
+
+  const handleShadowOpacityChange = useCallback(
+    (value) => {
+      setFieldValue(`layer_data.shadowOpacity`, value);
+      handleShadowOpacityChangeDebounced(value);
+    },
+    [handleShadowOpacityChangeDebounced, setFieldValue]
+  );
+
+  const handleShadowBlurChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("shadowBlur", value),
+    1000
+  );
+
+  const handleShadowBlurChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.shadowBlur`, value);
+      handleShadowBlurChangeDebounced(value);
+    },
+    [handleShadowBlurChangeDebounced, setFieldValue]
+  );
+
+  const handleShadowOffsetXChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("shadowOffsetX", value),
+    1000
+  );
+
+  const handleShadowOffsetXChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.shadowOffsetX`, value);
+      handleShadowOffsetXChangeDebounced(value);
+    },
+    [handleShadowOffsetXChangeDebounced, setFieldValue]
+  );
+
+  const handleShadowOffsetYChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("shadowOffsetY", value),
+    1000
+  );
+
+  const handleShadowOffsetYChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.shadowOffsetY`, value);
+      handleShadowOffsetYChangeDebounced(value);
+    },
+    [handleShadowOffsetYChangeDebounced, setFieldValue]
   );
 
   if (
@@ -118,7 +184,7 @@ export const ShadowProperty = React.memo((props) => {
                 small
                 value={values.layer_data.shadowOpacity}
                 disabled={!editable}
-                setValue={(value) => onDataFieldChange("shadowOpacity", value)}
+                setValue={handleShadowOpacityChange}
               />
             </Box>
           ) : (
@@ -145,9 +211,7 @@ export const ShadowProperty = React.memo((props) => {
                 errors.layer_data.shadowBlur
               }
               onBlur={handleBlur}
-              onChange={(e) =>
-                onDataFieldChange("shadowBlur", Number(e.target.value) || 0)
-              }
+              onChange={handleShadowBlurChange}
               fullWidth
               margin="normal"
               mb={4}
@@ -181,12 +245,7 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data.shadowOffsetX
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange(
-                      "shadowOffsetX",
-                      Number(e.target.value) || 0
-                    )
-                  }
+                  onChange={handleShadowOffsetXChange}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -220,12 +279,7 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data.shadowOffsetY
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange(
-                      "shadowOffsetY",
-                      Number(e.target.value) || 0
-                    )
-                  }
+                  onChange={handleShadowOffsetYChange}
                   fullWidth
                   margin="normal"
                   mb={4}

@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
+import { useDebouncedCallback } from "use-debounce";
 
 import {
   Grid,
@@ -18,6 +19,7 @@ export const CornerProperty = React.memo((props) => {
     editable,
     errors,
     handleBlur,
+    setFieldValue,
     onDataFieldChange,
     touched,
     values,
@@ -37,6 +39,62 @@ export const CornerProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
+  );
+
+  const handleCornerTopLeftChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("cornerTopLeft", value),
+    1000
+  );
+
+  const handleCornerTopLeftChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.cornerTopLeft`, value);
+      handleCornerTopLeftChangeDebounced(value);
+    },
+    [handleCornerTopLeftChangeDebounced, setFieldValue]
+  );
+
+  const handleCornerTopRightChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("cornerTopRight", Number(value) || 0),
+    1000
+  );
+
+  const handleCornerTopRightChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.cornerTopRight`, value);
+      handleCornerTopRightChangeDebounced(value);
+    },
+    [handleCornerTopRightChangeDebounced, setFieldValue]
+  );
+
+  const handleCornerBottomLeftChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("cornerBottomLeft", Number(value) || 0),
+    1000
+  );
+
+  const handleCornerBottomLeftChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.cornerBottomLeft`, value);
+      handleCornerBottomLeftChangeDebounced(value);
+    },
+    [handleCornerBottomLeftChangeDebounced, setFieldValue]
+  );
+
+  const handleCornerBottomRightChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("cornerBottomRight", Number(value) || 0),
+    1000
+  );
+
+  const handleCornerBottomRightChange = useCallback(
+    (e) => {
+      const value = Number(e.target.value) || 0;
+      setFieldValue(`layer_data.cornerBottomRight`, value);
+      handleCornerBottomRightChangeDebounced(value);
+    },
+    [handleCornerBottomRightChangeDebounced, setFieldValue]
   );
 
   if (
@@ -82,12 +140,7 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerTopLeft
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange(
-                      "cornerTopLeft",
-                      Number(e.target.value) || 0
-                    )
-                  }
+                  onChange={handleCornerTopLeftChange}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -121,12 +174,7 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerTopRight
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange(
-                      "cornerTopRight",
-                      Number(e.target.value) || 0
-                    )
-                  }
+                  onChange={handleCornerTopRightChange}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -160,12 +208,7 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerBottomLeft
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange(
-                      "cornerBottomLeft",
-                      Number(e.target.value) || 0
-                    )
-                  }
+                  onChange={handleCornerBottomLeftChange}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -199,12 +242,7 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerBottomRight
                   }
                   onBlur={handleBlur}
-                  onChange={(e) =>
-                    onDataFieldChange(
-                      "cornerBottomRight",
-                      Number(e.target.value) || 0
-                    )
-                  }
+                  onChange={handleCornerBottomRightChange}
                   fullWidth
                   margin="normal"
                   mb={4}

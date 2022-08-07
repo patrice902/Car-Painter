@@ -39,7 +39,6 @@ export const useGeneralSocket = () => {
     });
 
     SocketClient.on("client-delete-scheme", (response) => {
-      console.log("client-delete-scheme: ", response);
       dispatch(deleteSchemeListItem(response.data.id));
     });
 

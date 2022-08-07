@@ -55,21 +55,14 @@ export const InnerForm = React.memo(
       },
       [formProps.values, currentLayer]
     );
-    const handleDataFieldChange = useCallback(
-      (field, value) => {
-        formProps.setFieldValue(`layer_data.${field}`, value);
-        onLayerDataUpdate(field, value);
-      },
-      [formProps, onLayerDataUpdate]
-    );
-    const handleLayerDataMultiUpdate = useCallback(
+
+    const setMultiFieldValue = useCallback(
       (valueMap) => {
         for (let itemKey of Object.keys(valueMap)) {
           formProps.setFieldValue(`layer_data.${itemKey}`, valueMap[itemKey]);
         }
-        onLayerDataMultiUpdate(valueMap);
       },
-      [formProps, onLayerDataMultiUpdate]
+      [formProps]
     );
 
     return (
@@ -80,21 +73,21 @@ export const InnerForm = React.memo(
           user={user}
           layerType={currentLayer && currentLayer.layer_type}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <GeneralProperty
           {...formProps}
           editable={editable}
           toggleField={toggleField}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <FontProperty
           {...formProps}
           editable={editable}
           fontList={fontList}
           onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
         />
         <ColorProperty
@@ -103,13 +96,13 @@ export const InnerForm = React.memo(
           currentCarMake={currentCarMake}
           onLayerDataUpdate={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <BackgroundProperty
           {...formProps}
           editable={editable}
           onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
         />
         <StrokeProperty
@@ -117,7 +110,7 @@ export const InnerForm = React.memo(
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <SizeProperty
           {...formProps}
@@ -126,14 +119,15 @@ export const InnerForm = React.memo(
           currentLayer={currentLayer}
           pressedKey={pressedKey}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={handleDataFieldChange}
-          onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
+          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
+          setMultiFieldValue={setMultiFieldValue}
         />
         <PositionProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <RotationProperty
           {...formProps}
@@ -143,14 +137,15 @@ export const InnerForm = React.memo(
           toggleField={toggleField}
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
-          onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
-          onDataFieldChange={handleDataFieldChange}
+          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
+          onDataFieldChange={onLayerDataUpdate}
+          setMultiFieldValue={setMultiFieldValue}
         />
         <SkewProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <ShadowProperty
           {...formProps}
@@ -158,15 +153,16 @@ export const InnerForm = React.memo(
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
           onApply={formProps.handleSubmit}
-          onDataFieldChange={handleDataFieldChange}
-          onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
+          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
+          setMultiFieldValue={setMultiFieldValue}
         />
         <CornerProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
           onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={handleDataFieldChange}
+          onDataFieldChange={onLayerDataUpdate}
         />
         <ExtraProperty
           {...formProps}

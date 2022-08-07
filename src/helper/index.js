@@ -123,6 +123,50 @@ export const parseLayer = (layer) => {
   return newLayer;
 };
 
+export const mergeTwoLayer = (originLayer, targetLayer) => {
+  if (!originLayer || !targetLayer) return null;
+
+  let convertedLayer = { ...targetLayer };
+  if (!convertedLayer.layer_data) {
+    convertedLayer.layer_data = {};
+  } else if (typeof convertedLayer.layer_data === "string") {
+    convertedLayer.layer_data = JSON.parse(convertedLayer.layer_data);
+  }
+
+  const newLayer = {
+    ...originLayer,
+    ...convertedLayer,
+    layer_data: {
+      ...originLayer.layer_data,
+      ...convertedLayer.layer_data,
+    },
+  };
+
+  return newLayer;
+};
+
+export const mergeTwoScheme = (originScheme, targetScheme) => {
+  if (!originScheme || !targetScheme) return null;
+
+  let convertedScheme = { ...targetScheme };
+  if (!convertedScheme.guide_data) {
+    convertedScheme.guide_data = {};
+  } else if (typeof convertedScheme.guide_data === "string") {
+    convertedScheme.guide_data = JSON.parse(convertedScheme.guide_data);
+  }
+
+  const newScheme = {
+    ...originScheme,
+    ...convertedScheme,
+    guide_data: {
+      ...originScheme.guide_data,
+      ...convertedScheme.guide_data,
+    },
+  };
+
+  return newScheme;
+};
+
 export const stringifyLayer = (layer) => {
   if (!layer) return null;
   let newLayer = { ...layer };

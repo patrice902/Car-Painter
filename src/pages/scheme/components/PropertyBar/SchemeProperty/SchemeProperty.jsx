@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
-import { useDebouncedCallback } from "use-debounce";
 import { GuidesSetting } from "./components";
 
 import { updateScheme } from "redux/reducers/schemeReducer";
@@ -17,20 +16,23 @@ export const SchemeProperty = React.memo((props) => {
     (state) => state.boardReducer.paintingGuides
   );
 
-  const handleApplyGuideSettings = useDebouncedCallback((guide_data) => {
-    dispatch(
-      updateScheme({
-        ...currentScheme,
-        guide_data: {
-          ...currentScheme.guide_data,
-          ...guide_data,
-        },
-      })
-    );
-  }, 300);
-  const handleChangePaintingGuides = useDebouncedCallback((newFormats) => {
-    dispatch(setPaintingGuides(newFormats));
-  }, 300);
+  const handleApplyGuideSettings = useCallback(
+    (guide_data) => {
+      dispatch(
+        updateScheme({
+          id: currentScheme.id,
+          guide_data,
+        })
+      );
+    },
+    [dispatch, currentScheme]
+  );
+  const handleChangePaintingGuides = useCallback(
+    (newFormats) => {
+      dispatch(setPaintingGuides(newFormats));
+    },
+    [dispatch]
+  );
 
   return (
     <>

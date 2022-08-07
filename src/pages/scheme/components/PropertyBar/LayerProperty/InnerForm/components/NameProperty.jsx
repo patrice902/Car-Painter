@@ -3,6 +3,7 @@ import styled from "styled-components/macro";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
 import { Box, TextField } from "@material-ui/core";
+import { useDebouncedCallback } from "use-debounce";
 
 const CustomeTextField = styled(TextField)`
   margin: 0;
@@ -24,6 +25,7 @@ export const NameProperty = React.memo((props) => {
     touched,
     values,
     layerType,
+    setFieldValue,
     onDataFieldChange,
   } = props;
   const layerDataProperties = ["name"];
@@ -43,6 +45,20 @@ export const NameProperty = React.memo((props) => {
       return name;
     },
     [user]
+  );
+
+  const handleNameChangeDebounced = useDebouncedCallback(
+    (value) => onDataFieldChange("name", value),
+    1000
+  );
+
+  const handleNameChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      setFieldValue(`layer_data.name`, value);
+      handleNameChangeDebounced(value);
+    },
+    [handleNameChangeDebounced, setFieldValue]
   );
 
   if (
@@ -78,7 +94,7 @@ export const NameProperty = React.memo((props) => {
               errors.layer_data.name
             }
             onBlur={handleBlur}
-            onChange={(e) => onDataFieldChange("name", e.target.value)}
+            onChange={handleNameChange}
             fullWidth
             margin="normal"
             mb={4}

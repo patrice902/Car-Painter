@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
+import { useDebouncedCallback } from "use-debounce";
 import {
   rotateAroundCenter,
   isCenterBasedShape,
@@ -33,6 +34,7 @@ export const RotationProperty = React.memo((props) => {
     stageRef,
     currentLayer,
     values,
+    setMultiFieldValue,
     onLayerDataMultiUpdate,
   } = props;
   const layerDataProperties = ["rotation", "flip", "flop"];
@@ -47,8 +49,17 @@ export const RotationProperty = React.memo((props) => {
     [values]
   );
 
+  const handleChangeRotationDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
+
   const handleChangeRotation = useCallback(
     (value) => {
+      let updatingMap = {
+        rotation: value,
+      };
+
       if (!isCenterBasedShape(currentLayer.layer_data.type)) {
         const stage = stageRef.current;
         const selectedNode = stage.findOne("." + currentLayer.id);
@@ -65,18 +76,18 @@ export const RotationProperty = React.memo((props) => {
           boundBox,
           newRot - boundBox.rotation
         );
-        onLayerDataMultiUpdate({
-          left: newBoundBox.x,
-          top: newBoundBox.y,
-          rotation: value,
-        });
-      } else {
-        onLayerDataMultiUpdate({
-          rotation: value,
-        });
+        updatingMap.left = newBoundBox.x;
+        updatingMap.top = newBoundBox.y;
       }
+      setMultiFieldValue(updatingMap);
+      handleChangeRotationDebounced(updatingMap);
     },
-    [currentLayer, stageRef, onLayerDataMultiUpdate]
+    [currentLayer, handleChangeRotationDebounced, setMultiFieldValue, stageRef]
+  );
+
+  const handleRotate90Debounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
   );
 
   const handleRotate90 = useCallback(
@@ -86,6 +97,11 @@ export const RotationProperty = React.memo((props) => {
       let value = selectedNode.rotation() + (isLeft ? -90 : 90);
       if (value <= -180) value += 360;
       else if (value >= 180) value -= 360;
+
+      let updatingMap = {
+        rotation: value,
+      };
+
       if (!isCenterBasedShape(currentLayer.layer_data.type)) {
         const newRot = (value / 180) * Math.PI;
         const boundBox = {
@@ -100,23 +116,19 @@ export const RotationProperty = React.memo((props) => {
           boundBox,
           newRot - boundBox.rotation
         );
-        onLayerDataMultiUpdate({
-          left: newBoundBox.x,
-          top: newBoundBox.y,
-          rotation: value,
-        });
-      } else {
-        onLayerDataMultiUpdate({
-          rotation: value,
-        });
+        updatingMap.left = newBoundBox.x;
+        updatingMap.top = newBoundBox.y;
       }
+
+      setMultiFieldValue(updatingMap);
+      handleRotate90Debounced(updatingMap);
     },
-    [
-      currentLayer.id,
-      currentLayer.layer_data.type,
-      onLayerDataMultiUpdate,
-      stageRef,
-    ]
+    [currentLayer, handleRotate90Debounced, setMultiFieldValue, stageRef]
+  );
+
+  const handleToggleFlopDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
   );
 
   const handleToggleFlop = useCallback(() => {
@@ -130,12 +142,25 @@ export const RotationProperty = React.memo((props) => {
           relativeTo: node.getParent().getParent(),
           skipShadow: true,
         }).width);
-    onLayerDataMultiUpdate({
+    const updatingMap = {
       left: values.layer_data.left + (newFlop ? 1 : -1) * Math.cos(rot) * width,
       top: values.layer_data.top + (newFlop ? 1 : -1) * Math.sin(rot) * width,
       flop: newFlop,
-    });
-  }, [currentLayer, onLayerDataMultiUpdate, stageRef, values.layer_data]);
+    };
+    onLayerDataMultiUpdate(updatingMap);
+    handleToggleFlopDebounced(updatingMap);
+  }, [
+    currentLayer,
+    onLayerDataMultiUpdate,
+    handleToggleFlopDebounced,
+    stageRef,
+    values,
+  ]);
+
+  const handleToggleFlipDebounced = useDebouncedCallback(
+    (value) => onLayerDataMultiUpdate(value),
+    1000
+  );
 
   const handleToggleFlip = useCallback(() => {
     const newFlip = values.layer_data.flip ? 0 : 1;
@@ -148,13 +173,21 @@ export const RotationProperty = React.memo((props) => {
           relativeTo: node.getParent().getParent(),
           skipShadow: true,
         }).height);
-    onLayerDataMultiUpdate({
+    const updatingMap = {
       left:
         values.layer_data.left + (newFlip ? -1 : 1) * Math.sin(rot) * height,
       top: values.layer_data.top + (newFlip ? 1 : -1) * Math.cos(rot) * height,
       flip: newFlip,
-    });
-  }, [currentLayer, onLayerDataMultiUpdate, stageRef, values.layer_data]);
+    };
+    onLayerDataMultiUpdate(updatingMap);
+    handleToggleFlipDebounced(updatingMap);
+  }, [
+    currentLayer,
+    handleToggleFlipDebounced,
+    onLayerDataMultiUpdate,
+    stageRef,
+    values,
+  ]);
 
   if (
     !AllowedLayerTypes ||

@@ -121,7 +121,17 @@ class SchemeService {
 
   static async updateById(id, payload) {
     const scheme = await this.getById(id);
-    await scheme.save(payload);
+    const schemeInfo = scheme.toJSON();
+    let updatingInfo = { ...payload };
+
+    if (payload.guide_data) {
+      updatingInfo.guide_data = JSON.stringify({
+        ...JSON.parse(schemeInfo.guide_data),
+        ...JSON.parse(payload.guide_data),
+      });
+    }
+
+    await scheme.save(updatingInfo, { patch: true });
     return scheme;
   }
 

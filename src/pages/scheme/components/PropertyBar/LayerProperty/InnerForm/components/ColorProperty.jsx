@@ -13,6 +13,7 @@ import {
   AccordionDetails,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { useDebouncedCallback } from "use-debounce";
 
 import { ColorPickerInput } from "components/common";
 import { useSelector } from "react-redux";
@@ -20,7 +21,14 @@ import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
 
 export const ColorProperty = React.memo((props) => {
-  const { editable, currentCarMake, errors, values, onDataFieldChange } = props;
+  const {
+    editable,
+    currentCarMake,
+    errors,
+    values,
+    setFieldValue,
+    onDataFieldChange,
+  } = props;
   const [expanded, setExpanded] = useState(true);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
   const logoList = useSelector((state) => state.logoReducer.list);
@@ -65,6 +73,42 @@ export const ColorProperty = React.memo((props) => {
     [AllowedLayerTypes, currentScheme.hide_spec, currentCarMake.car_type]
   );
 
+  const handleColorChangeDebounced = useDebouncedCallback((color) => {
+    onDataFieldChange("color", color);
+  }, 1000);
+
+  const handleColorChange = useCallback(
+    (color) => {
+      setFieldValue(`layer_data.color`, color);
+      handleColorChangeDebounced(color);
+    },
+    [handleColorChangeDebounced, setFieldValue]
+  );
+
+  const handleBlendTypeChangeDebounced = useDebouncedCallback((value) => {
+    onDataFieldChange("blendType", value);
+  }, 1000);
+
+  const handleBlendTypeChange = useCallback(
+    (e) => {
+      setFieldValue(`layer_data.blendType`, e.target.value);
+      handleBlendTypeChangeDebounced(e.target.value);
+    },
+    [handleBlendTypeChangeDebounced, setFieldValue]
+  );
+
+  const handleFinishChangeDebounced = useDebouncedCallback((value) => {
+    onDataFieldChange("finish", value);
+  }, 1000);
+
+  const handleFinishChange = useCallback(
+    (e) => {
+      setFieldValue(`layer_data.finish`, e.target.value);
+      handleFinishChangeDebounced(e.target.value);
+    },
+    [handleFinishChangeDebounced, setFieldValue]
+  );
+
   if (!showColor && !showBlendType && !showFinish) return <></>;
 
   return (
@@ -94,8 +138,8 @@ export const ColorProperty = React.memo((props) => {
                   <ColorPickerInput
                     value={values.layer_data.color}
                     disabled={!editable}
-                    onChange={(color) => onDataFieldChange("color", color)}
-                    onInputChange={(color) => onDataFieldChange("color", color)}
+                    onChange={handleColorChange}
+                    onInputChange={handleColorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.color
                     )}
@@ -127,9 +171,7 @@ export const ColorProperty = React.memo((props) => {
                     variant="outlined"
                     value={values.layer_data.blendType}
                     disabled={!editable}
-                    onChange={(event) =>
-                      onDataFieldChange("blendType", event.target.value)
-                    }
+                    onChange={handleBlendTypeChange}
                     fullWidth
                   >
                     <MenuItem value="normal">Normal</MenuItem>
@@ -172,9 +214,7 @@ export const ColorProperty = React.memo((props) => {
                     variant="outlined"
                     value={values.layer_data.finish}
                     disabled={!editable}
-                    onChange={(event) =>
-                      onDataFieldChange("finish", event.target.value)
-                    }
+                    onChange={handleFinishChange}
                     fullWidth
                   >
                     {FinishOptions.map((finishItem, index) => (
