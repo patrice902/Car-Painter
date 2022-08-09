@@ -3,6 +3,7 @@ import { PaintingGuides } from "constant";
 
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const PaintingGuideNumber = React.memo((props) => {
   const {
@@ -11,9 +12,12 @@ export const PaintingGuideNumber = React.memo((props) => {
     carMake,
     handleImageSize,
     guideData,
-    loadedStatuses,
     onLoadLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const getCarMakeImage = useCallback(
     (image) => {

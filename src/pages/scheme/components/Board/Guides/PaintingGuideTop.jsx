@@ -4,6 +4,7 @@ import { PaintingGuides } from "constant";
 
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const PaintingGuideTop = React.memo((props) => {
   const {
@@ -13,11 +14,13 @@ export const PaintingGuideTop = React.memo((props) => {
     handleImageSize,
     frameSize,
     guideData,
-    loadedStatuses,
     onLoadLayer,
   } = props;
   const gridPadding = useMemo(() => guideData.grid_padding || 10, [guideData]);
   const gridStroke = useMemo(() => guideData.grid_stroke || 0.1, [guideData]);
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const getCarMakeImage = useCallback(
     (image) => {

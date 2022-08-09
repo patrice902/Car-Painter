@@ -3,6 +3,7 @@ import { FinishOptions } from "constant";
 
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const SpecPaintingGuideCarMask = React.memo((props) => {
   const {
@@ -10,9 +11,12 @@ export const SpecPaintingGuideCarMask = React.memo((props) => {
     legacyMode,
     carMake,
     handleImageSize,
-    loadedStatuses,
     onLoadLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const getCarMakeImage = useCallback(
     (image) => {

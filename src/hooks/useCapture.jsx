@@ -27,6 +27,7 @@ import {
   addImageProcess,
   downloadTGA,
   getTGABlob,
+  sleep,
 } from "helper";
 import SchemeService from "services/schemeService";
 
@@ -92,6 +93,8 @@ export const useCapture = (
   const takeScreenshot = useCallback(
     async (isPNG = true) => {
       setCapturing(true);
+      await sleep(500);
+
       if (
         currentLayerRef.current &&
         ![LayerTypes.BASE, LayerTypes.CAR].includes(

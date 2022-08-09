@@ -5,6 +5,7 @@ import { FinishOptions, LayerTypes, MouseModes } from "constant";
 import { getRelativeShadowOffset, removeDuplicatedPointFromEnd } from "helper";
 
 import { Shape } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const Shapes = React.memo((props) => {
   const {
@@ -16,7 +17,6 @@ export const Shapes = React.memo((props) => {
     boardRotate,
     mouseMode,
     specMode,
-    loadedStatuses,
     paintingGuides,
     guideData,
     cloningLayer,
@@ -31,6 +31,10 @@ export const Shapes = React.memo((props) => {
     onCloneMove,
     onSetTransformingLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const filteredLayers = useMemo(
     () =>

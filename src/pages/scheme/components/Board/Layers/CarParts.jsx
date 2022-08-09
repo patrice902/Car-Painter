@@ -6,6 +6,7 @@ import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import config from "config";
 
 import { URLImage } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const CarParts = React.memo((props) => {
   const {
@@ -13,10 +14,13 @@ export const CarParts = React.memo((props) => {
     legacyMode,
     specMode,
     carMake,
-    loadedStatuses,
     handleImageSize,
     onLoadLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const filteredLayers = useMemo(
     () =>

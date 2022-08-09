@@ -6,6 +6,7 @@ import { FinishOptions, LayerTypes, MouseModes } from "constant";
 import { getRelativeShadowOffset } from "helper";
 
 import { GroupedURLImage } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const Overlays = React.memo((props) => {
   const {
@@ -16,7 +17,6 @@ export const Overlays = React.memo((props) => {
     mouseMode,
     specMode,
     boardRotate,
-    loadedStatuses,
     paintingGuides,
     guideData,
     cloningLayer,
@@ -31,6 +31,10 @@ export const Overlays = React.memo((props) => {
     onCloneMove,
     onSetTransformingLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const filteredLayers = useMemo(
     () =>

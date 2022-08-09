@@ -101,9 +101,6 @@ export const Board = React.memo(
     const cloningQueue = useSelector(
       (state) => state.layerReducer.cloningQueue
     );
-    const loadedStatuses = useSelector(
-      (state) => state.layerReducer.loadedStatuses
-    );
 
     const [wrapperPosition, setWrapperPosition] = useState({ x: 0, y: 56 });
     const {
@@ -288,7 +285,6 @@ export const Board = React.memo(
                       <SpecPaintingGuideCarMask
                         legacyMode={currentScheme.legacy_mode}
                         carMake={currentCarMake}
-                        loadedStatuses={loadedStatuses}
                         finishBase={schemeFinishBase}
                         handleImageSize={handleImageSize}
                         onLoadLayer={handleLoadLayer}
@@ -299,7 +295,6 @@ export const Board = React.memo(
                       legacyMode={currentScheme.legacy_mode}
                       carMake={currentCarMake}
                       layers={layerList}
-                      loadedStatuses={loadedStatuses}
                       handleImageSize={handleImageSize}
                       onLoadLayer={handleLoadLayer}
                     />
@@ -313,7 +308,6 @@ export const Board = React.memo(
                           carMake={currentCarMake}
                           paintingGuides={paintingGuides}
                           guideData={currentScheme.guide_data}
-                          loadedStatuses={loadedStatuses}
                           handleImageSize={handleImageSize}
                           onLoadLayer={handleLoadLayer}
                         />
@@ -326,7 +320,6 @@ export const Board = React.memo(
                           carMake={currentCarMake}
                           paintingGuides={paintingGuides}
                           guideData={currentScheme.guide_data}
-                          loadedStatuses={loadedStatuses}
                           handleImageSize={handleImageSize}
                           onLoadLayer={handleLoadLayer}
                         />
@@ -345,7 +338,6 @@ export const Board = React.memo(
                         specMode={viewMode === ViewModes.SPEC_VIEW}
                         legacyMode={currentScheme.legacy_mode}
                         carMake={currentCarMake}
-                        loadedStatuses={loadedStatuses}
                         handleImageSize={handleImageSize}
                         onLoadLayer={handleLoadLayer}
                       />
@@ -364,7 +356,6 @@ export const Board = React.memo(
                       cloningLayer={cloningLayer}
                       cloningQueue={cloningQueue}
                       mouseMode={mouseMode}
-                      loadedStatuses={loadedStatuses}
                       paintingGuides={paintingGuides}
                       guideData={currentScheme.guide_data}
                       handleImageSize={handleImageSize}
@@ -390,7 +381,6 @@ export const Board = React.memo(
                       currentLayer={currentLayer}
                       cloningLayer={cloningLayer}
                       cloningQueue={cloningQueue}
-                      loadedStatuses={loadedStatuses}
                       paintingGuides={paintingGuides}
                       guideData={currentScheme.guide_data}
                       onSelect={handleLayerSelect}
@@ -413,7 +403,6 @@ export const Board = React.memo(
                       frameSize={frameSize}
                       mouseMode={mouseMode}
                       boardRotate={boardRotate}
-                      loadedStatuses={loadedStatuses}
                       currentLayer={currentLayer}
                       cloningLayer={cloningLayer}
                       cloningQueue={cloningQueue}
@@ -436,7 +425,6 @@ export const Board = React.memo(
                         specMode={viewMode === ViewModes.SPEC_VIEW}
                         legacyMode={currentScheme.legacy_mode}
                         carMake={currentCarMake}
-                        loadedStatuses={loadedStatuses}
                         handleImageSize={handleImageSize}
                         onLoadLayer={handleLoadLayer}
                       />
@@ -450,7 +438,6 @@ export const Board = React.memo(
                       legacyMode={currentScheme.legacy_mode}
                       carMake={currentCarMake}
                       paintingGuides={paintingGuides}
-                      loadedStatuses={loadedStatuses}
                       guideData={currentScheme.guide_data}
                       handleImageSize={handleImageSize}
                       onLoadLayer={handleLoadLayer}
@@ -465,7 +452,6 @@ export const Board = React.memo(
                           carMake={currentCarMake}
                           paintingGuides={paintingGuides}
                           guideData={currentScheme.guide_data}
-                          loadedStatuses={loadedStatuses}
                           handleImageSize={handleImageSize}
                           onLoadLayer={handleLoadLayer}
                         />
@@ -478,7 +464,6 @@ export const Board = React.memo(
                           carMake={currentCarMake}
                           paintingGuides={paintingGuides}
                           guideData={currentScheme.guide_data}
-                          loadedStatuses={loadedStatuses}
                           handleImageSize={handleImageSize}
                           onLoadLayer={handleLoadLayer}
                         />
@@ -494,7 +479,6 @@ export const Board = React.memo(
                       legacyMode={currentScheme.legacy_mode}
                       carMake={currentCarMake}
                       paintingGuides={paintingGuides}
-                      loadedStatuses={loadedStatuses}
                       frameSize={frameSize}
                       guideData={currentScheme.guide_data}
                       handleImageSize={handleImageSize}

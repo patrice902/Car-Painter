@@ -6,6 +6,7 @@ import { FinishOptions, LayerTypes, MouseModes } from "constant";
 import { getRelativeShadowOffset } from "helper";
 
 import { GroupedURLImage, TextNode } from "components/konva";
+import { useSelector } from "react-redux";
 
 export const LogosAndTexts = React.memo((props) => {
   const {
@@ -13,7 +14,6 @@ export const LogosAndTexts = React.memo((props) => {
     editable,
     layers,
     loadedFontList,
-    loadedStatuses,
     fonts,
     frameSize,
     mouseMode,
@@ -34,6 +34,11 @@ export const LogosAndTexts = React.memo((props) => {
     onCloneMove,
     onSetTransformingLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
+
   const filteredLayers = useMemo(
     () =>
       _.orderBy(
@@ -58,6 +63,7 @@ export const LogosAndTexts = React.memo((props) => {
     }
     return newLayers;
   }, [cloningLayer, cloningQueue, filteredLayers]);
+
   const layerFont = useCallback(
     (layer) => {
       return fonts.length

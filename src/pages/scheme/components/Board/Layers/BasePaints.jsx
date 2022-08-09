@@ -6,6 +6,7 @@ import { basePaintAssetURL, legacyBasePaintAssetURL } from "helper";
 
 import { URLImage } from "components/konva";
 import config from "config";
+import { useSelector } from "react-redux";
 
 export const BasePaints = React.memo((props) => {
   const {
@@ -13,10 +14,13 @@ export const BasePaints = React.memo((props) => {
     legacyMode,
     layers,
     carMake,
-    loadedStatuses,
     handleImageSize,
     onLoadLayer,
   } = props;
+
+  const loadedStatuses = useSelector(
+    (state) => state.layerReducer.loadedStatuses
+  );
 
   const filteredLayers = useMemo(
     () =>
