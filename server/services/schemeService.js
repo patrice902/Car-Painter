@@ -132,7 +132,7 @@ class SchemeService {
 
       updatingInfo.guide_data = JSON.stringify({
         ...JSON.parse(schemeInfo.guide_data),
-        ...JSON.parse(payloadGuideData),
+        ...payloadGuideData,
       });
     }
 

@@ -174,7 +174,6 @@ export const Board = React.memo(
             {
               id: layer.id,
               layer_data: {
-                ...layer.layer_data,
                 ...values,
               },
             },

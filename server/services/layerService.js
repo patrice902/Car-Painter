@@ -63,7 +63,7 @@ class LayerService {
 
       updatingInfo.layer_data = JSON.stringify({
         ...JSON.parse(layerInfo.layer_data),
-        payloadLayerData,
+        ...payloadLayerData,
       });
     }
     await layer.save(updatingInfo, { patch: true });
