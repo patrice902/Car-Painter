@@ -56,9 +56,14 @@ class LayerService {
     const updatingInfo = { ...payload };
 
     if (payload.layer_data) {
+      const payloadLayerData =
+        typeof payload.layer_data === "string"
+          ? JSON.parse(payload.layer_data)
+          : payload.layer_data;
+
       updatingInfo.layer_data = JSON.stringify({
         ...JSON.parse(layerInfo.layer_data),
-        ...JSON.parse(payload.layer_data),
+        payloadLayerData,
       });
     }
     await layer.save(updatingInfo, { patch: true });

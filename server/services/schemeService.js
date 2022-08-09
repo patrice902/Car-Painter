@@ -125,9 +125,14 @@ class SchemeService {
     let updatingInfo = { ...payload };
 
     if (payload.guide_data) {
+      const payloadGuideData =
+        typeof payload.guide_data === "string"
+          ? JSON.parse(payload.guide_data)
+          : payload.guide_data;
+
       updatingInfo.guide_data = JSON.stringify({
         ...JSON.parse(schemeInfo.guide_data),
-        ...JSON.parse(payload.guide_data),
+        ...JSON.parse(payloadGuideData),
       });
     }
 
