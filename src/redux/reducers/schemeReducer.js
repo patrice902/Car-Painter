@@ -260,7 +260,6 @@ export const getScheme = (schemeID, callback, fallback) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
     const result = await SchemeService.getScheme(schemeID);
-    console.log("result: ", result.scheme);
     dispatch(
       setCurrent(
         _.omit(result.scheme, [

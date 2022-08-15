@@ -57,7 +57,6 @@ export const UploadListContent = React.memo((props) => {
 
   const handleDropZoneChange = useCallback(
     (files_up) => {
-      console.log(files_up);
       if (files_up.length) {
         setLoading(true);
         dispatch(
@@ -81,7 +80,6 @@ export const UploadListContent = React.memo((props) => {
     [setUploadToDelete]
   );
   const handleDeleteUploadConfirm = useCallback(async () => {
-    console.log("Deleting: ", uploadToDelete);
     try {
       setFetchingDeleteList(true);
       let schemes = await SchemeService.getSchemeListByUploadID(

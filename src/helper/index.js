@@ -243,6 +243,9 @@ export const getZoomedCenterPosition = (
   zoom,
   boardRotate = 0
 ) => {
+  if (!stageRef.current) {
+    return { x: 0, y: 0 };
+  }
   const transform = stageRef.current.getTransform().m;
   let width = stageRef.current.attrs.width;
   let height = stageRef.current.attrs.height;

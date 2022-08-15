@@ -97,7 +97,6 @@ export const useDrawHelper = (stageRef) => {
 
   const handleMouseDown = useCallback(
     (e) => {
-      // console.log("Mouse Down");
       if (mouseMode === MouseModes.DEFAULT) {
         const clickedOnEmpty = e.target === e.target.getStage();
         if (clickedOnEmpty && currentLayer) {
@@ -174,8 +173,6 @@ export const useDrawHelper = (stageRef) => {
     [dispatch, mouseMode, currentScheme.guide_data, drawingLayerRef, stageRef]
   );
   const handleMouseMove = useCallback(() => {
-    // console.log("Mouse Move");
-
     if (mouseMode !== MouseModes.DEFAULT && drawingLayerRef.current) {
       const position = getRelativePointerPosition(stageRef.current);
       const width = position.x - drawingLayerRef.current.layer_data.left;
@@ -241,7 +238,6 @@ export const useDrawHelper = (stageRef) => {
   }, [mouseMode, drawingLayerRef, stageRef, currentTick]);
   const handleMouseUp = useCallback(
     (e) => {
-      // console.log("Mouse Up");
       if (
         ![
           MouseModes.DEFAULT,

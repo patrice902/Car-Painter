@@ -6,7 +6,6 @@ class SocketClient {
     this.socket = socketIOClient(config.backendURL, {
       transports: ["websocket"],
     });
-    console.log("Connecting Socket: ", this.socket, config.backendURL);
   };
 
   static disconnect = () => {
@@ -14,7 +13,6 @@ class SocketClient {
   };
 
   static emit = (event, data) => {
-    console.log("Emitting: ", event, data);
     this.socket.emit(event, data);
   };
 

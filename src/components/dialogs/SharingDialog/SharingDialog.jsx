@@ -40,7 +40,6 @@ export const SharingDialog = React.memo((props) => {
 
   const handleApplySharingSetting = useCallback(
     (data) => {
-      console.log(data);
       let count = 0;
       if (data.newUser && data.newUser.editable >= 0 && data.newUser.pro_user) {
         count += 1;

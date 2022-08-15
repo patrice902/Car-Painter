@@ -154,7 +154,6 @@ export const useKonvaImageInit = ({
 
   const handleError = useCallback(
     (error) => {
-      console.log("Image Loading Error: ", error);
       if (onLoadLayer && id) onLoadLayer(id, true);
     },
     [onLoadLayer, id]

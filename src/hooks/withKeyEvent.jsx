@@ -199,7 +199,7 @@ export const withKeyEvent = (Component) =>
       (key, event) => {
         event.preventDefault();
         // Delete Selected Layer
-        console.log("KeyEvent: ", key, event);
+        // console.log("KeyEvent: ", key, event);
         if (event.target.tagName !== "INPUT" && event.type === "keydown") {
           if (pressedKey === key && pressedEventKey === event.key) {
             return;

@@ -92,6 +92,10 @@ export const useCapture = (
 
   const takeScreenshot = useCallback(
     async (isPNG = true) => {
+      if (!stageRef.current) {
+        return {};
+      }
+
       setCapturing(true);
       await sleep(500);
 
@@ -268,7 +272,6 @@ export const useCapture = (
           return;
         }
         try {
-          console.log("Uploading Thumbnail");
           dispatch(setSaving(true));
           const { canvas, ctx, carMaskLayerImg } = await takeScreenshot();
           ctx.drawImage(carMaskLayerImg, 0, 0);
@@ -276,7 +279,6 @@ export const useCapture = (
           if (uploadLater) dispatch(setSaving(false));
           await uploadThumbnail(dataURL);
           if (!uploadLater) dispatch(setSaving(false));
-          console.log("Uploaded Thumbnail");
         } catch (err) {
           console.log(err);
           dispatch(setMessage({ message: err.message }));
@@ -297,7 +299,6 @@ export const useCapture = (
   const retrievePNGDataUrl = useCallback(async () => {
     if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
-        console.log("Getting Thumbnail");
         dispatch(setSaving(true));
         const { canvas, ctx, carMaskLayerImg } = await takeScreenshot();
         ctx.drawImage(carMaskLayerImg, 0, 0);
