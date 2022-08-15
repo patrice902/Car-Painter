@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
 
@@ -9,18 +9,26 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Select,
   MenuItem,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
-import { ColorPickerInput, SliderInput } from "components/common";
 import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
-import { useDebouncedCallback } from "use-debounce";
+import {
+  FormColorPickerInput,
+  FormSelect,
+  FormSliderInput,
+} from "../../../components";
 
 export const StrokeProperty = React.memo((props) => {
-  const { editable, errors, values, setFieldValue, onDataFieldChange } = props;
+  const {
+    editable,
+    errors,
+    values,
+    onLayerDataUpdateOnly,
+    onLayerDataUpdate,
+  } = props;
   const layerDataProperties = ["stroke", "scolor", "strokeType"];
   const [expanded, setExpanded] = useState(true);
   const AllowedLayerTypes = useMemo(
@@ -31,46 +39,6 @@ export const StrokeProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleScolorChangeDebounced = useDebouncedCallback(
-    (color) => onDataFieldChange("scolor", color),
-    1000
-  );
-
-  const handleScolorChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.scolor`, value);
-      handleScolorChangeDebounced(value);
-    },
-    [handleScolorChangeDebounced, setFieldValue]
-  );
-
-  const handleStrokeChangeDebounced = useDebouncedCallback(
-    (color) => onDataFieldChange("stroke", color),
-    1000
-  );
-
-  const handleStrokeChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.stroke`, value);
-      handleStrokeChangeDebounced(value);
-    },
-    [handleStrokeChangeDebounced, setFieldValue]
-  );
-
-  const handleStrokeTypeChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("strokeType", value),
-    1000
-  );
-
-  const handleStrokeTypeChange = useCallback(
-    (e) => {
-      const value = e.target.value;
-      setFieldValue(`layer_data.strokeType`, value);
-      handleStrokeTypeChangeDebounced(value);
-    },
-    [handleStrokeTypeChangeDebounced, setFieldValue]
   );
 
   if (
@@ -108,15 +76,16 @@ export const StrokeProperty = React.memo((props) => {
                   </LabelTypography>
                 </Grid>
                 <Grid item xs={6}>
-                  <ColorPickerInput
+                  <FormColorPickerInput
                     value={values.layer_data.scolor}
+                    fieldKey="scolor"
                     disabled={!editable}
-                    onChange={handleScolorChange}
-                    onInputChange={handleScolorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.scolor
                     )}
                     helperText={errors.layer_data && errors.layer_data.scolor}
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>
               </Grid>
@@ -126,14 +95,15 @@ export const StrokeProperty = React.memo((props) => {
           )}
           {AllowedLayerTypes.includes("layer_data.stroke") ? (
             <Box display="flex" alignItems="center" height="40px">
-              <SliderInput
+              <FormSliderInput
                 label="Stroke Width"
+                fieldKey="stroke"
                 min={0}
                 max={10}
-                small
                 value={values.layer_data.stroke}
                 disabled={!editable}
-                setValue={handleStrokeChange}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Box>
           ) : (
@@ -148,18 +118,18 @@ export const StrokeProperty = React.memo((props) => {
                   </LabelTypography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Select
+                  <FormSelect
                     name="layer_data.strokeType"
-                    variant="outlined"
+                    fieldKey="strokeType"
                     value={values.layer_data.strokeType}
                     disabled={!editable}
-                    onChange={handleStrokeTypeChange}
-                    fullWidth
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   >
                     <MenuItem value="inside">Inside</MenuItem>
                     <MenuItem value="middle">Middle</MenuItem>
                     <MenuItem value="outside">Outside</MenuItem>
-                  </Select>
+                  </FormSelect>
                 </Grid>
               </Grid>
             </Box>

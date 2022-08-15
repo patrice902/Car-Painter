@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
 
@@ -11,8 +11,7 @@ import {
   Grid,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { SmallTextField } from "../../../PropertyBar.style";
-import { useDebouncedCallback } from "use-debounce";
+import { FormTextField } from "../../../components";
 
 export const SkewProperty = React.memo((props) => {
   const {
@@ -21,8 +20,8 @@ export const SkewProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdateOnly,
+    onLayerDataUpdate,
   } = props;
   const layerDataProperties = ["skewX", "skewY"];
   const [expanded, setExpanded] = useState(true);
@@ -34,34 +33,6 @@ export const SkewProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleSkewXChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("skewX", value),
-    1000
-  );
-
-  const handleSkewXChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.skewX`, value);
-      handleSkewXChangeDebounced(value);
-    },
-    [handleSkewXChangeDebounced, setFieldValue]
-  );
-
-  const handleSkewYChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("skewY", value),
-    1000
-  );
-
-  const handleSkewYChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.skewY`, value);
-      handleSkewYChangeDebounced(value);
-    },
-    [handleSkewYChangeDebounced, setFieldValue]
   );
 
   if (
@@ -87,8 +58,9 @@ export const SkewProperty = React.memo((props) => {
           <Grid container spacing={2}>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.skewX") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.skewX"
+                  fieldKey="skewX"
                   label="Skew (X)"
                   variant="outlined"
                   type="number"
@@ -110,7 +82,8 @@ export const SkewProperty = React.memo((props) => {
                     errors.layer_data.skewX
                   }
                   onBlur={handleBlur}
-                  onChange={handleSkewXChange}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -124,8 +97,9 @@ export const SkewProperty = React.memo((props) => {
             </Grid>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.skewY") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.skewY"
+                  fieldKey="skewY"
                   label="Skew (Y)"
                   variant="outlined"
                   type="number"
@@ -147,7 +121,8 @@ export const SkewProperty = React.memo((props) => {
                     errors.layer_data.skewY
                   }
                   onBlur={handleBlur}
-                  onChange={handleSkewYChange}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                   fullWidth
                   margin="normal"
                   mb={4}

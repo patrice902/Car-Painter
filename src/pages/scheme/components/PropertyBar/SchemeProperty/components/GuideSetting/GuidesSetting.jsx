@@ -5,16 +5,15 @@ import { Formik } from "formik";
 import { colorValidator } from "helper";
 
 import { InnerForm } from "./InnerForm";
+import { useSelector } from "react-redux";
 
 export const GuidesSetting = React.memo((props) => {
-  const {
-    guide_data,
-    editable,
-    paintingGuides,
-    onCancel,
-    onApply,
-    onChangePaintingGuides,
-  } = props;
+  const { editable } = props;
+  const currentScheme = useSelector((state) => state.schemeReducer.current);
+  const guide_data = useMemo(
+    () => (currentScheme ? currentScheme.guide_data : {}),
+    [currentScheme]
+  );
 
   const initialValues = useMemo(
     () => ({
@@ -80,18 +79,13 @@ export const GuidesSetting = React.memo((props) => {
       validate={(values) => {
         return {};
       }}
-      onSubmit={onApply}
       enableReinitialize
     >
       {(formProps) => (
         <InnerForm
           {...formProps}
           editable={editable}
-          paintingGuides={paintingGuides}
           initialValues={initialValues}
-          onCancel={onCancel}
-          onApply={onApply}
-          onChangePaintingGuides={onChangePaintingGuides}
         />
       )}
     </Formik>

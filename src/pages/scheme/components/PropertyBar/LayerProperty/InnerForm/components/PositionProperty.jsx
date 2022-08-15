@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
 
@@ -11,8 +11,7 @@ import {
   AccordionDetails,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { SmallTextField } from "../../../PropertyBar.style";
-import { useDebouncedCallback } from "use-debounce";
+import { FormTextField } from "../../../components";
 
 export const PositionProperty = React.memo((props) => {
   const {
@@ -21,8 +20,8 @@ export const PositionProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdate,
+    onLayerDataUpdateOnly,
   } = props;
   const layerDataProperties = ["left", "top"];
   const [expanded, setExpanded] = useState(true);
@@ -34,34 +33,6 @@ export const PositionProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleLeftChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("left", value),
-    1000
-  );
-
-  const handleLeftChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.left`, value);
-      handleLeftChangeDebounced(value);
-    },
-    [handleLeftChangeDebounced, setFieldValue]
-  );
-
-  const handleTopChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("top", value),
-    1000
-  );
-
-  const handleTopChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.top`, value);
-      handleTopChangeDebounced(value);
-    },
-    [handleTopChangeDebounced, setFieldValue]
   );
 
   if (
@@ -87,8 +58,9 @@ export const PositionProperty = React.memo((props) => {
           <Grid container spacing={2}>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.left") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.left"
+                  fieldKey="left"
                   label="X"
                   variant="outlined"
                   type="number"
@@ -107,7 +79,8 @@ export const PositionProperty = React.memo((props) => {
                     errors.layer_data.left
                   }
                   onBlur={handleBlur}
-                  onChange={handleLeftChange}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -121,8 +94,9 @@ export const PositionProperty = React.memo((props) => {
             </Grid>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.top") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.top"
+                  fieldKey="top"
                   label="Y"
                   variant="outlined"
                   type="number"
@@ -141,7 +115,8 @@ export const PositionProperty = React.memo((props) => {
                     errors.layer_data.top
                   }
                   onBlur={handleBlur}
-                  onChange={handleTopChange}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                   fullWidth
                   margin="normal"
                   mb={4}

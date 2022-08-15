@@ -18,6 +18,8 @@ import {
   ExtraProperty,
   SkewProperty,
 } from "./components";
+import { useDispatch } from "react-redux";
+import { updateLayer } from "redux/reducers/layerReducer";
 
 export const InnerForm = React.memo(
   ({
@@ -25,17 +27,15 @@ export const InnerForm = React.memo(
     editable,
     stageRef,
     fontList,
-    toggleField,
-    toggleLayerDataField,
     currentLayer,
     currentCarMake,
     pressedKey,
     onClone,
     onDelete,
-    onLayerDataUpdate,
-    onLayerDataMultiUpdate,
     ...formProps
   }) => {
+    const dispatch = useDispatch();
+
     const checkLayerDataDirty = useCallback(
       (params) => {
         if (!currentLayer) return false;
@@ -57,12 +57,65 @@ export const InnerForm = React.memo(
     );
 
     const setMultiFieldValue = useCallback(
-      (valueMap) => {
+      (valueMap, prefix) => {
         for (let itemKey of Object.keys(valueMap)) {
-          formProps.setFieldValue(`layer_data.${itemKey}`, valueMap[itemKey]);
+          formProps.setFieldValue(
+            prefix ? `${prefix}.${itemKey}` : itemKey,
+            valueMap[itemKey]
+          );
         }
       },
       [formProps]
+    );
+
+    const handleLayerUpdate = useCallback(
+      (valueMap) => {
+        dispatch(
+          updateLayer({
+            id: currentLayer.id,
+            ...valueMap,
+          })
+        );
+      },
+      [currentLayer, dispatch]
+    );
+
+    const handleLayerUpdateOnly = useCallback(
+      (valueMap) => {
+        setMultiFieldValue(valueMap);
+        dispatch(
+          updateLayer({
+            id: currentLayer.id,
+            ...valueMap,
+          })
+        );
+      },
+      [currentLayer, dispatch, setMultiFieldValue]
+    );
+
+    const handleLayerDataUpdate = useCallback(
+      (valueMap) => {
+        dispatch(
+          updateLayer({
+            id: currentLayer.id,
+            layer_data: valueMap,
+          })
+        );
+      },
+      [currentLayer, dispatch]
+    );
+
+    const handleLayerDataUpdateOnly = useCallback(
+      (valueMap) => {
+        setMultiFieldValue(valueMap, "layer_data");
+        dispatch(
+          updateLayer({
+            id: currentLayer.id,
+            layer_data: valueMap,
+          })
+        );
+      },
+      [currentLayer, dispatch, setMultiFieldValue]
     );
 
     return (
@@ -73,96 +126,92 @@ export const InnerForm = React.memo(
           user={user}
           layerType={currentLayer && currentLayer.layer_type}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <GeneralProperty
           {...formProps}
           editable={editable}
-          toggleField={toggleField}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
+          onLayerUpdate={handleLayerUpdate}
+          onLayerUpdateOnly={handleLayerUpdateOnly}
         />
         <FontProperty
           {...formProps}
           editable={editable}
           fontList={fontList}
-          onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <ColorProperty
           {...formProps}
           editable={editable}
           currentCarMake={currentCarMake}
-          onLayerDataUpdate={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <BackgroundProperty
           {...formProps}
           editable={editable}
-          onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={onLayerDataUpdate}
           checkLayerDataDirty={checkLayerDataDirty}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <StrokeProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <SizeProperty
           {...formProps}
           editable={editable}
-          toggleLayerDataField={toggleLayerDataField}
           currentLayer={currentLayer}
           pressedKey={pressedKey}
-          checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={onLayerDataUpdate}
-          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
-          setMultiFieldValue={setMultiFieldValue}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <PositionProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <RotationProperty
           {...formProps}
           editable={editable}
           stageRef={stageRef}
           currentLayer={currentLayer}
-          toggleField={toggleField}
           checkLayerDataDirty={checkLayerDataDirty}
-          onLayerDataUpdate={onLayerDataUpdate}
-          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
-          onDataFieldChange={onLayerDataUpdate}
-          setMultiFieldValue={setMultiFieldValue}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <SkewProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <ShadowProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onLayerDataUpdate={onLayerDataUpdate}
-          onApply={formProps.handleSubmit}
-          onDataFieldChange={onLayerDataUpdate}
-          onLayerDataMultiUpdate={onLayerDataMultiUpdate}
-          setMultiFieldValue={setMultiFieldValue}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <CornerProperty
           {...formProps}
           editable={editable}
           checkLayerDataDirty={checkLayerDataDirty}
-          onLayerDataUpdate={onLayerDataUpdate}
-          onDataFieldChange={onLayerDataUpdate}
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <ExtraProperty
           {...formProps}

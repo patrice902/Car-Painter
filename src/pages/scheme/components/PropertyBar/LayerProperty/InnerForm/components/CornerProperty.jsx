@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
-import { useDebouncedCallback } from "use-debounce";
 
 import {
   Grid,
@@ -12,15 +11,15 @@ import {
   AccordionDetails,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { SmallTextField } from "../../../PropertyBar.style";
+import { FormTextField } from "../../../components";
 
 export const CornerProperty = React.memo((props) => {
   const {
     editable,
     errors,
     handleBlur,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdate,
+    onLayerDataUpdateOnly,
     touched,
     values,
   } = props;
@@ -39,62 +38,6 @@ export const CornerProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleCornerTopLeftChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("cornerTopLeft", value),
-    1000
-  );
-
-  const handleCornerTopLeftChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.cornerTopLeft`, value);
-      handleCornerTopLeftChangeDebounced(value);
-    },
-    [handleCornerTopLeftChangeDebounced, setFieldValue]
-  );
-
-  const handleCornerTopRightChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("cornerTopRight", Number(value) || 0),
-    1000
-  );
-
-  const handleCornerTopRightChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.cornerTopRight`, value);
-      handleCornerTopRightChangeDebounced(value);
-    },
-    [handleCornerTopRightChangeDebounced, setFieldValue]
-  );
-
-  const handleCornerBottomLeftChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("cornerBottomLeft", Number(value) || 0),
-    1000
-  );
-
-  const handleCornerBottomLeftChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.cornerBottomLeft`, value);
-      handleCornerBottomLeftChangeDebounced(value);
-    },
-    [handleCornerBottomLeftChangeDebounced, setFieldValue]
-  );
-
-  const handleCornerBottomRightChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("cornerBottomRight", Number(value) || 0),
-    1000
-  );
-
-  const handleCornerBottomRightChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.cornerBottomRight`, value);
-      handleCornerBottomRightChangeDebounced(value);
-    },
-    [handleCornerBottomRightChangeDebounced, setFieldValue]
   );
 
   if (
@@ -120,8 +63,9 @@ export const CornerProperty = React.memo((props) => {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               {AllowedLayerTypes.includes("layer_data.cornerTopLeft") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.cornerTopLeft"
+                  fieldKey="cornerTopLeft"
                   label="Top Left"
                   variant="outlined"
                   type="number"
@@ -139,14 +83,15 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data &&
                     errors.layer_data.cornerTopLeft
                   }
-                  onBlur={handleBlur}
-                  onChange={handleCornerTopLeftChange}
                   fullWidth
                   margin="normal"
                   mb={4}
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  onBlur={handleBlur}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               ) : (
                 <></>
@@ -154,8 +99,9 @@ export const CornerProperty = React.memo((props) => {
             </Grid>
             <Grid item xs={6}>
               {AllowedLayerTypes.includes("layer_data.cornerTopRight") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.cornerTopRight"
+                  fieldKey="cornerTopRight"
                   label="Top Right"
                   variant="outlined"
                   type="number"
@@ -173,14 +119,15 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data &&
                     errors.layer_data.cornerTopRight
                   }
-                  onBlur={handleBlur}
-                  onChange={handleCornerTopRightChange}
                   fullWidth
                   margin="normal"
                   mb={4}
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  onBlur={handleBlur}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               ) : (
                 <></>
@@ -188,11 +135,11 @@ export const CornerProperty = React.memo((props) => {
             </Grid>
             <Grid item xs={6}>
               {AllowedLayerTypes.includes("layer_data.cornerBottomLeft") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.cornerBottomLeft"
+                  fieldKey="cornerBottomLeft"
                   label="Bottom Left"
-                  variant="outlined"
-                  type="number"
+                  isNumber
                   value={mathRound2(values.layer_data.cornerBottomLeft)}
                   disabled={!editable}
                   error={Boolean(
@@ -208,13 +155,8 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerBottomLeft
                   }
                   onBlur={handleBlur}
-                  onChange={handleCornerBottomLeftChange}
-                  fullWidth
-                  margin="normal"
-                  mb={4}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               ) : (
                 <></>
@@ -222,11 +164,11 @@ export const CornerProperty = React.memo((props) => {
             </Grid>
             <Grid item xs={6}>
               {AllowedLayerTypes.includes("layer_data.cornerBottomRight") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.cornerBottomRight"
+                  fieldKey="cornerBottomRight"
                   label="Bottom Right"
-                  variant="outlined"
-                  type="number"
+                  isNumber
                   value={mathRound2(values.layer_data.cornerBottomRight)}
                   disabled={!editable}
                   error={Boolean(
@@ -242,13 +184,8 @@ export const CornerProperty = React.memo((props) => {
                     errors.layer_data.cornerBottomRight
                   }
                   onBlur={handleBlur}
-                  onChange={handleCornerBottomRightChange}
-                  fullWidth
-                  margin="normal"
-                  mb={4}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               ) : (
                 <></>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 
 import { AllowedLayerProps, LayerTypes, FinishOptions } from "constant";
 
@@ -6,19 +6,16 @@ import {
   Box,
   Typography,
   Grid,
-  Select,
   MenuItem,
   Accordion,
   AccordionSummary,
   AccordionDetails,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { useDebouncedCallback } from "use-debounce";
-
-import { ColorPickerInput } from "components/common";
 import { useSelector } from "react-redux";
 import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
+import { FormColorPickerInput, FormSelect } from "../../../components";
 
 export const ColorProperty = React.memo((props) => {
   const {
@@ -26,8 +23,8 @@ export const ColorProperty = React.memo((props) => {
     currentCarMake,
     errors,
     values,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdate,
+    onLayerDataUpdateOnly,
   } = props;
   const [expanded, setExpanded] = useState(true);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
@@ -73,42 +70,6 @@ export const ColorProperty = React.memo((props) => {
     [AllowedLayerTypes, currentScheme.hide_spec, currentCarMake.car_type]
   );
 
-  const handleColorChangeDebounced = useDebouncedCallback((color) => {
-    onDataFieldChange("color", color);
-  }, 1000);
-
-  const handleColorChange = useCallback(
-    (color) => {
-      setFieldValue(`layer_data.color`, color);
-      handleColorChangeDebounced(color);
-    },
-    [handleColorChangeDebounced, setFieldValue]
-  );
-
-  const handleBlendTypeChangeDebounced = useDebouncedCallback((value) => {
-    onDataFieldChange("blendType", value);
-  }, 1000);
-
-  const handleBlendTypeChange = useCallback(
-    (e) => {
-      setFieldValue(`layer_data.blendType`, e.target.value);
-      handleBlendTypeChangeDebounced(e.target.value);
-    },
-    [handleBlendTypeChangeDebounced, setFieldValue]
-  );
-
-  const handleFinishChangeDebounced = useDebouncedCallback((value) => {
-    onDataFieldChange("finish", value);
-  }, 1000);
-
-  const handleFinishChange = useCallback(
-    (e) => {
-      setFieldValue(`layer_data.finish`, e.target.value);
-      handleFinishChangeDebounced(e.target.value);
-    },
-    [handleFinishChangeDebounced, setFieldValue]
-  );
-
   if (!showColor && !showBlendType && !showFinish) return <></>;
 
   return (
@@ -135,15 +96,16 @@ export const ColorProperty = React.memo((props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
-                  <ColorPickerInput
+                  <FormColorPickerInput
                     value={values.layer_data.color}
+                    fieldKey="color"
                     disabled={!editable}
-                    onChange={handleColorChange}
-                    onInputChange={handleColorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.color
                     )}
                     helperText={errors.layer_data && errors.layer_data.color}
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>
               </Grid>
@@ -166,13 +128,13 @@ export const ColorProperty = React.memo((props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
-                  <Select
+                  <FormSelect
                     name="layer_data.blendType"
-                    variant="outlined"
+                    fieldKey="blendType"
                     value={values.layer_data.blendType}
                     disabled={!editable}
-                    onChange={handleBlendTypeChange}
-                    fullWidth
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   >
                     <MenuItem value="normal">Normal</MenuItem>
 
@@ -187,7 +149,7 @@ export const ColorProperty = React.memo((props) => {
                     <MenuItem value="saturation">Saturation</MenuItem>
                     <MenuItem value="luminosity">Luminosity</MenuItem>
                     <MenuItem value="xor">Xor</MenuItem>
-                  </Select>
+                  </FormSelect>
                 </Grid>
               </Grid>
             </Box>
@@ -209,20 +171,20 @@ export const ColorProperty = React.memo((props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
-                  <Select
+                  <FormSelect
                     name="layer_data.finish"
-                    variant="outlined"
+                    fieldKey="finish"
                     value={values.layer_data.finish}
                     disabled={!editable}
-                    onChange={handleFinishChange}
-                    fullWidth
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   >
                     {FinishOptions.map((finishItem, index) => (
                       <MenuItem value={finishItem.value} key={index}>
                         {finishItem.label}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </FormSelect>
                 </Grid>
               </Grid>
             </Box>

@@ -13,11 +13,13 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from "@material-ui/icons";
-import { ColorPickerInput, SliderInput } from "components/common";
 import { CustomAccordionSummary } from "./styles";
 import { LabelTypography } from "pages/scheme/components/PropertyBar/PropertyBar.style";
 import { focusBoardQuickly } from "helper";
-import { useDebouncedCallback } from "use-debounce";
+import {
+  FormColorPickerInput,
+  FormSliderInput,
+} from "pages/scheme/components/PropertyBar/components";
 
 export const SubForm = React.memo((props) => {
   const {
@@ -30,9 +32,9 @@ export const SubForm = React.memo((props) => {
     extraChildren,
     guideID,
     paintingGuides,
-    setFieldValue,
     onToggleGuideVisible,
-    onApply,
+    onSchemeUpdate,
+    onSchemeUpdateOnly,
   } = props;
   const [expanded, setExpanded] = useState(true);
   const guideVisible = useMemo(
@@ -46,30 +48,6 @@ export const SubForm = React.memo((props) => {
   const handleToggleGuideVisible = useCallback(
     () => onToggleGuideVisible(guideID),
     [guideID, onToggleGuideVisible]
-  );
-
-  const handleColorChangeDebounced = useDebouncedCallback(onApply, 300);
-
-  const handleColorChange = useCallback(
-    (value) => {
-      setFieldValue(colorKey, value);
-      handleColorChangeDebounced({
-        [colorKey]: value,
-      });
-    },
-    [colorKey, handleColorChangeDebounced, setFieldValue]
-  );
-
-  const handleOpacityChangeDebounced = useDebouncedCallback(onApply, 300);
-
-  const handleOpacityChange = useCallback(
-    (value) => {
-      setFieldValue(opacityKey, value);
-      handleOpacityChangeDebounced({
-        [opacityKey]: value,
-      });
-    },
-    [opacityKey, handleOpacityChangeDebounced, setFieldValue]
   );
 
   return (
@@ -137,13 +115,14 @@ export const SubForm = React.memo((props) => {
                       Color
                     </LabelTypography>
                     <Box pr="9px">
-                      <ColorPickerInput
+                      <FormColorPickerInput
                         disabled={!editable}
+                        fieldKey={colorKey}
                         value={values[colorKey]}
-                        onChange={handleColorChange}
-                        onInputChange={handleColorChange}
                         error={Boolean(errors[colorKey])}
                         helperText={errors[colorKey]}
+                        onUpdateField={onSchemeUpdateOnly}
+                        onUpdateDB={onSchemeUpdate}
                       />
                     </Box>
                   </Grid>
@@ -153,16 +132,17 @@ export const SubForm = React.memo((props) => {
                 {opacityKey ? (
                   <Grid item xs={12} sm={12} component={Box} height="40px">
                     <Box pr="9px">
-                      <SliderInput
+                      <FormSliderInput
                         label="Opacity"
+                        fieldKey={opacityKey}
                         disabled={!editable}
                         min={0.0}
                         max={1.0}
                         step={0.1}
                         marks
                         value={values[opacityKey]}
-                        setValue={handleOpacityChange}
-                        small
+                        onUpdateField={onSchemeUpdateOnly}
+                        onUpdateDB={onSchemeUpdate}
                       />
                     </Box>
                   </Grid>

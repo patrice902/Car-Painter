@@ -2,11 +2,11 @@ import React, { useMemo, useCallback } from "react";
 import styled from "styled-components/macro";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
-import { Box, TextField } from "@material-ui/core";
-import { useDebouncedCallback } from "use-debounce";
+import { Box } from "@material-ui/core";
+import { FormTextField } from "../../../components";
 
-const CustomeTextField = styled(TextField)`
-  margin: 0;
+const CustomeTextField = styled(FormTextField)`
+  margin: 0 !important;
   .MuiInputBase-input {
     height: 1.5rem;
     font-family: CircularXXWeb-Regular;
@@ -25,8 +25,8 @@ export const NameProperty = React.memo((props) => {
     touched,
     values,
     layerType,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdateOnly,
+    onLayerDataUpdate,
   } = props;
   const layerDataProperties = ["name"];
   const AllowedLayerTypes = useMemo(
@@ -47,20 +47,6 @@ export const NameProperty = React.memo((props) => {
     [user]
   );
 
-  const handleNameChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("name", value),
-    1000
-  );
-
-  const handleNameChange = useCallback(
-    (e) => {
-      const value = e.target.value;
-      setFieldValue(`layer_data.name`, value);
-      handleNameChangeDebounced(value);
-    },
-    [handleNameChangeDebounced, setFieldValue]
-  );
-
   if (
     !AllowedLayerTypes ||
     layerDataProperties.every(
@@ -79,6 +65,7 @@ export const NameProperty = React.memo((props) => {
         >
           <CustomeTextField
             name="layer_data.name"
+            fieldKey="name"
             value={layerName(values.layer_data.name, values.layer_type)}
             disabled={!editable || layerType === LayerTypes.CAR}
             error={Boolean(
@@ -94,13 +81,9 @@ export const NameProperty = React.memo((props) => {
               errors.layer_data.name
             }
             onBlur={handleBlur}
-            onChange={handleNameChange}
             fullWidth
-            margin="normal"
-            mb={4}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            onUpdateField={onLayerDataUpdateOnly}
+            onUpdateDB={onLayerDataUpdate}
           />
         </Box>
       ) : (

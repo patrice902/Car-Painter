@@ -1,16 +1,14 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
 import {
   Box,
   Typography,
-  IconButton,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Grid,
 } from "@material-ui/core";
-import { SliderInput } from "components/common";
 import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
@@ -18,9 +16,13 @@ import {
   LockOpen as LockOpenIcon,
   ExpandMore as ExpandMoreIcon,
 } from "@material-ui/icons";
-import { LabelTypography, SmallTextField } from "../../../PropertyBar.style";
+import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
-import { useDebouncedCallback } from "use-debounce";
+import {
+  FormIconButton,
+  FormSliderInput,
+  FormTextField,
+} from "../../../components";
 
 export const GeneralProperty = React.memo((props) => {
   const {
@@ -29,9 +31,10 @@ export const GeneralProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
-    toggleField,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerUpdate,
+    onLayerUpdateOnly,
+    onLayerDataUpdate,
+    onLayerDataUpdateOnly,
   } = props;
   const layerDataProperties = ["text", "numPoints", "angle", "opacity"];
   const layerProperties = ["layer_visible", "layer_locked"];
@@ -45,79 +48,6 @@ export const GeneralProperty = React.memo((props) => {
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
   );
-
-  const handleFontChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("text", value),
-    1000
-  );
-
-  const handleFontChange = useCallback(
-    (e) => {
-      setFieldValue(`layer_data.text`, e.target.value);
-      handleFontChangeDebounced(e.target.value);
-    },
-    [handleFontChangeDebounced, setFieldValue]
-  );
-
-  const handleNumPointsChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("numPoints", Number(value) || 0),
-    1000
-  );
-
-  const handleNumPointsChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.numPoints`, value);
-      handleNumPointsChangeDebounced(value);
-    },
-    [handleNumPointsChangeDebounced, setFieldValue]
-  );
-
-  const handleAngleChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("angle", value),
-    1000
-  );
-
-  const handleAngleChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.angle`, value);
-      handleAngleChangeDebounced(value);
-    },
-    [handleAngleChangeDebounced, setFieldValue]
-  );
-
-  const handleOpacityChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("opacity", value),
-    1000
-  );
-
-  const handleOpacityChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.opacity`, value);
-      handleOpacityChangeDebounced(value);
-    },
-    [handleOpacityChangeDebounced, setFieldValue]
-  );
-
-  const handleToggleVisibleDebounced = useDebouncedCallback(
-    () => toggleField("layer_visible"),
-    1000
-  );
-
-  const handleToggleVisible = useCallback(() => {
-    setFieldValue(`layer_visible`, !values.layer_visible);
-    handleToggleVisibleDebounced();
-  }, [handleToggleVisibleDebounced, setFieldValue, values.layer_visible]);
-
-  const handleToggleLockedDebounced = useDebouncedCallback(
-    () => toggleField("layer_locked"),
-    1000
-  );
-
-  const handleToggleLocked = useCallback(() => {
-    setFieldValue(`layer_locked`, !values.layer_locked);
-    handleToggleLockedDebounced();
-  }, [handleToggleLockedDebounced, setFieldValue, values.layer_locked]);
 
   if (
     !AllowedLayerTypes ||
@@ -142,8 +72,9 @@ export const GeneralProperty = React.memo((props) => {
         <Grid container spacing={2}>
           {AllowedLayerTypes.includes("layer_data.text") ? (
             <Grid item xs={12} sm={12}>
-              <SmallTextField
+              <FormTextField
                 name="layer_data.text"
+                fieldKey="text"
                 label="Text"
                 variant="outlined"
                 value={values.layer_data.text}
@@ -160,14 +91,15 @@ export const GeneralProperty = React.memo((props) => {
                   errors.layer_data &&
                   errors.layer_data.text
                 }
-                onBlur={handleBlur}
-                onChange={handleFontChange}
                 fullWidth
                 margin="normal"
                 mb={4}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                onBlur={handleBlur}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Grid>
           ) : (
@@ -175,8 +107,9 @@ export const GeneralProperty = React.memo((props) => {
           )}
           {AllowedLayerTypes.includes("layer_data.numPoints") ? (
             <Grid item xs={12} sm={12}>
-              <SmallTextField
+              <FormTextField
                 name="layer_data.numPoints"
+                fieldKey="numPoints"
                 label="Number of Points"
                 variant="outlined"
                 type="number"
@@ -194,14 +127,15 @@ export const GeneralProperty = React.memo((props) => {
                   errors.layer_data &&
                   errors.layer_data.numPoints
                 }
-                onBlur={handleBlur}
-                onChange={handleNumPointsChange}
                 fullWidth
                 margin="normal"
                 mb={4}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                onBlur={handleBlur}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Grid>
           ) : (
@@ -209,14 +143,15 @@ export const GeneralProperty = React.memo((props) => {
           )}
           {AllowedLayerTypes.includes("layer_data.angle") ? (
             <Grid item xs={12} sm={12} component={Box} height="40px">
-              <SliderInput
+              <FormSliderInput
                 label="Angle"
+                fieldKey="angle"
                 disabled={!editable}
                 min={0}
                 max={360}
-                small
                 value={Math.round(values.layer_data.angle)}
-                setValue={handleAngleChange}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Grid>
           ) : (
@@ -224,15 +159,16 @@ export const GeneralProperty = React.memo((props) => {
           )}
           {AllowedLayerTypes.includes("layer_data.opacity") ? (
             <Grid item xs={12} sm={12} component={Box} height="40px">
-              <SliderInput
+              <FormSliderInput
                 label="Opacity"
+                fieldKey="opacity"
                 disabled={!editable}
                 min={0}
                 max={1}
                 step={0.01}
-                small
                 value={values.layer_data.opacity}
-                setValue={handleOpacityChange}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Grid>
           ) : (
@@ -250,17 +186,19 @@ export const GeneralProperty = React.memo((props) => {
                 <LabelTypography variant="body1" color="textSecondary" mr={2}>
                   Visibility
                 </LabelTypography>
-                <IconButton
+                <FormIconButton
                   disabled={!editable}
-                  onClick={handleToggleVisible}
-                  size="small"
+                  fieldKey="layer_visible"
+                  value={values.layer_visible}
+                  onUpdateField={onLayerUpdateOnly}
+                  onUpdateDB={onLayerUpdate}
                 >
                   {values.layer_visible ? (
                     <VisibilityIcon />
                   ) : (
                     <VisibilityOffIcon />
                   )}
-                </IconButton>
+                </FormIconButton>
               </Box>
             </Grid>
           ) : (
@@ -285,13 +223,15 @@ export const GeneralProperty = React.memo((props) => {
                 <LabelTypography variant="body1" color="textSecondary" mr={2}>
                   Locking
                 </LabelTypography>
-                <IconButton
+                <FormIconButton
                   disabled={!editable}
-                  onClick={handleToggleLocked}
-                  size="small"
+                  fieldKey="layer_locked"
+                  value={values.layer_locked}
+                  onUpdateField={onLayerUpdateOnly}
+                  onUpdateDB={onLayerUpdate}
                 >
                   {values.layer_locked ? <LockIcon /> : <LockOpenIcon />}
-                </IconButton>
+                </FormIconButton>
               </Box>
             </Grid>
           ) : (

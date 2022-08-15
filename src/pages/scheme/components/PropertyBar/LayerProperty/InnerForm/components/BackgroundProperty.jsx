@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
@@ -12,10 +12,9 @@ import {
   AccordionDetails,
 } from "components/MaterialUI";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { useDebouncedCallback } from "use-debounce";
 
-import { ColorPickerInput } from "components/common";
-import { LabelTypography, SmallTextField } from "../../../PropertyBar.style";
+import { LabelTypography } from "../../../PropertyBar.style";
+import { FormTextField, FormColorPickerInput } from "../../../components";
 
 export const BackgroundProperty = React.memo((props) => {
   const {
@@ -24,8 +23,8 @@ export const BackgroundProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdateOnly,
+    onLayerDataUpdate,
   } = props;
   const layerDataProperties = ["bgColor", "paddingX", "paddingY"];
   const [expanded, setExpanded] = useState(true);
@@ -37,46 +36,6 @@ export const BackgroundProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleBgColorChangeDebounced = useDebouncedCallback((value) => {
-    onDataFieldChange("bgColor", value);
-  }, 1000);
-
-  const handleBgColorChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.bgColor`, value);
-      handleBgColorChangeDebounced(value);
-    },
-    [handleBgColorChangeDebounced, setFieldValue]
-  );
-
-  const handlePaddingXChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("paddingX", Number(value) || 0),
-    1000
-  );
-
-  const handlePaddingXChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.paddingX`, value);
-      handlePaddingXChangeDebounced(value);
-    },
-    [handlePaddingXChangeDebounced, setFieldValue]
-  );
-
-  const handlePaddingYChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("paddingY", value),
-    1000
-  );
-
-  const handlePaddingYChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.paddingY`, value);
-      handlePaddingYChangeDebounced(value);
-    },
-    [handlePaddingYChangeDebounced, setFieldValue]
   );
 
   if (
@@ -110,15 +69,16 @@ export const BackgroundProperty = React.memo((props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={6}>
-                  <ColorPickerInput
+                  <FormColorPickerInput
                     value={values.layer_data.bgColor}
+                    fieldKey="bgColor"
                     disabled={!editable}
-                    onChange={handleBgColorChange}
-                    onInputChange={handleBgColorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.bgColor
                     )}
                     helperText={errors.layer_data && errors.layer_data.bgColor}
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>
               </>
@@ -127,13 +87,14 @@ export const BackgroundProperty = React.memo((props) => {
             )}
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.paddingX") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.paddingX"
+                  fieldKey="paddingX"
                   label="Padding (X)"
                   variant="outlined"
+                  value={mathRound2(values.layer_data.paddingX)}
                   type="number"
                   disabled={!editable}
-                  value={mathRound2(values.layer_data.paddingX)}
                   error={Boolean(
                     touched.layer_data &&
                       touched.layer_data.paddingX &&
@@ -146,14 +107,15 @@ export const BackgroundProperty = React.memo((props) => {
                     errors.layer_data &&
                     errors.layer_data.paddingX
                   }
-                  onBlur={handleBlur}
-                  onChange={handlePaddingXChange}
                   fullWidth
                   margin="normal"
                   mb={4}
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  onBlur={handleBlur}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               ) : (
                 <></>
@@ -161,9 +123,10 @@ export const BackgroundProperty = React.memo((props) => {
             </Grid>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.paddingY") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.paddingY"
                   label="Padding (Y)"
+                  fieldKey="paddingY"
                   variant="outlined"
                   type="number"
                   value={mathRound2(values.layer_data.paddingY)}
@@ -180,14 +143,15 @@ export const BackgroundProperty = React.memo((props) => {
                     errors.layer_data &&
                     errors.layer_data.paddingY
                   }
-                  onBlur={handleBlur}
-                  onChange={handlePaddingYChange}
                   fullWidth
                   margin="normal"
                   mb={4}
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  onBlur={handleBlur}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               ) : (
                 <></>

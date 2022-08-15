@@ -1,11 +1,10 @@
 import React, { useMemo, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Formik } from "formik";
 import { useDebounce } from "use-debounce";
 import * as Yup from "yup";
 import _ from "lodash";
 
-import { updateLayer } from "redux/reducers/layerReducer";
 import { AllowedLayerProps, LayerTypes, DefaultLayer } from "constant";
 import { colorValidator, focusBoardQuickly } from "helper";
 
@@ -13,7 +12,6 @@ import { InnerForm } from "./InnerForm";
 
 export const LayerProperty = React.memo((props) => {
   const { editable, stageRef, transformingLayer, onClone, onDelete } = props;
-  const dispatch = useDispatch();
 
   const currentLayer = useSelector((state) => state.layerReducer.current);
   const currentCarMake = useSelector((state) => state.carMakeReducer.current);
@@ -81,65 +79,6 @@ export const LayerProperty = React.memo((props) => {
     if (currentLayer) onDelete(currentLayer);
     focusBoardQuickly();
   }, [onDelete, currentLayer]);
-  const handleApply = useCallback(
-    (values) => {
-      dispatch(updateLayer(values));
-      focusBoardQuickly();
-    },
-    [dispatch]
-  );
-  const toggleField = useCallback(
-    (field) => {
-      dispatch(
-        updateLayer({
-          id: currentLayer.id,
-          [field]: currentLayer[field] ? 0 : 1,
-        })
-      );
-      focusBoardQuickly();
-    },
-    [dispatch, currentLayer]
-  );
-  const handleLayerDataUpdate = useCallback(
-    (key, value) => {
-      dispatch(
-        updateLayer({
-          id: currentLayer.id,
-          layer_data: {
-            [key]: value,
-          },
-        })
-      );
-    },
-    [currentLayer, dispatch]
-  );
-  const handleLayerDataMultiUpdate = useCallback(
-    (updatedValues) => {
-      dispatch(
-        updateLayer({
-          id: currentLayer.id,
-          layer_data: {
-            ...updatedValues,
-          },
-        })
-      );
-    },
-    [currentLayer, dispatch]
-  );
-  const toggleLayerDataField = useCallback(
-    (field) => {
-      dispatch(
-        updateLayer({
-          id: currentLayer.id,
-          layer_data: {
-            [field]: currentLayer.layer_data[field] ? 0 : 1,
-          },
-        })
-      );
-      focusBoardQuickly();
-    },
-    [dispatch, currentLayer]
-  );
 
   return (
     <>
@@ -237,7 +176,6 @@ export const LayerProperty = React.memo((props) => {
           ),
         })}
         enableReinitialize
-        onSubmit={handleApply}
       >
         {(formProps) => (
           <InnerForm
@@ -246,15 +184,11 @@ export const LayerProperty = React.memo((props) => {
             user={user}
             stageRef={stageRef}
             fontList={fontList}
-            toggleField={toggleField}
-            toggleLayerDataField={toggleLayerDataField}
             currentLayer={currentLayer}
             currentCarMake={currentCarMake}
             pressedKey={pressedKey}
             onClone={handleClone}
             onDelete={handleDelete}
-            onLayerDataUpdate={handleLayerDataUpdate}
-            onLayerDataMultiUpdate={handleLayerDataMultiUpdate}
           />
         )}
       </Formik>

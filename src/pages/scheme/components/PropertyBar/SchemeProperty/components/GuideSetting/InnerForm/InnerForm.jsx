@@ -1,32 +1,29 @@
 import React, { useCallback } from "react";
 import { Form } from "formik";
 
-import { Box, Checkbox, Grid } from "components/MaterialUI";
+import { Box, Grid } from "components/MaterialUI";
 import { SubForm } from "./SubForm";
 
-import { LightTooltip, SliderInput } from "components/common";
+import { LightTooltip } from "components/common";
 import { CustomFormControlLabel } from "./styles";
-import { useDebouncedCallback } from "use-debounce";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateScheme,
+  setCurrent as setCurrentScheme,
+} from "redux/reducers/schemeReducer";
+import { setPaintingGuides } from "redux/reducers/boardReducer";
+import {
+  FormCheckbox,
+  FormSliderInput,
+} from "pages/scheme/components/PropertyBar/components";
 
 export const InnerForm = React.memo(
-  ({
-    editable,
-    initialValues,
-    paintingGuides,
-    onCancel,
-    onChangePaintingGuides,
-    onApply,
-    ...formProps
-  }) => {
-    const handleTogglePaintingGuide = useCallback(
-      (guideItem) => {
-        let index = paintingGuides.indexOf(guideItem);
-        let newGuide = [...paintingGuides];
-        if (index === -1) newGuide.push(guideItem);
-        else newGuide.splice(index, 1);
-        onChangePaintingGuides(newGuide);
-      },
-      [onChangePaintingGuides, paintingGuides]
+  ({ editable, initialValues, ...formProps }) => {
+    const dispatch = useDispatch();
+
+    const currentScheme = useSelector((state) => state.schemeReducer.current);
+    const paintingGuides = useSelector(
+      (state) => state.boardReducer.paintingGuides
     );
 
     const setMultiFieldValue = useCallback(
@@ -38,146 +35,40 @@ export const InnerForm = React.memo(
       [formProps]
     );
 
-    const handleShowWireframeChangeDebounced = useDebouncedCallback(
-      onApply,
-      300
-    );
-
-    const handleShowWireframeChange = useCallback(
-      (e) => {
-        const map = {
-          show_wireframe: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowWireframeChangeDebounced(map);
+    const handleSchemeUpdate = useCallback(
+      (guide_data) => {
+        dispatch(
+          updateScheme({
+            id: currentScheme.id,
+            guide_data,
+          })
+        );
       },
-      [handleShowWireframeChangeDebounced, setMultiFieldValue]
+      [dispatch, currentScheme]
     );
 
-    const handleShowSponsorChangeDebounced = useDebouncedCallback(onApply, 300);
-
-    const handleShowSponsorChange = useCallback(
-      (e) => {
-        const map = {
-          show_sponsor: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowSponsorChangeDebounced(map);
+    const handleSchemeUpdateOnly = useCallback(
+      (guide_data) => {
+        setMultiFieldValue(guide_data);
+        dispatch(
+          setCurrentScheme({
+            id: currentScheme.id,
+            guide_data,
+          })
+        );
       },
-      [handleShowSponsorChangeDebounced, setMultiFieldValue]
+      [setMultiFieldValue, dispatch, currentScheme.id]
     );
 
-    const handleShowSponsorBlockOnTopDebounced = useDebouncedCallback(
-      onApply,
-      300
-    );
-
-    const handleShowSponsorBlockOnTop = useCallback(
-      (e) => {
-        const map = {
-          show_sponsor_block_on_top: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowSponsorBlockOnTopDebounced(map);
+    const handleTogglePaintingGuide = useCallback(
+      (guideItem) => {
+        let index = paintingGuides.indexOf(guideItem);
+        let newGuide = [...paintingGuides];
+        if (index === -1) newGuide.push(guideItem);
+        else newGuide.splice(index, 1);
+        dispatch(setPaintingGuides(newGuide));
       },
-      [handleShowSponsorBlockOnTopDebounced, setMultiFieldValue]
-    );
-
-    const handleShowNumberBlocksDebounced = useDebouncedCallback(onApply, 300);
-
-    const handleShowNumberBlocks = useCallback(
-      (e) => {
-        const map = {
-          show_numberBlocks: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowNumberBlocksDebounced(map);
-      },
-      [handleShowNumberBlocksDebounced, setMultiFieldValue]
-    );
-
-    const handleShowNumberBlockOnTopDebounced = useDebouncedCallback(
-      onApply,
-      300
-    );
-
-    const handleShowNumberBlockOnTop = useCallback(
-      (e) => {
-        const map = {
-          show_number_block_on_top: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowNumberBlockOnTopDebounced(map);
-      },
-      [handleShowNumberBlockOnTopDebounced, setMultiFieldValue]
-    );
-
-    const handleGridPaddingChangeDebounced = useDebouncedCallback(onApply, 300);
-
-    const handleGridPaddingChange = useCallback(
-      (e) => {
-        const map = {
-          grid_padding: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleGridPaddingChangeDebounced(map);
-      },
-      [handleGridPaddingChangeDebounced, setMultiFieldValue]
-    );
-
-    const handleGridStrokeChangeDebounced = useDebouncedCallback(onApply, 300);
-
-    const handleGridStrokeChange = useCallback(
-      (e) => {
-        const map = {
-          grid_stroke: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleGridStrokeChangeDebounced(map);
-      },
-      [handleGridStrokeChangeDebounced, setMultiFieldValue]
-    );
-
-    const handleShowGridChangeDebounced = useDebouncedCallback(onApply, 300);
-
-    const handleShowGridChange = useCallback(
-      (e) => {
-        const map = {
-          show_grid: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowGridChangeDebounced(map);
-      },
-      [handleShowGridChangeDebounced, setMultiFieldValue]
-    );
-
-    const handleSnapGridChangeDebounced = useDebouncedCallback(onApply, 300);
-
-    const handleSnapGridChange = useCallback(
-      (e) => {
-        const map = {
-          snap_grid: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleSnapGridChangeDebounced(map);
-      },
-      [handleSnapGridChangeDebounced, setMultiFieldValue]
-    );
-
-    const handleShowCarpartsOnTopChangeDebounced = useDebouncedCallback(
-      onApply,
-      300
-    );
-
-    const handleShowCarpartsOnTopChange = useCallback(
-      (e) => {
-        const map = {
-          show_carparts_on_top: e.target.checked,
-        };
-        setMultiFieldValue(map);
-        handleShowCarpartsOnTopChangeDebounced(map);
-      },
-      [handleShowCarpartsOnTopChangeDebounced, setMultiFieldValue]
+      [dispatch, paintingGuides]
     );
 
     return (
@@ -192,7 +83,8 @@ export const InnerForm = React.memo(
             fields={["carmask_color", "carmask_opacity"]}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
-            onApply={onApply}
+            onSchemeUpdateOnly={handleSchemeUpdateOnly}
+            onSchemeUpdate={handleSchemeUpdate}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
           />
@@ -205,7 +97,8 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
-            onApply={onApply}
+            onSchemeUpdateOnly={handleSchemeUpdateOnly}
+            onSchemeUpdate={handleSchemeUpdate}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -216,12 +109,14 @@ export const InnerForm = React.memo(
                 >
                   <CustomFormControlLabel
                     control={
-                      <Checkbox
+                      <FormCheckbox
                         color="primary"
                         name="show_wireframe"
+                        fieldKey="show_wireframe"
                         checked={formProps.values.show_wireframe}
                         disabled={!editable}
-                        onChange={handleShowWireframeChange}
+                        onUpdateField={handleSchemeUpdateOnly}
+                        onUpdateDB={handleSchemeUpdate}
                       />
                     }
                     label="Show when editing"
@@ -245,7 +140,8 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
-            onApply={onApply}
+            onSchemeUpdateOnly={handleSchemeUpdateOnly}
+            onSchemeUpdate={handleSchemeUpdate}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -257,12 +153,14 @@ export const InnerForm = React.memo(
                   >
                     <CustomFormControlLabel
                       control={
-                        <Checkbox
+                        <FormCheckbox
                           color="primary"
                           name="show_sponsor"
+                          fieldKey="show_sponsor"
                           checked={formProps.values.show_sponsor}
                           disabled={!editable}
-                          onChange={handleShowSponsorChange}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
                         />
                       }
                       label="Show when editing"
@@ -277,12 +175,14 @@ export const InnerForm = React.memo(
                   >
                     <CustomFormControlLabel
                       control={
-                        <Checkbox
+                        <FormCheckbox
                           color="primary"
                           name="show_sponsor_block_on_top"
+                          fieldKey="show_sponsor_block_on_top"
                           checked={formProps.values.show_sponsor_block_on_top}
                           disabled={!editable}
-                          onChange={handleShowSponsorBlockOnTop}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
                         />
                       }
                       label={`Display above layers`}
@@ -307,7 +207,8 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
-            onApply={onApply}
+            onSchemeUpdateOnly={handleSchemeUpdateOnly}
+            onSchemeUpdate={handleSchemeUpdate}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
@@ -319,12 +220,14 @@ export const InnerForm = React.memo(
                   >
                     <CustomFormControlLabel
                       control={
-                        <Checkbox
+                        <FormCheckbox
                           color="primary"
                           name="show_numberBlocks"
+                          fieldKey="show_numberBlocks"
                           checked={formProps.values.show_numberBlocks}
                           disabled={!editable}
-                          onChange={handleShowNumberBlocks}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
                         />
                       }
                       label="Show when editing"
@@ -339,12 +242,14 @@ export const InnerForm = React.memo(
                   >
                     <CustomFormControlLabel
                       control={
-                        <Checkbox
+                        <FormCheckbox
                           color="primary"
                           name="show_number_block_on_top"
+                          fieldKey="show_number_block_on_top"
                           checked={formProps.values.show_number_block_on_top}
                           disabled={!editable}
-                          onChange={handleShowNumberBlockOnTop}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
                         />
                       }
                       label={`Display above layers`}
@@ -371,36 +276,39 @@ export const InnerForm = React.memo(
             editable={editable}
             initialValues={initialValues}
             paintingGuides={paintingGuides}
-            onApply={onApply}
+            onSchemeUpdateOnly={handleSchemeUpdateOnly}
+            onSchemeUpdate={handleSchemeUpdate}
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
               <>
                 <Grid item xs={12} sm={12} component={Box} height="40px">
                   <Box pr="9px">
-                    <SliderInput
+                    <FormSliderInput
                       label="Column Size"
+                      fieldKey="grid_padding"
                       min={5}
                       max={50}
                       step={1}
                       value={formProps.values.grid_padding}
                       disabled={!editable}
-                      setValue={handleGridPaddingChange}
-                      small
+                      onUpdateField={handleSchemeUpdateOnly}
+                      onUpdateDB={handleSchemeUpdate}
                     />
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={12} component={Box} height="40px">
                   <Box pr="9px">
-                    <SliderInput
+                    <FormSliderInput
                       label="Stroke Width"
+                      fieldKey="grid_stroke"
                       min={0.01}
                       max={3}
                       step={0.01}
                       value={formProps.values.grid_stroke}
                       disabled={!editable}
-                      setValue={handleGridStrokeChange}
-                      small
+                      onUpdateField={handleSchemeUpdateOnly}
+                      onUpdateDB={handleSchemeUpdate}
                     />
                   </Box>
                 </Grid>
@@ -411,12 +319,14 @@ export const InnerForm = React.memo(
                   >
                     <CustomFormControlLabel
                       control={
-                        <Checkbox
+                        <FormCheckbox
                           color="primary"
                           name="show_grid"
+                          fieldKey="show_grid"
                           checked={formProps.values.show_grid}
                           disabled={!editable}
-                          onChange={handleShowGridChange}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
                         />
                       }
                       label="Show when editing"
@@ -427,12 +337,14 @@ export const InnerForm = React.memo(
                 <Grid item xs={12} sm={12}>
                   <CustomFormControlLabel
                     control={
-                      <Checkbox
+                      <FormCheckbox
                         color="primary"
                         name="snap_grid"
+                        fieldKey="snap_grid"
                         checked={formProps.values.snap_grid}
                         disabled={!editable}
-                        onChange={handleSnapGridChange}
+                        onUpdateField={handleSchemeUpdateOnly}
+                        onUpdateDB={handleSchemeUpdate}
                       />
                     }
                     label="Snap when editing"
@@ -447,7 +359,8 @@ export const InnerForm = React.memo(
             fields={["show_carparts_on_top"]}
             editable={editable}
             initialValues={initialValues}
-            onApply={onApply}
+            onSchemeUpdateOnly={handleSchemeUpdateOnly}
+            onSchemeUpdate={handleSchemeUpdate}
             {...formProps}
             extraChildren={
               <Grid item xs={12} sm={12}>
@@ -457,12 +370,14 @@ export const InnerForm = React.memo(
                 >
                   <CustomFormControlLabel
                     control={
-                      <Checkbox
+                      <FormCheckbox
                         color="primary"
                         name="show_carparts_on_top"
+                        fieldKey="show_carparts_on_top"
                         checked={formProps.values.show_carparts_on_top}
                         disabled={!editable}
-                        onChange={handleShowCarpartsOnTopChange}
+                        onUpdateField={handleSchemeUpdateOnly}
+                        onUpdateDB={handleSchemeUpdate}
                       />
                     }
                     label="Display above layers"

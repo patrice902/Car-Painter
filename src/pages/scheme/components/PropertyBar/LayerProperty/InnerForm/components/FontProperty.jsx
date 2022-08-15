@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import styled from "styled-components/macro";
 import { AllowedLayerProps, LayerTypes } from "constant";
 
@@ -14,10 +14,13 @@ import {
 } from "@material-ui/core";
 import { spacing } from "@material-ui/system";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { FontSelect, ColorPickerInput, SliderInput } from "components/common";
 import { LabelTypography } from "../../../PropertyBar.style";
 import { focusBoardQuickly } from "helper";
-import { useDebouncedCallback } from "use-debounce";
+import {
+  FormColorPickerInput,
+  FormFontSelect,
+  FormSliderInput,
+} from "../../../components";
 
 const FormControl = styled(MuiFormControl)(spacing);
 
@@ -27,8 +30,8 @@ export const FontProperty = React.memo((props) => {
     errors,
     values,
     fontList,
-    setFieldValue,
-    onDataFieldChange,
+    onLayerDataUpdate,
+    onLayerDataUpdateOnly,
   } = props;
   const layerDataProperties = ["font", "size"];
   const [expanded, setExpanded] = useState(true);
@@ -40,45 +43,6 @@ export const FontProperty = React.memo((props) => {
         ? AllowedLayerProps[values.layer_type]
         : AllowedLayerProps[values.layer_type][values.layer_data.type],
     [values]
-  );
-
-  const handleFontChangeDebounced = useDebouncedCallback(
-    (fontID) => onDataFieldChange("font", fontID),
-    1000
-  );
-
-  const handleFontChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.font`, value);
-      handleFontChangeDebounced(value);
-    },
-    [handleFontChangeDebounced, setFieldValue]
-  );
-
-  const handleColorChangeDebounced = useDebouncedCallback(
-    (color) => onDataFieldChange("color", color),
-    1000
-  );
-
-  const handleColorChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.color`, value);
-      handleColorChangeDebounced(value);
-    },
-    [handleColorChangeDebounced, setFieldValue]
-  );
-
-  const handleSizeChangeDebounced = useDebouncedCallback(
-    (size) => onDataFieldChange("size", size),
-    1000
-  );
-
-  const handleSizeChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.size`, value);
-      handleSizeChangeDebounced(value);
-    },
-    [handleSizeChangeDebounced, setFieldValue]
   );
 
   if (
@@ -104,11 +68,13 @@ export const FontProperty = React.memo((props) => {
           {AllowedLayerTypes.includes("layer_data.font") ? (
             <FormControl variant="outlined" mt={2}>
               <InputLabel id="font-select-label">Font</InputLabel>
-              <FontSelect
+              <FormFontSelect
                 value={values.layer_data.font}
+                fieldKey="font"
                 disabled={!editable}
-                onChange={handleFontChange}
                 fontList={fontList}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </FormControl>
           ) : (
@@ -123,15 +89,16 @@ export const FontProperty = React.memo((props) => {
                   </LabelTypography>
                 </Grid>
                 <Grid item xs={6}>
-                  <ColorPickerInput
+                  <FormColorPickerInput
                     value={values.layer_data.color}
+                    fieldKey="color"
                     disabled={!editable}
-                    onChange={handleColorChange}
-                    onInputChange={handleColorChange}
                     error={Boolean(
                       errors.layer_data && errors.layer_data.color
                     )}
                     helperText={errors.layer_data && errors.layer_data.color}
+                    onUpdateField={onLayerDataUpdateOnly}
+                    onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>
               </Grid>
@@ -141,13 +108,15 @@ export const FontProperty = React.memo((props) => {
           )}
           {AllowedLayerTypes.includes("layer_data.size") ? (
             <Box display="flex" alignItems="center" height="40px">
-              <SliderInput
+              <FormSliderInput
                 label="Font Size"
+                fieldKey="size"
                 disabled={!editable}
                 min={6}
                 max={512}
                 value={values.layer_data.size}
-                setValue={handleSizeChange}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Box>
           ) : (

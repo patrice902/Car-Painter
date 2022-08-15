@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
-import { useDebouncedCallback } from "use-debounce";
 
 import {
   Box,
@@ -13,9 +12,13 @@ import {
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 
-import { ColorPickerInput, SliderInput } from "components/common";
-import { LabelTypography, SmallTextField } from "../../../PropertyBar.style";
+import { LabelTypography } from "../../../PropertyBar.style";
 import { useCallback } from "react";
+import {
+  FormColorPickerInput,
+  FormSliderInput,
+  FormTextField,
+} from "../../../components";
 
 export const ShadowProperty = React.memo((props) => {
   const DefaultBlurToSet = 10;
@@ -25,10 +28,8 @@ export const ShadowProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
-    setFieldValue,
-    setMultiFieldValue,
-    onDataFieldChange,
-    onLayerDataMultiUpdate,
+    onLayerDataUpdateOnly,
+    onLayerDataUpdate,
   } = props;
   const layerDataProperties = [
     "shadowColor",
@@ -48,12 +49,7 @@ export const ShadowProperty = React.memo((props) => {
     [values]
   );
 
-  const handleColorChangeDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleColorChange = useCallback(
+  const colorMapFunc = useCallback(
     (value) => {
       let updatingMap = {
         shadowColor: value,
@@ -66,65 +62,9 @@ export const ShadowProperty = React.memo((props) => {
         updatingMap.shadowBlur = DefaultBlurToSet;
       }
 
-      setMultiFieldValue(updatingMap);
-      handleColorChangeDebounced(updatingMap);
+      return updatingMap;
     },
-    [handleColorChangeDebounced, setMultiFieldValue, values]
-  );
-
-  const handleShadowOpacityChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("shadowOpacity", value),
-    1000
-  );
-
-  const handleShadowOpacityChange = useCallback(
-    (value) => {
-      setFieldValue(`layer_data.shadowOpacity`, value);
-      handleShadowOpacityChangeDebounced(value);
-    },
-    [handleShadowOpacityChangeDebounced, setFieldValue]
-  );
-
-  const handleShadowBlurChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("shadowBlur", value),
-    1000
-  );
-
-  const handleShadowBlurChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.shadowBlur`, value);
-      handleShadowBlurChangeDebounced(value);
-    },
-    [handleShadowBlurChangeDebounced, setFieldValue]
-  );
-
-  const handleShadowOffsetXChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("shadowOffsetX", value),
-    1000
-  );
-
-  const handleShadowOffsetXChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.shadowOffsetX`, value);
-      handleShadowOffsetXChangeDebounced(value);
-    },
-    [handleShadowOffsetXChangeDebounced, setFieldValue]
-  );
-
-  const handleShadowOffsetYChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("shadowOffsetY", value),
-    1000
-  );
-
-  const handleShadowOffsetYChange = useCallback(
-    (e) => {
-      const value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.shadowOffsetY`, value);
-      handleShadowOffsetYChangeDebounced(value);
-    },
-    [handleShadowOffsetYChangeDebounced, setFieldValue]
+    [values]
   );
 
   if (
@@ -157,17 +97,19 @@ export const ShadowProperty = React.memo((props) => {
                 </Box>
               </Grid>
               <Grid item xs={6}>
-                <ColorPickerInput
+                <FormColorPickerInput
                   value={values.layer_data.shadowColor}
+                  fieldKey="shadowColor"
                   disabled={!editable}
-                  onChange={handleColorChange}
-                  onInputChange={handleColorChange}
                   error={Boolean(
                     errors.layer_data && errors.layer_data.shadowColor
                   )}
                   helperText={
                     errors.layer_data && errors.layer_data.shadowColor
                   }
+                  filterFunc={colorMapFunc}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                 />
               </Grid>
             </Grid>
@@ -176,23 +118,25 @@ export const ShadowProperty = React.memo((props) => {
           )}
           {AllowedLayerTypes.includes("layer_data.shadowOpacity") ? (
             <Box height="40px" display="flex" alignItems="center">
-              <SliderInput
+              <FormSliderInput
                 label="Opacity"
+                fieldKey="shadowOpacity"
                 min={0}
                 max={1}
                 step={0.01}
-                small
                 value={values.layer_data.shadowOpacity}
                 disabled={!editable}
-                setValue={handleShadowOpacityChange}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             </Box>
           ) : (
             <></>
           )}
           {AllowedLayerTypes.includes("layer_data.shadowBlur") ? (
-            <SmallTextField
+            <FormTextField
               name="layer_data.shadowBlur"
+              fieldKey="shadowBlur"
               label="Shadow Blur"
               variant="outlined"
               type="number"
@@ -211,7 +155,8 @@ export const ShadowProperty = React.memo((props) => {
                 errors.layer_data.shadowBlur
               }
               onBlur={handleBlur}
-              onChange={handleShadowBlurChange}
+              onUpdateField={onLayerDataUpdateOnly}
+              onUpdateDB={onLayerDataUpdate}
               fullWidth
               margin="normal"
               mb={4}
@@ -225,8 +170,9 @@ export const ShadowProperty = React.memo((props) => {
           <Grid container spacing={2}>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.shadowOffsetX") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.shadowOffsetX"
+                  fieldKey="shadowOffsetX"
                   label="Offset (X)"
                   variant="outlined"
                   type="number"
@@ -245,7 +191,8 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data.shadowOffsetX
                   }
                   onBlur={handleBlur}
-                  onChange={handleShadowOffsetXChange}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                   fullWidth
                   margin="normal"
                   mb={4}
@@ -259,8 +206,9 @@ export const ShadowProperty = React.memo((props) => {
             </Grid>
             <Grid item sm={6}>
               {AllowedLayerTypes.includes("layer_data.shadowOffsetY") ? (
-                <SmallTextField
+                <FormTextField
                   name="layer_data.shadowOffsetY"
+                  fieldKey="shadowOffsetY"
                   label="Offset (Y)"
                   variant="outlined"
                   type="number"
@@ -279,7 +227,8 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data.shadowOffsetY
                   }
                   onBlur={handleBlur}
-                  onChange={handleShadowOffsetYChange}
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
                   fullWidth
                   margin="normal"
                   mb={4}

@@ -11,6 +11,6 @@ export const SmallTextField = styled(TextField)`
     height: 1.5rem;
   }
   &.MuiTextField-root {
-    margin: 12px 0 !important;
+    margin: 12px 0;
   }
 `;

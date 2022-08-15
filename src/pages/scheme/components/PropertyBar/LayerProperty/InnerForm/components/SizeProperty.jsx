@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { AllowedLayerProps, LayerTypes, MouseModes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
-import { useDebouncedCallback } from "use-debounce";
 
 import {
   Box,
@@ -10,9 +9,8 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@material-ui/core";
-import { LockButton } from "components/common";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { SmallTextField } from "../../../PropertyBar.style";
+import { FormLockButton, FormTextField } from "../../../components";
 
 export const SizeProperty = React.memo((props) => {
   const {
@@ -21,13 +19,10 @@ export const SizeProperty = React.memo((props) => {
     handleBlur,
     touched,
     values,
-    toggleLayerDataField,
     currentLayer,
     pressedKey,
-    setFieldValue,
-    setMultiFieldValue,
-    onDataFieldChange,
-    onLayerDataMultiUpdate,
+    onLayerDataUpdateOnly,
+    onLayerDataUpdate,
   } = props;
   const layerDataProperties = [
     "width",
@@ -52,14 +47,8 @@ export const SizeProperty = React.memo((props) => {
   );
   const pressingShiftKey = useMemo(() => pressedKey === "shift", [pressedKey]);
 
-  const handleChangeWidthDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeWidth = useCallback(
-    (e) => {
-      let value = parseFloat(e.target.value) || 0;
+  const widthMapFunc = useCallback(
+    (value) => {
       let updatingMap = {
         width: value,
       };
@@ -68,20 +57,13 @@ export const SizeProperty = React.memo((props) => {
           (value * currentLayer.layer_data.height) /
           currentLayer.layer_data.width;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeWidthDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeWidthDebounced, setMultiFieldValue, values]
+    [currentLayer, values]
   );
 
-  const handleChangeHeightDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeHeight = useCallback(
-    (e) => {
-      let value = parseFloat(e.target.value) || 0;
+  const heightMapFunc = useCallback(
+    (value) => {
       let updatingMap = {
         height: value,
       };
@@ -90,20 +72,13 @@ export const SizeProperty = React.memo((props) => {
           (value * currentLayer.layer_data.width) /
           currentLayer.layer_data.height;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeHeightDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeHeightDebounced, setMultiFieldValue, values]
+    [currentLayer, values]
   );
 
-  const handleChangeScaleXDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeScaleX = useCallback(
-    (e) => {
-      let value = parseFloat(e.target.value) || 0;
+  const scaleXMapFunc = useCallback(
+    (value) => {
       let updatingMap = {
         scaleX: value,
       };
@@ -112,20 +87,13 @@ export const SizeProperty = React.memo((props) => {
           (value * currentLayer.layer_data.scaleY) /
           currentLayer.layer_data.scaleX;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeScaleXDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeScaleXDebounced, setMultiFieldValue, values]
+    [currentLayer, values]
   );
 
-  const handleChangeScaleYDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeScaleY = useCallback(
-    (e) => {
-      let value = parseFloat(e.target.value) || 0;
+  const scaleYMapFunc = useCallback(
+    (value) => {
       let updatingMap = {
         scaleY: value,
       };
@@ -134,20 +102,13 @@ export const SizeProperty = React.memo((props) => {
           (value * currentLayer.layer_data.scaleX) /
           currentLayer.layer_data.scaleY;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeScaleYDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeScaleYDebounced, setMultiFieldValue, values]
+    [currentLayer, values]
   );
 
-  const handleChangeInnerRadiusDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeInnerRadius = useCallback(
-    (e) => {
-      let value = parseFloat(e.target.value) || 0;
+  const innerRadiusMapFunc = useCallback(
+    (value) => {
       let updatingMap = {
         innerRadius: value,
       };
@@ -156,20 +117,13 @@ export const SizeProperty = React.memo((props) => {
           (value * currentLayer.layer_data.outerRadius) /
           currentLayer.layer_data.innerRadius;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeInnerRadiusDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeInnerRadiusDebounced, setMultiFieldValue, values]
+    [currentLayer, values]
   );
 
-  const handleChangeOuterRadiusDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeOuterRadius = useCallback(
-    (e) => {
-      let value = parseFloat(e.target.value) || 0;
+  const outerRadiusMapFunc = useCallback(
+    (value) => {
       let updatingMap = {
         outerRadius: value,
       };
@@ -178,62 +132,9 @@ export const SizeProperty = React.memo((props) => {
           (value * currentLayer.layer_data.innerRadius) /
           currentLayer.layer_data.outerRadius;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeOuterRadiusDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeOuterRadiusDebounced, setMultiFieldValue, values]
-  );
-
-  const handleToggleSizeLockedDebounced = useDebouncedCallback(
-    () => toggleLayerDataField("sizeLocked"),
-    1000
-  );
-
-  const handleToggleSizeLocked = useCallback(() => {
-    setFieldValue(`layer_data.sizeLocked`, !values.layer_data.sizeLocked);
-    handleToggleSizeLockedDebounced();
-  }, [handleToggleSizeLockedDebounced, setFieldValue, values]);
-
-  const handleRadiusChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("radius", value),
-    1000
-  );
-
-  const handleRadiusChange = useCallback(
-    (e) => {
-      let value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.radius`, value);
-      handleRadiusChangeDebounced(value);
-    },
-    [handleRadiusChangeDebounced, setFieldValue]
-  );
-
-  const handlePointerWidthChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("pointerWidth", value),
-    1000
-  );
-
-  const handlePointerWidthChange = useCallback(
-    (e) => {
-      let value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.pointerWidth`, value);
-      handlePointerWidthChangeDebounced(value);
-    },
-    [handlePointerWidthChangeDebounced, setFieldValue]
-  );
-
-  const handlePointerLengthChangeDebounced = useDebouncedCallback(
-    (value) => onDataFieldChange("pointerLength", value),
-    1000
-  );
-
-  const handlePointerLengthChange = useCallback(
-    (e) => {
-      let value = Number(e.target.value) || 0;
-      setFieldValue(`layer_data.pointerLength`, value);
-      handlePointerLengthChangeDebounced(value);
-    },
-    [handlePointerLengthChangeDebounced, setFieldValue]
+    [currentLayer, values]
   );
 
   if (
@@ -263,8 +164,10 @@ export const SizeProperty = React.memo((props) => {
             alignItems="center"
           >
             {AllowedLayerTypes.includes("layer_data.width") ? (
-              <SmallTextField
+              <FormTextField
                 name="layer_data.width"
+                fieldKey="width"
+                fieldFunc={widthMapFunc}
                 label={
                   values.layer_data.type !== MouseModes.ELLIPSE
                     ? "Width"
@@ -287,7 +190,8 @@ export const SizeProperty = React.memo((props) => {
                   errors.layer_data.width
                 }
                 onBlur={handleBlur}
-                onChange={handleChangeWidth}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -300,21 +204,25 @@ export const SizeProperty = React.memo((props) => {
             )}
             {AllowedLayerTypes.includes("layer_data.width") &&
             AllowedLayerTypes.includes("layer_data.height") ? (
-              <LockButton
+              <FormLockButton
+                fieldKey="sizeLocked"
                 disabled={!editable}
                 locked={
                   values.layer_data.sizeLocked || pressingShiftKey
                     ? "true"
                     : "false"
                 }
-                onClick={handleToggleSizeLocked}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             ) : (
               <></>
             )}
             {AllowedLayerTypes.includes("layer_data.height") ? (
-              <SmallTextField
+              <FormTextField
                 name="layer_data.height"
+                fieldKey="height"
+                fieldFunc={heightMapFunc}
                 label={
                   values.layer_data.type !== MouseModes.ELLIPSE
                     ? "Height"
@@ -337,7 +245,8 @@ export const SizeProperty = React.memo((props) => {
                   errors.layer_data.height
                 }
                 onBlur={handleBlur}
-                onChange={handleChangeHeight}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -356,8 +265,10 @@ export const SizeProperty = React.memo((props) => {
             alignItems="center"
           >
             {AllowedLayerTypes.includes("layer_data.scaleX") ? (
-              <SmallTextField
+              <FormTextField
                 name="layer_data.scaleX"
+                fieldKey="scaleX"
+                fieldFunc={scaleXMapFunc}
                 label="Scale (X)"
                 variant="outlined"
                 type="number"
@@ -376,7 +287,8 @@ export const SizeProperty = React.memo((props) => {
                   errors.layer_data.scaleX
                 }
                 onBlur={handleBlur}
-                onChange={handleChangeScaleX}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -392,21 +304,25 @@ export const SizeProperty = React.memo((props) => {
             )}
             {AllowedLayerTypes.includes("layer_data.scaleX") &&
             AllowedLayerTypes.includes("layer_data.scaleY") ? (
-              <LockButton
+              <FormLockButton
+                fieldKey="sizeLocked"
                 disabled={!editable}
                 locked={
                   values.layer_data.sizeLocked || pressingShiftKey
                     ? "true"
                     : "false"
                 }
-                onClick={handleToggleSizeLocked}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             ) : (
               <></>
             )}
             {AllowedLayerTypes.includes("layer_data.scaleY") ? (
-              <SmallTextField
+              <FormTextField
                 name="layer_data.scaleY"
+                fieldKey="scaleY"
+                fieldFunc={scaleYMapFunc}
                 label="Scale (Y)"
                 variant="outlined"
                 type="number"
@@ -425,7 +341,8 @@ export const SizeProperty = React.memo((props) => {
                   errors.layer_data.scaleY
                 }
                 onBlur={handleBlur}
-                onChange={handleChangeScaleY}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -447,8 +364,10 @@ export const SizeProperty = React.memo((props) => {
             alignItems="center"
           >
             {AllowedLayerTypes.includes("layer_data.innerRadius") ? (
-              <SmallTextField
+              <FormTextField
                 name="layer_data.innerRadius"
+                fieldKey="innerRadius"
+                fieldFunc={innerRadiusMapFunc}
                 label="Inner Radius"
                 variant="outlined"
                 type="number"
@@ -467,7 +386,8 @@ export const SizeProperty = React.memo((props) => {
                   errors.layer_data.innerRadius
                 }
                 onBlur={handleBlur}
-                onChange={handleChangeInnerRadius}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -480,21 +400,25 @@ export const SizeProperty = React.memo((props) => {
             )}
             {AllowedLayerTypes.includes("layer_data.innerRadius") &&
             AllowedLayerTypes.includes("layer_data.outerRadius") ? (
-              <LockButton
+              <FormLockButton
+                fieldKey="sizeLocked"
                 disabled={!editable}
-                onClick={handleToggleSizeLocked}
                 locked={
                   values.layer_data.sizeLocked || pressingShiftKey
                     ? "true"
                     : "false"
                 }
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
               />
             ) : (
               <></>
             )}
             {AllowedLayerTypes.includes("layer_data.outerRadius") ? (
-              <SmallTextField
+              <FormTextField
                 name="layer_data.outerRadius"
+                fieldKey="outerRadius"
+                fieldFunc={outerRadiusMapFunc}
                 label="Outer Radius"
                 variant="outlined"
                 type="number"
@@ -513,7 +437,8 @@ export const SizeProperty = React.memo((props) => {
                   errors.layer_data.outerRadius
                 }
                 onBlur={handleBlur}
-                onChange={handleChangeOuterRadius}
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
                 fullWidth
                 margin="normal"
                 mb={4}
@@ -526,8 +451,9 @@ export const SizeProperty = React.memo((props) => {
             )}
           </Box>
           {AllowedLayerTypes.includes("layer_data.radius") ? (
-            <SmallTextField
+            <FormTextField
               name="layer_data.radius"
+              fieldKey="radius"
               label="Radius"
               variant="outlined"
               type="number"
@@ -546,7 +472,8 @@ export const SizeProperty = React.memo((props) => {
                 errors.layer_data.radius
               }
               onBlur={handleBlur}
-              onChange={handleRadiusChange}
+              onUpdateField={onLayerDataUpdateOnly}
+              onUpdateDB={onLayerDataUpdate}
               fullWidth
               margin="normal"
               mb={4}
@@ -558,8 +485,9 @@ export const SizeProperty = React.memo((props) => {
             <></>
           )}
           {AllowedLayerTypes.includes("layer_data.pointerWidth") ? (
-            <SmallTextField
+            <FormTextField
               name="layer_data.pointerWidth"
+              fieldKey="pointerWidth"
               label="Pointer Width"
               variant="outlined"
               type="number"
@@ -578,7 +506,8 @@ export const SizeProperty = React.memo((props) => {
                 errors.layer_data.pointerWidth
               }
               onBlur={handleBlur}
-              onChange={handlePointerWidthChange}
+              onUpdateField={onLayerDataUpdateOnly}
+              onUpdateDB={onLayerDataUpdate}
               fullWidth
               margin="normal"
               mb={4}
@@ -590,8 +519,9 @@ export const SizeProperty = React.memo((props) => {
             <></>
           )}
           {AllowedLayerTypes.includes("layer_data.pointerLength") ? (
-            <SmallTextField
+            <FormTextField
               name="layer_data.pointerLength"
+              fieldKey="pointerLength"
               label="Pointer Length"
               variant="outlined"
               type="number"
@@ -610,7 +540,8 @@ export const SizeProperty = React.memo((props) => {
                 errors.layer_data.pointerLength
               }
               onBlur={handleBlur}
-              onChange={handlePointerLengthChange}
+              onUpdateField={onLayerDataUpdateOnly}
+              onUpdateDB={onLayerDataUpdate}
               fullWidth
               margin="normal"
               mb={4}

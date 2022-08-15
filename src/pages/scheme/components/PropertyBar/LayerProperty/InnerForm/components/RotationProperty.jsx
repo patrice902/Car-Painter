@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 
 import { AllowedLayerProps, LayerTypes } from "constant";
-import { useDebouncedCallback } from "use-debounce";
 import {
   rotateAroundCenter,
   isCenterBasedShape,
@@ -14,7 +13,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  IconButton,
 } from "@material-ui/core";
 import {
   ExpandMore as ExpandMoreIcon,
@@ -25,8 +23,8 @@ import {
 } from "@material-ui/icons";
 import { faSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { SliderInput } from "components/common";
 import { LabelTypography } from "../../../PropertyBar.style";
+import { FormIconButton, FormSliderInput } from "../../../components";
 
 export const RotationProperty = React.memo((props) => {
   const {
@@ -34,8 +32,8 @@ export const RotationProperty = React.memo((props) => {
     stageRef,
     currentLayer,
     values,
-    setMultiFieldValue,
-    onLayerDataMultiUpdate,
+    onLayerDataUpdate,
+    onLayerDataUpdateOnly,
   } = props;
   const layerDataProperties = ["rotation", "flip", "flop"];
   const [expanded, setExpanded] = useState(true);
@@ -49,12 +47,7 @@ export const RotationProperty = React.memo((props) => {
     [values]
   );
 
-  const handleChangeRotationDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleChangeRotation = useCallback(
+  const rotationMapFunc = useCallback(
     (value) => {
       let updatingMap = {
         rotation: value,
@@ -79,18 +72,12 @@ export const RotationProperty = React.memo((props) => {
         updatingMap.left = newBoundBox.x;
         updatingMap.top = newBoundBox.y;
       }
-      setMultiFieldValue(updatingMap);
-      handleChangeRotationDebounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleChangeRotationDebounced, setMultiFieldValue, stageRef]
+    [currentLayer, stageRef]
   );
 
-  const handleRotate90Debounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleRotate90 = useCallback(
+  const rotate90MapFunc = useCallback(
     (isLeft = true) => {
       const stage = stageRef.current;
       const selectedNode = stage.findOne("." + currentLayer.id);
@@ -120,18 +107,12 @@ export const RotationProperty = React.memo((props) => {
         updatingMap.top = newBoundBox.y;
       }
 
-      setMultiFieldValue(updatingMap);
-      handleRotate90Debounced(updatingMap);
+      return updatingMap;
     },
-    [currentLayer, handleRotate90Debounced, setMultiFieldValue, stageRef]
+    [currentLayer, stageRef]
   );
 
-  const handleToggleFlopDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
-
-  const handleToggleFlop = useCallback(() => {
+  const flopMapFunc = useCallback(() => {
     const newFlop = values.layer_data.flop ? 0 : 1;
     const rot = (values.layer_data.rotation / 180) * Math.PI;
     const node = stageRef.current.find(`.${currentLayer.id}`)[0];
@@ -147,22 +128,11 @@ export const RotationProperty = React.memo((props) => {
       top: values.layer_data.top + (newFlop ? 1 : -1) * Math.sin(rot) * width,
       flop: newFlop,
     };
-    onLayerDataMultiUpdate(updatingMap);
-    handleToggleFlopDebounced(updatingMap);
-  }, [
-    currentLayer,
-    onLayerDataMultiUpdate,
-    handleToggleFlopDebounced,
-    stageRef,
-    values,
-  ]);
 
-  const handleToggleFlipDebounced = useDebouncedCallback(
-    (value) => onLayerDataMultiUpdate(value),
-    1000
-  );
+    return updatingMap;
+  }, [currentLayer, stageRef, values]);
 
-  const handleToggleFlip = useCallback(() => {
+  const flipMapFunc = useCallback(() => {
     const newFlip = values.layer_data.flip ? 0 : 1;
     const rot = (values.layer_data.rotation / 180) * Math.PI;
     const node = stageRef.current.find(`.${currentLayer.id}`)[0];
@@ -179,15 +149,9 @@ export const RotationProperty = React.memo((props) => {
       top: values.layer_data.top + (newFlip ? 1 : -1) * Math.cos(rot) * height,
       flip: newFlip,
     };
-    onLayerDataMultiUpdate(updatingMap);
-    handleToggleFlipDebounced(updatingMap);
-  }, [
-    currentLayer,
-    handleToggleFlipDebounced,
-    onLayerDataMultiUpdate,
-    stageRef,
-    values,
-  ]);
+
+    return updatingMap;
+  }, [currentLayer, stageRef, values]);
 
   if (
     !AllowedLayerTypes ||
@@ -212,14 +176,16 @@ export const RotationProperty = React.memo((props) => {
           {AllowedLayerTypes.includes("layer_data.rotation") ? (
             <>
               <Box display="flex" height="40px" alignItems="center">
-                <SliderInput
+                <FormSliderInput
                   label="Rotation"
+                  fieldKey="rotation"
                   min={-179}
                   max={179}
                   value={Math.round(values.layer_data.rotation)}
                   disabled={!editable}
-                  setValue={handleChangeRotation}
-                  small
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
+                  fieldFunc={rotationMapFunc}
                 />
               </Box>
               <Box
@@ -232,13 +198,14 @@ export const RotationProperty = React.memo((props) => {
                 <LabelTypography variant="body1" color="textSecondary" mr={2}>
                   Rotate Left
                 </LabelTypography>
-                <IconButton
+                <FormIconButton
                   disabled={!editable}
-                  onClick={() => handleRotate90()}
-                  size="small"
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
+                  fieldFunc={rotate90MapFunc}
                 >
                   <RotateLeftIcon />
-                </IconButton>
+                </FormIconButton>
               </Box>
               <Box
                 display="flex"
@@ -250,13 +217,14 @@ export const RotationProperty = React.memo((props) => {
                 <LabelTypography variant="body1" color="textSecondary" mr={2}>
                   Rotate Right
                 </LabelTypography>
-                <IconButton
+                <FormIconButton
                   disabled={!editable}
-                  onClick={() => handleRotate90(false)}
-                  size="small"
+                  onUpdateField={onLayerDataUpdateOnly}
+                  onUpdateDB={onLayerDataUpdate}
+                  fieldFunc={() => rotate90MapFunc(false)}
                 >
                   <RotateRightIcon />
-                </IconButton>
+                </FormIconButton>
               </Box>
             </>
           ) : (
@@ -273,10 +241,11 @@ export const RotationProperty = React.memo((props) => {
               <LabelTypography variant="body1" color="textSecondary" mr={2}>
                 Flop
               </LabelTypography>
-              <IconButton
+              <FormIconButton
                 disabled={!editable}
-                onClick={handleToggleFlop}
-                size="small"
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
+                fieldFunc={flopMapFunc}
               >
                 {values.layer_data.flop ? (
                   <SwapHorizIcon />
@@ -288,7 +257,7 @@ export const RotationProperty = React.memo((props) => {
                     </Box>
                   </>
                 )}
-              </IconButton>
+              </FormIconButton>
             </Box>
           ) : (
             <></>
@@ -304,10 +273,11 @@ export const RotationProperty = React.memo((props) => {
               <LabelTypography variant="body1" color="textSecondary" mr={2}>
                 Flip
               </LabelTypography>
-              <IconButton
+              <FormIconButton
                 disabled={!editable}
-                onClick={handleToggleFlip}
-                size="small"
+                onUpdateField={onLayerDataUpdateOnly}
+                onUpdateDB={onLayerDataUpdate}
+                fieldFunc={flipMapFunc}
               >
                 {values.layer_data.flip ? (
                   <SwapVertIcon />
@@ -319,7 +289,7 @@ export const RotationProperty = React.memo((props) => {
                     </Box>
                   </>
                 )}
-              </IconButton>
+              </FormIconButton>
             </Box>
           ) : (
             <></>

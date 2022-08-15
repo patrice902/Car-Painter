@@ -149,14 +149,7 @@ export const slice = createSlice({
       state.sharedUsers = [];
     },
     setCurrent: (state, action) => {
-      let scheme = { ...state.current, ...action.payload };
-      if (
-        scheme &&
-        (typeof scheme.guide_data === "string" || !scheme.guide_data)
-      ) {
-        scheme.guide_data = JSON.parse(scheme.guide_data || null) || {};
-      }
-      state.current = scheme;
+      state.current = mergeTwoScheme(state.current, action.payload);
     },
     setOwner: (state, action) => {
       state.owner = action.payload;
