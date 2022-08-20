@@ -125,7 +125,6 @@ export const parseLayer = (layer) => {
 
 export const mergeTwoLayer = (originLayer, targetLayer) => {
   if (!targetLayer) return null;
-  if (!originLayer) return targetLayer;
 
   let convertedLayer = { ...targetLayer };
   if (!convertedLayer.layer_data) {
@@ -135,10 +134,10 @@ export const mergeTwoLayer = (originLayer, targetLayer) => {
   }
 
   const newLayer = {
-    ...originLayer,
+    ...(originLayer || {}),
     ...convertedLayer,
     layer_data: {
-      ...originLayer.layer_data,
+      ...(originLayer ? originLayer.layer_data : {}),
       ...convertedLayer.layer_data,
     },
   };
@@ -148,7 +147,6 @@ export const mergeTwoLayer = (originLayer, targetLayer) => {
 
 export const mergeTwoScheme = (originScheme, targetScheme) => {
   if (!targetScheme) return null;
-  if (!originScheme) return targetScheme;
 
   let convertedScheme = { ...targetScheme };
   if (!convertedScheme.guide_data) {
@@ -158,10 +156,10 @@ export const mergeTwoScheme = (originScheme, targetScheme) => {
   }
 
   const newScheme = {
-    ...originScheme,
+    ...(originScheme || {}),
     ...convertedScheme,
     guide_data: {
-      ...originScheme.guide_data,
+      ...(originScheme ? originScheme.guide_data : {}),
       ...convertedScheme.guide_data,
     },
   };

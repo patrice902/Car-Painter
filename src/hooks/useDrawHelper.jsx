@@ -95,7 +95,7 @@ export const useDrawHelper = (stageRef) => {
     }
   }, 5);
 
-  const handleMouseDown = useCallback(
+  const onMouseDown = useCallback(
     (e) => {
       if (mouseMode === MouseModes.DEFAULT) {
         const clickedOnEmpty = e.target === e.target.getStage();
@@ -106,7 +106,7 @@ export const useDrawHelper = (stageRef) => {
     },
     [dispatch, mouseMode, currentLayer]
   );
-  const handleContentMouseDown = useCallback(
+  const onContentMouseDown = useCallback(
     (e) => {
       if (mouseMode !== MouseModes.DEFAULT) {
         const position = getRelativePointerPosition(stageRef.current);
@@ -172,7 +172,7 @@ export const useDrawHelper = (stageRef) => {
     },
     [dispatch, mouseMode, currentScheme.guide_data, drawingLayerRef, stageRef]
   );
-  const handleMouseMove = useCallback(() => {
+  const onMouseMove = useCallback(() => {
     if (mouseMode !== MouseModes.DEFAULT && drawingLayerRef.current) {
       const position = getRelativePointerPosition(stageRef.current);
       const width = position.x - drawingLayerRef.current.layer_data.left;
@@ -236,7 +236,7 @@ export const useDrawHelper = (stageRef) => {
       prevTick.current = currentTick.current;
     }
   }, [mouseMode, drawingLayerRef, stageRef, currentTick]);
-  const handleMouseUp = useCallback(
+  const onMouseUp = useCallback(
     (e) => {
       if (
         ![
@@ -253,7 +253,7 @@ export const useDrawHelper = (stageRef) => {
     },
     [mouseMode, stageRef, dispatch]
   );
-  const handleDoubleClick = useCallback(
+  const onDoubleClick = useCallback(
     (e) => {
       const position = getRelativePointerPosition(stageRef.current);
       if (
@@ -310,7 +310,7 @@ export const useDrawHelper = (stageRef) => {
     },
     [dispatch, paintingGuides, previousGuide, setPreviousGuide, currentScheme]
   );
-  const handleLayerDragStart = useCallback(
+  const onLayerDragStart = useCallback(
     (layer) => {
       if (
         currentScheme.guide_data.show_wireframe ||
@@ -327,7 +327,7 @@ export const useDrawHelper = (stageRef) => {
     },
     [dispatch, showGuideForRepositioning, currentScheme, pressedKey]
   );
-  const handleLayerDragEnd = useCallback(() => {
+  const onLayerDragEnd = useCallback(() => {
     if (
       currentScheme.guide_data.show_wireframe ||
       currentScheme.guide_data.show_numberBlocks ||
@@ -338,9 +338,9 @@ export const useDrawHelper = (stageRef) => {
     dispatch(setDrawingStatus(null));
   }, [dispatch, showGuideForRepositioning, currentScheme]);
 
-  const handleDragEnd = useCallback(() => {}, []);
+  const onDragEnd = useCallback(() => {}, []);
 
-  const handleContextMenu = useCallback(
+  const onContextMenu = useCallback(
     (e) => {
       e.evt.preventDefault(true);
       const stage = e.target.getStage();
@@ -357,16 +357,16 @@ export const useDrawHelper = (stageRef) => {
     [dispatch]
   );
 
-  return [
+  return {
     drawingLayerRef,
-    handleMouseDown,
-    handleMouseUp,
-    handleMouseMove,
-    handleContentMouseDown,
-    handleDoubleClick,
-    handleLayerDragStart,
-    handleLayerDragEnd,
-    handleDragEnd,
-    handleContextMenu,
-  ];
+    onMouseDown,
+    onMouseUp,
+    onMouseMove,
+    onContentMouseDown,
+    onDoubleClick,
+    onLayerDragStart,
+    onLayerDragEnd,
+    onDragEnd,
+    onContextMenu,
+  };
 };

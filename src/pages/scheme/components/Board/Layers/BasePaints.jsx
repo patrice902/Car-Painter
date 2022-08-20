@@ -1,35 +1,36 @@
 import React, { useMemo, useCallback } from "react";
 import _ from "lodash";
 
-import { FinishOptions, LayerTypes } from "constant";
+import { FinishOptions, LayerTypes, ViewModes } from "constant";
 import { basePaintAssetURL, legacyBasePaintAssetURL } from "helper";
 
 import { URLImage } from "components/konva";
 import config from "config";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
-export const BasePaints = React.memo((props) => {
+export const BasePaints = React.memo(() => {
+  const { legacyMode } = useScheme();
   const {
-    specMode,
-    legacyMode,
-    layers,
-    carMake,
-    handleImageSize,
+    layerList,
+    loadedStatuses,
     onLoadLayer,
-  } = props;
+    onExpandFrameFromImage,
+  } = useLayer();
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
-  );
+  const carMake = useSelector((state) => state.carMakeReducer.current);
+  const viewMode = useSelector((state) => state.boardReducer.viewMode);
+
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const filteredLayers = useMemo(
     () =>
       _.orderBy(
-        layers.filter((item) => item.layer_type === LayerTypes.BASE),
+        layerList.filter((item) => item.layer_type === LayerTypes.BASE),
         ["layer_order"],
         ["desc"]
       ),
-    [layers]
+    [layerList]
   );
   const getLayerImage = useCallback(
     (layer) => {
@@ -65,7 +66,7 @@ export const BasePaints = React.memo((props) => {
           listening={false}
           visible={layer.layer_visible ? true : false}
           loadedStatus={loadedStatuses[layer.id]}
-          tellSize={handleImageSize}
+          tellSize={onExpandFrameFromImage}
           onLoadLayer={onLoadLayer}
         />
       ))}

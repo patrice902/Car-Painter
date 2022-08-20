@@ -59,7 +59,7 @@ const Scheme = React.memo((props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const params = useParams();
-  const [, , , onZoomFit] = useZoom(stageRef);
+  const { onZoomFit } = useZoom(stageRef);
 
   const [hoveredJSON, setHoveredJSON] = useState({});
   const [transformingLayer, setTransformingLayer] = useState(null);

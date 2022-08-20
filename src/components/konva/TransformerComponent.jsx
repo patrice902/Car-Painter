@@ -10,9 +10,13 @@ import { LayerTypes } from "constant";
 import useImage from "use-image";
 import { rgb } from "color";
 import RotateIcon from "assets/rotate-left.svg";
+import { useSelector } from "react-redux";
 
 export const TransformerComponent = React.memo(
-  ({ trRef, selectedLayer, pressedKey, hoveredTransform, zoom }) => {
+  ({ trRef, selectedLayer, hoveredTransform }) => {
+    const zoom = useSelector((state) => state.boardReducer.zoom);
+    const pressedKey = useSelector((state) => state.boardReducer.pressedKey);
+
     const minScaledSize = useMemo(
       () =>
         selectedLayer

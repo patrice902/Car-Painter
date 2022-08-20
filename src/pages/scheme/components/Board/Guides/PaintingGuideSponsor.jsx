@@ -4,19 +4,15 @@ import { PaintingGuides } from "constant";
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
 export const PaintingGuideSponsor = React.memo((props) => {
-  const {
-    legacyMode,
-    paintingGuides,
-    carMake,
-    handleImageSize,
-    guideData,
-    onLoadLayer,
-  } = props;
+  const { legacyMode, guideData } = useScheme();
+  const { loadedStatuses, onLoadLayer, onExpandFrameFromImage } = useLayer();
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
+  const carMake = useSelector((state) => state.carMakeReducer.current);
+  const paintingGuides = useSelector(
+    (state) => state.boardReducer.paintingGuides
   );
 
   const getCarMakeImage = useCallback(
@@ -39,7 +35,7 @@ export const PaintingGuideSponsor = React.memo((props) => {
       y={0}
       width={legacyMode ? 1024 : 2048}
       height={legacyMode ? 1024 : 2048}
-      tellSize={handleImageSize}
+      tellSize={onExpandFrameFromImage}
       filterColor={guideData.sponsor_color}
       opacity={guideData.sponsor_opacity}
       listening={false}

@@ -5,22 +5,20 @@ import { PaintingGuides } from "constant";
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
 export const PaintingGuideTop = React.memo((props) => {
-  const {
-    legacyMode,
-    paintingGuides,
-    carMake,
-    handleImageSize,
-    frameSize,
-    guideData,
-    onLoadLayer,
-  } = props;
+  const { legacyMode, guideData } = useScheme();
+  const { loadedStatuses, onLoadLayer, onExpandFrameFromImage } = useLayer();
+
+  const carMake = useSelector((state) => state.carMakeReducer.current);
+  const paintingGuides = useSelector(
+    (state) => state.boardReducer.paintingGuides
+  );
+  const frameSize = useSelector((state) => state.boardReducer.frameSize);
+
   const gridPadding = useMemo(() => guideData.grid_padding || 10, [guideData]);
   const gridStroke = useMemo(() => guideData.grid_stroke || 0.1, [guideData]);
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
-  );
 
   const getCarMakeImage = useCallback(
     (image) => {
@@ -43,7 +41,7 @@ export const PaintingGuideTop = React.memo((props) => {
         y={0}
         width={legacyMode ? 1024 : 2048}
         height={legacyMode ? 1024 : 2048}
-        tellSize={handleImageSize}
+        tellSize={onExpandFrameFromImage}
         filterColor={guideData.wireframe_color}
         opacity={guideData.wireframe_opacity}
         listening={false}

@@ -5,13 +5,14 @@ import { setZoom } from "redux/reducers/boardReducer";
 import { mathRound4 } from "helper";
 
 export const useZoom = (stageRef) => {
+  const scaleBy = 1.2;
   const dispatch = useDispatch();
 
   const zoom = useSelector((state) => state.boardReducer.zoom);
   const frameSize = useSelector((state) => state.boardReducer.frameSize);
   const currentLayer = useSelector((state) => state.layerReducer.current);
 
-  const handleZoom = useCallback(
+  const onZoom = useCallback(
     (newScale) => {
       if (currentLayer && currentLayer.layer_data) {
         const stage = stageRef.current;
@@ -40,17 +41,47 @@ export const useZoom = (stageRef) => {
     [dispatch, currentLayer, stageRef]
   );
 
-  const handleZoomIn = useCallback(() => {
+  const onWheelZoom = useCallback(
+    (event) => {
+      event.evt.preventDefault();
+      if (stageRef.current !== null && event.evt.ctrlKey) {
+        const stage = stageRef.current;
+        const oldScale = stage.scaleX();
+        const { x: pointerX, y: pointerY } = stage.getPointerPosition();
+        const mousePointTo = {
+          x: (pointerX - stage.x()) / oldScale,
+          y: (pointerY - stage.y()) / oldScale,
+        };
+        const newScale = Math.max(
+          Math.min(
+            event.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy,
+            10
+          ),
+          0.25
+        );
+        dispatch(setZoom(newScale));
+        const newPos = {
+          x: pointerX - mousePointTo.x * newScale,
+          y: pointerY - mousePointTo.y * newScale,
+        };
+        stage.position(newPos);
+        stage.batchDraw();
+      }
+    },
+    [dispatch, stageRef]
+  );
+
+  const onZoomIn = useCallback(() => {
     const newScale = mathRound4(Math.max(Math.min(zoom * 1.25, 10), 0.25));
-    handleZoom(newScale);
-  }, [zoom, handleZoom]);
+    onZoom(newScale);
+  }, [zoom, onZoom]);
 
-  const handleZoomOut = useCallback(() => {
+  const onZoomOut = useCallback(() => {
     const newScale = mathRound4(Math.max(Math.min(zoom / 1.25, 10), 0.25));
-    handleZoom(newScale);
-  }, [zoom, handleZoom]);
+    onZoom(newScale);
+  }, [zoom, onZoom]);
 
-  const handleZoomFit = useCallback(() => {
+  const onZoomFit = useCallback(() => {
     if (stageRef.current) {
       let width = stageRef.current.attrs.width || 1024;
       let height = stageRef.current.attrs.height || 1024;
@@ -67,5 +98,5 @@ export const useZoom = (stageRef) => {
     }
   }, [dispatch, stageRef, frameSize]);
 
-  return [zoom, handleZoomIn, handleZoomOut, handleZoomFit];
+  return { zoom, onZoomIn, onZoomOut, onZoomFit, onWheelZoom };
 };

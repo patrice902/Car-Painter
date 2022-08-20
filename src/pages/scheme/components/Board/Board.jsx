@@ -1,14 +1,9 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Stage, Layer, Rect, Shape } from "react-konva";
-import {
-  useSelector,
-  useDispatch,
-  ReactReduxContext,
-  Provider,
-} from "react-redux";
+import { useSelector, ReactReduxContext, Provider } from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
 
-import { MouseModes, ViewModes, FinishOptions } from "constant";
+import { MouseModes, ViewModes } from "constant";
 
 import { Box } from "@material-ui/core";
 import { ScreenLoader } from "components/common";
@@ -28,23 +23,7 @@ import {
 } from "./Layers";
 import { TransformerComponent } from "components/konva";
 
-import {
-  setFrameSizeToMax,
-  setShowProperties,
-  setZoom,
-} from "redux/reducers/boardReducer";
-import { insertToLoadedList as insertToLoadedFontList } from "redux/reducers/fontReducer";
-import {
-  setCurrent as setCurrentLayer,
-  updateLayer,
-  setLoadedStatus,
-  setCloningLayer,
-  cloneLayer,
-  insertToCloningQueue,
-  deleteCloningQueueByID,
-} from "redux/reducers/layerReducer";
-import { useDrawHelper } from "hooks";
-import { v4 as uuidv4 } from "uuid";
+import { useDrawHelper, useZoom } from "hooks";
 import { BoardContextMenu } from "components/dialogs";
 
 export const Board = React.memo(
@@ -62,45 +41,29 @@ export const Board = React.memo(
     onDeleteLayer,
     onCloneLayer,
   }) => {
-    const scaleBy = 1.2;
-    const [
+    const {
       drawingLayerRef,
       onMouseDown,
       onMouseUp,
       onMouseMove,
       onContentMouseDown,
       onDoubleClick,
-      onLayerDragStart,
-      onLayerDragEnd,
       onDragEnd,
       onContextMenu,
-    ] = useDrawHelper(stageRef);
-
-    const dispatch = useDispatch();
+      onLayerDragStart,
+      onLayerDragEnd,
+    } = useDrawHelper(stageRef);
+    const { zoom, onWheelZoom } = useZoom(stageRef);
 
     const frameSize = useSelector((state) => state.boardReducer.frameSize);
-    const zoom = useSelector((state) => state.boardReducer.zoom);
-    const paintingGuides = useSelector(
-      (state) => state.boardReducer.paintingGuides
-    );
-    const pressedKey = useSelector((state) => state.boardReducer.pressedKey);
     const boardRotate = useSelector((state) => state.boardReducer.boardRotate);
     const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
     const viewMode = useSelector((state) => state.boardReducer.viewMode);
-    const currentCarMake = useSelector((state) => state.carMakeReducer.current);
     const currentScheme = useSelector((state) => state.schemeReducer.current);
     const schemeSaving = useSelector((state) => state.schemeReducer.saving);
     const schemeLoaded = useSelector((state) => state.schemeReducer.loaded);
-    const fontList = useSelector((state) => state.fontReducer.list);
-    const loadedFontList = useSelector((state) => state.fontReducer.loadedList);
     const layerList = useSelector((state) => state.layerReducer.list);
     const currentLayer = useSelector((state) => state.layerReducer.current);
-    const cloningLayer = useSelector(
-      (state) => state.layerReducer.cloningLayer
-    );
-    const cloningQueue = useSelector(
-      (state) => state.layerReducer.cloningQueue
-    );
 
     const [wrapperPosition, setWrapperPosition] = useState({ x: 0, y: 56 });
     const {
@@ -114,114 +77,11 @@ export const Board = React.memo(
       },
     });
 
-    const schemeFinishBase = useMemo(() => {
-      const foundFinish = FinishOptions.find(
-        (item) => item.value === currentScheme.finish
-      );
-      if (foundFinish) return foundFinish.base;
-      return FinishOptions[0].base;
-    }, [currentScheme.finish]);
-
-    const handleZoomStage = useCallback(
-      (event) => {
-        event.evt.preventDefault();
-        if (stageRef.current !== null && event.evt.ctrlKey) {
-          const stage = stageRef.current;
-          const oldScale = stage.scaleX();
-          const { x: pointerX, y: pointerY } = stage.getPointerPosition();
-          const mousePointTo = {
-            x: (pointerX - stage.x()) / oldScale,
-            y: (pointerY - stage.y()) / oldScale,
-          };
-          const newScale = Math.max(
-            Math.min(
-              event.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy,
-              10
-            ),
-            0.25
-          );
-          dispatch(setZoom(newScale));
-          const newPos = {
-            x: pointerX - mousePointTo.x * newScale,
-            y: pointerY - mousePointTo.y * newScale,
-          };
-          stage.position(newPos);
-          stage.batchDraw();
-        }
-      },
-      [dispatch, stageRef]
-    );
-    const handleImageSize = useCallback(
-      (size) => {
-        if (frameSize.width < size.width || frameSize.height < size.height) {
-          dispatch(
-            setFrameSizeToMax({
-              width: Math.max(frameSize.width, size.width),
-              height: Math.max(frameSize.height, size.height),
-            })
-          );
-        }
-      },
-      [dispatch, frameSize]
-    );
-    const handleLayerDataChange = useCallback(
-      (layer, values, pushingToHistory = true) => {
-        dispatch(
-          updateLayer(
-            {
-              id: layer.id,
-              layer_data: {
-                ...values,
-              },
-            },
-            pushingToHistory
-          )
-        );
-      },
-      [dispatch]
-    );
-    const handleLayerSelect = useCallback(
-      (layer) => {
-        dispatch(setCurrentLayer(layer));
-      },
-      [dispatch]
-    );
     const handleHoverLayer = useCallback(
       (layer, flag) => {
         onChangeHoverJSONItem(layer.id, flag);
       },
       [onChangeHoverJSONItem]
-    );
-    const handleAddFont = useCallback(
-      (fontFamily) => {
-        dispatch(insertToLoadedFontList(fontFamily));
-      },
-      [dispatch]
-    );
-
-    const handleLoadLayer = useCallback(
-      (layerID, flag) => {
-        dispatch(setLoadedStatus({ key: layerID, value: flag }));
-      },
-      [dispatch]
-    );
-
-    const handleDblClickLayer = useCallback(() => {
-      dispatch(setShowProperties(true));
-    }, [dispatch]);
-
-    const handleCloneMoveLayer = useCallback(
-      (movedLayer) => {
-        const newQueueID = `cloning-layer-${uuidv4()}`;
-        dispatch(setCloningLayer(null));
-        dispatch(insertToCloningQueue({ ...movedLayer, id: newQueueID }));
-        dispatch(
-          cloneLayer(movedLayer, true, true, {}, () => {
-            dispatch(deleteCloningQueueByID(newQueueID));
-          })
-        );
-      },
-      [dispatch]
     );
 
     return (
@@ -250,7 +110,7 @@ export const Board = React.memo(
                 onContentMouseup={onMouseUp}
                 onContextMenu={onContextMenu}
                 onDblClick={onDoubleClick}
-                onWheel={handleZoomStage}
+                onWheel={onWheelZoom}
                 scaleX={zoom || 1}
                 scaleY={zoom || 1}
                 rotation={boardRotate}
@@ -282,47 +142,20 @@ export const Board = React.memo(
                       listening={false}
                     />
                     {viewMode === ViewModes.SPEC_VIEW && (
-                      <SpecPaintingGuideCarMask
-                        legacyMode={currentScheme.legacy_mode}
-                        carMake={currentCarMake}
-                        finishBase={schemeFinishBase}
-                        handleImageSize={handleImageSize}
-                        onLoadLayer={handleLoadLayer}
-                      />
+                      <SpecPaintingGuideCarMask />
                     )}
-                    <BasePaints
-                      specMode={viewMode === ViewModes.SPEC_VIEW}
-                      legacyMode={currentScheme.legacy_mode}
-                      carMake={currentCarMake}
-                      layers={layerList}
-                      handleImageSize={handleImageSize}
-                      onLoadLayer={handleLoadLayer}
-                    />
+                    <BasePaints />
                   </Layer>
                   {!currentScheme.guide_data.show_sponsor_block_on_top ||
                   !currentScheme.guide_data.show_number_block_on_top ? (
                     <Layer listening={false}>
                       {!currentScheme.guide_data.show_sponsor_block_on_top ? (
-                        <PaintingGuideSponsor
-                          legacyMode={currentScheme.legacy_mode}
-                          carMake={currentCarMake}
-                          paintingGuides={paintingGuides}
-                          guideData={currentScheme.guide_data}
-                          handleImageSize={handleImageSize}
-                          onLoadLayer={handleLoadLayer}
-                        />
+                        <PaintingGuideSponsor />
                       ) : (
                         <></>
                       )}
                       {!currentScheme.guide_data.show_number_block_on_top ? (
-                        <PaintingGuideNumber
-                          legacyMode={currentScheme.legacy_mode}
-                          carMake={currentCarMake}
-                          paintingGuides={paintingGuides}
-                          guideData={currentScheme.guide_data}
-                          handleImageSize={handleImageSize}
-                          onLoadLayer={handleLoadLayer}
-                        />
+                        <PaintingGuideNumber />
                       ) : (
                         <></>
                       )}
@@ -333,14 +166,7 @@ export const Board = React.memo(
 
                   <Layer ref={mainLayerRef}>
                     {!currentScheme.guide_data.show_carparts_on_top ? (
-                      <CarParts
-                        layers={layerList}
-                        specMode={viewMode === ViewModes.SPEC_VIEW}
-                        legacyMode={currentScheme.legacy_mode}
-                        carMake={currentCarMake}
-                        handleImageSize={handleImageSize}
-                        onLoadLayer={handleLoadLayer}
-                      />
+                      <CarParts />
                     ) : (
                       <></>
                     )}
@@ -348,125 +174,47 @@ export const Board = React.memo(
                     <Overlays
                       stageRef={stageRef}
                       editable={editable}
-                      specMode={viewMode === ViewModes.SPEC_VIEW}
-                      layers={layerList}
-                      frameSize={frameSize}
-                      boardRotate={boardRotate}
-                      currentLayer={currentLayer}
-                      cloningLayer={cloningLayer}
-                      cloningQueue={cloningQueue}
-                      mouseMode={mouseMode}
-                      paintingGuides={paintingGuides}
-                      guideData={currentScheme.guide_data}
-                      handleImageSize={handleImageSize}
-                      onSelect={handleLayerSelect}
-                      onChange={handleLayerDataChange}
                       onHover={handleHoverLayer}
-                      onLoadLayer={handleLoadLayer}
-                      onDragStart={onLayerDragStart}
-                      onDragEnd={onLayerDragEnd}
-                      onCloneMove={handleCloneMoveLayer}
-                      onDblClick={handleDblClickLayer}
+                      onLayerDragStart={onLayerDragStart}
+                      onLayerDragEnd={onLayerDragEnd}
                       onSetTransformingLayer={setTransformingLayer}
                     />
                     <Shapes
                       stageRef={stageRef}
                       editable={editable}
-                      frameSize={frameSize}
-                      specMode={viewMode === ViewModes.SPEC_VIEW}
-                      layers={layerList}
                       drawingLayer={drawingLayerRef.current}
-                      boardRotate={boardRotate}
-                      mouseMode={mouseMode}
-                      currentLayer={currentLayer}
-                      cloningLayer={cloningLayer}
-                      cloningQueue={cloningQueue}
-                      paintingGuides={paintingGuides}
-                      guideData={currentScheme.guide_data}
-                      onSelect={handleLayerSelect}
-                      onChange={handleLayerDataChange}
                       onHover={handleHoverLayer}
-                      onLoadLayer={handleLoadLayer}
-                      onDragStart={onLayerDragStart}
-                      onDragEnd={onLayerDragEnd}
-                      onDblClick={handleDblClickLayer}
-                      onCloneMove={handleCloneMoveLayer}
+                      onLayerDragStart={onLayerDragStart}
+                      onLayerDragEnd={onLayerDragEnd}
                       onSetTransformingLayer={setTransformingLayer}
                     />
                     <LogosAndTexts
                       stageRef={stageRef}
                       editable={editable}
-                      specMode={viewMode === ViewModes.SPEC_VIEW}
-                      layers={layerList}
-                      fonts={fontList}
-                      loadedFontList={loadedFontList}
-                      frameSize={frameSize}
-                      mouseMode={mouseMode}
-                      boardRotate={boardRotate}
-                      currentLayer={currentLayer}
-                      cloningLayer={cloningLayer}
-                      cloningQueue={cloningQueue}
-                      paintingGuides={paintingGuides}
-                      guideData={currentScheme.guide_data}
-                      onSelect={handleLayerSelect}
-                      onChange={handleLayerDataChange}
-                      onFontLoad={handleAddFont}
                       onHover={handleHoverLayer}
-                      onLoadLayer={handleLoadLayer}
-                      onDragStart={onLayerDragStart}
-                      onDragEnd={onLayerDragEnd}
-                      onDblClick={handleDblClickLayer}
-                      onCloneMove={handleCloneMoveLayer}
+                      onLayerDragStart={onLayerDragStart}
+                      onLayerDragEnd={onLayerDragEnd}
                       onSetTransformingLayer={setTransformingLayer}
                     />
                     {currentScheme.guide_data.show_carparts_on_top ? (
-                      <CarParts
-                        layers={layerList}
-                        specMode={viewMode === ViewModes.SPEC_VIEW}
-                        legacyMode={currentScheme.legacy_mode}
-                        carMake={currentCarMake}
-                        handleImageSize={handleImageSize}
-                        onLoadLayer={handleLoadLayer}
-                      />
+                      <CarParts />
                     ) : (
                       <></>
                     )}
                   </Layer>
                   <Layer ref={carMaskLayerRef} listening={false}>
-                    <PaintingGuideCarMask
-                      specMode={viewMode === ViewModes.SPEC_VIEW}
-                      legacyMode={currentScheme.legacy_mode}
-                      carMake={currentCarMake}
-                      paintingGuides={paintingGuides}
-                      guideData={currentScheme.guide_data}
-                      handleImageSize={handleImageSize}
-                      onLoadLayer={handleLoadLayer}
-                    />
+                    <PaintingGuideCarMask />
                   </Layer>
                   {currentScheme.guide_data.show_sponsor_block_on_top ||
                   currentScheme.guide_data.show_number_block_on_top ? (
                     <Layer listening={false}>
                       {currentScheme.guide_data.show_sponsor_block_on_top ? (
-                        <PaintingGuideSponsor
-                          legacyMode={currentScheme.legacy_mode}
-                          carMake={currentCarMake}
-                          paintingGuides={paintingGuides}
-                          guideData={currentScheme.guide_data}
-                          handleImageSize={handleImageSize}
-                          onLoadLayer={handleLoadLayer}
-                        />
+                        <PaintingGuideSponsor />
                       ) : (
                         <></>
                       )}
                       {currentScheme.guide_data.show_number_block_on_top ? (
-                        <PaintingGuideNumber
-                          legacyMode={currentScheme.legacy_mode}
-                          carMake={currentCarMake}
-                          paintingGuides={paintingGuides}
-                          guideData={currentScheme.guide_data}
-                          handleImageSize={handleImageSize}
-                          onLoadLayer={handleLoadLayer}
-                        />
+                        <PaintingGuideNumber />
                       ) : (
                         <></>
                       )}
@@ -475,15 +223,7 @@ export const Board = React.memo(
                     <></>
                   )}
                   <Layer name="layer-guide-top">
-                    <PaintingGuideTop
-                      legacyMode={currentScheme.legacy_mode}
-                      carMake={currentCarMake}
-                      paintingGuides={paintingGuides}
-                      frameSize={frameSize}
-                      guideData={currentScheme.guide_data}
-                      handleImageSize={handleImageSize}
-                      onLoadLayer={handleLoadLayer}
-                    />
+                    <PaintingGuideTop />
                   </Layer>
 
                   {/* Clipping/Transforming Layer */}
@@ -519,8 +259,6 @@ export const Board = React.memo(
                       <TransformerComponent
                         trRef={activeTransformerRef}
                         selectedLayer={currentLayer}
-                        pressedKey={pressedKey}
-                        zoom={zoom}
                       />
                     ) : (
                       <></>
@@ -536,8 +274,6 @@ export const Board = React.memo(
                           (item) => hoveredLayerJSON[item.id]
                         )}
                         hoveredTransform={true}
-                        pressedKey={pressedKey}
-                        zoom={zoom}
                       />
                     ) : (
                       <></>

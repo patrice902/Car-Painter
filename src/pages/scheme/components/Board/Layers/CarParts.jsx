@@ -1,35 +1,36 @@
 import React, { useMemo, useCallback } from "react";
 import _ from "lodash";
 
-import { FinishOptions, LayerTypes } from "constant";
+import { FinishOptions, LayerTypes, ViewModes } from "constant";
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import config from "config";
 
 import { URLImage } from "components/konva";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
-export const CarParts = React.memo((props) => {
+export const CarParts = React.memo(() => {
+  const { legacyMode } = useScheme();
   const {
-    layers,
-    legacyMode,
-    specMode,
-    carMake,
-    handleImageSize,
+    layerList,
+    loadedStatuses,
     onLoadLayer,
-  } = props;
+    onExpandFrameFromImage,
+  } = useLayer();
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
-  );
+  const carMake = useSelector((state) => state.carMakeReducer.current);
+  const viewMode = useSelector((state) => state.boardReducer.viewMode);
+
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const filteredLayers = useMemo(
     () =>
       _.orderBy(
-        layers.filter((item) => item.layer_type === LayerTypes.CAR),
+        layerList.filter((item) => item.layer_type === LayerTypes.CAR),
         ["layer_order"],
         ["desc"]
       ),
-    [layers]
+    [layerList]
   );
   const getCarMakeImage = useCallback(
     (layer_data) => {
@@ -66,7 +67,7 @@ export const CarParts = React.memo((props) => {
           visible={layer.layer_visible ? true : false}
           loadedStatus={loadedStatuses[layer.id]}
           onLoadLayer={onLoadLayer}
-          tellSize={handleImageSize}
+          tellSize={onExpandFrameFromImage}
         />
       ))}
     </>

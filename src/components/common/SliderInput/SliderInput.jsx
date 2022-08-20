@@ -2,6 +2,17 @@ import React, { useCallback } from "react";
 import { Slider, Tooltip, Box, Grid, Typography } from "components/MaterialUI";
 import { CustomInput, SliderWrapper, Wrapper } from "./SliderInput.style";
 
+const ValueLabelComponent = React.memo((props) => (
+  <Tooltip
+    open={props.open}
+    enterTouchDelay={0}
+    placement="top"
+    title={props.value}
+  >
+    {props.children}
+  </Tooltip>
+));
+
 export const SliderInput = React.memo((props) => {
   const { label, disabled, min, max, value, setValue, step, small } = props;
 
@@ -40,16 +51,7 @@ export const SliderInput = React.memo((props) => {
                 disabled={disabled}
                 onChange={(event, value) => setValue(value)}
                 aria-labelledby="shape-size"
-                ValueLabelComponent={(props) => (
-                  <Tooltip
-                    open={props.open}
-                    enterTouchDelay={0}
-                    placement="top"
-                    title={props.value}
-                  >
-                    {props.children}
-                  </Tooltip>
-                )}
+                ValueLabelComponent={ValueLabelComponent}
               />
             </SliderWrapper>
             <CustomInput

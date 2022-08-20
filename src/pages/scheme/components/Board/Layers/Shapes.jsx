@@ -1,49 +1,56 @@
 import React, { useMemo, useCallback } from "react";
 import _ from "lodash";
 
-import { FinishOptions, LayerTypes, MouseModes } from "constant";
+import { FinishOptions, LayerTypes, MouseModes, ViewModes } from "constant";
 import { getRelativeShadowOffset, removeDuplicatedPointFromEnd } from "helper";
 
 import { Shape } from "components/konva";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
 export const Shapes = React.memo((props) => {
   const {
     stageRef,
     editable,
-    layers,
-    frameSize,
     drawingLayer,
-    boardRotate,
-    mouseMode,
-    specMode,
-    paintingGuides,
-    guideData,
-    cloningLayer,
-    cloningQueue,
-    onSelect,
-    onChange,
-    onHover,
-    onLoadLayer,
-    onDragStart,
-    onDragEnd,
-    onDblClick,
-    onCloneMove,
     onSetTransformingLayer,
+    onHover,
+    onLayerDragStart,
+    onLayerDragEnd,
   } = props;
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
+  const {
+    layerList,
+    loadedStatuses,
+    cloningLayer,
+    cloningQueue,
+    onLoadLayer,
+    onLayerSelect: onSelect,
+    onLayerDataChange: onChange,
+    onCloneMoveLayer: onCloneMove,
+    onDblClickLayer: onDblClick,
+  } = useLayer();
+
+  const { guideData } = useScheme();
+
+  const frameSize = useSelector((state) => state.boardReducer.frameSize);
+  const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
+  const viewMode = useSelector((state) => state.boardReducer.viewMode);
+  const boardRotate = useSelector((state) => state.boardReducer.boardRotate);
+  const paintingGuides = useSelector(
+    (state) => state.boardReducer.paintingGuides
   );
+
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const filteredLayers = useMemo(
     () =>
       _.orderBy(
-        layers.filter((item) => item.layer_type === LayerTypes.SHAPE),
+        layerList.filter((item) => item.layer_type === LayerTypes.SHAPE),
         ["layer_order"],
         ["desc"]
       ),
-    [layers]
+    [layerList]
   );
   const resultLayers = useMemo(() => {
     let newLayers = [...filteredLayers];
@@ -219,8 +226,8 @@ export const Shapes = React.memo((props) => {
             onChange={(values) => onChange(layer, values)}
             onHover={(flag) => onHover(layer, flag)}
             onLoadLayer={onLoadLayer}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
+            onDragStart={onLayerDragStart}
+            onDragEnd={onLayerDragEnd}
             onCloneMove={onCloneMove}
             onSetTransformingLayer={onSetTransformingLayer}
           />

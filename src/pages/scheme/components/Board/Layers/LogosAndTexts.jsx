@@ -2,47 +2,55 @@ import React, { useMemo, useCallback } from "react";
 import _ from "lodash";
 
 import config from "config";
-import { FinishOptions, LayerTypes, MouseModes } from "constant";
+import { FinishOptions, LayerTypes, MouseModes, ViewModes } from "constant";
 import { getRelativeShadowOffset } from "helper";
 
 import { GroupedURLImage, TextNode } from "components/konva";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
+import { insertToLoadedList as insertToLoadedFontList } from "redux/reducers/fontReducer";
 
 export const LogosAndTexts = React.memo((props) => {
   const {
     stageRef,
     editable,
-    layers,
-    loadedFontList,
-    fonts,
-    frameSize,
-    mouseMode,
-    specMode,
-    boardRotate,
-    paintingGuides,
-    guideData,
-    cloningLayer,
-    cloningQueue,
-    onChange,
-    onFontLoad,
-    onHover,
-    onDblClick,
-    onLoadLayer,
-    onSelect,
-    onDragStart,
-    onDragEnd,
-    onCloneMove,
     onSetTransformingLayer,
+    onHover,
+    onLayerDragStart,
+    onLayerDragEnd,
   } = props;
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
+  const dispatch = useDispatch();
+  const {
+    layerList,
+    loadedStatuses,
+    cloningLayer,
+    cloningQueue,
+    onLoadLayer,
+    onLayerSelect: onSelect,
+    onLayerDataChange: onChange,
+    onCloneMoveLayer: onCloneMove,
+    onDblClickLayer: onDblClick,
+  } = useLayer();
+
+  const { guideData } = useScheme();
+
+  const frameSize = useSelector((state) => state.boardReducer.frameSize);
+  const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
+  const viewMode = useSelector((state) => state.boardReducer.viewMode);
+  const boardRotate = useSelector((state) => state.boardReducer.boardRotate);
+  const paintingGuides = useSelector(
+    (state) => state.boardReducer.paintingGuides
   );
+  const loadedFontList = useSelector((state) => state.fontReducer.loadedList);
+  const fonts = useSelector((state) => state.fontReducer.list);
+
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const filteredLayers = useMemo(
     () =>
       _.orderBy(
-        layers.filter(
+        layerList.filter(
           (item) =>
             item.layer_type === LayerTypes.LOGO ||
             item.layer_type === LayerTypes.UPLOAD ||
@@ -51,7 +59,7 @@ export const LogosAndTexts = React.memo((props) => {
         ["layer_order"],
         ["desc"]
       ),
-    [layers]
+    [layerList]
   );
   const resultLayers = useMemo(() => {
     let newLayers = [...filteredLayers];
@@ -89,6 +97,13 @@ export const LogosAndTexts = React.memo((props) => {
       ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
       : `${config.assetsURL}/${layer.layer_data.source_file}`;
   }, []);
+
+  const onFontLoad = useCallback(
+    (fontFamily) => {
+      dispatch(insertToLoadedFontList(fontFamily));
+    },
+    [dispatch]
+  );
 
   return (
     <>
@@ -164,8 +179,8 @@ export const LogosAndTexts = React.memo((props) => {
               onHover={(flag) => onHover(layer, flag)}
               visible={layer.layer_visible ? true : false}
               onLoadLayer={onLoadLayer}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
+              onDragStart={onLayerDragStart}
+              onDragEnd={onLayerDragEnd}
               onCloneMove={onCloneMove}
               onSetTransformingLayer={onSetTransformingLayer}
             />
@@ -251,8 +266,8 @@ export const LogosAndTexts = React.memo((props) => {
             }
             onHover={(flag) => onHover(layer, flag)}
             onLoadLayer={onLoadLayer}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
+            onDragStart={onLayerDragStart}
+            onDragEnd={onLayerDragEnd}
             onCloneMove={onCloneMove}
             onSetTransformingLayer={onSetTransformingLayer}
           />

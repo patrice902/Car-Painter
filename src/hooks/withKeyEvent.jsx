@@ -44,13 +44,16 @@ import LayerDeleteDialog from "components/dialogs/LayerDeleteDialog";
 import SchemeService from "services/schemeService";
 import { deleteUpload } from "redux/reducers/uploadReducer";
 import { setAskingSimPreviewByLatest } from "redux/reducers/downloaderReducer";
+import { useDebouncedCallback } from "use-debounce";
+
+const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
 
 export const withKeyEvent = (Component) =>
   React.memo((props) => {
     const dispatch = useDispatch();
     const isVisible = usePageVisibility();
     const { editable, stageRef } = props;
-    const [, onZoomIn, onZoomOut, onZoomFit] = useZoom(stageRef);
+    const { onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
     const [deleteLayerState, setDeleteLayerState] = useState({});
     const [dialog, setDialog] = useState(null);
     const [browserZoom, setBrowserZoom] = useState(1);
@@ -195,13 +198,28 @@ export const withKeyEvent = (Component) =>
       [boardRotate, dispatch]
     );
 
+    const handleDebouncedLayerDataUpdate = useDebouncedCallback(
+      (layer_data) => {
+        dispatch(
+          updateLayer({
+            id: currentLayer.id,
+            layer_data: layer_data,
+          })
+        );
+      },
+      300
+    );
+
     const handleKeyEvent = useCallback(
       (key, event) => {
         event.preventDefault();
         // Delete Selected Layer
-        // console.log("KeyEvent: ", key, event);
         if (event.target.tagName !== "INPUT" && event.type === "keydown") {
-          if (pressedKey === key && pressedEventKey === event.key) {
+          if (
+            pressedKey === key &&
+            pressedEventKey === event.key &&
+            !ArrowKeys.includes(event.key)
+          ) {
             return;
           }
           if (pressedKey !== key) {
@@ -364,9 +382,7 @@ export const withKeyEvent = (Component) =>
             dispatch(setPressedEventKey(null));
           }
           if (
-            ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(
-              event.key
-            ) &&
+            ArrowKeys.includes(event.key) &&
             currentLayer &&
             ![LayerTypes.CAR, LayerTypes.BASE].includes(currentLayer.layer_type)
           ) {
@@ -395,32 +411,18 @@ export const withKeyEvent = (Component) =>
               speedX = -initialspeedY;
               speedY = initialspeedX;
             }
-            if (event.type === "keyup") {
+            if (prevTick.current != tick.current) {
+              prevTick.current = Object.assign(tick.current);
               let layer_data = { ...currentLayer.layer_data };
-              if (prevTick.current != tick.current) {
-                layer_data.left = currentLayer.layer_data.left + speedX;
-                layer_data.top = currentLayer.layer_data.top + speedY;
-              }
+              layer_data.left = currentLayer.layer_data.left + speedX;
+              layer_data.top = currentLayer.layer_data.top + speedY;
               dispatch(
-                updateLayer({
+                updateLayerOnly({
                   id: currentLayer.id,
                   layer_data: layer_data,
                 })
               );
-            } else {
-              if (prevTick.current != tick.current) {
-                prevTick.current = Object.assign(tick.current);
-                dispatch(
-                  updateLayerOnly({
-                    ...currentLayer,
-                    layer_data: {
-                      ...currentLayer.layer_data,
-                      left: currentLayer.layer_data.left + speedX,
-                      top: currentLayer.layer_data.top + speedY,
-                    },
-                  })
-                );
-              }
+              handleDebouncedLayerDataUpdate(layer_data);
             }
           }
         }
@@ -443,20 +445,21 @@ export const withKeyEvent = (Component) =>
         handleChangeBoardRotation,
         togglePaintingGuides,
         boardRotate,
+        handleDebouncedLayerDataUpdate,
       ]
     );
 
     useEffect(() => {
-      if (editable) {
+      if (editable && (pressedKey || pressedEventKey)) {
         const interval = setInterval(() => {
           tick.current += 1;
-        }, 200);
+        }, 50);
 
         return () => {
           clearInterval(interval);
         };
       }
-    }, [editable]);
+    }, [editable, pressedKey, pressedEventKey]);
 
     useEffect(() => {
       if (!isVisible) {

@@ -47,7 +47,7 @@ export const Toolbar = React.memo((props) => {
     requestSpecTGAPNGDataUrl,
     onChangeBoardRotation,
   } = props;
-  const [zoom, onZoomIn, onZoomOut, onZoomFit] = useZoom(stageRef);
+  const { zoom, onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);

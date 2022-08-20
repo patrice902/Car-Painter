@@ -56,8 +56,9 @@ export const ShadowProperty = React.memo((props) => {
       };
 
       if (
-        !values.layer_data.shadowColor ||
-        values.layer_data.shadowColor === "transparent"
+        (!values.layer_data.shadowColor ||
+          values.layer_data.shadowColor === "transparent") &&
+        !values.layer_data.shadowBlur
       ) {
         updatingMap.shadowBlur = DefaultBlurToSet;
       }
@@ -107,7 +108,7 @@ export const ShadowProperty = React.memo((props) => {
                   helperText={
                     errors.layer_data && errors.layer_data.shadowColor
                   }
-                  filterFunc={colorMapFunc}
+                  fieldFunc={colorMapFunc}
                   onUpdateField={onLayerDataUpdateOnly}
                   onUpdateDB={onLayerDataUpdate}
                 />

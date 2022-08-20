@@ -1,24 +1,22 @@
 import React, { useCallback, useMemo } from "react";
-import { PaintingGuides } from "constant";
+import { PaintingGuides, ViewModes } from "constant";
 
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
-export const PaintingGuideCarMask = React.memo((props) => {
-  const {
-    specMode,
-    legacyMode,
-    paintingGuides,
-    carMake,
-    handleImageSize,
-    guideData,
-    onLoadLayer,
-  } = props;
+export const PaintingGuideCarMask = React.memo(() => {
+  const { legacyMode, guideData } = useScheme();
+  const { loadedStatuses, onLoadLayer, onExpandFrameFromImage } = useLayer();
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
+  const carMake = useSelector((state) => state.carMakeReducer.current);
+  const paintingGuides = useSelector(
+    (state) => state.boardReducer.paintingGuides
   );
+  const viewMode = useSelector((state) => state.boardReducer.viewMode);
+
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const getCarMakeImage = useCallback(
     (image) => {
@@ -51,7 +49,7 @@ export const PaintingGuideCarMask = React.memo((props) => {
       y={0}
       width={legacyMode ? 1024 : 2048}
       height={legacyMode ? 1024 : 2048}
-      tellSize={handleImageSize}
+      tellSize={onExpandFrameFromImage}
       filterColor={guideData.carmask_color}
       opacity={guideData.carmask_opacity}
       listening={false}

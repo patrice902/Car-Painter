@@ -1,10 +1,10 @@
 import { useEffect, useCallback, useMemo, useState } from "react";
-import { useReducerRef } from "hooks";
+import { useReducerRef, useScheme } from "hooks";
 import _ from "lodash";
 
 import { useSelector, useDispatch } from "react-redux";
 
-import { LayerTypes, ViewModes, FinishOptions } from "constant";
+import { LayerTypes, ViewModes } from "constant";
 
 import {
   setSaving,
@@ -39,12 +39,13 @@ export const useCapture = (
   unsetDeleteLayerState
 ) => {
   const dispatch = useDispatch();
+  const { schemeFinishBase } = useScheme();
   const [pauseCapturing, setPauseCapturing] = useState(false);
   const [capturing, setCapturing] = useState(false);
   const [, userRef] = useReducerRef(
     useSelector((state) => state.authReducer.user)
   );
-  const [currentScheme, currentSchemeRef] = useReducerRef(
+  const [, currentSchemeRef] = useReducerRef(
     useSelector((state) => state.schemeReducer.current)
   );
   const [, currentCarMakeRef] = useReducerRef(
@@ -71,16 +72,6 @@ export const useCapture = (
   const [, frameSizeRef] = useReducerRef(
     useSelector((state) => state.boardReducer.frameSize)
   );
-
-  const schemeFinishBase = useMemo(() => {
-    if (currentScheme) {
-      const foundFinish = FinishOptions.find(
-        (item) => item.value === currentScheme.finish
-      );
-      if (foundFinish) return foundFinish.base;
-    }
-    return FinishOptions[0].base;
-  }, [currentScheme]);
 
   const carMakeSize = useMemo(
     () =>

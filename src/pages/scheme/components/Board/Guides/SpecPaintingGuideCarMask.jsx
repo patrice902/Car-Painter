@@ -1,22 +1,15 @@
 import React, { useCallback, useMemo } from "react";
-import { FinishOptions } from "constant";
 
 import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
 import { useSelector } from "react-redux";
+import { useLayer, useScheme } from "hooks";
 
-export const SpecPaintingGuideCarMask = React.memo((props) => {
-  const {
-    finishBase = FinishOptions[0].base,
-    legacyMode,
-    carMake,
-    handleImageSize,
-    onLoadLayer,
-  } = props;
+export const SpecPaintingGuideCarMask = React.memo(() => {
+  const { schemeFinishBase: finishBase, legacyMode } = useScheme();
+  const { loadedStatuses, onLoadLayer, onExpandFrameFromImage } = useLayer();
 
-  const loadedStatuses = useSelector(
-    (state) => state.layerReducer.loadedStatuses
-  );
+  const carMake = useSelector((state) => state.carMakeReducer.current);
 
   const getCarMakeImage = useCallback(
     (image) => {
@@ -44,7 +37,7 @@ export const SpecPaintingGuideCarMask = React.memo((props) => {
       y={0}
       width={legacyMode ? 1024 : 2048}
       height={legacyMode ? 1024 : 2048}
-      tellSize={handleImageSize}
+      tellSize={onExpandFrameFromImage}
       opacity={1}
       listening={false}
       visible={true}
