@@ -69,14 +69,31 @@ export const slice = createSlice({
         (item) => item.id === action.payload.id
       );
       if (foundIndex !== -1) {
-        const newScheme = mergeTwoLayer(layerList[foundIndex], action.payload);
-        layerList[foundIndex] = newScheme;
+        const newLayer = mergeTwoLayer(layerList[foundIndex], action.payload);
+        layerList[foundIndex] = newLayer;
         state.list = layerList;
 
-        if (state.current && state.current.id === newScheme.id) {
-          state.current = newScheme;
+        if (state.current && state.current.id === newLayer.id) {
+          state.current = newLayer;
         }
       }
+    },
+    mergeListItems: (state, action) => {
+      let layerList = [...state.list];
+      for (let layerItem of action.payload) {
+        let foundIndex = layerList.findIndex(
+          (item) => item.id === layerItem.id
+        );
+        if (foundIndex !== -1) {
+          const newLayer = mergeTwoLayer(layerList[foundIndex], layerItem);
+          layerList[foundIndex] = newLayer;
+
+          if (state.current && state.current.id === newLayer.id) {
+            state.current = newLayer;
+          }
+        }
+      }
+      state.list = layerList;
     },
     deleteItemsByUploadID: (state, action) => {
       let layerList = [...state.list];
@@ -165,6 +182,7 @@ export const {
   concatList,
   updateListItem,
   mergeListItem,
+  mergeListItems,
   deleteListItem,
   deleteListItems,
   setClipboard,
@@ -666,6 +684,54 @@ export const updateLayer = (layer, pushingToHistory = true) => async (
     dispatch(setMessage({ message: err.message }));
   }
   // dispatch(setLoading(false));
+};
+
+export const bulkUpdateLayer = (layerList, pushingToHistory = true) => async (
+  dispatch,
+  getState
+) => {
+  try {
+    const currentUser = getState().authReducer.user;
+
+    let previousLayers = [];
+    let layerListForSocket = [];
+    for (let layer of layerList) {
+      previousLayers.push(
+        getState().layerReducer.list.find((item) => item.id === layer.id)
+      );
+
+      dispatch(mergeListItem(layer));
+      const currentLayer = getState().layerReducer.current;
+      if (currentLayer && currentLayer.id === layer.id) {
+        dispatch(mergeCurrent(layer));
+      }
+
+      let layerForSocket = { ...layer };
+      if (layerForSocket.layer_data) {
+        layerForSocket.layer_data = JSON.stringify(layerForSocket.layer_data);
+      }
+
+      layerListForSocket.push(layerForSocket);
+    }
+
+    SocketClient.emit("client-bulk-update-layer", {
+      data: layerListForSocket,
+      socketID: SocketClient.socket.id,
+      userID: currentUser.id,
+    });
+
+    if (pushingToHistory) {
+      dispatch(
+        pushToActionHistory({
+          action: HistoryActions.LAYER_BULK_CHANGE_ACTION,
+          prev_data: previousLayers,
+          next_data: layerList,
+        })
+      );
+    }
+  } catch (err) {
+    dispatch(setMessage({ message: err.message }));
+  }
 };
 
 export const updateLayerOnly = (layer) => async (dispatch, getState) => {

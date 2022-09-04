@@ -1,7 +1,10 @@
 const _ = require("lodash");
 const Layer = require("../models/layer.model");
 const Scheme = require("../models/scheme.model");
-const { generateRandomColor } = require("../utils/common");
+const {
+  generateRandomColor,
+  getSchemeUpdatingInfo,
+} = require("../utils/common");
 const LayerService = require("./layerService");
 
 class SchemeService {
@@ -122,21 +125,10 @@ class SchemeService {
   static async updateById(id, payload) {
     const scheme = await this.getById(id);
     const schemeInfo = scheme.toJSON();
-    let updatingInfo = { ...payload };
 
-    if (payload.guide_data) {
-      const payloadGuideData =
-        typeof payload.guide_data === "string"
-          ? JSON.parse(payload.guide_data)
-          : payload.guide_data;
-
-      updatingInfo.guide_data = JSON.stringify({
-        ...JSON.parse(schemeInfo.guide_data),
-        ...payloadGuideData,
-      });
-    }
-
-    await scheme.save(updatingInfo, { patch: true });
+    await scheme.save(getSchemeUpdatingInfo(schemeInfo, payload), {
+      patch: true,
+    });
     return scheme;
   }
 

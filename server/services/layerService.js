@@ -1,4 +1,5 @@
 const Layer = require("../models/layer.model");
+const { getLayerUpdatingInfo } = require("../utils/common");
 
 class LayerService {
   static async getList() {
@@ -53,21 +54,33 @@ class LayerService {
   static async updateById(id, payload) {
     const layer = await this.getById(id);
     const layerInfo = layer.toJSON();
-    const updatingInfo = { ...payload };
 
-    if (payload.layer_data) {
-      const payloadLayerData =
-        typeof payload.layer_data === "string"
-          ? JSON.parse(payload.layer_data)
-          : payload.layer_data;
-
-      updatingInfo.layer_data = JSON.stringify({
-        ...JSON.parse(layerInfo.layer_data),
-        ...payloadLayerData,
-      });
-    }
-    await layer.save(updatingInfo, { patch: true });
+    await layer.save(getLayerUpdatingInfo(layerInfo, payload), { patch: true });
     return layer;
+  }
+
+  static async bulkUpdate(payload) {
+    const list = [];
+    let promises = [];
+
+    for (let item of payload) {
+      promises.push(
+        new Promise(async (resolve) => {
+          const layer = await this.getById(item.id);
+          const layerInfo = layer.toJSON();
+
+          await layer.save(getLayerUpdatingInfo(layerInfo, item), {
+            patch: true,
+          });
+          list.push(layer);
+
+          resolve();
+        })
+      );
+    }
+    await Promise.all(promises);
+
+    return list;
   }
 
   static async deleteById(id) {

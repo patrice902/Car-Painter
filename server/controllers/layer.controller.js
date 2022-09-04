@@ -50,6 +50,18 @@ class LayerController {
     }
   }
 
+  static async bulkUpdate(req, res) {
+    try {
+      let layers = await LayerService.bulkUpdate(req.body);
+      res.json(layers);
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
   static async delete(req, res) {
     try {
       await LayerService.deleteById(req.params.id);
