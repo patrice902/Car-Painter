@@ -11,6 +11,7 @@ import {
   createLayer,
   createLayerList,
   deleteLayerList,
+  bulkUpdateLayer,
 } from "./layerReducer";
 import { updateScheme } from "./schemeReducer";
 
@@ -149,6 +150,11 @@ export const historyActionBack = () => async (dispatch, getState) => {
           updateLayer(actionHistory[actionHistoryIndex].prev_data, false)
         );
         break;
+      case HistoryActions.LAYER_BULK_CHANGE_ACTION:
+        dispatch(
+          bulkUpdateLayer(actionHistory[actionHistoryIndex].prev_data, false)
+        );
+        break;
       case HistoryActions.LAYER_ADD_ACTION:
         dispatch(deleteLayer(actionHistory[actionHistoryIndex].data, false));
         break;
@@ -201,6 +207,14 @@ export const historyActionUp = () => async (dispatch, getState) => {
       case HistoryActions.LAYER_CHANGE_ACTION:
         dispatch(
           updateLayer(actionHistory[actionHistoryIndex + 1].next_data, false)
+        );
+        break;
+      case HistoryActions.LAYER_BULK_CHANGE_ACTION:
+        dispatch(
+          bulkUpdateLayer(
+            actionHistory[actionHistoryIndex + 1].next_data,
+            false
+          )
         );
         break;
       case HistoryActions.LAYER_ADD_ACTION:

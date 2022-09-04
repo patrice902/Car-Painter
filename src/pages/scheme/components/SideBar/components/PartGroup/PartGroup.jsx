@@ -8,10 +8,11 @@ import { MouseModes, LayerTypes } from "constant";
 import {
   updateLayer,
   setCurrent as setCurrentLayer,
+  bulkUpdateLayer,
 } from "redux/reducers/layerReducer";
 import { setMouseMode } from "redux/reducers/boardReducer";
 
-import { Box, Card, Collapse, Typography } from "@material-ui/core";
+import { Box, Card, Collapse } from "@material-ui/core";
 import { LightTooltip } from "components/common";
 import { HeaderTitle, CustomCardContent } from "./PartGroup.style";
 
@@ -63,21 +64,22 @@ export const PartGroup = (props) => {
     setExpanded((preValue) => !preValue);
     focusBoardQuickly();
   }, [setExpanded]);
-  const handleChangeLayer = useCallback(
+  const handleChangeLayerOrders = useCallback(
     (list) => {
+      const layers = [];
       for (let index in list) {
-        const layer = layerList.find((item) => item.id == list[index].id);
+        const layer = layerList.find(
+          (item) => item.id.toString() === list[index].id.toString()
+        );
         if (layer && layer.layer_order !== parseInt(index) + 1) {
-          dispatch(
-            updateLayer(
-              {
-                id: layer.id,
-                layer_order: parseInt(index) + 1,
-              },
-              false
-            )
-          );
+          layers.push({
+            id: layer.id,
+            layer_order: parseInt(index) + 1,
+          });
         }
+      }
+      if (layers.length) {
+        dispatch(bulkUpdateLayer(layers));
       }
     },
     [layerList, dispatch]
@@ -140,7 +142,7 @@ export const PartGroup = (props) => {
           <CustomCardContent>
             <ReactSortable
               list={sortedList}
-              setList={handleChangeLayer}
+              setList={handleChangeLayerOrders}
               animation={150}
               sort={!disableDnd && !disabled}
             >

@@ -19,7 +19,7 @@ import {
   SkewProperty,
 } from "./components";
 import { useDispatch } from "react-redux";
-import { updateLayer } from "redux/reducers/layerReducer";
+import { updateLayer, updateLayerOnly } from "redux/reducers/layerReducer";
 
 export const InnerForm = React.memo(
   ({
@@ -84,7 +84,7 @@ export const InnerForm = React.memo(
       (valueMap) => {
         setMultiFieldValue(valueMap);
         dispatch(
-          updateLayer({
+          updateLayerOnly({
             id: currentLayer.id,
             ...valueMap,
           })
@@ -109,7 +109,7 @@ export const InnerForm = React.memo(
       (valueMap) => {
         setMultiFieldValue(valueMap, "layer_data");
         dispatch(
-          updateLayer({
+          updateLayerOnly({
             id: currentLayer.id,
             layer_data: valueMap,
           })

@@ -32,6 +32,9 @@ class SocketServer {
     socket.on("client-update-layer", (data) =>
       this.onClientUpdateLayer.bind(this)(socket, data)
     );
+    socket.on("client-bulk-update-layer", (data) =>
+      this.onClientBulkUpdateLayer.bind(this)(socket, data)
+    );
     socket.on("client-delete-layer", (data) =>
       this.onClientDeleteLayer.bind(this)(socket, data)
     );
@@ -48,14 +51,32 @@ class SocketServer {
 
   async onClientUpdateLayer(socket, requestData) {
     socket.broadcast.to(socket.room).emit("client-update-layer", requestData);
-    await LayerService.updateById(requestData.data.id, requestData.data);
+    LayerService.updateById(requestData.data.id, requestData.data);
     const schemeUpdatePayload = {
       date_modified: Math.round(new Date().getTime() / 1000),
       last_modified_by: requestData.userID,
       thumbnail_updated: 0,
       race_updated: 0,
     };
-    await SchemeService.updateById(socket.room, schemeUpdatePayload);
+    SchemeService.updateById(socket.room, schemeUpdatePayload);
+    this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      ...requestData,
+      data: { id: socket.room, ...schemeUpdatePayload },
+    });
+  }
+
+  async onClientBulkUpdateLayer(socket, requestData) {
+    socket.broadcast
+      .to(socket.room)
+      .emit("client-bulk-update-layer", requestData);
+    LayerService.bulkUpdate(requestData.data);
+    const schemeUpdatePayload = {
+      date_modified: Math.round(new Date().getTime() / 1000),
+      last_modified_by: requestData.userID,
+      thumbnail_updated: 0,
+      race_updated: 0,
+    };
+    SchemeService.updateById(socket.room, schemeUpdatePayload);
     this.io.sockets.in(socket.room).emit("client-update-scheme", {
       ...requestData,
       data: { id: socket.room, ...schemeUpdatePayload },
@@ -70,14 +91,14 @@ class SocketServer {
       thumbnail_updated: 0,
       race_updated: 0,
     };
-    await SchemeService.updateById(socket.room, schemeUpdatePayload);
+    SchemeService.updateById(socket.room, schemeUpdatePayload);
     this.io.sockets.in(socket.room).emit("client-update-scheme", {
       ...requestData,
       data: { id: socket.room, ...schemeUpdatePayload },
     });
   }
 
-  async onClientCreateLayerList(socket, requestData) {
+  onClientCreateLayerList(socket, requestData) {
     socket.broadcast
       .to(socket.room)
       .emit("client-create-layer-list", requestData);
@@ -87,7 +108,7 @@ class SocketServer {
       thumbnail_updated: 0,
       race_updated: 0,
     };
-    await SchemeService.updateById(socket.room, schemeUpdatePayload);
+    SchemeService.updateById(socket.room, schemeUpdatePayload);
     this.io.sockets.in(socket.room).emit("client-update-scheme", {
       ...requestData,
       data: { id: socket.room, ...schemeUpdatePayload },
@@ -96,14 +117,14 @@ class SocketServer {
 
   async onClientDeleteLayer(socket, requestData) {
     socket.broadcast.to(socket.room).emit("client-delete-layer", requestData);
-    await LayerService.deleteById(requestData.data.id);
+    LayerService.deleteById(requestData.data.id);
     const schemeUpdatePayload = {
       date_modified: Math.round(new Date().getTime() / 1000),
       last_modified_by: requestData.userID,
       thumbnail_updated: 0,
       race_updated: 0,
     };
-    await SchemeService.updateById(socket.room, schemeUpdatePayload);
+    SchemeService.updateById(socket.room, schemeUpdatePayload);
     this.io.sockets.in(socket.room).emit("client-update-scheme", {
       ...requestData,
       data: { id: socket.room, ...schemeUpdatePayload },
@@ -123,7 +144,7 @@ class SocketServer {
       thumbnail_updated: 0,
       race_updated: 0,
     };
-    await SchemeService.updateById(socket.room, schemeUpdatePayload);
+    SchemeService.updateById(socket.room, schemeUpdatePayload);
     this.io.sockets.in(socket.room).emit("client-update-scheme", {
       ...requestData,
       data: { id: socket.room, ...schemeUpdatePayload },
@@ -136,7 +157,7 @@ class SocketServer {
         .to(socket.room)
         .emit("client-update-scheme", requestData);
       socket.broadcast.to("general").emit("client-update-scheme", requestData); // Broadcast to General room
-      await SchemeService.updateById(requestData.data.id, {
+      SchemeService.updateById(requestData.data.id, {
         ...requestData.data,
         last_modified_by: requestData.userID,
       });
@@ -150,7 +171,7 @@ class SocketServer {
     socket.broadcast
       .to("general")
       .emit("client-delete-scheme", { data: { id: socket.room } }); // Broadcast to General room
-    await SchemeService.deleteById(requestData.data.id);
+    SchemeService.deleteById(requestData.data.id);
   }
 }
 
