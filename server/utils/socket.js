@@ -9,6 +9,9 @@ class SocketServer {
         origin: "*",
         methods: ["GET", "POST"],
       },
+      perMessageDeflate: {
+        threshold: 32768,
+      },
     });
     this.shapes = [];
     this.io.on("connection", this.onConnection.bind(this));
