@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import config from "config";
 
-import { Link as RouterLink } from "react-router-dom";
 import {
   Alert,
   Button,
@@ -92,7 +92,7 @@ export const InnerForm = React.memo((props) => {
           {errors.password}
         </FormHelperText>
       </FormControl>
-      <Link component={RouterLink} to="/auth/reset-password" color="primary">
+      <Link href={`${config.parentAppURL}/lostpasswd`} color="primary">
         Forgot password?
       </Link>
       <Button

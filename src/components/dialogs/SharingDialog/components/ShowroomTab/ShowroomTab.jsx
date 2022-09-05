@@ -29,7 +29,7 @@ export const ShowroomTab = React.memo((props) => {
         <form
           ref={showroomFormRef}
           style={{ display: "none" }}
-          action={`${config.oldAppURL}/showroom/upload/${schemeID}`}
+          action={`${config.parentAppURL}/showroom/upload/${schemeID}`}
           method="post"
           target="_blank"
           enctype="multipart/form-data"

@@ -1,10 +1,11 @@
 import React from "react";
+import config from "config";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Box, Link, Typography } from "components/MaterialUI";
 import { InnerForm } from "./InnerForm";
 
@@ -80,12 +81,7 @@ export const SignIn = React.memo(() => {
 
         <Typography variant="h4" align="center" color="textSecondary">
           Not a member yet?
-          <Link
-            component={RouterLink}
-            to="/auth/sign-up"
-            color="primary"
-            ml={2}
-          >
+          <Link href={`${config.parentAppURL}/register`} color="primary" ml={2}>
             Sign up
           </Link>
         </Typography>
