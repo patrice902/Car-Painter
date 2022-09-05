@@ -6,7 +6,7 @@ const config = {
       ? "/assets"
       : "http://localhost:3000/assets"),
   legacyAssetURL: "https://www.tradingpaints.com/builder",
-  oldAppURL: process.env.REACT_APP_OLD_APP_URL,
+  parentAppURL: process.env.REACT_APP_PARENT_APP_URL,
   backendURL:
     process.env.NODE_ENV !== "development" ? "/" : "http://localhost:3000",
   apiURL:
