@@ -53,128 +53,162 @@ class SocketServer {
   }
 
   async onClientUpdateLayer(socket, requestData) {
-    socket.broadcast.to(socket.room).emit("client-update-layer", requestData);
-    LayerService.updateById(requestData.data.id, requestData.data);
-    const schemeUpdatePayload = {
-      date_modified: Math.round(new Date().getTime() / 1000),
-      last_modified_by: requestData.userID,
-      thumbnail_updated: 0,
-      race_updated: 0,
-    };
-    SchemeService.updateById(socket.room, schemeUpdatePayload);
-    this.io.sockets.in(socket.room).emit("client-update-scheme", {
-      ...requestData,
-      data: { id: socket.room, ...schemeUpdatePayload },
-    });
+    if (socket.room) {
+      socket.broadcast.to(socket.room).emit("client-update-layer", requestData);
+      LayerService.updateById(requestData.data.id, requestData.data);
+      const schemeUpdatePayload = {
+        date_modified: Math.round(new Date().getTime() / 1000),
+        last_modified_by: requestData.userID,
+        thumbnail_updated: 0,
+        race_updated: 0,
+      };
+      SchemeService.updateById(socket.room, schemeUpdatePayload);
+      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+        ...requestData,
+        data: { id: socket.room, ...schemeUpdatePayload },
+      });
+    } else {
+      console.log("socket.room is empty");
+    }
   }
 
   async onClientBulkUpdateLayer(socket, requestData) {
-    socket.broadcast
-      .to(socket.room)
-      .emit("client-bulk-update-layer", requestData);
-    LayerService.bulkUpdate(requestData.data);
-    const schemeUpdatePayload = {
-      date_modified: Math.round(new Date().getTime() / 1000),
-      last_modified_by: requestData.userID,
-      thumbnail_updated: 0,
-      race_updated: 0,
-    };
-    SchemeService.updateById(socket.room, schemeUpdatePayload);
-    this.io.sockets.in(socket.room).emit("client-update-scheme", {
-      ...requestData,
-      data: { id: socket.room, ...schemeUpdatePayload },
-    });
+    if (socket.room) {
+      socket.broadcast
+        .to(socket.room)
+        .emit("client-bulk-update-layer", requestData);
+      LayerService.bulkUpdate(requestData.data);
+      const schemeUpdatePayload = {
+        date_modified: Math.round(new Date().getTime() / 1000),
+        last_modified_by: requestData.userID,
+        thumbnail_updated: 0,
+        race_updated: 0,
+      };
+      SchemeService.updateById(socket.room, schemeUpdatePayload);
+      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+        ...requestData,
+        data: { id: socket.room, ...schemeUpdatePayload },
+      });
+    } else {
+      console.log("socket.room is empty");
+    }
   }
 
   async onClientCreateLayer(socket, requestData) {
-    socket.broadcast.to(socket.room).emit("client-create-layer", requestData);
-    const schemeUpdatePayload = {
-      date_modified: Math.round(new Date().getTime() / 1000),
-      last_modified_by: requestData.userID,
-      thumbnail_updated: 0,
-      race_updated: 0,
-    };
-    SchemeService.updateById(socket.room, schemeUpdatePayload);
-    this.io.sockets.in(socket.room).emit("client-update-scheme", {
-      ...requestData,
-      data: { id: socket.room, ...schemeUpdatePayload },
-    });
+    if (socket.room) {
+      socket.broadcast.to(socket.room).emit("client-create-layer", requestData);
+      const schemeUpdatePayload = {
+        date_modified: Math.round(new Date().getTime() / 1000),
+        last_modified_by: requestData.userID,
+        thumbnail_updated: 0,
+        race_updated: 0,
+      };
+      SchemeService.updateById(socket.room, schemeUpdatePayload);
+      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+        ...requestData,
+        data: { id: socket.room, ...schemeUpdatePayload },
+      });
+    } else {
+      console.log("socket.room is empty");
+    }
   }
 
   onClientCreateLayerList(socket, requestData) {
-    socket.broadcast
-      .to(socket.room)
-      .emit("client-create-layer-list", requestData);
-    const schemeUpdatePayload = {
-      date_modified: Math.round(new Date().getTime() / 1000),
-      last_modified_by: requestData.userID,
-      thumbnail_updated: 0,
-      race_updated: 0,
-    };
-    SchemeService.updateById(socket.room, schemeUpdatePayload);
-    this.io.sockets.in(socket.room).emit("client-update-scheme", {
-      ...requestData,
-      data: { id: socket.room, ...schemeUpdatePayload },
-    });
+    if (socket.room) {
+      socket.broadcast
+        .to(socket.room)
+        .emit("client-create-layer-list", requestData);
+      const schemeUpdatePayload = {
+        date_modified: Math.round(new Date().getTime() / 1000),
+        last_modified_by: requestData.userID,
+        thumbnail_updated: 0,
+        race_updated: 0,
+      };
+      SchemeService.updateById(socket.room, schemeUpdatePayload);
+      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+        ...requestData,
+        data: { id: socket.room, ...schemeUpdatePayload },
+      });
+    } else {
+      console.log("socket.room is empty");
+    }
   }
 
   async onClientDeleteLayer(socket, requestData) {
-    socket.broadcast.to(socket.room).emit("client-delete-layer", requestData);
-    LayerService.deleteById(requestData.data.id);
-    const schemeUpdatePayload = {
-      date_modified: Math.round(new Date().getTime() / 1000),
-      last_modified_by: requestData.userID,
-      thumbnail_updated: 0,
-      race_updated: 0,
-    };
-    SchemeService.updateById(socket.room, schemeUpdatePayload);
-    this.io.sockets.in(socket.room).emit("client-update-scheme", {
-      ...requestData,
-      data: { id: socket.room, ...schemeUpdatePayload },
-    });
+    if (socket.room) {
+      socket.broadcast.to(socket.room).emit("client-delete-layer", requestData);
+      LayerService.deleteById(requestData.data.id);
+      const schemeUpdatePayload = {
+        date_modified: Math.round(new Date().getTime() / 1000),
+        last_modified_by: requestData.userID,
+        thumbnail_updated: 0,
+        race_updated: 0,
+      };
+      SchemeService.updateById(socket.room, schemeUpdatePayload);
+      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+        ...requestData,
+        data: { id: socket.room, ...schemeUpdatePayload },
+      });
+    } else {
+      console.log("socket.room is empty");
+    }
   }
 
   async onClientDeleteLayerList(socket, requestData) {
-    socket.broadcast
-      .to(socket.room)
-      .emit("client-delete-layer-list", requestData);
-    for (let layer of requestData.data) {
-      LayerService.deleteById(layer.id);
+    if (socket.room) {
+      socket.broadcast
+        .to(socket.room)
+        .emit("client-delete-layer-list", requestData);
+      for (let layer of requestData.data) {
+        LayerService.deleteById(layer.id);
+      }
+      const schemeUpdatePayload = {
+        date_modified: Math.round(new Date().getTime() / 1000),
+        last_modified_by: requestData.userID,
+        thumbnail_updated: 0,
+        race_updated: 0,
+      };
+      SchemeService.updateById(socket.room, schemeUpdatePayload);
+      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+        ...requestData,
+        data: { id: socket.room, ...schemeUpdatePayload },
+      });
+    } else {
+      console.log("socket.room is empty");
     }
-    const schemeUpdatePayload = {
-      date_modified: Math.round(new Date().getTime() / 1000),
-      last_modified_by: requestData.userID,
-      thumbnail_updated: 0,
-      race_updated: 0,
-    };
-    SchemeService.updateById(socket.room, schemeUpdatePayload);
-    this.io.sockets.in(socket.room).emit("client-update-scheme", {
-      ...requestData,
-      data: { id: socket.room, ...schemeUpdatePayload },
-    });
   }
 
   async onClientUpdateScheme(socket, requestData) {
     try {
-      socket.broadcast
-        .to(socket.room)
-        .emit("client-update-scheme", requestData);
-      socket.broadcast.to("general").emit("client-update-scheme", requestData); // Broadcast to General room
-      SchemeService.updateById(requestData.data.id, {
-        ...requestData.data,
-        last_modified_by: requestData.userID,
-      });
+      if (socket.room) {
+        socket.broadcast
+          .to(socket.room)
+          .emit("client-update-scheme", requestData);
+        socket.broadcast
+          .to("general")
+          .emit("client-update-scheme", requestData); // Broadcast to General room
+        SchemeService.updateById(requestData.data.id, {
+          ...requestData.data,
+          last_modified_by: requestData.userID,
+        });
+      } else {
+        console.log("socket.room is empty");
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
   async onClientDeleteScheme(socket, requestData) {
-    socket.broadcast.to(socket.room).emit("client-delete-scheme");
-    socket.broadcast
-      .to("general")
-      .emit("client-delete-scheme", { data: { id: socket.room } }); // Broadcast to General room
-    SchemeService.deleteById(requestData.data.id);
+    if (socket.room) {
+      socket.broadcast.to(socket.room).emit("client-delete-scheme");
+      socket.broadcast
+        .to("general")
+        .emit("client-delete-scheme", { data: { id: socket.room } }); // Broadcast to General room
+      SchemeService.deleteById(requestData.data.id);
+    } else {
+      console.log("socket.room is empty");
+    }
   }
 }
 
