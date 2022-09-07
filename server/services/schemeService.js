@@ -34,6 +34,11 @@ class SchemeService {
   }
 
   static async getById(id) {
+    if (!id) {
+      console.log("Trying to get scheme with ID of null");
+      return null;
+    }
+
     const scheme = await Scheme.where({ id }).fetch({
       withRelated: [
         "carMake",
@@ -123,6 +128,11 @@ class SchemeService {
   }
 
   static async updateById(id, payload) {
+    if (!id) {
+      console.log("Trying to update scheme with ID of null: ", payload);
+      return null;
+    }
+
     const scheme = await this.getById(id);
     const schemeInfo = scheme.toJSON();
 
@@ -133,12 +143,20 @@ class SchemeService {
   }
 
   static async deleteById(id) {
+    if (!id) {
+      return null;
+    }
+
     const scheme = await this.getById(id);
     await scheme.destroy();
     return true;
   }
 
   static async cloneById(id) {
+    if (!id) {
+      return null;
+    }
+
     let originalScheme = await Scheme.where({ id }).fetch({
       withRelated: ["layers"],
     });
