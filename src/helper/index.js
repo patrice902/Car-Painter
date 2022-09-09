@@ -266,16 +266,16 @@ export const rotatePoint = (x, y, angle) => {
   return { x: nx, y: ny };
 };
 
-export const getCenter = (shape) => {
+export const getCenter = (shape, flop = 0, flip = 0) => {
   return {
     x:
       shape.x +
-      (shape.width / 2) * Math.cos(shape.rotation) +
-      (shape.height / 2) * Math.sin(-shape.rotation),
+      shape.width * (flop ? -0.5 : 0.5) * Math.cos(shape.rotation) +
+      shape.height * (flip ? -0.5 : 0.5) * Math.sin(-shape.rotation),
     y:
       shape.y +
-      (shape.height / 2) * Math.cos(shape.rotation) +
-      (shape.width / 2) * Math.sin(shape.rotation),
+      shape.height * (flip ? -0.5 : 0.5) * Math.cos(shape.rotation) +
+      shape.width * (flop ? -0.5 : 0.5) * Math.sin(shape.rotation),
   };
 };
 
@@ -299,8 +299,8 @@ export const rotateAroundPoint = (shape, deltaDeg, point) => {
   };
 };
 
-export const rotateAroundCenter = (shape, deltaDeg) => {
-  const center = getCenter(shape);
+export const rotateAroundCenter = (shape, deltaDeg, flop = 0, flip = 0) => {
+  const center = getCenter(shape, flop, flip);
   return rotateAroundPoint(shape, deltaDeg, center);
 };
 

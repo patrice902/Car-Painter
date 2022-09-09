@@ -133,8 +133,8 @@ export const useTransform = ({
       }
 
       if (layer.layer_type === LayerTypes.TEXT) {
-        transform.scaleX = mathRound2(Math.max(0.01, scaleX));
-        transform.scaleY = mathRound2(Math.max(0.01, scaleY));
+        transform.scaleX = mathRound2(Math.max(0.01, Math.abs(scaleX)));
+        transform.scaleY = mathRound2(Math.max(0.01, Math.abs(scaleY)));
         transform.width = mathRound2(Math.max(5, node.width()));
         transform.height = mathRound2(Math.max(5, node.height()));
       } else {

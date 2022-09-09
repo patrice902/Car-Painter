@@ -67,8 +67,11 @@ export const RotationProperty = React.memo((props) => {
 
         const newBoundBox = rotateAroundCenter(
           boundBox,
-          newRot - boundBox.rotation
+          newRot - boundBox.rotation,
+          currentLayer.layer_data.flop,
+          currentLayer.layer_data.flip
         );
+
         updatingMap.left = newBoundBox.x;
         updatingMap.top = newBoundBox.y;
       }
@@ -85,31 +88,9 @@ export const RotationProperty = React.memo((props) => {
       if (value <= -180) value += 360;
       else if (value >= 180) value -= 360;
 
-      let updatingMap = {
-        rotation: value,
-      };
-
-      if (!isCenterBasedShape(currentLayer.layer_data.type)) {
-        const newRot = (value / 180) * Math.PI;
-        const boundBox = {
-          x: selectedNode.x(),
-          y: selectedNode.y(),
-          width: selectedNode.width(),
-          height: selectedNode.height(),
-          rotation: (selectedNode.rotation() / 180) * Math.PI,
-        };
-
-        const newBoundBox = rotateAroundCenter(
-          boundBox,
-          newRot - boundBox.rotation
-        );
-        updatingMap.left = newBoundBox.x;
-        updatingMap.top = newBoundBox.y;
-      }
-
-      return updatingMap;
+      return rotationMapFunc(value);
     },
-    [currentLayer, stageRef]
+    [currentLayer, rotationMapFunc, stageRef]
   );
 
   const flopMapFunc = useCallback(() => {
