@@ -20,7 +20,6 @@ export const SharedProjects = React.memo((props) => {
   const {
     user,
     blockedBy,
-    blockedUsers,
     sharedSchemeList,
     favoriteSchemeList,
     sortBy,
@@ -99,10 +98,7 @@ export const SharedProjects = React.memo((props) => {
   }, []);
 
   return (
-    <Box minHeight="calc(100vh - 160px)" display="flex" flexDirection="column">
-      <Typography variant="h2" mb={5}>
-        Shared with Me
-      </Typography>
+    <>
       {filteredSharedSchemeList.length ? (
         <CustomInfiniteScroll
           dataLength={limit} //This is important field to render the next data
@@ -195,13 +191,13 @@ export const SharedProjects = React.memo((props) => {
           display="flex"
           justifyContent="center"
           alignItems="center"
-          height="100%"
+          height="min(500px, 50vh)"
           flexGrow={1}
         >
           <Typography variant="h2">No Projects</Typography>
         </Box>
       )}
-    </Box>
+    </>
   );
 });
 

@@ -13,7 +13,7 @@ import {
 import { MoreVert as ActionIcon } from "@material-ui/icons";
 import { SearchBox } from "components/common";
 import CarMakeAutocomplete from "./CarMakeAutocomplete";
-import { IconButton, Menu } from "@material-ui/core";
+import { IconButton, Menu, useMediaQuery } from "@material-ui/core";
 
 export const FilterBar = React.memo(
   ({
@@ -28,6 +28,7 @@ export const FilterBar = React.memo(
     legacyFilter,
   }) => {
     const [actionMenuEl, setActionMenuEl] = useState(null);
+    const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
     const handleSearchChange = useCallback((value) => setSearch(value), [
       setSearch,
     ]);
@@ -39,10 +40,29 @@ export const FilterBar = React.memo(
       setActionMenuEl(null);
     };
 
+    const sortByComponent = (
+      <CustomFormControl variant="outlined">
+        <InputLabel id="sort-label">Sort By</InputLabel>
+        <Select
+          labelId="sort-label"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          label="Sort By"
+        >
+          <MenuItem value={1}>Project Name</MenuItem>
+          <MenuItem value={2}>Vehicle Name</MenuItem>
+          <MenuItem value={3}>Last Modified</MenuItem>
+        </Select>
+      </CustomFormControl>
+    );
+
     return (
       <>
-        <Box maxWidth="300px">
-          <SearchBox value={search} onChange={handleSearchChange} />
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box maxWidth="300px">
+            <SearchBox value={search} onChange={handleSearchChange} />
+          </Box>
+          {overMobile ? null : sortByComponent}
         </Box>
 
         <Box
@@ -50,21 +70,8 @@ export const FilterBar = React.memo(
           justifyContent="flex-start"
           alignItems="center"
           my={3}
-          pr={5}
         >
-          <CustomFormControl variant="outlined">
-            <InputLabel id="sort-label">Sort By</InputLabel>
-            <Select
-              labelId="sort-label"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              label="Sort By"
-            >
-              <MenuItem value={1}>Project Name</MenuItem>
-              <MenuItem value={2}>Vehicle Name</MenuItem>
-              <MenuItem value={3}>Last Modified</MenuItem>
-            </Select>
-          </CustomFormControl>
+          {overMobile ? sortByComponent : null}
           <StyledCarMakeAutocomplete
             label="Filter By Vehicle"
             value={selectedVehicle}
@@ -137,7 +144,11 @@ const StyledCarMakeAutocomplete = styled(CarMakeAutocomplete)`
 const CustomFormControl = styled(FormControl)`
   .MuiInputBase-root {
     height: 38px;
-    margin-right: 10px;
+    margin-right: 20px;
+
+    ${(props) => props.theme.breakpoints.up("sm")} {
+      margin-right: 10px;
+    }
   }
 `;
 
