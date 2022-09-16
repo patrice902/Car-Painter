@@ -72,10 +72,7 @@ export const MyProjects = React.memo((props) => {
   }, []);
 
   return (
-    <Box minHeight="calc(100vh - 160px)" display="flex" flexDirection="column">
-      <Typography variant="h2" mb={5}>
-        My Projects
-      </Typography>
+    <>
       {filteredSchemeList.length ? (
         <CustomInfiniteScroll
           dataLength={limit} //This is important field to render the next data
@@ -112,13 +109,13 @@ export const MyProjects = React.memo((props) => {
           display="flex"
           justifyContent="center"
           alignItems="center"
-          height="100%"
+          height="min(500px, 50vh)"
           flexGrow={1}
         >
           <Typography variant="h2">No Projects</Typography>
         </Box>
       )}
-    </Box>
+    </>
   );
 });
 

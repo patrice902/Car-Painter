@@ -105,13 +105,17 @@ export const CreateProjectDialog = React.memo((props) => {
 });
 
 const StyledCarMakeAutocomplete = styled(CarMakeAutocomplete)`
-  width: 500px;
   margin-bottom: 16px;
   .MuiInputLabel-outlined {
     transform: translate(14px, 19px) scale(1);
     &.MuiInputLabel-shrink {
       transform: translate(14px, -6px) scale(0.75);
     }
+  }
+
+  width: 250px;
+  ${(props) => props.theme.breakpoints.up("sm")} {
+    width: 500px;
   }
 `;
 

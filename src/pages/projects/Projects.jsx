@@ -1,8 +1,16 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import _ from "lodash";
 
-import { Box } from "components/MaterialUI";
-import { AppHeader, ScreenLoader } from "components/common";
+import {
+  Box,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from "components/MaterialUI";
+
+import { AddBoxOutlined as AddIcon } from "@material-ui/icons";
+import { AppHeader, LightTooltip, ScreenLoader } from "components/common";
 import {
   MyProjects,
   SharedProjects,
@@ -10,7 +18,6 @@ import {
   LeftBar,
   FilterBar,
 } from "./components";
-import { Wrapper, TabPanel } from "./Projects.style";
 
 import {
   getSchemeList,
@@ -25,15 +32,21 @@ import {
   clearCurrent as clearCurrentScheme,
   clearSharedUsers,
   setLoaded as setSchemeLoaded,
+  createScheme,
 } from "redux/reducers/schemeReducer";
 import { reset as resetLayerReducer } from "redux/reducers/layerReducer";
 import { reset as resetBoardReducer } from "redux/reducers/boardReducer";
 import { getCarMakeList } from "redux/reducers/carMakeReducer";
 import { useGeneralSocket } from "hooks";
 import { getCarPinListByUserID } from "redux/reducers/carPinReducer";
+import { CreateProjectDialog } from "components/dialogs";
+import { useHistory } from "react-router";
+import styled from "styled-components";
 
 export const Projects = React.memo(() => {
   const dispatch = useDispatch();
+  const history = useHistory();
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const user = useSelector((state) => state.authReducer.user);
   const blockedBy = useSelector((state) => state.authReducer.blockedBy);
@@ -55,6 +68,8 @@ export const Projects = React.memo(() => {
   const [search, setSearch] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [hideLegacy, setHideLegacy] = useState(false);
+  const [dialog, setDialog] = useState();
+  const [predefinedCarMakeID, setPredefinedCarMakeID] = useState();
   const [sortBy, setSortBy] = useState(3);
 
   const [loadingSharedList, setLoadingSharedList] = useState(false);
@@ -72,7 +87,38 @@ export const Projects = React.memo(() => {
     return false;
   }, [schemeList, favoriteSchemeList, sharedSchemeList]);
 
+  let sortedCarMakesList = useMemo(
+    () =>
+      _.orderBy(
+        [...carMakeList.filter((item) => !item.is_parent && !item.deleted)],
+        ["car_type", "name"],
+        ["asc", "asc"]
+      ),
+    [carMakeList]
+  );
+
   useGeneralSocket();
+
+  const openScheme = useCallback(
+    (schemeID) => {
+      history.push(`/project/${schemeID}`);
+    },
+    [history]
+  );
+
+  const createSchemeFromCarMake = useCallback(
+    (carMake, name) => {
+      setDialog(null);
+      dispatch(createScheme(carMake, name, user.id, 0, openScheme));
+    },
+    [dispatch, openScheme, user]
+  );
+
+  const handleCreateNew = useCallback(() => {
+    setDialog("CreateProjectDialog");
+  }, []);
+
+  const hideDialog = useCallback(() => setDialog(null), []);
 
   useEffect(() => {
     // dispatch(setMessage({ message: null }));
@@ -118,6 +164,18 @@ export const Projects = React.memo(() => {
     }
   }, [carMakeList, setSelectedVehicle]);
 
+  useEffect(() => {
+    if (user) {
+      const url = new URL(window.location.href);
+      const makeID = url.searchParams.get("make");
+      if (makeID) {
+        setPredefinedCarMakeID(makeID);
+        setDialog("CreateProjectDialog");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   const handleDeleteProject = (schemeID) => {
     dispatch(deleteScheme(schemeID));
   };
@@ -159,18 +217,31 @@ export const Projects = React.memo(() => {
   return (
     <Box width="100%" height="100%" display="flex" flexDirection="column">
       <AppHeader></AppHeader>
-      <Box width="100%" height="100%" display="flex" bgcolor="#333">
-        <LeftBar tabValue={tabValue} setTabValue={setTabValue} />
-        <Wrapper
+      <Box
+        width="100%"
+        height={overMobile ? "calc(100vh - 56px)" : "calc(100vh - 96px)"}
+        display="flex"
+        bgcolor="#333"
+        flexDirection={overMobile ? "row" : "column-reverse"}
+      >
+        <LeftBar
+          tabValue={tabValue}
+          setTabValue={setTabValue}
+          onCreateNew={handleCreateNew}
+        />
+        <Box
           display="flex"
           flexDirection="column"
           justifyContent="flex-start"
-          my={2}
+          my={overMobile ? 2 : 0}
           mr={2}
           py={5}
           pl={5}
           width="100%"
-          height="calc(100% - 16px)"
+          height={overMobile ? "calc(100% - 16px)" : "calc(100% - 48px)"}
+          position="relative"
+          bgcolor="#444"
+          borderRadius={overMobile ? "10px" : 0}
         >
           <FilterBar
             search={search}
@@ -187,7 +258,6 @@ export const Projects = React.memo(() => {
             id="scheme-list-content"
             overflow="auto"
             position="relative"
-            height="100%"
             pr={5}
           >
             {schemeLoading ||
@@ -197,7 +267,12 @@ export const Projects = React.memo(() => {
               <ScreenLoader />
             ) : (
               <>
-                <TabPanel value={tabValue} index={0}>
+                <TabPanel
+                  value={tabValue}
+                  index={0}
+                  title="My Projects"
+                  onCreateNew={handleCreateNew}
+                >
                   <MyProjects
                     user={user}
                     favoriteSchemeList={favoriteSchemeList}
@@ -212,7 +287,12 @@ export const Projects = React.memo(() => {
                     onAddFavorite={handleCreateFavorite}
                   />
                 </TabPanel>
-                <TabPanel value={tabValue} index={1}>
+                <TabPanel
+                  value={tabValue}
+                  index={1}
+                  title="Shared with Me"
+                  onCreateNew={handleCreateNew}
+                >
                   <SharedProjects
                     user={user}
                     blockedBy={blockedBy}
@@ -229,7 +309,12 @@ export const Projects = React.memo(() => {
                     onAddFavorite={handleCreateFavorite}
                   />
                 </TabPanel>
-                <TabPanel value={tabValue} index={2}>
+                <TabPanel
+                  value={tabValue}
+                  index={2}
+                  title="Favorite Projects"
+                  onCreateNew={handleCreateNew}
+                >
                   <FavoriteProjects
                     user={user}
                     favoriteSchemeList={favoriteSchemeList}
@@ -244,10 +329,57 @@ export const Projects = React.memo(() => {
               </>
             )}
           </Box>
-        </Wrapper>
+        </Box>
       </Box>
+      <CreateProjectDialog
+        carMakeList={sortedCarMakesList}
+        predefinedCarMakeID={predefinedCarMakeID}
+        open={dialog === "CreateProjectDialog"}
+        onContinue={createSchemeFromCarMake}
+        onCancel={hideDialog}
+      />
     </Box>
   );
 });
+
+const TabPanel = ({ children, value, index, title, onCreateNew, ...props }) => {
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+
+  return (
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      id={`projects-tabpanel-${index}`}
+      aria-labelledby={`projects-tab-${index}`}
+      width="100%"
+      {...props}
+    >
+      {value === index && (
+        <Box display="flex" flexDirection="column">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb={5}
+          >
+            <Typography variant="h2">{title}</Typography>
+            {overMobile ? null : (
+              <LightTooltip title="New Project" arrow>
+                <IconButton size="small" onClick={onCreateNew}>
+                  <CustomAddIcon />
+                </IconButton>
+              </LightTooltip>
+            )}
+          </Box>
+          {children}
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+const CustomAddIcon = styled(AddIcon)`
+  font-size: 32px;
+`;
 
 export default Projects;

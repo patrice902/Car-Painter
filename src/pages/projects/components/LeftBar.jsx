@@ -1,77 +1,25 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import _ from "lodash";
+import React, { useEffect, useMemo, useCallback } from "react";
 import styled from "styled-components/macro";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 
-import { Box, Typography, Button } from "components/MaterialUI";
-import { CreateProjectDialog } from "components/dialogs";
-
-import { createScheme } from "redux/reducers/schemeReducer";
+import { Box, Typography, Button, useMediaQuery } from "components/MaterialUI";
 import { Add as AddIcon } from "@material-ui/icons";
 
 const tabURLs = ["mine", "shared", "favorite"];
 
-export const LeftBar = React.memo(({ tabValue, setTabValue }) => {
-  const dispatch = useDispatch();
+export const LeftBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
   const history = useHistory();
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
-  const user = useSelector((state) => state.authReducer.user);
-  const carMakeList = useSelector((state) => state.carMakeReducer.list);
   const sharedSchemeList = useSelector(
     (state) => state.schemeReducer.sharedList
-  );
-
-  const [dialog, setDialog] = useState();
-  const [predefinedCarMakeID, setPredefinedCarMakeID] = useState();
-
-  let sortedCarMakesList = useMemo(
-    () =>
-      _.orderBy(
-        [...carMakeList.filter((item) => !item.is_parent && !item.deleted)],
-        ["car_type", "name"],
-        ["asc", "asc"]
-      ),
-    [carMakeList]
   );
 
   const newInvitationCount = useMemo(
     () => sharedSchemeList.filter((item) => !item.accepted).length,
     [sharedSchemeList]
   );
-
-  useEffect(() => {
-    if (user) {
-      const url = new URL(window.location.href);
-      const makeID = url.searchParams.get("make");
-      if (makeID) {
-        setPredefinedCarMakeID(makeID);
-        setDialog("CreateProjectDialog");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  const hideDialog = useCallback(() => setDialog(null), []);
-
-  const openScheme = useCallback(
-    (schemeID) => {
-      history.push(`/project/${schemeID}`);
-    },
-    [history]
-  );
-
-  const createSchemeFromCarMake = useCallback(
-    (carMake, name) => {
-      setDialog(null);
-      dispatch(createScheme(carMake, name, user.id, 0, openScheme));
-    },
-    [dispatch, openScheme, user]
-  );
-
-  const handleCreateNew = useCallback(() => {
-    setDialog("CreateProjectDialog");
-  }, []);
 
   const handleClickTabItem = useCallback(
     (tabIndex) => {
@@ -96,19 +44,30 @@ export const LeftBar = React.memo(({ tabValue, setTabValue }) => {
   }, [history, setTabValue]);
 
   return (
-    <Box width="250px">
-      <Box display="flex" justifyContent="space-between" p={3}>
-        <GreyButton
-          onClick={handleCreateNew}
-          color="primary"
-          variant="contained"
-          startIcon={<AddIcon />}
-          mr={2}
-        >
-          <Typography variant="subtitle1"> New</Typography>
-        </GreyButton>
-      </Box>
-      <Box display="flex" flexDirection="column">
+    <Box
+      width={overMobile ? "250px" : "100%"}
+      display="flex"
+      flexDirection={overMobile ? "column" : "row"}
+    >
+      {overMobile ? (
+        <Box display="flex" justifyContent="space-between" p={3}>
+          <GreyButton
+            onClick={onCreateNew}
+            color="primary"
+            variant="contained"
+            startIcon={<AddIcon />}
+            mr={2}
+          >
+            <Typography variant="subtitle1"> New</Typography>
+          </GreyButton>
+        </Box>
+      ) : null}
+      <Box
+        display="flex"
+        flexDirection={overMobile ? "column" : "row"}
+        width="100%"
+        justifyContent={overMobile ? "start" : "space-between"}
+      >
         <Tab
           state={tabValue === 0 ? "active" : null}
           onClick={() => handleClickTabItem(0)}
@@ -137,13 +96,6 @@ export const LeftBar = React.memo(({ tabValue, setTabValue }) => {
           <Typography>Favorite Projects</Typography>
         </Tab>
       </Box>
-      <CreateProjectDialog
-        carMakeList={sortedCarMakesList}
-        predefinedCarMakeID={predefinedCarMakeID}
-        open={dialog === "CreateProjectDialog"}
-        onContinue={createSchemeFromCarMake}
-        onCancel={hideDialog}
-      />
     </Box>
   );
 });
@@ -158,7 +110,11 @@ const GreyButton = styled(Button)`
 const Tab = styled(Box)`
   background-color: ${(props) => (props.state === "active" ? "#222" : "#333")};
   cursor: pointer;
-  padding: 4px 12px;
+  padding: 12px;
+
+  ${(props) => props.theme.breakpoints.up("sm")} {
+    padding: 4px 12px;
+  }
 `;
 
 export default LeftBar;
