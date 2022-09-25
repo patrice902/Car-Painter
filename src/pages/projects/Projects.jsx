@@ -71,6 +71,7 @@ export const Projects = React.memo(() => {
   const [dialog, setDialog] = useState();
   const [predefinedCarMakeID, setPredefinedCarMakeID] = useState();
   const [sortBy, setSortBy] = useState(3);
+  const [innerHeight, setInnerHeight] = useState(window.innerHeight);
 
   const [loadingSharedList, setLoadingSharedList] = useState(false);
   const [loadingFavoriteList, setLoadingFavoriteList] = useState(false);
@@ -128,6 +129,10 @@ export const Projects = React.memo(() => {
     dispatch(resetLayerReducer());
     dispatch(resetBoardReducer());
     dispatch(getSchemeList(user.id));
+
+    window.addEventListener("resize", () => {
+      setInnerHeight(window.innerHeight);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
@@ -219,7 +224,7 @@ export const Projects = React.memo(() => {
       <AppHeader></AppHeader>
       <Box
         width="100%"
-        height={overMobile ? "calc(100vh - 56px)" : "calc(100vh - 96px)"}
+        height={innerHeight - 56}
         display="flex"
         bgcolor="#333"
         flexDirection={overMobile ? "row" : "column-reverse"}

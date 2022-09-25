@@ -123,8 +123,8 @@ export const RaceDialog = React.memo((props) => {
             number={number}
             applying={applying}
             setNumber={setNumber}
-            leagueList={cars[number].leagues}
-            teamList={cars[number].teams}
+            leagueList={cars[number] ? cars[number].leagues : []}
+            teamList={cars[number] ? cars[number].teams : []}
             expanded={expanded}
             setExpanded={setExpanded}
             {...formProps}

@@ -8,6 +8,7 @@ import {
   Link as MuiLink,
   Typography,
   Popover,
+  useMediaQuery,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -17,17 +18,18 @@ import { getUserName } from "helper";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "redux/reducers/authReducer";
 
-export const AppHeader = React.memo(({ children }) => {
+export const AppHeader = React.memo(({ isBoard, children }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authReducer.user);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const handleSignOut = useCallback(() => {
     dispatch(signOut());
   }, [dispatch]);
 
   return (
-    <Box
+    <Wrapper
       width="100%"
       display="flex"
       alignItems="center"
@@ -44,10 +46,20 @@ export const AppHeader = React.memo(({ children }) => {
         <MuiLink href="https://tradingpaints.com/" style={{ height: "30px" }}>
           <img src={TradingPaintsLogo} alt="TradingPaintsLogo" height="100%" />
         </MuiLink>
-        <SlashSeparator>&#47;</SlashSeparator>
-        <Link to="/" style={{ height: "30px" }}>
-          <img src={PaintBuilderLogo} alt="PaintBuilderLogo" height="100%" />
-        </Link>
+        {overMobile || !isBoard ? (
+          <>
+            <SlashSeparator>&#47;</SlashSeparator>
+            <Link to="/" style={{ height: "30px" }}>
+              <img
+                src={PaintBuilderLogo}
+                alt="PaintBuilderLogo"
+                height="100%"
+              />
+            </Link>
+          </>
+        ) : (
+          <></>
+        )}
       </Box>
       <Box
         height="100%"
@@ -113,7 +125,7 @@ export const AppHeader = React.memo(({ children }) => {
           <></>
         )}
       </Box>
-    </Box>
+    </Wrapper>
   );
 });
 
@@ -121,7 +133,7 @@ export const SlashSeparator = styled(Typography)`
   color: #666;
   font-size: 40px;
   font-weight: 400;
-  margin: -7px 5px 0;
+  margin: 2px 5px 0;
 `;
 
 const StyledLink = styled(MuiLink)`
@@ -156,7 +168,14 @@ const NameItem = styled(Typography)`
 `;
 
 const AvatarButton = styled(Button)`
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
   padding: 0;
+`;
+
+const Wrapper = styled(Box)`
+  gap: 16px;
 `;
 
 export default AppHeader;

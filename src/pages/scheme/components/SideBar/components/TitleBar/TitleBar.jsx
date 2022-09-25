@@ -15,7 +15,7 @@ import { focusBoardQuickly } from "helper";
 
 export const TitleBar = React.memo((props) => {
   const { editable, onBack } = props;
-  const overTablet = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const dispatch = useDispatch();
 
@@ -56,28 +56,36 @@ export const TitleBar = React.memo((props) => {
       my={1}
     >
       <Box display="flex" alignItems="center" flexGrow={1}>
-        <Box mr={1}>
+        <Box mr={overMobile ? 1 : 4}>
           <LightTooltip title="Back" arrow>
-            <IconButton onClick={onBack}>
+            <IconButton size={overMobile ? "medium" : "small"} onClick={onBack}>
               <CustomIcon icon={faChevronLeft} size="xs" />
             </IconButton>
           </LightTooltip>
         </Box>
-
-        <NameInput
-          value={name}
-          onChange={handleNameChange}
-          inputProps={{ maxLength: "50" }}
-        />
-      </Box>
-      <Box display="flex" marginLeft="4px">
-        {overTablet && (
-          <LightTooltip title="Settings" arrow>
-            <IconButton ml={2} onClick={() => setDialog(DialogTypes.SETTINGS)}>
-              <SettingsIcon />
-            </IconButton>
-          </LightTooltip>
+        {overMobile ? (
+          <NameInput
+            value={name}
+            onChange={handleNameChange}
+            inputProps={{ maxLength: "50" }}
+          />
+        ) : (
+          <></>
         )}
+      </Box>
+      <Box
+        display="flex"
+        marginLeft={overMobile ? "4px" : 0}
+        marginRight={overMobile ? 0 : 4}
+      >
+        <LightTooltip title="Settings" arrow>
+          <IconButton
+            size={overMobile ? "medium" : "small"}
+            onClick={() => setDialog(DialogTypes.SETTINGS)}
+          >
+            <SettingsIcon />
+          </IconButton>
+        </LightTooltip>
       </Box>
 
       <SchemeSettingsDialog
