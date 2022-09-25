@@ -9,6 +9,7 @@ import {
   Button,
   CircularProgress,
   Slider,
+  useMediaQuery,
 } from "components/MaterialUI";
 import { Wrapper, ZoomButton } from "./Toolbar.style";
 import { ChevronsLeft, ChevronsRight } from "react-feather";
@@ -48,6 +49,7 @@ export const Toolbar = React.memo((props) => {
     onChangeBoardRotation,
   } = props;
   const { zoom, onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
@@ -246,11 +248,16 @@ export const Toolbar = React.memo((props) => {
         width="100%"
       >
         <Box display="flex" alignContent="center">
-          <LightTooltip title="Toggle Layers" arrow>
-            <IconButton onClick={handleToggleLayers}>
-              {showLayers ? <ChevronsLeft /> : <ChevronsRight />}
-            </IconButton>
-          </LightTooltip>
+          {overMobile ? (
+            <LightTooltip title="Toggle Layers" arrow>
+              <IconButton onClick={handleToggleLayers}>
+                {showLayers ? <ChevronsLeft /> : <ChevronsRight />}
+              </IconButton>
+            </LightTooltip>
+          ) : (
+            <></>
+          )}
+
           <LightTooltip title="Shortcuts" arrow>
             <IconButton onClick={() => setDialog(DialogTypes.SHORTCUTS)}>
               <img src={ShortcutIcon} width="20px" alt="shortcuts" />
@@ -291,30 +298,34 @@ export const Toolbar = React.memo((props) => {
             </Box>
           </LightTooltip>
 
-          <Box mx={4} height="100%" display="flex">
-            <LightTooltip
-              title={
-                downloaderRunning
-                  ? "Open Sim Preview Dialog (Or just run quick Sim Preview Action by HotKey: P)"
-                  : downloaderRunning === false
-                  ? "Trading Paints Downloader is running but you are not in a iRacing session"
-                  : "Trading Paints Downloader is not detected"
-              }
-              arrow
-            >
-              <Button
-                variant="default"
-                disabled={!isWindows() || simPreviewing}
-                onClick={handleClickSimPreview}
+          {overMobile ? (
+            <Box mx={4} height="100%" display="flex">
+              <LightTooltip
+                title={
+                  downloaderRunning
+                    ? "Open Sim Preview Dialog (Or just run quick Sim Preview Action by HotKey: P)"
+                    : downloaderRunning === false
+                    ? "Trading Paints Downloader is running but you are not in a iRacing session"
+                    : "Trading Paints Downloader is not detected"
+                }
+                arrow
               >
-                {simPreviewing ? (
-                  <CircularProgress size={20} />
-                ) : (
-                  <Typography variant="subtitle2">Sim Preview</Typography>
-                )}
-              </Button>
-            </LightTooltip>
-          </Box>
+                <Button
+                  variant="default"
+                  disabled={!isWindows() || simPreviewing}
+                  onClick={handleClickSimPreview}
+                >
+                  {simPreviewing ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <Typography variant="subtitle2">Sim Preview</Typography>
+                  )}
+                </Button>
+              </LightTooltip>
+            </Box>
+          ) : (
+            <></>
+          )}
 
           <Box display="flex" alignItems="center">
             <LightTooltip title="Zoom to fit" position="bottom" arrow>
@@ -345,11 +356,15 @@ export const Toolbar = React.memo((props) => {
               <Rotate90DegreesCcw />
             </IconButton>
           </LightTooltip>
-          <LightTooltip title="Toggle Properties" arrow>
-            <IconButton onClick={handleToggleProperties}>
-              {showProperties ? <ChevronsRight /> : <ChevronsLeft />}
-            </IconButton>
-          </LightTooltip>
+          {overMobile ? (
+            <LightTooltip title="Toggle Properties" arrow>
+              <IconButton onClick={handleToggleProperties}>
+                {showProperties ? <ChevronsRight /> : <ChevronsLeft />}
+              </IconButton>
+            </LightTooltip>
+          ) : (
+            <></>
+          )}
         </Box>
       </Box>
       <ZoomPopover

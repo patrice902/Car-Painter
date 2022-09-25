@@ -167,6 +167,9 @@ const overrides = {
       fontFamily: "AkkuratMonoLLWeb-Regular",
       fontSize: "14px",
       height: "2rem",
+      "@media only screen and (max-width: 600px)": {
+        fontSize: "16px",
+      },
       "&:-webkit-autofill": {
         "-webkit-box-shadow": "0 0 0 100px #444 inset !important",
       },

@@ -58,14 +58,18 @@ export const FilterBar = React.memo(
 
     return (
       <>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Wrapper
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Box maxWidth="300px">
             <SearchBox value={search} onChange={handleSearchChange} />
           </Box>
           {overMobile ? null : sortByComponent}
-        </Box>
+        </Wrapper>
 
-        <Box
+        <Wrapper
           display="flex"
           justifyContent="flex-start"
           alignItems="center"
@@ -119,7 +123,7 @@ export const FilterBar = React.memo(
               <></>
             )}
           </Menu>
-        </Box>
+        </Wrapper>
       </>
     );
   }
@@ -144,12 +148,16 @@ const StyledCarMakeAutocomplete = styled(CarMakeAutocomplete)`
 const CustomFormControl = styled(FormControl)`
   .MuiInputBase-root {
     height: 38px;
-    margin-right: 20px;
+    margin-right: 16px;
 
     ${(props) => props.theme.breakpoints.up("sm")} {
       margin-right: 10px;
     }
   }
+`;
+
+const Wrapper = styled(Box)`
+  gap: 8px;
 `;
 
 export default FilterBar;

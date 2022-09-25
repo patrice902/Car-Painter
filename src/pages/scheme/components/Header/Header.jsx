@@ -2,7 +2,14 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DialogTypes } from "constant";
 
-import { Typography, Box, Button, Popover } from "components/MaterialUI";
+import {
+  Typography,
+  Box,
+  Button,
+  Popover,
+  useMediaQuery,
+  IconButton,
+} from "components/MaterialUI";
 import {
   DropDownIcon,
   ShareIcon,
@@ -21,10 +28,12 @@ import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
 import { updateScheme } from "redux/reducers/schemeReducer";
 import { SharingDialog } from "components/dialogs";
+import { TitleBar } from "../SideBar/components";
 
 export const Header = React.memo((props) => {
   const {
     editable,
+    onBack,
     onDownloadTGA,
     onDownloadSpecTGA,
     retrieveTGAPNGDataUrl,
@@ -37,6 +46,7 @@ export const Header = React.memo((props) => {
   const [sharingTab, setSharingTab] = useState(0);
 
   const dispatch = useDispatch();
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const currentCarMake = useSelector((state) => state.carMakeReducer.current);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
@@ -247,29 +257,52 @@ export const Header = React.memo((props) => {
 
   return (
     <>
-      <AppHeader>
-        <Box mr={1} height="100%" display="flex" alignItems="center">
-          <DropDownButton
-            aria-controls="share-options-menu"
-            aria-haspopup="true"
-            startIcon={<ShareIcon />}
-            endIcon={<DropDownIcon />}
-            onClick={handleOpenShareOptions}
-          >
-            <Typography variant="subtitle2">Share</Typography>
-          </DropDownButton>
+      <AppHeader isBoard>
+        {!overMobile ? <TitleBar editable={editable} onBack={onBack} /> : <></>}
+        <Box mr={4} height="100%" display="flex" alignItems="center">
+          {overMobile ? (
+            <DropDownButton
+              aria-controls="share-options-menu"
+              aria-haspopup="true"
+              startIcon={<ShareIcon />}
+              endIcon={<DropDownIcon />}
+              onClick={handleOpenShareOptions}
+            >
+              <Typography variant="subtitle2">Share</Typography>
+            </DropDownButton>
+          ) : (
+            <IconButton
+              aria-controls="share-options-menu"
+              aria-haspopup="true"
+              size="small"
+              onClick={handleOpenShareOptions}
+            >
+              <ShareIcon />
+            </IconButton>
+          )}
         </Box>
 
-        <Box mr={1} height="100%" display="flex" alignItems="center">
-          <DropDownButton
-            aria-controls="tga-options-menu"
-            aria-haspopup="true"
-            onClick={handleOpenTGAOptions}
-            startIcon={<FaDownload />}
-            endIcon={<DropDownIcon />}
-          >
-            <Typography variant="subtitle2">Download</Typography>
-          </DropDownButton>
+        <Box mr={4} height="100%" display="flex" alignItems="center">
+          {overMobile ? (
+            <DropDownButton
+              aria-controls="tga-options-menu"
+              aria-haspopup="true"
+              onClick={handleOpenTGAOptions}
+              startIcon={<FaDownload />}
+              endIcon={<DropDownIcon />}
+            >
+              <Typography variant="subtitle2">Download</Typography>
+            </DropDownButton>
+          ) : (
+            <IconButton
+              aria-controls="tga-options-menu"
+              aria-haspopup="true"
+              size="small"
+              onClick={handleOpenTGAOptions}
+            >
+              <FaDownload />
+            </IconButton>
+          )}
         </Box>
 
         {primaryRaceNumber > -1 ? (
@@ -302,16 +335,30 @@ export const Header = React.memo((props) => {
             </Button>
           </CustomButtonGroup>
         ) : (
-          <Button
-            variant="outlined"
-            mx={1}
-            pr="16px"
-            size="small"
-            startIcon={<img src={RaceIcon} width={22} height={22} alt="Race" />}
-            onClick={() => setDialog(DialogTypes.RACE)}
-          >
-            <Typography variant="subtitle2">Race</Typography>
-          </Button>
+          <>
+            {overMobile ? (
+              <Button
+                variant="outlined"
+                mr={4}
+                pr="16px"
+                size="small"
+                startIcon={
+                  <img src={RaceIcon} width={22} height={22} alt="Race" />
+                }
+                onClick={() => setDialog(DialogTypes.RACE)}
+              >
+                <Typography variant="subtitle2">Race</Typography>
+              </Button>
+            ) : (
+              <IconButton
+                size="small"
+                mr={4}
+                onClick={() => setDialog(DialogTypes.RACE)}
+              >
+                <img src={RaceIcon} width={28} height={28} alt="Race" />
+              </IconButton>
+            )}
+          </>
         )}
 
         <Popover

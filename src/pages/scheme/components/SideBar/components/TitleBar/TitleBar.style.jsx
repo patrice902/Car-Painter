@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const CustomIcon = styled(FontAwesomeIcon)`
   width: 20px !important;
+  height: 20px !important;
 `;
 
 export const NameInput = styled(TextField)`

@@ -6,7 +6,7 @@ import KeyboardEventHandler from "react-keyboard-event-handler";
 import Helmet from "react-helmet";
 import { useHistory, useParams } from "react-router";
 
-import { Box } from "@material-ui/core";
+import { Box, useMediaQuery } from "@material-ui/core";
 
 import { ScreenLoader } from "components/common";
 import {
@@ -60,6 +60,7 @@ const Scheme = React.memo((props) => {
   const history = useHistory();
   const params = useParams();
   const { onZoomFit } = useZoom(stageRef);
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const [hoveredJSON, setHoveredJSON] = useState({});
   const [transformingLayer, setTransformingLayer] = useState(null);
@@ -262,6 +263,7 @@ const Scheme = React.memo((props) => {
           />
           <Header
             editable={editable}
+            onBack={handleGoBack}
             onDownloadTGA={handleDownloadTGA}
             onDownloadSpecTGA={handleDownloadSpecTGA}
             retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
@@ -272,15 +274,19 @@ const Scheme = React.memo((props) => {
             display="flex"
             justifyContent="space-between"
           >
-            <SideBar
-              dialog={dialog}
-              setDialog={setDialog}
-              editable={editable}
-              hoveredLayerJSON={hoveredJSON}
-              stageRef={stageRef}
-              onBack={handleGoBack}
-              onChangeHoverJSONItem={setHoveredJSONItem}
-            />
+            {overMobile ? (
+              <SideBar
+                dialog={dialog}
+                setDialog={setDialog}
+                editable={editable}
+                hoveredLayerJSON={hoveredJSON}
+                stageRef={stageRef}
+                onBack={handleGoBack}
+                onChangeHoverJSONItem={setHoveredJSONItem}
+              />
+            ) : (
+              <></>
+            )}
             <Box
               bgcolor="#282828"
               overflow="hidden"
@@ -315,13 +321,17 @@ const Scheme = React.memo((props) => {
                 onChangeBoardRotation={handleChangeBoardRotation}
               />
             </Box>
-            <PropertyBar
-              stageRef={stageRef}
-              editable={editable}
-              transformingLayer={transformingLayer}
-              onCloneLayer={onCloneLayer}
-              onDeleteLayer={onDeleteLayer}
-            />
+            {overMobile ? (
+              <PropertyBar
+                stageRef={stageRef}
+                editable={editable}
+                transformingLayer={transformingLayer}
+                onCloneLayer={onCloneLayer}
+                onDeleteLayer={onDeleteLayer}
+              />
+            ) : (
+              <></>
+            )}
           </Box>
         </Box>
       )}
