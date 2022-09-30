@@ -1,11 +1,12 @@
 import React from "react";
 
 import { NavLink } from "react-router-dom";
-import { Box, Typography, IconButton } from "@material-ui/core";
+import { Box, Typography, IconButton, useMediaQuery } from "@material-ui/core";
 import { HighlightOff as CloseIcon } from "@material-ui/icons";
 import { useStyles } from "./LegacyBanner.style";
 
 export const LegacyBanner = React.memo(({ show, carMakeID, onDismiss }) => {
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const classes = useStyles();
 
   return (
@@ -14,7 +15,7 @@ export const LegacyBanner = React.memo(({ show, carMakeID, onDismiss }) => {
       left={0}
       right={0}
       top="10px"
-      width="500px"
+      width={overMobile ? "500px" : "350px"}
       display="flex"
       justifyContent="center"
       margin="auto"

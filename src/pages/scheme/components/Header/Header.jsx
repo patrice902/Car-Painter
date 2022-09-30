@@ -15,10 +15,13 @@ import {
   ShareIcon,
   DropDownButton,
   CustomButtonGroup,
+  CustomIcon,
 } from "./Header.style";
 import { AppHeader } from "components/common";
 import RaceIcon from "assets/race.svg";
 import { FaDownload } from "react-icons/fa";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { Settings as SettingsIcon } from "@material-ui/icons";
 
 import RaceDialog from "components/dialogs/RaceDialog/RaceDialog";
 import { getCarRaces, setCarRace } from "redux/reducers/carReducer";
@@ -27,8 +30,7 @@ import { CircularProgress } from "components/MaterialUI";
 import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
 import { updateScheme } from "redux/reducers/schemeReducer";
-import { SharingDialog } from "components/dialogs";
-import { TitleBar } from "../SideBar/components";
+import { SchemeSettingsDialog, SharingDialog } from "components/dialogs";
 
 export const Header = React.memo((props) => {
   const {
@@ -258,8 +260,29 @@ export const Header = React.memo((props) => {
   return (
     <>
       <AppHeader isBoard>
-        {!overMobile ? <TitleBar editable={editable} onBack={onBack} /> : <></>}
-        <Box mr={4} height="100%" display="flex" alignItems="center">
+        {!overMobile ? (
+          <IconButton size={overMobile ? "medium" : "small"} onClick={onBack}>
+            <CustomIcon icon={faChevronLeft} size="xs" />
+          </IconButton>
+        ) : (
+          <></>
+        )}
+        {!overMobile ? (
+          <IconButton
+            size={overMobile ? "medium" : "small"}
+            onClick={() => setDialog(DialogTypes.SETTINGS)}
+          >
+            <SettingsIcon />
+          </IconButton>
+        ) : (
+          <></>
+        )}
+        <Box
+          mr={overMobile ? 4 : 0}
+          height="100%"
+          display="flex"
+          alignItems="center"
+        >
           {overMobile ? (
             <DropDownButton
               aria-controls="share-options-menu"
@@ -282,7 +305,12 @@ export const Header = React.memo((props) => {
           )}
         </Box>
 
-        <Box mr={4} height="100%" display="flex" alignItems="center">
+        <Box
+          mr={overMobile ? 4 : 0}
+          height="100%"
+          display="flex"
+          alignItems="center"
+        >
           {overMobile ? (
             <DropDownButton
               aria-controls="tga-options-menu"
@@ -339,7 +367,7 @@ export const Header = React.memo((props) => {
             {overMobile ? (
               <Button
                 variant="outlined"
-                mr={4}
+                mr={overMobile ? 4 : 0}
                 pr="16px"
                 size="small"
                 startIcon={
@@ -352,7 +380,7 @@ export const Header = React.memo((props) => {
             ) : (
               <IconButton
                 size="small"
-                mr={4}
+                mr={overMobile ? 4 : 0}
                 onClick={() => setDialog(DialogTypes.RACE)}
               >
                 <img src={RaceIcon} width={28} height={28} alt="Race" />
@@ -457,6 +485,11 @@ export const Header = React.memo((props) => {
         open={dialog === DialogTypes.SHARING}
         tab={sharingTab}
         retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
+        onCancel={handleCloseDialog}
+      />
+      <SchemeSettingsDialog
+        editable={editable}
+        open={dialog === DialogTypes.SETTINGS}
         onCancel={handleCloseDialog}
       />
     </>

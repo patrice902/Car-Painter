@@ -502,6 +502,15 @@ export const scrollBackOnProjectList = () => {
   }
 };
 
+export const scrollTopOnProjectList = () => {
+  const schemeListContent = document.getElementById("scheme-list-content");
+  schemeListContent.scrollTop = 0;
+
+  if (schemeListContent.scrollTop !== 0) {
+    setTimeout(() => (schemeListContent.scrollTop = 0), 500);
+  }
+};
+
 export const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };

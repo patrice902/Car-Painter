@@ -8,7 +8,7 @@ export const CustomeTextField = styled(TextField)`
   }
 `;
 export const TextPreviewWrapper = styled(Box)`
-  overflow: auto;
+  overflow: hidden;
   background: #${(props) => props.backcolor};
 `;
 export const TextPreview = styled(Box)`

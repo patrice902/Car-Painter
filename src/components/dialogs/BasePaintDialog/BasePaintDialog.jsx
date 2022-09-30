@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useMediaQuery,
 } from "components/MaterialUI";
 import { basePaintAssetURL, legacyBasePaintAssetURL } from "helper";
 import { ImageWithLoad, Loader } from "components/common";
@@ -24,6 +25,8 @@ export const BasePaintDialog = React.memo((props) => {
   const classes = useStyles();
   const [limit, setLimit] = useState(step);
   const { legacyMode, basePaints, carMake, onCancel, open, onOpenBase } = props;
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+
   const bases = useMemo(
     () =>
       !carMake
@@ -108,7 +111,11 @@ export const BasePaintDialog = React.memo((props) => {
           loader={<Loader />}
           scrollableTarget="base-paint-dialog-content"
         >
-          <CustomImageList rowHeight={178} cols={3} spacing={8}>
+          <CustomImageList
+            rowHeight={178}
+            cols={overMobile ? 3 : 1}
+            spacing={8}
+          >
             {bases.slice(0, limit).map((item, index) => (
               <CustomImageListItem
                 key={index}

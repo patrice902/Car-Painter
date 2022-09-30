@@ -9,11 +9,14 @@ import {
   FormControl,
   Checkbox,
   FormControlLabel,
+  Button,
 } from "components/MaterialUI";
 import { MoreVert as ActionIcon } from "@material-ui/icons";
 import { SearchBox } from "components/common";
 import CarMakeAutocomplete from "./CarMakeAutocomplete";
 import { IconButton, Menu, useMediaQuery } from "@material-ui/core";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import { useEffect } from "react";
 
 export const FilterBar = React.memo(
   ({
@@ -27,8 +30,10 @@ export const FilterBar = React.memo(
     setSortBy,
     legacyFilter,
   }) => {
-    const [actionMenuEl, setActionMenuEl] = useState(null);
     const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+    const [actionMenuEl, setActionMenuEl] = useState(null);
+    const [showFilter, setShowFilter] = useState(true);
+
     const handleSearchChange = useCallback((value) => setSearch(value), [
       setSearch,
     ]);
@@ -36,9 +41,16 @@ export const FilterBar = React.memo(
     const handleActionMenuClick = (event) => {
       setActionMenuEl(event.currentTarget);
     };
+
     const handleActionMenuClose = () => {
       setActionMenuEl(null);
     };
+
+    const toggleFilter = () => setShowFilter((prev) => !prev);
+
+    useEffect(() => {
+      setShowFilter(overMobile);
+    }, [overMobile]);
 
     const sortByComponent = (
       <CustomFormControl variant="outlined">
@@ -58,72 +70,97 @@ export const FilterBar = React.memo(
 
     return (
       <>
-        <Wrapper
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Box maxWidth="300px">
-            <SearchBox value={search} onChange={handleSearchChange} />
+        {!overMobile ? (
+          <Box
+            display="flex"
+            justifyContent="end"
+            marginRight={4}
+            marginBottom={4}
+          >
+            <Button
+              startIcon={<FilterListIcon />}
+              onClick={toggleFilter}
+              variant={showFilter ? "contained" : "outlined"}
+            >
+              {!showFilter ? "Filter" : "Hide"}
+            </Button>
           </Box>
-          {overMobile ? null : sortByComponent}
-        </Wrapper>
+        ) : (
+          <></>
+        )}
 
-        <Wrapper
-          display="flex"
-          justifyContent="flex-start"
-          alignItems="center"
-          my={3}
-        >
-          {overMobile ? sortByComponent : null}
-          <StyledCarMakeAutocomplete
-            label="Filter By Vehicle"
-            value={selectedVehicle}
-            onChange={(event, newValue) => {
-              setSelectedVehicle(newValue);
-            }}
-          />
-          <IconButton
-            aria-haspopup="true"
-            aria-controls={`projects-control`}
-            onClick={handleActionMenuClick}
-          >
-            <ActionIcon />
-          </IconButton>
-          <Menu
-            id={`projects-control`}
-            elevation={0}
-            getContentAnchorEl={null}
-            anchorEl={actionMenuEl}
-            keepMounted
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={Boolean(actionMenuEl)}
-            onClose={handleActionMenuClose}
-          >
-            {legacyFilter ? (
-              <MenuItem>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={hideLegacy}
-                      onChange={(e) => setHideLegacy(e.target.checked)}
+        {showFilter ? (
+          <>
+            <Wrapper
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Box maxWidth="300px">
+                <SearchBox value={search} onChange={handleSearchChange} />
+              </Box>
+              {overMobile ? null : sortByComponent}
+            </Wrapper>
+
+            <Wrapper
+              display="flex"
+              justifyContent="flex-start"
+              alignItems="center"
+              my={3}
+            >
+              {overMobile ? sortByComponent : null}
+              <StyledCarMakeAutocomplete
+                label="Filter By Vehicle"
+                value={selectedVehicle}
+                onChange={(event, newValue) => {
+                  setSelectedVehicle(newValue);
+                }}
+              />
+              <IconButton
+                aria-haspopup="true"
+                aria-controls={`projects-control`}
+                onClick={handleActionMenuClick}
+              >
+                <ActionIcon />
+              </IconButton>
+              <Menu
+                id={`projects-control`}
+                elevation={0}
+                getContentAnchorEl={null}
+                anchorEl={actionMenuEl}
+                keepMounted
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(actionMenuEl)}
+                onClose={handleActionMenuClose}
+              >
+                {legacyFilter ? (
+                  <MenuItem>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={hideLegacy}
+                          onChange={(e) => setHideLegacy(e.target.checked)}
+                        />
+                      }
+                      label="Hide Legacy"
                     />
-                  }
-                  label="Hide Legacy"
-                />
-              </MenuItem>
-            ) : (
-              <></>
-            )}
-          </Menu>
-        </Wrapper>
+                  </MenuItem>
+                ) : (
+                  <></>
+                )}
+              </Menu>
+            </Wrapper>
+          </>
+        ) : (
+          <></>
+        )}
       </>
     );
   }

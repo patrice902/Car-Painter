@@ -19,6 +19,12 @@ export const CustomImageListItem = styled(ImageListItem)`
     border: 1px solid gray;
   }
 `;
-export const CustomDialogContent = styled(DialogContent)`
-  width: 600px;
-`;
+
+export const CustomDialogContent = styled(DialogContent)(
+  ({ theme }) => `
+  width: 300px;
+   ${theme.breakpoints.up("sm")} {
+    width: 600px;
+  }
+`
+);

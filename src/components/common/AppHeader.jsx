@@ -37,38 +37,37 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
       padding="8px 15px"
       bgcolor="black"
     >
-      <Box
-        height="30px"
-        display="flex"
-        alignItems="center"
-        justifyContent="flex-start"
-      >
-        <MuiLink href="https://tradingpaints.com/" style={{ height: "30px" }}>
-          <img src={TradingPaintsLogo} alt="TradingPaintsLogo" height="100%" />
-        </MuiLink>
-        {overMobile || !isBoard ? (
-          <>
-            <SlashSeparator>&#47;</SlashSeparator>
-            <Link to="/" style={{ height: "30px" }}>
-              <img
-                src={PaintBuilderLogo}
-                alt="PaintBuilderLogo"
-                height="100%"
-              />
-            </Link>
-          </>
-        ) : (
-          <></>
-        )}
-      </Box>
+      {overMobile || !isBoard ? (
+        <Box
+          height="30px"
+          display="flex"
+          alignItems="center"
+          justifyContent="flex-start"
+        >
+          <MuiLink href="https://tradingpaints.com/" style={{ height: "30px" }}>
+            <img
+              src={TradingPaintsLogo}
+              alt="TradingPaintsLogo"
+              height="100%"
+            />
+          </MuiLink>
+          <SlashSeparator>&#47;</SlashSeparator>
+          <Link to="/" style={{ height: "30px" }}>
+            <img src={PaintBuilderLogo} alt="PaintBuilderLogo" height="100%" />
+          </Link>
+        </Box>
+      ) : (
+        <></>
+      )}
       <Box
         height="100%"
+        width="100%"
         display="flex"
         alignItems="center"
-        justifyContent="flex-end"
+        justifyContent={overMobile || !isBoard ? "flex-end" : "space-around"}
       >
         {children}
-        {user ? (
+        {user && (overMobile || !isBoard) ? (
           <>
             <Box marginLeft="8px">
               <AvatarButton
@@ -110,12 +109,16 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
                 >
                   Settings
                 </StyledLink>
-                <StyledLink
-                  href="https://tradingpaints.com/install"
-                  target="_blank"
-                >
-                  Install Downloader
-                </StyledLink>
+                {overMobile ? (
+                  <StyledLink
+                    href="https://tradingpaints.com/install"
+                    target="_blank"
+                  >
+                    Install Downloader
+                  </StyledLink>
+                ) : (
+                  <></>
+                )}
                 <StyledDivider />
                 <SignOutButton onClick={handleSignOut}>Sign out</SignOutButton>
               </Box>

@@ -6,7 +6,7 @@ import { getNameFromUploadFileName, uploadAssetURL } from "helper";
 
 import { DropzoneArea } from "material-ui-dropzone";
 import { Delete as DeleteIcon } from "@material-ui/icons";
-import { Box, ImageListItemBar } from "components/MaterialUI";
+import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
 import { ImageWithLoad, Loader, ScreenLoader } from "components/common";
 import { ConfirmDialog, YesNoDialog } from "components/dialogs";
 import {
@@ -27,6 +27,8 @@ import SchemeService from "services/schemeService";
 export const UploadListContent = React.memo((props) => {
   const step = 40;
   const dispatch = useDispatch();
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+
   const { uploads, search, setSearch, onOpenUpload } = props;
   const user = useSelector((state) => state.authReducer.user);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
@@ -145,7 +147,7 @@ export const UploadListContent = React.memo((props) => {
           loader={<Loader />}
           scrollableTarget="upload-dialog-content"
         >
-          <CustomImageList rowHeight={178} cols={3}>
+          <CustomImageList rowHeight={178} cols={overMobile ? 3 : 2}>
             {filteredUploads.slice(0, limit).map((uploadItem) => (
               <CustomImageListItem
                 key={uploadItem.id}

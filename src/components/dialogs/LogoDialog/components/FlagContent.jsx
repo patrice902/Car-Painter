@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from "react";
 
-import { Box, ImageListItemBar } from "components/MaterialUI";
+import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
 import { Loader } from "components/common";
 import config from "config";
 
@@ -14,6 +14,7 @@ import {
 export const FlagContent = React.memo((props) => {
   const { step, logos, search, onOpen } = props;
   const [flagLimit, setFlagLimit] = useState(step);
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const filteredFlags = useMemo(
     () =>
@@ -39,7 +40,7 @@ export const FlagContent = React.memo((props) => {
         loader={<Loader />}
         scrollableTarget="flag-dialog-content"
       >
-        <CustomImageList rowHeight={178} cols={3}>
+        <CustomImageList rowHeight={178} cols={overMobile ? 3 : 1}>
           {filteredFlags.slice(0, flagLimit).map((logo) => (
             <CustomImageListItem
               key={logo.id}

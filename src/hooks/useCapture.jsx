@@ -83,7 +83,12 @@ export const useCapture = (
 
   const takeScreenshot = useCallback(
     async (isPNG = true) => {
-      if (!stageRef.current) {
+      if (
+        !stageRef.current ||
+        !baseLayerRef.current ||
+        !mainLayerRef.current ||
+        !carMaskLayerRef.current
+      ) {
         return {};
       }
 
