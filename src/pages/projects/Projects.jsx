@@ -42,6 +42,7 @@ import { getCarPinListByUserID } from "redux/reducers/carPinReducer";
 import { CreateProjectDialog } from "components/dialogs";
 import { useHistory } from "react-router";
 import styled from "styled-components";
+import { scrollTopOnProjectList } from "helper";
 
 export const Projects = React.memo(() => {
   const dispatch = useDispatch();
@@ -219,6 +220,26 @@ export const Projects = React.memo(() => {
     dispatch(deleteFavoriteItem(favoriteID, callback));
   };
 
+  const handleChangeSortBy = (value) => {
+    setSortBy(value);
+    scrollTopOnProjectList();
+  };
+
+  const handleChangeSelectedVehicle = (value) => {
+    setSelectedVehicle(value);
+    scrollTopOnProjectList();
+  };
+
+  const handleChangeSearch = (value) => {
+    setSearch(value);
+    scrollTopOnProjectList();
+  };
+
+  const handleSetHideLegacy = (value) => {
+    setHideLegacy(value);
+    scrollTopOnProjectList();
+  };
+
   return (
     <Box width="100%" height="100%" display="flex" flexDirection="column">
       <AppHeader></AppHeader>
@@ -250,13 +271,13 @@ export const Projects = React.memo(() => {
         >
           <FilterBar
             search={search}
-            setSearch={setSearch}
+            setSearch={handleChangeSearch}
             selectedVehicle={selectedVehicle}
-            setSelectedVehicle={setSelectedVehicle}
+            setSelectedVehicle={handleChangeSelectedVehicle}
             hideLegacy={hideLegacy}
-            setHideLegacy={setHideLegacy}
+            setHideLegacy={handleSetHideLegacy}
             sortBy={sortBy}
-            setSortBy={setSortBy}
+            setSortBy={handleChangeSortBy}
             legacyFilter={legacyFilter}
           />
           <Box

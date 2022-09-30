@@ -2,9 +2,14 @@ import styled from "styled-components/macro";
 import { DialogContent, Tab, Tabs } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
-export const CustomDialogContent = styled(DialogContent)`
-  width: 600px;
-`;
+export const CustomDialogContent = styled(DialogContent)(
+  ({ theme }) => `
+  width: 300px;
+   ${theme.breakpoints.up("sm")} {
+    width: 600px;
+  }
+`
+);
 
 export const StyledTabs = withStyles({
   indicator: {

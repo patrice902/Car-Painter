@@ -18,7 +18,7 @@ import {
 } from "./InnerForm.style";
 
 import { insertToLoadedList as insertToLoadedFontList } from "redux/reducers/fontReducer";
-import { Box } from "@material-ui/core";
+import { Box, useMediaQuery } from "@material-ui/core";
 
 export const InnerForm = React.memo((props) => {
   const {
@@ -34,6 +34,7 @@ export const InnerForm = React.memo((props) => {
   const dispatch = useDispatch();
   const loadedFontList = useSelector((state) => state.fontReducer.loadedList);
   const previewBoxRef = useRef();
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const loadFont = useCallback(
     (fontFamily, fontFile) => {
@@ -87,10 +88,10 @@ export const InnerForm = React.memo((props) => {
   useEffect(() => {
     fitty("#text-preview", {
       minSize: 10,
-      maxSize: 512,
+      maxSize: overMobile ? 512 : 128,
       multiLine: false,
     });
-  }, [values.text, values.font]);
+  }, [values.text, values.font, overMobile]);
 
   useEffect(() => {
     const adjustFont = (e) => {
@@ -204,7 +205,7 @@ export const InnerForm = React.memo((props) => {
 
       <TextPreviewWrapper
         width="100%"
-        height="300px"
+        height={overMobile ? "300px" : "100px"}
         my={2}
         display="flex"
         justifyContent="center"

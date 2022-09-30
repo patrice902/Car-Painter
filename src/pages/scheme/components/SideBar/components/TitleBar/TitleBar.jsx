@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DialogTypes } from "constant";
 
-import { Box, IconButton, useMediaQuery } from "@material-ui/core";
+import { Box, IconButton } from "@material-ui/core";
 import { SchemeSettingsDialog } from "components/dialogs";
 import { LightTooltip } from "components/common";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
@@ -15,7 +15,6 @@ import { focusBoardQuickly } from "helper";
 
 export const TitleBar = React.memo((props) => {
   const { editable, onBack } = props;
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const dispatch = useDispatch();
 
@@ -56,31 +55,23 @@ export const TitleBar = React.memo((props) => {
       my={1}
     >
       <Box display="flex" alignItems="center" flexGrow={1}>
-        <Box mr={overMobile ? 1 : 4}>
+        <Box mr={1}>
           <LightTooltip title="Back" arrow>
-            <IconButton size={overMobile ? "medium" : "small"} onClick={onBack}>
+            <IconButton size="medium" onClick={onBack}>
               <CustomIcon icon={faChevronLeft} size="xs" />
             </IconButton>
           </LightTooltip>
         </Box>
-        {overMobile ? (
-          <NameInput
-            value={name}
-            onChange={handleNameChange}
-            inputProps={{ maxLength: "50" }}
-          />
-        ) : (
-          <></>
-        )}
+        <NameInput
+          value={name}
+          onChange={handleNameChange}
+          inputProps={{ maxLength: "50" }}
+        />
       </Box>
-      <Box
-        display="flex"
-        marginLeft={overMobile ? "4px" : 0}
-        marginRight={overMobile ? 0 : 4}
-      >
+      <Box display="flex" marginLeft="4px">
         <LightTooltip title="Settings" arrow>
           <IconButton
-            size={overMobile ? "medium" : "small"}
+            size="medium"
             onClick={() => setDialog(DialogTypes.SETTINGS)}
           >
             <SettingsIcon />

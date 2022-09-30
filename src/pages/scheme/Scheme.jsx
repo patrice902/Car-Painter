@@ -40,6 +40,8 @@ import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
 import { MouseModes } from "constant";
 import { focusBoardQuickly, isWindows } from "helper";
 import { useMemo } from "react";
+import { setLoadedStatusAll } from "redux/reducers/layerReducer";
+import { DrawerBar } from "./components/SideBar/components";
 
 const Scheme = React.memo((props) => {
   const {
@@ -131,10 +133,11 @@ const Scheme = React.memo((props) => {
   );
 
   const handleGoBack = useCallback(async () => {
+    dispatch(setLoadedStatusAll({}));
     await handleUploadThumbnail(false);
 
     history.push(previousPath || "/");
-  }, [history, handleUploadThumbnail, previousPath]);
+  }, [history, dispatch, handleUploadThumbnail, previousPath]);
 
   const hideLegacyBanner = useCallback(() => {
     setShowLegacyBanner(false);
@@ -293,6 +296,16 @@ const Scheme = React.memo((props) => {
               flexGrow="1"
               position="relative"
             >
+              {!overMobile ? (
+                <DrawerBar
+                  dialog={dialog}
+                  setDialog={setDialog}
+                  stageRef={stageRef}
+                  editable={editable}
+                />
+              ) : (
+                <></>
+              )}
               <Board
                 hoveredLayerJSON={hoveredJSON}
                 editable={editable}
