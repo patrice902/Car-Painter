@@ -47,8 +47,6 @@ export const getCarRaces = (schemeID, onSuccess, onError) => async (
       onSuccess();
     }
   } catch (err) {
-    console.log("Error: ", err);
-    dispatch(setMessage({ message: err.message }));
     if (onError) {
       onError();
     }

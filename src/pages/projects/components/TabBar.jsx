@@ -8,7 +8,7 @@ import { Add as AddIcon } from "@material-ui/icons";
 
 const tabURLs = ["mine", "shared", "favorite"];
 
-export const LeftBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
+export const TabBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
   const history = useHistory();
   const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
@@ -110,11 +110,12 @@ const GreyButton = styled(Button)`
 const Tab = styled(Box)`
   background-color: ${(props) => (props.state === "active" ? "#222" : "#333")};
   cursor: pointer;
-  padding: 12px;
+  padding: 12px 8px;
+  flex-grow: 1;
 
   ${(props) => props.theme.breakpoints.up("sm")} {
     padding: 4px 12px;
   }
 `;
 
-export default LeftBar;
+export default TabBar;

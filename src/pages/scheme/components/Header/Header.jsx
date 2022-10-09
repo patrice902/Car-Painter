@@ -30,7 +30,12 @@ import { CircularProgress } from "components/MaterialUI";
 import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
 import { updateScheme } from "redux/reducers/schemeReducer";
-import { SchemeSettingsDialog, SharingDialog } from "components/dialogs";
+import {
+  SchemeSettingsDialog,
+  SharingDialog,
+  ShortCutsDialog,
+} from "components/dialogs";
+import ShortcutIcon from "assets/keyboard-shortcuts.svg";
 
 export const Header = React.memo((props) => {
   const {
@@ -305,33 +310,37 @@ export const Header = React.memo((props) => {
           )}
         </Box>
 
-        <Box
-          mr={overMobile ? 4 : 0}
-          height="100%"
-          display="flex"
-          alignItems="center"
-        >
-          {overMobile ? (
-            <DropDownButton
-              aria-controls="tga-options-menu"
-              aria-haspopup="true"
-              onClick={handleOpenTGAOptions}
-              startIcon={<FaDownload />}
-              endIcon={<DropDownIcon />}
-            >
-              <Typography variant="subtitle2">Download</Typography>
-            </DropDownButton>
-          ) : (
-            <IconButton
-              aria-controls="tga-options-menu"
-              aria-haspopup="true"
-              size="small"
-              onClick={handleOpenTGAOptions}
-            >
-              <FaDownload />
-            </IconButton>
-          )}
-        </Box>
+        {overMobile ? (
+          <Box
+            mr={overMobile ? 4 : 0}
+            height="100%"
+            display="flex"
+            alignItems="center"
+          >
+            {overMobile ? (
+              <DropDownButton
+                aria-controls="tga-options-menu"
+                aria-haspopup="true"
+                onClick={handleOpenTGAOptions}
+                startIcon={<FaDownload />}
+                endIcon={<DropDownIcon />}
+              >
+                <Typography variant="subtitle2">Download</Typography>
+              </DropDownButton>
+            ) : (
+              <IconButton
+                aria-controls="tga-options-menu"
+                aria-haspopup="true"
+                size="small"
+                onClick={handleOpenTGAOptions}
+              >
+                <FaDownload />
+              </IconButton>
+            )}
+          </Box>
+        ) : (
+          <></>
+        )}
 
         {primaryRaceNumber > -1 ? (
           <CustomButtonGroup variant="outlined">
@@ -387,6 +396,17 @@ export const Header = React.memo((props) => {
               </IconButton>
             )}
           </>
+        )}
+
+        {!overMobile ? (
+          <IconButton
+            size="small"
+            onClick={() => setDialog(DialogTypes.SHORTCUTS)}
+          >
+            <img src={ShortcutIcon} width="20px" alt="shortcuts" />
+          </IconButton>
+        ) : (
+          <></>
         )}
 
         <Popover
@@ -469,6 +489,10 @@ export const Header = React.memo((props) => {
         </Popover>
       </AppHeader>
 
+      <ShortCutsDialog
+        open={dialog === DialogTypes.SHORTCUTS}
+        onCancel={handleCloseDialog}
+      />
       <RaceDialog
         open={dialog === DialogTypes.RACE}
         applying={applyingRace}
