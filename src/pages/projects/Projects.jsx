@@ -15,7 +15,7 @@ import {
   MyProjects,
   SharedProjects,
   FavoriteProjects,
-  LeftBar,
+  TabBar,
   FilterBar,
 } from "./components";
 
@@ -250,7 +250,7 @@ export const Projects = React.memo(() => {
         bgcolor="#333"
         flexDirection={overMobile ? "row" : "column-reverse"}
       >
-        <LeftBar
+        <TabBar
           tabValue={tabValue}
           setTabValue={setTabValue}
           onCreateNew={handleCreateNew}

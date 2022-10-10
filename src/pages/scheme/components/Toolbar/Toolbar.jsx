@@ -38,7 +38,13 @@ import {
   setAskingSimPreviewByLatest,
   submitSimPreview,
 } from "redux/reducers/downloaderReducer";
-import { Rotate90DegreesCcw, Search as SearchIcon } from "@material-ui/icons";
+import {
+  Rotate90DegreesCcw,
+  Search as SearchIcon,
+  Tune as TuneIcon,
+  SettingsInputSvideo as SettingsInputSvideoIcon,
+} from "@material-ui/icons";
+
 import { focusBoardQuickly, isWindows } from "helper";
 
 export const Toolbar = React.memo((props) => {
@@ -76,6 +82,7 @@ export const Toolbar = React.memo((props) => {
   const showProperties = useSelector(
     (state) => state.boardReducer.showProperties
   );
+  const currentLayer = useSelector((state) => state.layerReducer.current);
   // const viewMode = useSelector((state) => state.boardReducer.viewMode);
 
   const downloaderRunning = useSelector(
@@ -247,23 +254,26 @@ export const Toolbar = React.memo((props) => {
         alignContent="center"
         width="100%"
       >
-        <Box display="flex" alignContent="center">
-          {overMobile ? (
+        {overMobile ? (
+          <Box display="flex" alignContent="center">
             <LightTooltip title="Toggle Layers" arrow>
               <IconButton onClick={handleToggleLayers}>
                 {showLayers ? <ChevronsLeft /> : <ChevronsRight />}
               </IconButton>
             </LightTooltip>
-          ) : (
-            <></>
-          )}
-
-          <LightTooltip title="Shortcuts" arrow>
-            <IconButton onClick={() => setDialog(DialogTypes.SHORTCUTS)}>
-              <img src={ShortcutIcon} width="20px" alt="shortcuts" />
+            <LightTooltip title="Shortcuts" arrow>
+              <IconButton onClick={() => setDialog(DialogTypes.SHORTCUTS)}>
+                <img src={ShortcutIcon} width="20px" alt="shortcuts" />
+              </IconButton>
+            </LightTooltip>
+          </Box>
+        ) : (
+          <>
+            <IconButton onClick={handleToggleProperties}>
+              {currentLayer ? <SettingsInputSvideoIcon /> : <TuneIcon />}
             </IconButton>
-          </LightTooltip>
-        </Box>
+          </>
+        )}
         <Box display="flex" justifyContent="flex-end" alignContent="center">
           {/* <Button variant="outlined" onClick={handleToggleViewMode} mx={1}>
             Toggle View Mode

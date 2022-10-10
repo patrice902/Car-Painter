@@ -134,10 +134,11 @@ const Scheme = React.memo((props) => {
 
   const handleGoBack = useCallback(async () => {
     dispatch(setLoadedStatusAll({}));
-    await handleUploadThumbnail(false);
-
+    if (overMobile) {
+      await handleUploadThumbnail(false);
+    }
     history.push(previousPath || "/");
-  }, [history, dispatch, handleUploadThumbnail, previousPath]);
+  }, [history, dispatch, handleUploadThumbnail, previousPath, overMobile]);
 
   const hideLegacyBanner = useCallback(() => {
     setShowLegacyBanner(false);
@@ -206,13 +207,15 @@ const Scheme = React.memo((props) => {
     ) {
       dispatch(setLoaded(true));
       onZoomFit();
-      setTimeout(handleUploadThumbnail, 5000);
+      if (overMobile) {
+        setTimeout(handleUploadThumbnail, 5000);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadedStatuses, schemeLoaded]);
 
   useEffect(() => {
-    if (editable) {
+    if (editable && overMobile) {
       const thumbnailInterval = setInterval(handleUploadThumbnail, 300000);
       return () => {
         clearInterval(thumbnailInterval);
@@ -223,7 +226,9 @@ const Scheme = React.memo((props) => {
 
   useInterval(
     () => {
-      dispatch(getDownloaderStatus());
+      if (isWindows()) {
+        dispatch(getDownloaderStatus());
+      }
     },
     isInWindows && user && user.id && currentScheme ? 10000 : null
   );
@@ -334,17 +339,13 @@ const Scheme = React.memo((props) => {
                 onChangeBoardRotation={handleChangeBoardRotation}
               />
             </Box>
-            {overMobile ? (
-              <PropertyBar
-                stageRef={stageRef}
-                editable={editable}
-                transformingLayer={transformingLayer}
-                onCloneLayer={onCloneLayer}
-                onDeleteLayer={onDeleteLayer}
-              />
-            ) : (
-              <></>
-            )}
+            <PropertyBar
+              stageRef={stageRef}
+              editable={editable}
+              transformingLayer={transformingLayer}
+              onCloneLayer={onCloneLayer}
+              onDeleteLayer={onDeleteLayer}
+            />
           </Box>
         </Box>
       )}
