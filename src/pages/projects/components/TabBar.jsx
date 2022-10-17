@@ -110,11 +110,13 @@ const GreyButton = styled(Button)`
 const Tab = styled(Box)`
   background-color: ${(props) => (props.state === "active" ? "#222" : "#333")};
   cursor: pointer;
-  padding: 12px 8px;
+  padding: 12px 6px;
   flex-grow: 1;
+  text-align: center;
 
   ${(props) => props.theme.breakpoints.up("sm")} {
     padding: 4px 12px;
+    text-align: left;
   }
 `;
 

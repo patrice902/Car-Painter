@@ -154,6 +154,7 @@ export const useKonvaImageInit = ({
 
   const handleError = useCallback(
     (error) => {
+      console.log("Failed to fetch image: ", error);
       if (onLoadLayer && id) onLoadLayer(id, true);
     },
     [onLoadLayer, id]
@@ -161,18 +162,22 @@ export const useKonvaImageInit = ({
 
   const setImgFromSVG = useCallback(
     async (src) => {
-      let svgString = await urlToString(
-        src + `?timestamp=${new Date().toISOString()}`
-      );
-      if (filterColor || stroke || strokeWidth) {
-        svgString = replaceColors(svgString, {
-          color: filterColor,
-          stroke: stroke,
-          strokeWidth: strokeWidth * strokeScale,
-        });
-      }
+      try {
+        let svgString = await urlToString(
+          src + `?timestamp=${new Date().toISOString()}`
+        );
+        if (filterColor || stroke || strokeWidth) {
+          svgString = replaceColors(svgString, {
+            color: filterColor,
+            stroke: stroke,
+            strokeWidth: strokeWidth * strokeScale,
+          });
+        }
 
-      loadImage(svgToURL(svgString), imageRef, handleLoad, handleError);
+        loadImage(svgToURL(svgString), imageRef, handleLoad, handleError);
+      } catch (error) {
+        console.log("Failed to fetch image: ", error);
+      }
     },
     [
       filterColor,

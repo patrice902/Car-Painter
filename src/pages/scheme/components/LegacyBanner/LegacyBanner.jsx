@@ -27,6 +27,7 @@ export const LegacyBanner = React.memo(({ show, carMakeID, onDismiss }) => {
           borderRadius={10}
           border="2px solid navajowhite"
           position="relative"
+          zIndex={1090}
         >
           <Box position="absolute" right="5px" top="5px">
             <IconButton size="small" onClick={onDismiss}>

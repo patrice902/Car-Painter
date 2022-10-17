@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   TextField,
+  useMediaQuery,
 } from "components/MaterialUI";
 
 import { CustomDialogContent } from "./styles";
@@ -25,6 +26,7 @@ export const InnerForm = React.memo(
       setFieldValue,
       values,
     } = formProps;
+    const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
     const blockedUsers = useSelector((state) => state.authReducer.blockedUsers);
     const blockedBy = useSelector((state) => state.authReducer.blockedBy);
@@ -81,13 +83,18 @@ export const InnerForm = React.memo(
       <Form onSubmit={handleSubmit} noValidate>
         <CustomDialogContent dividers id="insert-text-dialog-content">
           {isOwner ? (
-            <Box display="flex" justifyContent="space-between" mb={5} pr={5}>
+            <Box
+              display={overMobile ? "flex" : "block"}
+              justifyContent="space-between"
+              mb={5}
+              pr={5}
+            >
               <TextField
                 label="Enter Customer ID"
                 variant="outlined"
                 name="newUser"
                 onChange={(event) => handleNewUserChange(event.target.value)}
-                style={{ width: 200 }}
+                style={{ width: overMobile ? 200 : "100%" }}
               />
               {values.newUser ? (
                 <Box
@@ -95,7 +102,8 @@ export const InnerForm = React.memo(
                   justifyContent="space-between"
                   alignItems="center"
                   flexGrow={1}
-                  ml={5}
+                  ml={overMobile ? 5 : 0}
+                  mt={overMobile ? 0 : 5}
                 >
                   <Box mt="-7px">
                     <Typography>{getUserName(values.newUser.user)}</Typography>
