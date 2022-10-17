@@ -6,9 +6,7 @@ import {
   FormControlLabel,
 } from "components/MaterialUI";
 
-export const CustomDialogContent = styled(DialogContent)`
-  padding-right: 0;
-`;
+export const CustomDialogContent = styled(DialogContent)``;
 
 export const CustomButton = styled(Button)`
   font-size: 16px;

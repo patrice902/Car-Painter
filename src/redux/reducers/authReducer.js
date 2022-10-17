@@ -59,8 +59,8 @@ export const signInWithCookie = (callback, fallback) => async (dispatch) => {
       dispatch(setUser(_.omit(user, ["blockedUsers", "blockedByUsers"])));
       if (callback) callback();
     } catch (error) {
-      dispatch(setMessage({ message: error.response.data.message }));
-      if (fallback) fallback(error.response.data.message);
+      console.log("error: ", error);
+      if (fallback) fallback(error);
     }
     dispatch(setLoading(false));
   } else {
@@ -77,7 +77,7 @@ export const signIn = (payload, callback) => async (dispatch) => {
     dispatch(setUser(response.user));
     if (callback) callback(response.user);
   } catch (error) {
-    dispatch(setMessage({ message: error.response.data.message }));
+    console.log("error: ", error);
   }
   dispatch(setLoading(false));
 };

@@ -42,7 +42,7 @@ const Wrapper = React.memo(({ children }) => {
       width="100%"
       height="300px"
       bottom={0}
-      zIndex={1500}
+      zIndex={1202}
       flexDirection="column"
       bgcolor="#666"
     >

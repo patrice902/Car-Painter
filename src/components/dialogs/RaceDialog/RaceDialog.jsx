@@ -24,6 +24,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  useMediaQuery,
 } from "components/MaterialUI";
 import { NumberModSwitch } from "components/common";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
@@ -147,6 +148,7 @@ const RaceForm = React.memo(
     setExpanded,
     ...formProps
   }) => {
+    const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
     const currentCarMake = useSelector((state) => state.carMakeReducer.current);
     const cars = useSelector((state) => state.carReducer.cars);
 
@@ -189,13 +191,17 @@ const RaceForm = React.memo(
             >
               <Grid
                 container
-                justifyContent="center"
+                justifyContent={overMobile ? "center" : "left"}
                 alignItems="center"
                 spacing={1}
               >
-                <CustomGrid item onClick={() => handleChangeNumber(0)}>
-                  <Typography>Sim-Stamped Number</Typography>
-                </CustomGrid>
+                {overMobile ? (
+                  <CustomGrid item onClick={() => handleChangeNumber(0)}>
+                    <Typography>Sim-Stamped Number</Typography>
+                  </CustomGrid>
+                ) : (
+                  <></>
+                )}
                 <Grid item>
                   <NumberModSwitch
                     checked={number ? true : false}
@@ -205,29 +211,44 @@ const RaceForm = React.memo(
                     name="number"
                   />
                 </Grid>
-                <CustomGrid item onClick={() => handleChangeNumber(1)}>
-                  <Typography>Custom Number</Typography>
+                <CustomGrid
+                  item
+                  style={{ display: overMobile ? "block" : "flex" }}
+                  onClick={() => handleChangeNumber(1)}
+                >
+                  {overMobile ? (
+                    <Typography>Custom Number</Typography>
+                  ) : (
+                    <Typography>{number ? "Custom" : "Sim-Stamped"}</Typography>
+                  )}
+
+                  <Box
+                    position={overMobile ? "absolute" : "relative"}
+                    left={overMobile ? "calc(50% + 180px)" : 0}
+                    top={overMobile ? "6px" : 0}
+                  >
+                    {number ? (
+                      <CustomTextField
+                        placeholder="Number"
+                        name="num"
+                        type="tel"
+                        value={formProps.values.num}
+                        inputProps={{ maxLength: 3 }}
+                        onBlur={formProps.handleBlur}
+                        onChange={formProps.handleChange}
+                        error={Boolean(
+                          formProps.touched.num && formProps.errors.num
+                        )}
+                        helperText={
+                          formProps.touched.num && formProps.errors.num
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Box>
                 </CustomGrid>
               </Grid>
-              <Box position="absolute" left="calc(50% + 180px)" top="6px">
-                {number ? (
-                  <CustomTextField
-                    placeholder="Number"
-                    name="num"
-                    type="tel"
-                    value={formProps.values.num}
-                    inputProps={{ maxLength: 3 }}
-                    onBlur={formProps.handleBlur}
-                    onChange={formProps.handleChange}
-                    error={Boolean(
-                      formProps.touched.num && formProps.errors.num
-                    )}
-                    helperText={formProps.touched.num && formProps.errors.num}
-                  />
-                ) : (
-                  <></>
-                )}
-              </Box>
             </Box>
             <Accordion
               expanded={expanded}
@@ -239,7 +260,7 @@ const RaceForm = React.memo(
               <AccordionDetails>
                 <Box display="flex" flexDirection="column" width="100%" pt={3}>
                   <Grid container mb={4}>
-                    <Grid item xs={6}>
+                    <Grid item xs={overMobile ? 6 : 12}>
                       <FormControlLabel
                         label="Primary paint"
                         control={
@@ -258,7 +279,7 @@ const RaceForm = React.memo(
                         }
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={overMobile ? 6 : 12}>
                       <FormControlLabel
                         label="Night races"
                         control={

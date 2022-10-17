@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogActions,
   Typography,
+  useMediaQuery,
 } from "components/MaterialUI";
 import { SearchBox } from "components/common";
 
@@ -33,6 +34,7 @@ export const LogoDialog = React.memo((props) => {
   const step = 40;
   const [tabValue, setTabValue] = useState(0);
   const [search, setSearch] = useState("");
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const sortedLogos = useMemo(
     () =>
       _.orderBy(
@@ -59,11 +61,15 @@ export const LogoDialog = React.memo((props) => {
 
   return (
     <Dialog aria-labelledby="logo-title" open={open} onClose={onCancel}>
-      <DialogTitle id="logo-title">
+      <DialogTitle id="logo-title" style={{ padding: "0px 24px" }}>
         <Box display="flex" flexDirection="row" alignItems="center">
-          <Typography variant="h5" mr={2}>
-            Insert:
-          </Typography>
+          {overMobile ? (
+            <Typography variant="h5" mr={2}>
+              Insert:
+            </Typography>
+          ) : (
+            <></>
+          )}
           <StyledTabs
             value={tabValue}
             onChange={handleTabChange}

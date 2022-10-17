@@ -9,6 +9,7 @@ import {
   Checkbox,
   DialogActions,
   Typography,
+  useMediaQuery,
 } from "components/MaterialUI";
 import { LightTooltip } from "components/common";
 import { ConfirmDialog } from "components/dialogs";
@@ -48,6 +49,7 @@ export const GeneralSetting = React.memo((props) => {
   } = props;
   const history = useHistory();
   const dispatch = useDispatch();
+  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const [favoriteInPrgoress, setFavoriteInPrgoress] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState(false);
@@ -215,7 +217,9 @@ export const GeneralSetting = React.memo((props) => {
                 )
               }
             >
-              {`Reset ${currentCarMake.name} template layers`}
+              {overMobile
+                ? `Reset ${currentCarMake.name} template layers`
+                : `Reset Template Layers`}
             </CustomButton>
           ) : (
             <></>
