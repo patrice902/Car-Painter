@@ -20,6 +20,7 @@ const initialState = {
     width: 1024,
     height: 1024,
   },
+  isDesktop: true,
   showProperties: true,
   showLayers: true,
   paintingGuides: [PaintingGuides.CARMASK],
@@ -108,6 +109,9 @@ export const slice = createSlice({
     setContextMenu: (state, action) => {
       state.contextMenu = action.payload;
     },
+    setIsDesktop: (state, action) => {
+      state.isDesktop = action.payload;
+    },
   },
 });
 
@@ -132,6 +136,7 @@ export const {
   setDownloadSpecTGA,
   setSpecTGADataURL,
   setContextMenu,
+  setIsDesktop,
 } = slice.actions;
 
 export default slice.reducer;

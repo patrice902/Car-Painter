@@ -2,6 +2,7 @@ import { useRef, useMemo, useState, useEffect, useCallback } from "react";
 import Canvg from "canvg";
 import { mathRound2, getPixelRatio, loadImage, rotatePoint } from "helper";
 import { replaceColors, svgToURL, urlToString } from "helper/svg";
+import { useSelector } from "react-redux";
 
 export const useKonvaImageInit = ({
   imageshapeRef,
@@ -31,15 +32,23 @@ export const useKonvaImageInit = ({
   const [image, setImage] = useState(null);
   const imageRef = useRef(null);
   const isSVG = useMemo(() => src.toLowerCase().includes(".svg"), [src]);
+  const isDesktop = useSelector((state) => state.boardReducer.isDesktop);
 
   const applyCaching = useCallback(() => {
-    if (imageshapeRef.current) {
+    if (
+      imageshapeRef &&
+      imageshapeRef.current &&
+      imageRef &&
+      imageRef.current
+    ) {
       imageshapeRef.current.cache({
-        pixelRatio: getPixelRatio(imageshapeRef.current, imageRef.current),
+        pixelRatio: isDesktop
+          ? getPixelRatio(imageshapeRef.current, imageRef.current)
+          : 1,
         imageSmoothingEnabled: true,
       });
     }
-  }, [imageshapeRef, imageRef]);
+  }, [imageshapeRef, imageRef, isDesktop]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
