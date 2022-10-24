@@ -21,6 +21,7 @@ const initialState = {
     height: 1024,
   },
   isDesktop: true,
+  isDraggable: true,
   showProperties: true,
   showLayers: true,
   paintingGuides: [PaintingGuides.CARMASK],
@@ -112,6 +113,9 @@ export const slice = createSlice({
     setIsDesktop: (state, action) => {
       state.isDesktop = action.payload;
     },
+    setIsDraggalbe: (state, action) => {
+      state.isDraggable = action.payload;
+    },
   },
 });
 
@@ -137,6 +141,7 @@ export const {
   setSpecTGADataURL,
   setContextMenu,
   setIsDesktop,
+  setIsDraggalbe,
 } = slice.actions;
 
 export default slice.reducer;

@@ -172,7 +172,7 @@ export const useDrawHelper = (stageRef) => {
     },
     [dispatch, mouseMode, currentScheme.guide_data, drawingLayerRef, stageRef]
   );
-  const onMouseMove = useCallback(() => {
+  const onContentMousemove = useCallback(() => {
     if (mouseMode !== MouseModes.DEFAULT && drawingLayerRef.current) {
       const position = getRelativePointerPosition(stageRef.current);
       const width = position.x - drawingLayerRef.current.layer_data.left;
@@ -236,7 +236,7 @@ export const useDrawHelper = (stageRef) => {
       prevTick.current = currentTick.current;
     }
   }, [mouseMode, drawingLayerRef, stageRef, currentTick]);
-  const onMouseUp = useCallback(
+  const onContentMouseup = useCallback(
     (e) => {
       if (
         ![
@@ -360,8 +360,8 @@ export const useDrawHelper = (stageRef) => {
   return {
     drawingLayerRef,
     onMouseDown,
-    onMouseUp,
-    onMouseMove,
+    onContentMouseup,
+    onContentMousemove,
     onContentMouseDown,
     onDoubleClick,
     onLayerDragStart,
