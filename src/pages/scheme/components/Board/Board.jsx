@@ -23,7 +23,7 @@ import {
 } from "./Layers";
 import { TransformerComponent } from "components/konva";
 
-import { useDrawHelper, useZoom } from "hooks";
+import { useDrawHelper, useZoom, useTouch } from "hooks";
 import { BoardContextMenu } from "components/dialogs";
 
 export const Board = React.memo(
@@ -44,8 +44,8 @@ export const Board = React.memo(
     const {
       drawingLayerRef,
       onMouseDown,
-      onMouseUp,
-      onMouseMove,
+      onContentMouseup,
+      onContentMousemove,
       onContentMouseDown,
       onDoubleClick,
       onDragEnd,
@@ -53,12 +53,14 @@ export const Board = React.memo(
       onLayerDragStart,
       onLayerDragEnd,
     } = useDrawHelper(stageRef);
+    const { onTouchStart, onTouchMove, onTouchEnd } = useTouch(stageRef);
     const { zoom, onWheelZoom } = useZoom(stageRef);
 
     const frameSize = useSelector((state) => state.boardReducer.frameSize);
     const boardRotate = useSelector((state) => state.boardReducer.boardRotate);
     const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
     const viewMode = useSelector((state) => state.boardReducer.viewMode);
+    const isDraggable = useSelector((state) => state.boardReducer.isDraggable);
     const currentScheme = useSelector((state) => state.schemeReducer.current);
     const schemeSaving = useSelector((state) => state.schemeReducer.saving);
     const schemeLoaded = useSelector((state) => state.schemeReducer.loaded);
@@ -104,10 +106,12 @@ export const Board = React.memo(
                 width={wrapperWidth}
                 height={wrapperHeight}
                 onMousedown={onMouseDown}
-                onTouchStart={onMouseDown}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
                 onContentMousedown={onContentMouseDown}
-                onContentMousemove={onMouseMove}
-                onContentMouseup={onMouseUp}
+                onContentMousemove={onContentMousemove}
+                onContentMouseup={onContentMouseup}
                 onContextMenu={onContextMenu}
                 onDblClick={onDoubleClick}
                 onWheel={onWheelZoom}
@@ -119,12 +123,13 @@ export const Board = React.memo(
                 offsetX={frameSize.width / 2}
                 offsetY={frameSize.height / 2}
                 ref={stageRef}
-                draggable={mouseMode === MouseModes.DEFAULT}
+                draggable={mouseMode === MouseModes.DEFAULT && isDraggable}
                 onDragEnd={onDragEnd}
                 style={{
                   cursor:
                     mouseMode === MouseModes.DEFAULT ? "default" : "crosshair",
                 }}
+                hitOnDragEnabled
               >
                 <Provider store={store}>
                   <Layer ref={baseLayerRef} listening={false}>

@@ -28,7 +28,7 @@ import { getOverlayList } from "redux/reducers/overlayReducer";
 import { getFontList } from "redux/reducers/fontReducer";
 import { getLogoList } from "redux/reducers/logoReducer";
 import { setMessage } from "redux/reducers/messageReducer";
-import { setBoardRotate } from "redux/reducers/boardReducer";
+import { setBoardRotate, setIsDesktop } from "redux/reducers/boardReducer";
 import { getUploadListByUserID } from "redux/reducers/uploadReducer";
 
 import { useBoardSocket, useCapture, useZoom, withKeyEvent } from "hooks";
@@ -255,6 +255,11 @@ const Scheme = React.memo((props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoveredJSON, stageRef, pressedKey]);
+
+  useEffect(() => {
+    dispatch(setIsDesktop(overMobile));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overMobile]);
 
   return (
     <>
