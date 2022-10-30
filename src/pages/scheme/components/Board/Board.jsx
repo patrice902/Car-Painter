@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Stage, Layer, Rect, Shape } from "react-konva";
+import { Stage, Layer, Rect, Shape, Group } from "react-konva";
 import { useSelector, ReactReduxContext, Provider } from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
 
@@ -132,42 +132,44 @@ export const Board = React.memo(
                 hitOnDragEnabled
               >
                 <Provider store={store}>
-                  <Layer ref={baseLayerRef} listening={false}>
-                    {/* Background */}
-                    <Rect
-                      x={0}
-                      y={0}
-                      width={frameSize.width}
-                      height={frameSize.height}
-                      fill={
-                        currentScheme.base_color === "transparent"
-                          ? currentScheme.base_color
-                          : "#" + currentScheme.base_color
-                      }
-                      listening={false}
-                    />
-                    {viewMode === ViewModes.SPEC_VIEW && (
-                      <SpecPaintingGuideCarMask />
+                  <Layer listening={false}>
+                    <Group ref={baseLayerRef} listening={false}>
+                      {/* Background */}
+                      <Rect
+                        x={0}
+                        y={0}
+                        width={frameSize.width}
+                        height={frameSize.height}
+                        fill={
+                          currentScheme.base_color === "transparent"
+                            ? currentScheme.base_color
+                            : "#" + currentScheme.base_color
+                        }
+                        listening={false}
+                      />
+                      {viewMode === ViewModes.SPEC_VIEW && (
+                        <SpecPaintingGuideCarMask />
+                      )}
+                      <BasePaints />
+                    </Group>
+                    {!currentScheme.guide_data.show_sponsor_block_on_top ||
+                    !currentScheme.guide_data.show_number_block_on_top ? (
+                      <Group listening={false}>
+                        {!currentScheme.guide_data.show_sponsor_block_on_top ? (
+                          <PaintingGuideSponsor />
+                        ) : (
+                          <></>
+                        )}
+                        {!currentScheme.guide_data.show_number_block_on_top ? (
+                          <PaintingGuideNumber />
+                        ) : (
+                          <></>
+                        )}
+                      </Group>
+                    ) : (
+                      <></>
                     )}
-                    <BasePaints />
                   </Layer>
-                  {!currentScheme.guide_data.show_sponsor_block_on_top ||
-                  !currentScheme.guide_data.show_number_block_on_top ? (
-                    <Layer listening={false}>
-                      {!currentScheme.guide_data.show_sponsor_block_on_top ? (
-                        <PaintingGuideSponsor />
-                      ) : (
-                        <></>
-                      )}
-                      {!currentScheme.guide_data.show_number_block_on_top ? (
-                        <PaintingGuideNumber />
-                      ) : (
-                        <></>
-                      )}
-                    </Layer>
-                  ) : (
-                    <></>
-                  )}
 
                   <Layer ref={mainLayerRef}>
                     {!currentScheme.guide_data.show_carparts_on_top ? (
@@ -207,28 +209,30 @@ export const Board = React.memo(
                       <></>
                     )}
                   </Layer>
-                  <Layer ref={carMaskLayerRef} listening={false}>
-                    <PaintingGuideCarMask />
-                  </Layer>
-                  {currentScheme.guide_data.show_sponsor_block_on_top ||
-                  currentScheme.guide_data.show_number_block_on_top ? (
-                    <Layer listening={false}>
-                      {currentScheme.guide_data.show_sponsor_block_on_top ? (
-                        <PaintingGuideSponsor />
-                      ) : (
-                        <></>
-                      )}
-                      {currentScheme.guide_data.show_number_block_on_top ? (
-                        <PaintingGuideNumber />
-                      ) : (
-                        <></>
-                      )}
-                    </Layer>
-                  ) : (
-                    <></>
-                  )}
-                  <Layer name="layer-guide-top">
-                    <PaintingGuideTop />
+                  <Layer listening={false}>
+                    <Group ref={carMaskLayerRef} listening={false}>
+                      <PaintingGuideCarMask />
+                    </Group>
+                    {currentScheme.guide_data.show_sponsor_block_on_top ||
+                    currentScheme.guide_data.show_number_block_on_top ? (
+                      <Group listening={false}>
+                        {currentScheme.guide_data.show_sponsor_block_on_top ? (
+                          <PaintingGuideSponsor />
+                        ) : (
+                          <></>
+                        )}
+                        {currentScheme.guide_data.show_number_block_on_top ? (
+                          <PaintingGuideNumber />
+                        ) : (
+                          <></>
+                        )}
+                      </Group>
+                    ) : (
+                      <></>
+                    )}
+                    <Group name="layer-guide-top">
+                      <PaintingGuideTop />
+                    </Group>
                   </Layer>
 
                   {/* Clipping/Transforming Layer */}
