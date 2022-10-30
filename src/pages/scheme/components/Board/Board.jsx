@@ -232,59 +232,60 @@ export const Board = React.memo(
                     <Group name="layer-guide-top" listening={false}>
                       <PaintingGuideTop />
                     </Group>
-                  </Layer>
-                  <Layer>
+
                     {/* Clipping/Transforming Layer */}
-                    <Shape
-                      x={-frameSize.width}
-                      y={-frameSize.height}
-                      width={frameSize.width * 3}
-                      height={frameSize.height * 3}
-                      sceneFunc={(ctx) => {
-                        // draw background
-                        ctx.fillStyle = "rgba(40, 40, 40, 0.7)";
-                        ctx.fillRect(
-                          0,
-                          0,
-                          frameSize.width * 3,
-                          frameSize.height * 3
-                        );
+                    <Group>
+                      {/* <Shape
+                        x={-frameSize.width}
+                        y={-frameSize.height}
+                        width={frameSize.width * 3}
+                        height={frameSize.height * 3}
+                        sceneFunc={(ctx) => {
+                          // draw background
+                          ctx.fillStyle = "rgba(40, 40, 40, 0.7)";
+                          ctx.fillRect(
+                            0,
+                            0,
+                            frameSize.width * 3,
+                            frameSize.height * 3
+                          );
 
-                        ctx.globalCompositeOperation = "destination-out";
-                        ctx.fillStyle = "black";
-                        ctx.fillRect(
-                          frameSize.width,
-                          frameSize.height,
-                          frameSize.width,
-                          frameSize.height
-                        );
-                      }}
-                      listening={false}
-                    />
+                          ctx.globalCompositeOperation = "destination-out";
+                          ctx.fillStyle = "black";
+                          ctx.fillRect(
+                            frameSize.width,
+                            frameSize.height,
+                            frameSize.width,
+                            frameSize.height
+                          );
+                        }}
+                        listening={false}
+                      /> */}
 
-                    {editable ? (
-                      <TransformerComponent
-                        trRef={activeTransformerRef}
-                        selectedLayer={currentLayer}
-                      />
-                    ) : (
-                      <></>
-                    )}
+                      {editable ? (
+                        <TransformerComponent
+                          trRef={activeTransformerRef}
+                          selectedLayer={currentLayer}
+                        />
+                      ) : (
+                        <></>
+                      )}
 
-                    {hoveredLayerJSON &&
-                    (!currentLayer ||
-                      !hoveredLayerJSON[currentLayer.id] ||
-                      !editable) ? (
-                      <TransformerComponent
-                        trRef={hoveredTransformerRef}
-                        selectedLayer={layerList.find(
-                          (item) => hoveredLayerJSON[item.id]
-                        )}
-                        hoveredTransform={true}
-                      />
-                    ) : (
-                      <></>
-                    )}
+                      {hoveredLayerJSON &&
+                      (!currentLayer ||
+                        !hoveredLayerJSON[currentLayer.id] ||
+                        !editable) ? (
+                        <TransformerComponent
+                          trRef={hoveredTransformerRef}
+                          selectedLayer={layerList.find(
+                            (item) => hoveredLayerJSON[item.id]
+                          )}
+                          hoveredTransform={true}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                    </Group>
                   </Layer>
                 </Provider>
               </Stage>
