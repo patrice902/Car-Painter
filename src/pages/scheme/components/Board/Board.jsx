@@ -132,7 +132,7 @@ export const Board = React.memo(
                 hitOnDragEnabled
               >
                 <Provider store={store}>
-                  <Layer listening={false}>
+                  <Layer>
                     <Group ref={baseLayerRef} listening={false}>
                       {/* Background */}
                       <Rect
@@ -169,47 +169,46 @@ export const Board = React.memo(
                     ) : (
                       <></>
                     )}
-                  </Layer>
 
-                  <Layer ref={mainLayerRef}>
-                    {!currentScheme.guide_data.show_carparts_on_top ? (
-                      <CarParts />
-                    ) : (
-                      <></>
-                    )}
+                    <Group ref={mainLayerRef}>
+                      {!currentScheme.guide_data.show_carparts_on_top ? (
+                        <CarParts />
+                      ) : (
+                        <></>
+                      )}
 
-                    <Overlays
-                      stageRef={stageRef}
-                      editable={editable}
-                      onHover={handleHoverLayer}
-                      onLayerDragStart={onLayerDragStart}
-                      onLayerDragEnd={onLayerDragEnd}
-                      onSetTransformingLayer={setTransformingLayer}
-                    />
-                    <Shapes
-                      stageRef={stageRef}
-                      editable={editable}
-                      drawingLayer={drawingLayerRef.current}
-                      onHover={handleHoverLayer}
-                      onLayerDragStart={onLayerDragStart}
-                      onLayerDragEnd={onLayerDragEnd}
-                      onSetTransformingLayer={setTransformingLayer}
-                    />
-                    <LogosAndTexts
-                      stageRef={stageRef}
-                      editable={editable}
-                      onHover={handleHoverLayer}
-                      onLayerDragStart={onLayerDragStart}
-                      onLayerDragEnd={onLayerDragEnd}
-                      onSetTransformingLayer={setTransformingLayer}
-                    />
-                    {currentScheme.guide_data.show_carparts_on_top ? (
-                      <CarParts />
-                    ) : (
-                      <></>
-                    )}
-                  </Layer>
-                  <Layer listening={false}>
+                      <Overlays
+                        stageRef={stageRef}
+                        editable={editable}
+                        onHover={handleHoverLayer}
+                        onLayerDragStart={onLayerDragStart}
+                        onLayerDragEnd={onLayerDragEnd}
+                        onSetTransformingLayer={setTransformingLayer}
+                      />
+                      <Shapes
+                        stageRef={stageRef}
+                        editable={editable}
+                        drawingLayer={drawingLayerRef.current}
+                        onHover={handleHoverLayer}
+                        onLayerDragStart={onLayerDragStart}
+                        onLayerDragEnd={onLayerDragEnd}
+                        onSetTransformingLayer={setTransformingLayer}
+                      />
+                      <LogosAndTexts
+                        stageRef={stageRef}
+                        editable={editable}
+                        onHover={handleHoverLayer}
+                        onLayerDragStart={onLayerDragStart}
+                        onLayerDragEnd={onLayerDragEnd}
+                        onSetTransformingLayer={setTransformingLayer}
+                      />
+                      {currentScheme.guide_data.show_carparts_on_top ? (
+                        <CarParts />
+                      ) : (
+                        <></>
+                      )}
+                    </Group>
+
                     <Group ref={carMaskLayerRef} listening={false}>
                       <PaintingGuideCarMask />
                     </Group>
@@ -230,63 +229,63 @@ export const Board = React.memo(
                     ) : (
                       <></>
                     )}
-                    <Group name="layer-guide-top">
+                    <Group name="layer-guide-top" listening={false}>
                       <PaintingGuideTop />
                     </Group>
-                  </Layer>
 
-                  {/* Clipping/Transforming Layer */}
-                  <Layer>
-                    <Shape
-                      x={-frameSize.width}
-                      y={-frameSize.height}
-                      width={frameSize.width * 3}
-                      height={frameSize.height * 3}
-                      sceneFunc={(ctx) => {
-                        // draw background
-                        ctx.fillStyle = "rgba(40, 40, 40, 0.7)";
-                        ctx.fillRect(
-                          0,
-                          0,
-                          frameSize.width * 3,
-                          frameSize.height * 3
-                        );
+                    {/* Clipping/Transforming Layer */}
+                    <Group>
+                      <Shape
+                        x={-frameSize.width}
+                        y={-frameSize.height}
+                        width={frameSize.width * 3}
+                        height={frameSize.height * 3}
+                        sceneFunc={(ctx) => {
+                          // draw background
+                          ctx.fillStyle = "rgba(40, 40, 40, 0.7)";
+                          ctx.fillRect(
+                            0,
+                            0,
+                            frameSize.width * 3,
+                            frameSize.height * 3
+                          );
 
-                        ctx.globalCompositeOperation = "destination-out";
-                        ctx.fillStyle = "black";
-                        ctx.fillRect(
-                          frameSize.width,
-                          frameSize.height,
-                          frameSize.width,
-                          frameSize.height
-                        );
-                      }}
-                      listening={false}
-                    />
-
-                    {editable ? (
-                      <TransformerComponent
-                        trRef={activeTransformerRef}
-                        selectedLayer={currentLayer}
+                          ctx.globalCompositeOperation = "destination-out";
+                          ctx.fillStyle = "black";
+                          ctx.fillRect(
+                            frameSize.width,
+                            frameSize.height,
+                            frameSize.width,
+                            frameSize.height
+                          );
+                        }}
+                        listening={false}
                       />
-                    ) : (
-                      <></>
-                    )}
 
-                    {hoveredLayerJSON &&
-                    (!currentLayer ||
-                      !hoveredLayerJSON[currentLayer.id] ||
-                      !editable) ? (
-                      <TransformerComponent
-                        trRef={hoveredTransformerRef}
-                        selectedLayer={layerList.find(
-                          (item) => hoveredLayerJSON[item.id]
-                        )}
-                        hoveredTransform={true}
-                      />
-                    ) : (
-                      <></>
-                    )}
+                      {editable ? (
+                        <TransformerComponent
+                          trRef={activeTransformerRef}
+                          selectedLayer={currentLayer}
+                        />
+                      ) : (
+                        <></>
+                      )}
+
+                      {hoveredLayerJSON &&
+                      (!currentLayer ||
+                        !hoveredLayerJSON[currentLayer.id] ||
+                        !editable) ? (
+                        <TransformerComponent
+                          trRef={hoveredTransformerRef}
+                          selectedLayer={layerList.find(
+                            (item) => hoveredLayerJSON[item.id]
+                          )}
+                          hoveredTransform={true}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                    </Group>
                   </Layer>
                 </Provider>
               </Stage>
