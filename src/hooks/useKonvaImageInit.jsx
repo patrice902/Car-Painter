@@ -4,6 +4,16 @@ import { mathRound2, getPixelRatio, loadImage, rotatePoint } from "helper";
 import { replaceColors, svgToURL, urlToString } from "helper/svg";
 import { useSelector } from "react-redux";
 
+const clearCache = (node) => {
+  node._cache.get("canvas").scene._canvas.width = 0;
+  node._cache.get("canvas").scene._canvas.height = 0;
+  node._cache.get("canvas").hit._canvas.width = 0;
+  node._cache.get("canvas").hit._canvas.height = 0;
+  node._cache.get("canvas").filter._canvas.width = 0;
+  node._cache.get("canvas").filter._canvas.height = 0;
+  node.clearCache();
+};
+
 export const useKonvaImageInit = ({
   imageshapeRef,
   id,
@@ -41,6 +51,7 @@ export const useKonvaImageInit = ({
       imageRef &&
       imageRef.current
     ) {
+      clearCache(imageshapeRef.current);
       imageshapeRef.current.cache({
         pixelRatio:
           getPixelRatio(imageshapeRef.current, imageRef.current) *

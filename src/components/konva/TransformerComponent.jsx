@@ -57,7 +57,7 @@ export const TransformerComponent = React.memo(
       ctx.drawImage(icon, 0, 0, canvas.width, canvas.height);
 
       return canvas;
-    }, [icon]);
+    }, [anchorSize, icon]);
 
     const centeredScaling = useMemo(() => pressedKey === "alt", [pressedKey]);
 
