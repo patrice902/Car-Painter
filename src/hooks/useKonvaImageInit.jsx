@@ -5,12 +5,15 @@ import { replaceColors, svgToURL, urlToString } from "helper/svg";
 import { useSelector } from "react-redux";
 
 const clearCache = (node) => {
-  node._cache.get("canvas").scene._canvas.width = 0;
-  node._cache.get("canvas").scene._canvas.height = 0;
-  node._cache.get("canvas").hit._canvas.width = 0;
-  node._cache.get("canvas").hit._canvas.height = 0;
-  node._cache.get("canvas").filter._canvas.width = 0;
-  node._cache.get("canvas").filter._canvas.height = 0;
+  const canvasCache = node._cache.get("canvas");
+  if (canvasCache) {
+    canvasCache.scene._canvas.width = 0;
+    canvasCache.scene._canvas.height = 0;
+    canvasCache.hit._canvas.width = 0;
+    canvasCache.hit._canvas.height = 0;
+    canvasCache.filter._canvas.width = 0;
+    canvasCache.filter._canvas.height = 0;
+  }
   node.clearCache();
 };
 
