@@ -65,7 +65,7 @@ export const useKonvaImageInit = ({
       clearCache(imageshapeRef.current);
       const pixelRatio = getPixelRatio(imageshapeRef.current, imageRef.current);
       imageshapeRef.current.cache({
-        pixelRatio,
+        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio * 0.5, 0.5),
         imageSmoothingEnabled: true,
       });
     }
