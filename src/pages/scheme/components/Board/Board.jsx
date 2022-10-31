@@ -23,9 +23,9 @@ import {
 } from "./Layers";
 import { TransformerComponent } from "components/konva";
 
-import { useDrawHelper, useZoom, useTouch } from "hooks";
+import { useDrawHelper, useZoom } from "hooks";
 import { BoardContextMenu } from "components/dialogs";
-import { useEffect } from "react";
+import { useRef } from "react";
 
 export const Board = React.memo(
   ({
@@ -53,9 +53,14 @@ export const Board = React.memo(
       onContextMenu,
       onLayerDragStart,
       onLayerDragEnd,
+      onTouchStart,
+      onTouchMove,
+      onTouchEnd,
+      onTap,
+      onDbltap,
     } = useDrawHelper(stageRef);
-    const { onTouchStart, onTouchMove, onTouchEnd } = useTouch(stageRef);
     const { zoom, onWheelZoom } = useZoom(stageRef);
+    const mainGroupRef = useRef();
 
     const frameSize = useSelector((state) => state.boardReducer.frameSize);
     const boardRotate = useSelector((state) => state.boardReducer.boardRotate);
@@ -87,12 +92,6 @@ export const Board = React.memo(
       [onChangeHoverJSONItem]
     );
 
-    useEffect(() => {
-      if (stageRef.current) {
-        stageRef.current.cache();
-      }
-    }, [stageRef, layerList, currentScheme]);
-
     return (
       <Box width="100%" height="calc(100% - 50px)" position="relative">
         <Box
@@ -121,6 +120,8 @@ export const Board = React.memo(
                 onContentMouseup={onContentMouseup}
                 onContextMenu={onContextMenu}
                 onDblClick={onDoubleClick}
+                onTap={onTap}
+                onDbltap={onDbltap}
                 onWheel={onWheelZoom}
                 scaleX={zoom || 1}
                 scaleY={zoom || 1}
@@ -140,104 +141,109 @@ export const Board = React.memo(
               >
                 <Provider store={store}>
                   <Layer>
-                    <Group ref={baseLayerRef} listening={false}>
-                      {/* Background */}
-                      <Rect
-                        x={0}
-                        y={0}
-                        width={frameSize.width}
-                        height={frameSize.height}
-                        fill={
-                          currentScheme.base_color === "transparent"
-                            ? currentScheme.base_color
-                            : "#" + currentScheme.base_color
-                        }
-                        listening={false}
-                      />
-                      {viewMode === ViewModes.SPEC_VIEW && (
-                        <SpecPaintingGuideCarMask />
-                      )}
-                      <BasePaints />
-                    </Group>
-                    {!currentScheme.guide_data.show_sponsor_block_on_top ||
-                    !currentScheme.guide_data.show_number_block_on_top ? (
-                      <Group listening={false}>
-                        {!currentScheme.guide_data.show_sponsor_block_on_top ? (
-                          <PaintingGuideSponsor />
-                        ) : (
-                          <></>
+                    <Group ref={mainGroupRef}>
+                      <Group ref={baseLayerRef} listening={false}>
+                        {/* Background */}
+                        <Rect
+                          x={0}
+                          y={0}
+                          width={frameSize.width}
+                          height={frameSize.height}
+                          fill={
+                            currentScheme.base_color === "transparent"
+                              ? currentScheme.base_color
+                              : "#" + currentScheme.base_color
+                          }
+                          listening={false}
+                        />
+                        {viewMode === ViewModes.SPEC_VIEW && (
+                          <SpecPaintingGuideCarMask />
                         )}
-                        {!currentScheme.guide_data.show_number_block_on_top ? (
-                          <PaintingGuideNumber />
-                        ) : (
-                          <></>
-                        )}
+                        <BasePaints />
                       </Group>
-                    ) : (
-                      <></>
-                    )}
-
-                    <Group ref={mainLayerRef}>
-                      {!currentScheme.guide_data.show_carparts_on_top ? (
-                        <CarParts />
+                      {!currentScheme.guide_data.show_sponsor_block_on_top ||
+                      !currentScheme.guide_data.show_number_block_on_top ? (
+                        <Group listening={false}>
+                          {!currentScheme.guide_data
+                            .show_sponsor_block_on_top ? (
+                            <PaintingGuideSponsor />
+                          ) : (
+                            <></>
+                          )}
+                          {!currentScheme.guide_data
+                            .show_number_block_on_top ? (
+                            <PaintingGuideNumber />
+                          ) : (
+                            <></>
+                          )}
+                        </Group>
                       ) : (
                         <></>
                       )}
 
-                      <Overlays
-                        stageRef={stageRef}
-                        editable={editable}
-                        onHover={handleHoverLayer}
-                        onLayerDragStart={onLayerDragStart}
-                        onLayerDragEnd={onLayerDragEnd}
-                        onSetTransformingLayer={setTransformingLayer}
-                      />
-                      <Shapes
-                        stageRef={stageRef}
-                        editable={editable}
-                        drawingLayer={drawingLayerRef.current}
-                        onHover={handleHoverLayer}
-                        onLayerDragStart={onLayerDragStart}
-                        onLayerDragEnd={onLayerDragEnd}
-                        onSetTransformingLayer={setTransformingLayer}
-                      />
-                      <LogosAndTexts
-                        stageRef={stageRef}
-                        editable={editable}
-                        onHover={handleHoverLayer}
-                        onLayerDragStart={onLayerDragStart}
-                        onLayerDragEnd={onLayerDragEnd}
-                        onSetTransformingLayer={setTransformingLayer}
-                      />
-                      {currentScheme.guide_data.show_carparts_on_top ? (
-                        <CarParts />
-                      ) : (
-                        <></>
-                      )}
-                    </Group>
-
-                    <Group ref={carMaskLayerRef} listening={false}>
-                      <PaintingGuideCarMask />
-                    </Group>
-                    {currentScheme.guide_data.show_sponsor_block_on_top ||
-                    currentScheme.guide_data.show_number_block_on_top ? (
-                      <Group listening={false}>
-                        {currentScheme.guide_data.show_sponsor_block_on_top ? (
-                          <PaintingGuideSponsor />
+                      <Group ref={mainLayerRef}>
+                        {!currentScheme.guide_data.show_carparts_on_top ? (
+                          <CarParts />
                         ) : (
                           <></>
                         )}
-                        {currentScheme.guide_data.show_number_block_on_top ? (
-                          <PaintingGuideNumber />
+
+                        <Overlays
+                          stageRef={stageRef}
+                          editable={editable}
+                          onHover={handleHoverLayer}
+                          onLayerDragStart={onLayerDragStart}
+                          onLayerDragEnd={onLayerDragEnd}
+                          onSetTransformingLayer={setTransformingLayer}
+                        />
+                        <Shapes
+                          stageRef={stageRef}
+                          editable={editable}
+                          drawingLayer={drawingLayerRef.current}
+                          onHover={handleHoverLayer}
+                          onLayerDragStart={onLayerDragStart}
+                          onLayerDragEnd={onLayerDragEnd}
+                          onSetTransformingLayer={setTransformingLayer}
+                        />
+                        <LogosAndTexts
+                          stageRef={stageRef}
+                          editable={editable}
+                          onHover={handleHoverLayer}
+                          onLayerDragStart={onLayerDragStart}
+                          onLayerDragEnd={onLayerDragEnd}
+                          onSetTransformingLayer={setTransformingLayer}
+                        />
+                        {currentScheme.guide_data.show_carparts_on_top ? (
+                          <CarParts />
                         ) : (
                           <></>
                         )}
                       </Group>
-                    ) : (
-                      <></>
-                    )}
-                    <Group name="layer-guide-top" listening={false}>
-                      <PaintingGuideTop />
+
+                      <Group ref={carMaskLayerRef} listening={false}>
+                        <PaintingGuideCarMask />
+                      </Group>
+                      {currentScheme.guide_data.show_sponsor_block_on_top ||
+                      currentScheme.guide_data.show_number_block_on_top ? (
+                        <Group listening={false}>
+                          {currentScheme.guide_data
+                            .show_sponsor_block_on_top ? (
+                            <PaintingGuideSponsor />
+                          ) : (
+                            <></>
+                          )}
+                          {currentScheme.guide_data.show_number_block_on_top ? (
+                            <PaintingGuideNumber />
+                          ) : (
+                            <></>
+                          )}
+                        </Group>
+                      ) : (
+                        <></>
+                      )}
+                      <Group name="layer-guide-top" listening={false}>
+                        <PaintingGuideTop />
+                      </Group>
                     </Group>
                   </Layer>
                   <Layer>
