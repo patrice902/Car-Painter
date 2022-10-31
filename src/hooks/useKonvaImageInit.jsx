@@ -53,14 +53,14 @@ export const useKonvaImageInit = ({
       imageshapeRef.current &&
       imageRef &&
       imageRef.current &&
-      filterColor
+      (filterColor || isDesktop)
     ) {
       clearCache(imageshapeRef.current);
       const pixelRatio =
         getPixelRatio(imageshapeRef.current, imageRef.current) *
-        (isDesktop ? 1 : 0.3);
+        (isDesktop ? 1 : 0.1);
       imageshapeRef.current.cache({
-        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio, 0.3),
+        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio, 0.1),
         imageSmoothingEnabled: true,
       });
     }
