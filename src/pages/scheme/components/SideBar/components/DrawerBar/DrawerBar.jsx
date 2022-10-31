@@ -468,7 +468,11 @@ export const DrawerBar = React.memo(
             ariaLabel="Add Layer"
             icon={<SpeedDialIcon />}
             onClose={() => setOpenSpeedDial(false)}
-            onOpen={() => setOpenSpeedDial(true)}
+            onOpen={(_, reason) => {
+              if (reason === "toggle") {
+                setOpenSpeedDial(true);
+              }
+            }}
             open={openSpeedDial}
             hidden={!editable}
             direction="left"

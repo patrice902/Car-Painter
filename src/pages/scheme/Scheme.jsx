@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useInterval from "react-useinterval";
 import KeyboardEventHandler from "react-keyboard-event-handler";
-import Helmet from "react-helmet";
+import { Helmet } from "react-helmet";
 import { useHistory, useParams } from "react-router";
 
 import { Box, useMediaQuery } from "@material-ui/core";
@@ -263,7 +263,9 @@ const Scheme = React.memo((props) => {
 
   return (
     <>
-      <Helmet title={currentScheme ? currentScheme.name : null} />
+      <Helmet>
+        {currentScheme ? <title>{currentScheme.name}</title> : null}
+      </Helmet>
       {schemeLoading || carMakeLoading || fontLoading || !currentScheme ? (
         <ScreenLoader />
       ) : (

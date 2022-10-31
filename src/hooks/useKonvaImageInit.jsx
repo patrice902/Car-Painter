@@ -1,8 +1,28 @@
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
 import Canvg from "canvg";
-import { mathRound2, getPixelRatio, loadImage, rotatePoint } from "helper";
+import {
+  mathRound2,
+  getPixelRatio,
+  loadImage,
+  rotatePoint,
+  detectBrowser,
+} from "helper";
 import { replaceColors, svgToURL, urlToString } from "helper/svg";
 import { useSelector } from "react-redux";
+import { Browser } from "constant";
+
+const clearCache = (node) => {
+  const canvasCache = node._cache.get("canvas");
+  if (canvasCache) {
+    canvasCache.scene._canvas.width = 0;
+    canvasCache.scene._canvas.height = 0;
+    canvasCache.hit._canvas.width = 0;
+    canvasCache.hit._canvas.height = 0;
+    canvasCache.filter._canvas.width = 0;
+    canvasCache.filter._canvas.height = 0;
+  }
+  node.clearCache();
+};
 
 export const useKonvaImageInit = ({
   imageshapeRef,
@@ -39,16 +59,17 @@ export const useKonvaImageInit = ({
       imageshapeRef &&
       imageshapeRef.current &&
       imageRef &&
-      imageRef.current
+      imageRef.current &&
+      (filterColor || isDesktop)
     ) {
+      clearCache(imageshapeRef.current);
+      const pixelRatio = getPixelRatio(imageshapeRef.current, imageRef.current);
       imageshapeRef.current.cache({
-        pixelRatio:
-          getPixelRatio(imageshapeRef.current, imageRef.current) *
-          (isDesktop ? 1 : 0.1),
+        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio * 0.3, 0.3),
         imageSmoothingEnabled: true,
       });
     }
-  }, [imageshapeRef, imageRef, isDesktop]);
+  }, [imageshapeRef, imageRef, isDesktop, filterColor]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
@@ -113,7 +134,7 @@ export const useKonvaImageInit = ({
     let targetWidth = width || originWidth || 200;
     let targetHeight = height || originHeight || 200;
 
-    if (isSVG && navigator.userAgent.indexOf("Firefox") !== -1) {
+    if (isSVG && detectBrowser() === Browser.FIREFOX) {
       let canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       const v = await Canvg.from(ctx, imageRef.current.src, {

@@ -1,6 +1,6 @@
 import config from "config";
 import TGA from "utils/tga";
-import { LayerTypes, MouseModes } from "constant";
+import { Browser, LayerTypes, MouseModes } from "constant";
 // import validateColor from "validate-color";
 
 export const getDifferenceFromToday = (past_date) => {
@@ -526,4 +526,23 @@ export const getCenterOfPoints = (p1, p2) => {
     x: (p1.x + p2.x) / 2,
     y: (p1.y + p2.y) / 2,
   };
+};
+
+export const detectBrowser = () => {
+  let userAgent = navigator.userAgent;
+  let browserName;
+
+  if (userAgent.match(/chrome|chromium|crios/i)) {
+    browserName = Browser.CHROME;
+  } else if (userAgent.match(/firefox|fxios/i)) {
+    browserName = Browser.FIREFOX;
+  } else if (userAgent.match(/safari/i)) {
+    browserName = Browser.SAFARI;
+  } else if (userAgent.match(/opr\//i)) {
+    browserName = Browser.OPERA;
+  } else if (userAgent.match(/edg/i)) {
+    browserName = Browser.EDGE;
+  }
+
+  return browserName;
 };
