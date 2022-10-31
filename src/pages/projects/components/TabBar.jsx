@@ -76,7 +76,9 @@ export const TabBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
         </Tab>
         <Tab
           display="flex"
-          justifyContent={newInvitationCount ? "space-between" : "center"}
+          justifyContent={
+            newInvitationCount || overMobile ? "space-between" : "center"
+          }
           state={tabValue === 1 ? "active" : null}
           onClick={() => handleClickTabItem(1)}
         >

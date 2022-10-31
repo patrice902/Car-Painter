@@ -9,6 +9,14 @@ export const THEMES = {
   INDIGO: "INDIGO",
 };
 
+export const Browser = {
+  CHROME: "CHROME",
+  FIREFOX: "FIREFOX",
+  SAFARI: "SAFARI",
+  OPERA: "OPERA",
+  EDGE: "EDGE",
+};
+
 export const LayerTypes = {
   TEXT: 1,
   LOGO: 2,

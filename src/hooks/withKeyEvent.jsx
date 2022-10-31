@@ -11,6 +11,7 @@ import {
   DialogTypes,
   LayerTypes,
   DrawingStatus,
+  Browser,
 } from "constant";
 
 import {
@@ -38,6 +39,7 @@ import {
   focusBoard,
   isInSameSideBar,
   isWindows,
+  detectBrowser,
 } from "helper";
 
 import LayerDeleteDialog from "components/dialogs/LayerDeleteDialog";
@@ -337,14 +339,14 @@ export const withKeyEvent = (Component) =>
           } else if (event.key === "=" && (event.ctrlKey || event.metaKey)) {
             const newBrowserZoom = browserZoom * 1.25;
             document.body.style.zoom = newBrowserZoom;
-            if (navigator.userAgent.indexOf("Firefox") !== -1) {
+            if (detectBrowser() === Browser.FIREFOX) {
               document.body.style.MozTransform = `scale(${newBrowserZoom})`;
             }
             setBrowserZoom(newBrowserZoom);
           } else if (event.key === "-" && (event.ctrlKey || event.metaKey)) {
             const newBrowserZoom = browserZoom / 1.25;
             document.body.style.zoom = newBrowserZoom;
-            if (navigator.userAgent.indexOf("Firefox") !== -1) {
+            if (detectBrowser() === Browser.FIREFOX) {
               document.body.style.MozTransform = `scale(${newBrowserZoom})`;
             }
             setBrowserZoom(newBrowserZoom);
