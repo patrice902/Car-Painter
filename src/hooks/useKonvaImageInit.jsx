@@ -1,8 +1,15 @@
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
 import Canvg from "canvg";
-import { mathRound2, getPixelRatio, loadImage, rotatePoint } from "helper";
+import {
+  mathRound2,
+  getPixelRatio,
+  loadImage,
+  rotatePoint,
+  detectBrowser,
+} from "helper";
 import { replaceColors, svgToURL, urlToString } from "helper/svg";
 import { useSelector } from "react-redux";
+import { Browser } from "constant";
 
 const clearCache = (node) => {
   const canvasCache = node._cache.get("canvas");
@@ -53,14 +60,12 @@ export const useKonvaImageInit = ({
       imageshapeRef.current &&
       imageRef &&
       imageRef.current &&
-      (filterColor || isDesktop)
+      (filterColor || isDesktop || detectBrowser() !== Browser.SAFARI)
     ) {
       clearCache(imageshapeRef.current);
-      const pixelRatio =
-        getPixelRatio(imageshapeRef.current, imageRef.current) *
-        (isDesktop ? 1 : 0.3);
+      const pixelRatio = getPixelRatio(imageshapeRef.current, imageRef.current);
       imageshapeRef.current.cache({
-        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio, 0.3),
+        pixelRatio,
         imageSmoothingEnabled: true,
       });
     }
@@ -129,7 +134,7 @@ export const useKonvaImageInit = ({
     let targetWidth = width || originWidth || 200;
     let targetHeight = height || originHeight || 200;
 
-    if (isSVG && navigator.userAgent.indexOf("Firefox") !== -1) {
+    if (isSVG && detectBrowser() === Browser.FIREFOX) {
       let canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       const v = await Canvg.from(ctx, imageRef.current.src, {
