@@ -25,6 +25,7 @@ import { TransformerComponent } from "components/konva";
 
 import { useDrawHelper, useZoom, useTouch } from "hooks";
 import { BoardContextMenu } from "components/dialogs";
+import { useEffect } from "react";
 
 export const Board = React.memo(
   ({
@@ -85,6 +86,12 @@ export const Board = React.memo(
       },
       [onChangeHoverJSONItem]
     );
+
+    useEffect(() => {
+      if (stageRef.current) {
+        stageRef.current.cache();
+      }
+    }, [stageRef, layerList, currentScheme]);
 
     return (
       <Box width="100%" height="calc(100% - 50px)" position="relative">
