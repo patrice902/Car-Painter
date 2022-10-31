@@ -60,7 +60,7 @@ export const useKonvaImageInit = ({
       imageshapeRef.current &&
       imageRef &&
       imageRef.current &&
-      (filterColor || isDesktop || detectBrowser() !== Browser.SAFARI)
+      (filterColor || isDesktop)
     ) {
       clearCache(imageshapeRef.current);
       const pixelRatio = getPixelRatio(imageshapeRef.current, imageRef.current);
