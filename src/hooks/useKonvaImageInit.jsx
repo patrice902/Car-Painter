@@ -52,18 +52,19 @@ export const useKonvaImageInit = ({
       imageshapeRef &&
       imageshapeRef.current &&
       imageRef &&
-      imageRef.current
+      imageRef.current &&
+      filterColor
     ) {
       clearCache(imageshapeRef.current);
-      // const pixelRatio =
-      //   getPixelRatio(imageshapeRef.current, imageRef.current) *
-      //   (isDesktop ? 1 : 0.3);
-      // imageshapeRef.current.cache({
-      //   pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio, 0.3),
-      //   imageSmoothingEnabled: true,
-      // });
+      const pixelRatio =
+        getPixelRatio(imageshapeRef.current, imageRef.current) *
+        (isDesktop ? 1 : 0.3);
+      imageshapeRef.current.cache({
+        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio, 0.3),
+        imageSmoothingEnabled: true,
+      });
     }
-  }, [imageshapeRef, imageRef, isDesktop]);
+  }, [imageshapeRef, imageRef, isDesktop, filterColor]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
