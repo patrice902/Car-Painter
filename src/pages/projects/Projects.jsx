@@ -2,15 +2,10 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import _ from "lodash";
 
-import {
-  Box,
-  IconButton,
-  Typography,
-  useMediaQuery,
-} from "components/MaterialUI";
+import { Box, Typography, useMediaQuery } from "components/MaterialUI";
 
-import { AddBoxOutlined as AddIcon } from "@material-ui/icons";
-import { AppHeader, LightTooltip, ScreenLoader } from "components/common";
+import { Add as AddIcon } from "@material-ui/icons";
+import { AppHeader, ScreenLoader } from "components/common";
 import {
   MyProjects,
   SharedProjects,
@@ -43,6 +38,7 @@ import { CreateProjectDialog } from "components/dialogs";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 import { scrollTopOnProjectList } from "helper";
+import { Button } from "@material-ui/core";
 
 export const Projects = React.memo(() => {
   const dispatch = useDispatch();
@@ -390,11 +386,14 @@ const TabPanel = ({ children, value, index, title, onCreateNew, ...props }) => {
           >
             <Typography variant="h2">{title}</Typography>
             {overMobile ? null : (
-              <LightTooltip title="New Project" arrow>
-                <IconButton size="small" onClick={onCreateNew}>
-                  <CustomAddIcon />
-                </IconButton>
-              </LightTooltip>
+              <GreyButton
+                onClick={onCreateNew}
+                color="default"
+                variant="text"
+                startIcon={<AddIcon />}
+              >
+                <Typography variant="subtitle1"> New</Typography>
+              </GreyButton>
             )}
           </Box>
           {children}
@@ -404,8 +403,11 @@ const TabPanel = ({ children, value, index, title, onCreateNew, ...props }) => {
   );
 };
 
-const CustomAddIcon = styled(AddIcon)`
-  font-size: 32px;
+const GreyButton = styled(Button)`
+  background-color: #444;
+  &:hover {
+    background-color: #666;
+  }
 `;
 
 export default Projects;

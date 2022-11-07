@@ -71,10 +71,12 @@ export const PropertyBar = React.memo((props) => {
 
   useEffect(() => {
     if (!overMobile) {
-      hidePropertyBar();
+      dispatch(setShowProperties(false));
+    } else {
+      dispatch(setShowProperties(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [overMobile]);
 
   return (
     <Wrapper>

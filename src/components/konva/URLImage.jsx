@@ -72,7 +72,14 @@ export const URLImage = React.memo(
       onLoadLayer,
     });
 
-    const [, handleDragStart, handleDragMove, handleDragEnd] = useDrag({
+    const {
+      dragEnabled,
+      handleDragStart,
+      handleDragMove,
+      handleDragEnd,
+      handleTouchMove,
+      handleTouchEnd,
+    } = useDrag({
       stageRef,
       shapeRef,
       paintingGuides,
@@ -107,7 +114,7 @@ export const URLImage = React.memo(
         {...props}
         image={image}
         ref={shapeRef}
-        draggable={onChange}
+        draggable={onChange && dragEnabled}
         shadowBlur={shadowBlur}
         shadowColor={shadowColor}
         shadowOffsetX={shadowOffsetX || 0}
@@ -127,6 +134,8 @@ export const URLImage = React.memo(
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragMove={handleDragMove}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onTransformStart={handleTransformStart}
         onTransformEnd={handleTransformEnd}
         onTransform={handleTransform}

@@ -337,28 +337,32 @@ export const Toolbar = React.memo((props) => {
             <></>
           )}
 
-          <Box display="flex" alignItems="center">
-            <LightTooltip title="Zoom to fit" position="bottom" arrow>
-              <IconButton onClick={handleZoomToFit} size="small">
-                <SearchIcon />
-              </IconButton>
-            </LightTooltip>
-            <Box width="80px" ml={2}>
-              <Slider
-                min={0.1}
-                max={5}
-                step={0.1}
-                value={zoom}
-                onChange={(event, value) => handleZoom(value)}
-                aria-labelledby="zoom"
-              />
+          {overMobile ? (
+            <Box display="flex" alignItems="center">
+              <LightTooltip title="Zoom to fit" position="bottom" arrow>
+                <IconButton onClick={handleZoomToFit} size="small">
+                  <SearchIcon />
+                </IconButton>
+              </LightTooltip>
+              <Box width="80px" ml={2}>
+                <Slider
+                  min={0.1}
+                  max={5}
+                  step={0.1}
+                  value={zoom}
+                  onChange={(event, value) => handleZoom(value)}
+                  aria-labelledby="zoom"
+                />
+              </Box>
+              <ZoomButton variant="default" onClick={handleZoomPoperOpen}>
+                <Typography variant="subtitle2">
+                  {(zoom * 100).toFixed(2)} %
+                </Typography>
+              </ZoomButton>
             </Box>
-            <ZoomButton variant="default" onClick={handleZoomPoperOpen}>
-              <Typography variant="subtitle2">
-                {(zoom * 100).toFixed(2)} %
-              </Typography>
-            </ZoomButton>
-          </Box>
+          ) : (
+            <></>
+          )}
         </Box>
         <Box display="flex" alignContent="center" justifyContent="flex-end">
           <LightTooltip title="Rotate View" position="bottom" arrow>
