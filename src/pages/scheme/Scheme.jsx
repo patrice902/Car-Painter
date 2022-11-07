@@ -62,7 +62,7 @@ const Scheme = React.memo((props) => {
   const history = useHistory();
   const params = useParams();
   const { onZoomFit } = useZoom(stageRef);
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const [hoveredJSON, setHoveredJSON] = useState({});
   const [transformingLayer, setTransformingLayer] = useState(null);
@@ -134,11 +134,11 @@ const Scheme = React.memo((props) => {
 
   const handleGoBack = useCallback(async () => {
     dispatch(setLoadedStatusAll({}));
-    if (overMobile) {
+    if (isDesktop) {
       await handleUploadThumbnail(false);
     }
     history.push(previousPath || "/");
-  }, [history, dispatch, handleUploadThumbnail, previousPath, overMobile]);
+  }, [history, dispatch, handleUploadThumbnail, previousPath, isDesktop]);
 
   const hideLegacyBanner = useCallback(() => {
     setShowLegacyBanner(false);
@@ -207,7 +207,7 @@ const Scheme = React.memo((props) => {
     ) {
       dispatch(setLoaded(true));
       onZoomFit();
-      if (overMobile) {
+      if (isDesktop) {
         setTimeout(handleUploadThumbnail, 5000);
       }
     }
@@ -215,7 +215,7 @@ const Scheme = React.memo((props) => {
   }, [loadedStatuses, schemeLoaded]);
 
   useEffect(() => {
-    if (editable && overMobile) {
+    if (editable && isDesktop) {
       const thumbnailInterval = setInterval(handleUploadThumbnail, 300000);
       return () => {
         clearInterval(thumbnailInterval);
@@ -257,9 +257,9 @@ const Scheme = React.memo((props) => {
   }, [hoveredJSON, stageRef, pressedKey]);
 
   useEffect(() => {
-    dispatch(setIsDesktop(overMobile));
+    dispatch(setIsDesktop(isDesktop));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overMobile]);
+  }, [isDesktop]);
 
   return (
     <>
@@ -289,7 +289,7 @@ const Scheme = React.memo((props) => {
             display="flex"
             justifyContent="space-between"
           >
-            {overMobile ? (
+            {isDesktop ? (
               <SideBar
                 dialog={dialog}
                 setDialog={setDialog}
@@ -308,7 +308,7 @@ const Scheme = React.memo((props) => {
               flexGrow="1"
               position="relative"
             >
-              {!overMobile ? (
+              {!isDesktop ? (
                 <DrawerBar
                   dialog={dialog}
                   setDialog={setDialog}

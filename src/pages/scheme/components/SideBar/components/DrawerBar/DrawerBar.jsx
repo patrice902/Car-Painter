@@ -131,7 +131,7 @@ const modes = [
 export const DrawerBar = React.memo(
   ({ dialog, setDialog, stageRef, editable }) => {
     const dispatch = useDispatch();
-    const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+    const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
     const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
     const currentScheme = useSelector((state) => state.schemeReducer.current);
@@ -158,8 +158,8 @@ export const DrawerBar = React.memo(
             <img
               src={BasepaintIcon}
               alt="Base Paint"
-              height={overMobile ? "50px" : "30px"}
-              style={{ margin: overMobile ? "-5px" : "0px" }}
+              height={isDesktop ? "50px" : "30px"}
+              style={{ margin: isDesktop ? "-5px" : "0px" }}
             />
           ),
         },
@@ -170,8 +170,8 @@ export const DrawerBar = React.memo(
             <img
               src={GraphicsIcon}
               alt="Graphics"
-              height={overMobile ? "45px" : "30px"}
-              style={{ margin: overMobile ? "-4px" : "0px" }}
+              height={isDesktop ? "45px" : "30px"}
+              style={{ margin: isDesktop ? "-4px" : "0px" }}
             />
           ),
         },
@@ -182,7 +182,7 @@ export const DrawerBar = React.memo(
             <img
               src={LogoIcon}
               alt="Logos"
-              height={overMobile ? "40px" : "30px"}
+              height={isDesktop ? "40px" : "30px"}
             />
           ),
         },
@@ -192,7 +192,7 @@ export const DrawerBar = React.memo(
           icon: (
             <CustomFontAwesomeIcon
               style={
-                overMobile
+                isDesktop
                   ? { height: "30px", width: "30px" }
                   : { height: "20px", width: "20px", color: "white" }
               }
@@ -206,7 +206,7 @@ export const DrawerBar = React.memo(
           icon: (
             <CustomFontAwesomeIcon
               style={
-                overMobile
+                isDesktop
                   ? { height: "30px", width: "30px" }
                   : { height: "20px", width: "20px", color: "white" }
               }
@@ -215,7 +215,7 @@ export const DrawerBar = React.memo(
           ),
         },
       ],
-      [overMobile]
+      [isDesktop]
     );
 
     const hideDialog = useCallback(() => {
@@ -230,6 +230,7 @@ export const DrawerBar = React.memo(
           dispatch(setCurrentLayer(null));
         }
         focusBoardQuickly();
+        setOpenSpeedDial(false);
       },
       [dispatch]
     );
@@ -379,10 +380,10 @@ export const DrawerBar = React.memo(
         dispatch(setMouseMode(MouseModes.DEFAULT));
       }
       setShowShapes((flag) => !flag);
-      if (overMobile) {
+      if (isDesktop) {
         focusBoardQuickly();
       }
-    }, [showShapes, dispatch, overMobile]);
+    }, [showShapes, dispatch, isDesktop]);
 
     const handleCloseDrawShapesMobile = useCallback(
       (e, reason) => {
@@ -461,7 +462,7 @@ export const DrawerBar = React.memo(
       </>
     );
 
-    if (!overMobile) {
+    if (!isDesktop) {
       return (
         <>
           <MainSpeedDial

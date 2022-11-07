@@ -55,7 +55,7 @@ export const Toolbar = React.memo((props) => {
     onChangeBoardRotation,
   } = props;
   const { zoom, onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
@@ -254,7 +254,7 @@ export const Toolbar = React.memo((props) => {
         alignContent="center"
         width="100%"
       >
-        {overMobile ? (
+        {isDesktop ? (
           <Box display="flex" alignContent="center">
             <LightTooltip title="Toggle Layers" arrow>
               <IconButton onClick={handleToggleLayers}>
@@ -308,7 +308,7 @@ export const Toolbar = React.memo((props) => {
             </Box>
           </LightTooltip>
 
-          {overMobile ? (
+          {isDesktop ? (
             <Box mx={4} height="100%" display="flex">
               <LightTooltip
                 title={
@@ -337,7 +337,7 @@ export const Toolbar = React.memo((props) => {
             <></>
           )}
 
-          {overMobile ? (
+          {isDesktop ? (
             <Box display="flex" alignItems="center">
               <LightTooltip title="Zoom to fit" position="bottom" arrow>
                 <IconButton onClick={handleZoomToFit} size="small">
@@ -370,7 +370,7 @@ export const Toolbar = React.memo((props) => {
               <Rotate90DegreesCcw />
             </IconButton>
           </LightTooltip>
-          {overMobile ? (
+          {isDesktop ? (
             <LightTooltip title="Toggle Properties" arrow>
               <IconButton onClick={handleToggleProperties}>
                 {showProperties ? <ChevronsRight /> : <ChevronsLeft />}

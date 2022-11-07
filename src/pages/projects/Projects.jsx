@@ -43,7 +43,7 @@ import { Button } from "@material-ui/core";
 export const Projects = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const user = useSelector((state) => state.authReducer.user);
   const blockedBy = useSelector((state) => state.authReducer.blockedBy);
@@ -244,7 +244,7 @@ export const Projects = React.memo(() => {
         height={innerHeight - 56}
         display="flex"
         bgcolor="#333"
-        flexDirection={overMobile ? "row" : "column-reverse"}
+        flexDirection={isDesktop ? "row" : "column-reverse"}
       >
         <TabBar
           tabValue={tabValue}
@@ -255,15 +255,15 @@ export const Projects = React.memo(() => {
           display="flex"
           flexDirection="column"
           justifyContent="flex-start"
-          my={overMobile ? 2 : 0}
+          my={isDesktop ? 2 : 0}
           mr={2}
           py={5}
           pl={5}
           width="100%"
-          height={overMobile ? "calc(100% - 16px)" : "calc(100% - 48px)"}
+          height={isDesktop ? "calc(100% - 16px)" : "calc(100% - 48px)"}
           position="relative"
           bgcolor="#444"
-          borderRadius={overMobile ? "10px" : 0}
+          borderRadius={isDesktop ? "10px" : 0}
         >
           <FilterBar
             search={search}
@@ -365,7 +365,7 @@ export const Projects = React.memo(() => {
 });
 
 const TabPanel = ({ children, value, index, title, onCreateNew, ...props }) => {
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   return (
     <Box
@@ -385,7 +385,7 @@ const TabPanel = ({ children, value, index, title, onCreateNew, ...props }) => {
             mb={5}
           >
             <Typography variant="h2">{title}</Typography>
-            {overMobile ? null : (
+            {isDesktop ? null : (
               <GreyButton
                 onClick={onCreateNew}
                 color="default"
