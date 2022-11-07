@@ -219,6 +219,7 @@ export const withKeyEvent = (Component) =>
     const handleKeyEvent = useCallback(
       (key, event) => {
         event.preventDefault();
+        console.log("key, event: ", key, event);
         // Delete Selected Layer
         if (event.target.tagName !== "INPUT" && event.type === "keydown") {
           if (
