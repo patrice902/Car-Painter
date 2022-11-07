@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import Konva from "konva";
 import { PaintingGuides } from "constant";
-import { mathRound2 } from "helper";
+import { getCenterOfPoints, getDistance, mathRound2 } from "helper";
 import { useReducerRef } from "./useReducerRef";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setZoom } from "redux/reducers/boardReducer";
 
 export const useDrag = ({
   stageRef,
@@ -23,7 +25,12 @@ export const useDrag = ({
   onSetTransformingLayer,
 }) => {
   const GUIDELINE_ID = "snapping-guide-line";
-  const [dragging, setDragging] = useState(false);
+
+  const dispatch = useDispatch();
+  const [dragEnabled, setDragEnabled] = useState(true);
+  const [, setDragging] = useState(false);
+  const [lastDist, setLastDist] = useState(0);
+  const [lastCenter, setLastCenter] = useState(null);
   const [, layerRef] = useReducerRef(layer);
   const [, cloningLayerRef] = useReducerRef(cloningLayer);
   const pressedKey = useSelector((state) => state.boardReducer.pressedKey);
@@ -191,6 +198,73 @@ export const useDrag = ({
     },
     [frameSize, stageRef]
   );
+
+  const handleTouchMove = useCallback(
+    (e) => {
+      e.evt.preventDefault();
+      const touch1 = e.evt.touches[0];
+      const touch2 = e.evt.touches[1];
+      const stage = stageRef.current;
+      if (!stage) {
+        return;
+      }
+
+      if (touch1 && touch2) {
+        setDragEnabled(false);
+        var p1 = {
+          x: touch1.clientX,
+          y: touch1.clientY,
+        };
+        var p2 = {
+          x: touch2.clientX,
+          y: touch2.clientY,
+        };
+
+        if (!lastCenter) {
+          setLastCenter(getCenterOfPoints(p1, p2));
+          return;
+        }
+        var newCenter = getCenterOfPoints(p1, p2);
+
+        var dist = getDistance(p1, p2);
+
+        const targetDist = lastDist || dist;
+        const targetCenter = lastCenter || newCenter;
+
+        // local coordinates of center point
+        var pointTo = {
+          x: (newCenter.x - stage.x()) / stage.scaleX(),
+          y: (newCenter.y - stage.y()) / stage.scaleX(),
+        };
+
+        var scale = stage.scaleX() * (dist / targetDist);
+
+        dispatch(setZoom(scale));
+
+        // calculate new position of the stage
+        var dx = newCenter.x - targetCenter.x;
+        var dy = newCenter.y - targetCenter.y;
+
+        var newPos = {
+          x: newCenter.x - pointTo.x * scale + dx,
+          y: newCenter.y - pointTo.y * scale + dy,
+        };
+
+        stage.position(newPos);
+        stage.batchDraw();
+
+        setLastDist(dist);
+        setLastCenter(newCenter);
+      }
+    },
+    [dispatch, lastCenter, lastDist, stageRef]
+  );
+
+  const handleTouchEnd = useCallback((e) => {
+    setDragEnabled(true);
+    setLastDist(0);
+    setLastCenter(null);
+  }, []);
 
   const handleDragMove = useCallback(
     (e) => {
@@ -364,5 +438,12 @@ export const useDrag = ({
     }
   };
 
-  return [dragging, handleDragStart, handleDragMove, handleDragEnd];
+  return {
+    dragEnabled,
+    handleDragStart,
+    handleDragMove,
+    handleDragEnd,
+    handleTouchMove,
+    handleTouchEnd,
+  };
 };

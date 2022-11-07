@@ -57,7 +57,7 @@ export const useZoom = (stageRef) => {
             event.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy,
             10
           ),
-          0.25
+          0.1
         );
         dispatch(setZoom(newScale));
         const newPos = {
@@ -72,12 +72,12 @@ export const useZoom = (stageRef) => {
   );
 
   const onZoomIn = useCallback(() => {
-    const newScale = mathRound4(Math.max(Math.min(zoom * 1.25, 10), 0.25));
+    const newScale = mathRound4(Math.max(Math.min(zoom * 1.25, 10), 0.1));
     onZoom(newScale);
   }, [zoom, onZoom]);
 
   const onZoomOut = useCallback(() => {
-    const newScale = mathRound4(Math.max(Math.min(zoom / 1.25, 10), 0.25));
+    const newScale = mathRound4(Math.max(Math.min(zoom / 1.25, 10), 0.1));
     onZoom(newScale);
   }, [zoom, onZoom]);
 

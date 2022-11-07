@@ -30,12 +30,7 @@ import { CircularProgress } from "components/MaterialUI";
 import { setMessage } from "redux/reducers/messageReducer";
 import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
 import { updateScheme } from "redux/reducers/schemeReducer";
-import {
-  SchemeSettingsDialog,
-  SharingDialog,
-  ShortCutsDialog,
-} from "components/dialogs";
-import ShortcutIcon from "assets/keyboard-shortcuts.svg";
+import { SchemeSettingsDialog, SharingDialog } from "components/dialogs";
 
 export const Header = React.memo((props) => {
   const {
@@ -398,17 +393,6 @@ export const Header = React.memo((props) => {
           </>
         )}
 
-        {!overMobile ? (
-          <IconButton
-            size="small"
-            onClick={() => setDialog(DialogTypes.SHORTCUTS)}
-          >
-            <img src={ShortcutIcon} width="20px" alt="shortcuts" />
-          </IconButton>
-        ) : (
-          <></>
-        )}
-
         <Popover
           open={Boolean(shareAnchorEl)}
           anchorEl={shareAnchorEl}
@@ -489,10 +473,6 @@ export const Header = React.memo((props) => {
         </Popover>
       </AppHeader>
 
-      <ShortCutsDialog
-        open={dialog === DialogTypes.SHORTCUTS}
-        onCancel={handleCloseDialog}
-      />
       <RaceDialog
         open={dialog === DialogTypes.RACE}
         applying={applyingRace}

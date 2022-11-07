@@ -35,7 +35,14 @@ export const TextNode = React.memo(
   }) => {
     const [loadedFontFamily, setLoadedFontFamily] = useState(null);
     const shapeRef = useRef();
-    const [, handleDragStart, handleDragMove, handleDragEnd] = useDrag({
+    const {
+      dragEnabled,
+      handleDragStart,
+      handleDragMove,
+      handleDragEnd,
+      handleTouchMove,
+      handleTouchEnd,
+    } = useDrag({
       stageRef,
       shapeRef,
       paintingGuides,
@@ -111,7 +118,7 @@ export const TextNode = React.memo(
         shadowOpacity={shapeRef.current ? shadowOpacity : null}
         shadowOffsetX={shapeRef.current ? shadowOffsetX : 0}
         shadowOffsetY={shapeRef.current ? shadowOffsetY : 0}
-        draggable={onChange}
+        draggable={onChange && dragEnabled}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
         onClick={onSelect}
@@ -122,6 +129,8 @@ export const TextNode = React.memo(
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragMove={handleDragMove}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onTransformStart={handleTransformStart}
         onTransformEnd={handleTransformEnd}
         onTransform={handleTransform}

@@ -80,7 +80,14 @@ export const GroupedURLImage = React.memo(
       onLoadLayer,
     });
 
-    const [, handleDragStart, handleDragMove, handleDragEnd] = useDrag({
+    const {
+      dragEnabled,
+      handleDragStart,
+      handleDragMove,
+      handleDragEnd,
+      handleTouchMove,
+      handleTouchEnd,
+    } = useDrag({
       stageRef,
       shapeRef,
       paintingGuides,
@@ -120,10 +127,12 @@ export const GroupedURLImage = React.memo(
         onClick={onSelect}
         onDblClick={onDblClick}
         onTap={onSelect}
-        draggable={onChange && editable}
+        draggable={onChange && editable && dragEnabled}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onTransformStart={handleTransformStart}
         onTransformEnd={handleTransformEnd}
         onTransform={handleTransform}

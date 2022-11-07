@@ -11,6 +11,7 @@ import {
   Avatar,
   LinearProgress,
   Menu,
+  useMediaQuery,
 } from "@material-ui/core";
 import { ImageWithLoad, LightTooltip } from "components/common";
 import { ConfirmDialog } from "components/dialogs";
@@ -50,11 +51,15 @@ export const ProjectItem = React.memo((props) => {
   const [actionMenuEl, setActionMenuEl] = useState(null);
   const [deleteMessage, setDeleteMessage] = useState(false);
   const [favoriteInPrgoress, setFavoriteInPrgoress] = useState(false);
-  const showActionMenu = useMemo(() => onCloneProject || onDelete || onAccept, [
-    onCloneProject,
-    onDelete,
-    onAccept,
-  ]);
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const showActionMenu = useMemo(
+    () => (onCloneProject || onDelete || onAccept) && (!isDesktop || hovered),
+    [onCloneProject, onDelete, onAccept, isDesktop, hovered]
+  );
+  const showFavoriteButton = useMemo(
+    () => !isDesktop || hovered || isFavorite,
+    [hovered, isDesktop, isFavorite]
+  );
 
   const unsetDeleteMessage = useCallback(() => setDeleteMessage(null), []);
 
@@ -259,7 +264,7 @@ export const ProjectItem = React.memo((props) => {
             <CircularProgress size={30} />
           ) : (
             <>
-              {hovered || isFavorite ? (
+              {showFavoriteButton ? (
                 <IconButton onClick={handleToggleFavorite}>
                   {isFavorite ? (
                     <FontAwesomeIcon icon={faStarOn} size="sm" />
@@ -272,7 +277,7 @@ export const ProjectItem = React.memo((props) => {
               )}
             </>
           )}
-          {showActionMenu && hovered && (
+          {showActionMenu && (
             <>
               <IconButton
                 aria-haspopup="true"

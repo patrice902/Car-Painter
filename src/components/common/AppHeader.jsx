@@ -168,6 +168,9 @@ const NameItem = styled(Typography)`
   font-weight: 500;
   color: lightgray;
   padding: 8px 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 const AvatarButton = styled(Button)`
