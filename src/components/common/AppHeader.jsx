@@ -22,7 +22,7 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authReducer.user);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const handleSignOut = useCallback(() => {
     dispatch(signOut());
@@ -37,7 +37,7 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
       padding="8px 15px"
       bgcolor="black"
     >
-      {overMobile || !isBoard ? (
+      {isDesktop || !isBoard ? (
         <Box
           height="30px"
           display="flex"
@@ -64,10 +64,10 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
         width="100%"
         display="flex"
         alignItems="center"
-        justifyContent={overMobile || !isBoard ? "flex-end" : "space-around"}
+        justifyContent={isDesktop || !isBoard ? "flex-end" : "space-around"}
       >
         {children}
-        {user && (overMobile || !isBoard) ? (
+        {user && (isDesktop || !isBoard) ? (
           <>
             <Box marginLeft="8px">
               <AvatarButton
@@ -109,7 +109,7 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
                 >
                   Settings
                 </StyledLink>
-                {overMobile ? (
+                {isDesktop ? (
                   <StyledLink
                     href="https://tradingpaints.com/install"
                     target="_blank"

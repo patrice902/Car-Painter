@@ -25,7 +25,7 @@ export const TransformerComponent = React.memo(
                 selectedLayer.layer_data.width / 3,
                 selectedLayer.layer_data.height / 3
               ) * zoom,
-              5
+              15
             )
           : 0,
       [zoom, selectedLayer]

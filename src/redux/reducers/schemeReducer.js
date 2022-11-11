@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { createSlice } from "@reduxjs/toolkit";
 import { HistoryActions } from "constant";
-import { mergeTwoScheme, parseScheme } from "helper";
+import { clearScrollPosition, mergeTwoScheme, parseScheme } from "helper";
 import SchemeService from "services/schemeService";
 import SharedSchemeService from "services/sharedSchemeService";
 import FavoriteSchemeService from "services/favoriteSchemeService";
@@ -354,6 +354,7 @@ export const updateScheme = (
           next_data: parseScheme(updatedScheme),
         })
       );
+    clearScrollPosition();
   } catch (err) {
     dispatch(setMessage({ message: err.message }));
   }

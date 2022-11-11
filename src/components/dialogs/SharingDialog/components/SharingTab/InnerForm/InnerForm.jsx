@@ -26,7 +26,7 @@ export const InnerForm = React.memo(
       setFieldValue,
       values,
     } = formProps;
-    const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+    const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
     const blockedUsers = useSelector((state) => state.authReducer.blockedUsers);
     const blockedBy = useSelector((state) => state.authReducer.blockedBy);
@@ -84,7 +84,7 @@ export const InnerForm = React.memo(
         <CustomDialogContent dividers id="insert-text-dialog-content">
           {isOwner ? (
             <Box
-              display={overMobile ? "flex" : "block"}
+              display={isDesktop ? "flex" : "block"}
               justifyContent="space-between"
               mb={5}
               pr={5}
@@ -94,7 +94,7 @@ export const InnerForm = React.memo(
                 variant="outlined"
                 name="newUser"
                 onChange={(event) => handleNewUserChange(event.target.value)}
-                style={{ width: overMobile ? 200 : "100%" }}
+                style={{ width: isDesktop ? 200 : "100%" }}
               />
               {values.newUser ? (
                 <Box
@@ -102,8 +102,8 @@ export const InnerForm = React.memo(
                   justifyContent="space-between"
                   alignItems="center"
                   flexGrow={1}
-                  ml={overMobile ? 5 : 0}
-                  mt={overMobile ? 0 : 5}
+                  ml={isDesktop ? 5 : 0}
+                  mt={isDesktop ? 0 : 5}
                 >
                   <Box mt="-7px">
                     <Typography>{getUserName(values.newUser.user)}</Typography>

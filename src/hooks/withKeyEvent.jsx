@@ -49,6 +49,7 @@ import { setAskingSimPreviewByLatest } from "redux/reducers/downloaderReducer";
 import { useDebouncedCallback } from "use-debounce";
 
 const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
+const BracketKeys = ["[", "]"];
 
 export const withKeyEvent = (Component) =>
   React.memo((props) => {
@@ -66,6 +67,7 @@ export const withKeyEvent = (Component) =>
     const currentLayer = useSelector((state) => state.layerReducer.current);
     const clipboardLayer = useSelector((state) => state.layerReducer.clipboard);
     const layerList = useSelector((state) => state.layerReducer.list);
+    const uploadList = useSelector((state) => state.uploadReducer.list);
 
     const pressedKey = useSelector((state) => state.boardReducer.pressedKey);
     const pressedEventKey = useSelector(
@@ -115,24 +117,27 @@ export const withKeyEvent = (Component) =>
     );
     const handleDeleteLayer = useCallback(
       async (layer) => {
-        let nothingLeft = false;
-        if (layer.layer_type === LayerTypes.UPLOAD) {
+        let deleteUpload = false;
+        if (
+          layer.layer_type === LayerTypes.UPLOAD &&
+          uploadList.find((item) => item.id === layer.layer_data.id)
+        ) {
           let schemes = await SchemeService.getSchemeListByUploadID(
             layer.layer_data.id
           );
           if (schemes.length <= 1) {
-            nothingLeft = true;
+            deleteUpload = true;
           }
         }
         dispatch(setPressedKey(null));
         dispatch(setPressedEventKey(null));
         setDeleteLayerState({
           show: true,
-          nothingLeft,
+          deleteUpload,
           message: `Are you sure you want to delete "${layer.layer_data.name}"?`,
         });
       },
-      [dispatch]
+      [dispatch, uploadList]
     );
 
     const handleConfirm = useCallback(
@@ -215,12 +220,14 @@ export const withKeyEvent = (Component) =>
     const handleKeyEvent = useCallback(
       (key, event) => {
         event.preventDefault();
+        console.log("key, event: ", key, event);
         // Delete Selected Layer
         if (event.target.tagName !== "INPUT" && event.type === "keydown") {
           if (
             pressedKey === key &&
             pressedEventKey === event.key &&
-            !ArrowKeys.includes(event.key)
+            !ArrowKeys.includes(event.key) &&
+            !BracketKeys.includes(event.key)
           ) {
             return;
           }
@@ -494,7 +501,7 @@ export const withKeyEvent = (Component) =>
         <LayerDeleteDialog
           text={deleteLayerState && deleteLayerState.message}
           open={currentLayer && deleteLayerState && deleteLayerState.show}
-          nothingLeft={deleteLayerState && deleteLayerState.nothingLeft}
+          deleteUpload={deleteLayerState && deleteLayerState.deleteUpload}
           onCancel={unsetDeleteLayerState}
           onConfirm={handleConfirm}
         />

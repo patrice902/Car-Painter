@@ -48,7 +48,7 @@ export const Header = React.memo((props) => {
   const [sharingTab, setSharingTab] = useState(0);
 
   const dispatch = useDispatch();
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const currentCarMake = useSelector((state) => state.carMakeReducer.current);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
@@ -260,16 +260,16 @@ export const Header = React.memo((props) => {
   return (
     <>
       <AppHeader isBoard>
-        {!overMobile ? (
-          <IconButton size={overMobile ? "medium" : "small"} onClick={onBack}>
+        {!isDesktop ? (
+          <IconButton size={isDesktop ? "medium" : "small"} onClick={onBack}>
             <CustomIcon icon={faChevronLeft} size="xs" />
           </IconButton>
         ) : (
           <></>
         )}
-        {!overMobile ? (
+        {!isDesktop ? (
           <IconButton
-            size={overMobile ? "medium" : "small"}
+            size={isDesktop ? "medium" : "small"}
             onClick={() => setDialog(DialogTypes.SETTINGS)}
           >
             <SettingsIcon />
@@ -278,12 +278,12 @@ export const Header = React.memo((props) => {
           <></>
         )}
         <Box
-          mr={overMobile ? 4 : 0}
+          mr={isDesktop ? 4 : 0}
           height="100%"
           display="flex"
           alignItems="center"
         >
-          {overMobile ? (
+          {isDesktop ? (
             <DropDownButton
               aria-controls="share-options-menu"
               aria-haspopup="true"
@@ -305,14 +305,14 @@ export const Header = React.memo((props) => {
           )}
         </Box>
 
-        {overMobile ? (
+        {isDesktop ? (
           <Box
-            mr={overMobile ? 4 : 0}
+            mr={isDesktop ? 4 : 0}
             height="100%"
             display="flex"
             alignItems="center"
           >
-            {overMobile ? (
+            {isDesktop ? (
               <DropDownButton
                 aria-controls="tga-options-menu"
                 aria-haspopup="true"
@@ -368,10 +368,10 @@ export const Header = React.memo((props) => {
           </CustomButtonGroup>
         ) : (
           <>
-            {overMobile ? (
+            {isDesktop ? (
               <Button
                 variant="outlined"
-                mr={overMobile ? 4 : 0}
+                mr={isDesktop ? 4 : 0}
                 pr="16px"
                 size="small"
                 startIcon={
@@ -384,7 +384,7 @@ export const Header = React.memo((props) => {
             ) : (
               <IconButton
                 size="small"
-                mr={overMobile ? 4 : 0}
+                mr={isDesktop ? 4 : 0}
                 onClick={() => setDialog(DialogTypes.RACE)}
               >
                 <img src={RaceIcon} width={28} height={28} alt="Race" />

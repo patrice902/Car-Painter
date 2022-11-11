@@ -20,6 +20,8 @@ export const CustomImageList = styled(ImageList)`
 export const CustomImageListItem = styled(ImageListItem)`
   cursor: pointer;
   border: 1px solid transparent;
+  height: auto !important;
+  min-height: 182px;
   &:hover {
     border: 1px solid gray;
   }
