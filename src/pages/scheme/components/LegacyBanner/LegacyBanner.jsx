@@ -6,7 +6,7 @@ import { HighlightOff as CloseIcon } from "@material-ui/icons";
 import { useStyles } from "./LegacyBanner.style";
 
 export const LegacyBanner = React.memo(({ show, carMakeID, onDismiss }) => {
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const classes = useStyles();
 
   return (
@@ -15,7 +15,7 @@ export const LegacyBanner = React.memo(({ show, carMakeID, onDismiss }) => {
       left={0}
       right={0}
       top="10px"
-      width={overMobile ? "500px" : "350px"}
+      width={isDesktop ? "500px" : "350px"}
       display="flex"
       justifyContent="center"
       margin="auto"

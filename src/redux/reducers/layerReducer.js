@@ -17,6 +17,7 @@ import {
   rotatePoint,
   stringifyLayer,
   mergeTwoLayer,
+  clearScrollPosition,
 } from "helper";
 import LayerService from "services/layerService";
 import { setMessage } from "./messageReducer";
@@ -237,6 +238,7 @@ const shiftSimilarLayerOrders = (layer) => async (dispatch, getState) => {
       userID: currentUser.id,
     });
   }
+  clearScrollPosition();
 };
 
 export const createLayer = (
@@ -322,6 +324,7 @@ export const createLayerList = (layersInfo, pushingToHistory = true) => async (
       socketID: SocketClient.socket.id,
       userID: currentUser.id,
     });
+    clearScrollPosition();
   }
 
   dispatch(concatList(layers));
@@ -680,6 +683,7 @@ export const updateLayer = (layer, pushingToHistory = true) => async (
         })
       );
     }
+    clearScrollPosition();
   } catch (err) {
     dispatch(setMessage({ message: err.message }));
   }

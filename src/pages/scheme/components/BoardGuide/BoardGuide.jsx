@@ -8,9 +8,6 @@ import { useStyles } from "./BoardGuide.style";
 export const BoardGuide = React.memo(() => {
   const classes = useStyles();
 
-  const drawingStatus = useSelector(
-    (state) => state.layerReducer.drawingStatus
-  );
   const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
 
   return (
@@ -23,8 +20,7 @@ export const BoardGuide = React.memo(() => {
       justifyContent="center"
       className={classes.noPointerEvents}
     >
-      {!drawingStatus &&
-      [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
+      {[MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
         mouseMode
       ) ? (
         <Box

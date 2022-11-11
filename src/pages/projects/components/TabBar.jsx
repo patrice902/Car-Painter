@@ -10,7 +10,7 @@ const tabURLs = ["mine", "shared", "favorite"];
 
 export const TabBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
   const history = useHistory();
-  const overMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const sharedSchemeList = useSelector(
     (state) => state.schemeReducer.sharedList
@@ -45,11 +45,11 @@ export const TabBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
 
   return (
     <Box
-      width={overMobile ? "250px" : "100%"}
+      width={isDesktop ? "250px" : "100%"}
       display="flex"
-      flexDirection={overMobile ? "column" : "row"}
+      flexDirection={isDesktop ? "column" : "row"}
     >
-      {overMobile ? (
+      {isDesktop ? (
         <Box display="flex" justifyContent="space-between" p={3}>
           <GreyButton
             onClick={onCreateNew}
@@ -64,9 +64,9 @@ export const TabBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
       ) : null}
       <Box
         display="flex"
-        flexDirection={overMobile ? "column" : "row"}
+        flexDirection={isDesktop ? "column" : "row"}
         width="100%"
-        justifyContent={overMobile ? "start" : "space-between"}
+        justifyContent={isDesktop ? "start" : "space-between"}
       >
         <Tab
           state={tabValue === 0 ? "active" : null}
@@ -77,7 +77,7 @@ export const TabBar = React.memo(({ tabValue, setTabValue, onCreateNew }) => {
         <Tab
           display="flex"
           justifyContent={
-            newInvitationCount || overMobile ? "space-between" : "center"
+            newInvitationCount || isDesktop ? "space-between" : "center"
           }
           state={tabValue === 1 ? "active" : null}
           onClick={() => handleClickTabItem(1)}

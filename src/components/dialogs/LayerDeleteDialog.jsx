@@ -11,21 +11,22 @@ import {
   Checkbox,
   FormControlLabel,
 } from "components/MaterialUI";
+import styled from "styled-components";
 
 export const LayerDeleteDialog = React.memo((props) => {
-  const { text, open, nothingLeft, loading, onCancel, onConfirm } = props;
+  const { text, open, deleteUpload, loading, onCancel, onConfirm } = props;
   const [gonnaDeleteAll, setGonnaDeleteAll] = useState(false);
 
   const handleConfirm = useCallback(() => {
-    onConfirm(gonnaDeleteAll);
-  }, [gonnaDeleteAll, onConfirm]);
+    onConfirm(deleteUpload && gonnaDeleteAll);
+  }, [deleteUpload, gonnaDeleteAll, onConfirm]);
 
   return (
     <Dialog aria-labelledby="confirm-title" open={open} onClose={onCancel}>
       <DialogTitle id="confirm-title">Confirm</DialogTitle>
-      <DialogContent dividers>
+      <CustomDialogContent dividers>
         <Typography variant="body1">{text}</Typography>
-        {nothingLeft ? (
+        {deleteUpload ? (
           <FormControlLabel
             control={
               <Checkbox
@@ -39,7 +40,7 @@ export const LayerDeleteDialog = React.memo((props) => {
         ) : (
           <></>
         )}
-      </DialogContent>
+      </CustomDialogContent>
       <DialogActions>
         <Button onClick={onCancel} color="primary">
           Cancel
@@ -61,5 +62,14 @@ export const LayerDeleteDialog = React.memo((props) => {
     </Dialog>
   );
 });
+
+export const CustomDialogContent = styled(DialogContent)(
+  ({ theme }) => `
+  padding-right: 8px;
+   ${theme.breakpoints.up("sm")} {
+    padding-right: 24px;
+  }
+`
+);
 
 export default LayerDeleteDialog;
