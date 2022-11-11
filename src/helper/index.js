@@ -481,6 +481,20 @@ export const shortenName = (fullName) => {
   return shorten;
 };
 
+export const setScrollPostion = (path, position) => {
+  localStorage.setItem(
+    "scrollPosition",
+    JSON.stringify({
+      path,
+      position,
+    })
+  );
+};
+
+export const clearScrollPosition = () => {
+  localStorage.removeItem("scrollPosition");
+};
+
 export const scrollBackOnProjectList = () => {
   const scrollPositionObjText = localStorage.getItem("scrollPosition");
   if (scrollPositionObjText) {

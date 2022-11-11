@@ -49,6 +49,7 @@ import { setAskingSimPreviewByLatest } from "redux/reducers/downloaderReducer";
 import { useDebouncedCallback } from "use-debounce";
 
 const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
+const BracketKeys = ["[", "]"];
 
 export const withKeyEvent = (Component) =>
   React.memo((props) => {
@@ -225,7 +226,8 @@ export const withKeyEvent = (Component) =>
           if (
             pressedKey === key &&
             pressedEventKey === event.key &&
-            !ArrowKeys.includes(event.key)
+            !ArrowKeys.includes(event.key) &&
+            !BracketKeys.includes(event.key)
           ) {
             return;
           }

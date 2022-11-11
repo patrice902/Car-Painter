@@ -65,7 +65,7 @@ export const FavoriteProjects = React.memo((props) => {
   };
 
   useEffect(() => {
-    scrollBackOnProjectList();
+    setTimeout(scrollBackOnProjectList, 500);
   }, []);
 
   return (

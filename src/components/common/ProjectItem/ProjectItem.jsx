@@ -24,7 +24,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ShowroomNoCar from "assets/showroom_no_car.svg";
 
-import { getDifferenceFromToday, getUserName, reduceString } from "helper";
+import {
+  getDifferenceFromToday,
+  getUserName,
+  reduceString,
+  setScrollPostion,
+} from "helper";
 import { AvatarGroup } from "@material-ui/lab";
 import { setPreviousPath } from "redux/reducers/authReducer";
 import { useDispatch } from "react-redux";
@@ -146,13 +151,7 @@ export const ProjectItem = React.memo((props) => {
       .scrollTop;
 
     dispatch(setPreviousPath(window.location.pathname));
-    localStorage.setItem(
-      "scrollPosition",
-      JSON.stringify({
-        path: window.location.pathname,
-        position: scrollPosition,
-      })
-    );
+    setScrollPostion(window.location.pathname, scrollPosition);
     onOpenScheme(scheme.id, sharedID);
     return false;
   }, [dispatch, onOpenScheme, scheme, sharedID]);
