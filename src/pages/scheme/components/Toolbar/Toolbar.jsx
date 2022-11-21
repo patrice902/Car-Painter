@@ -43,6 +43,7 @@ import {
   Search as SearchIcon,
   Tune as TuneIcon,
   SettingsInputSvideo as SettingsInputSvideoIcon,
+  Layers as LayersIcon,
 } from "@material-ui/icons";
 
 import { focusBoardQuickly, isWindows } from "helper";
@@ -56,6 +57,7 @@ export const Toolbar = React.memo((props) => {
   } = props;
   const { zoom, onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
   const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMd = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
@@ -246,6 +248,15 @@ export const Toolbar = React.memo((props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [askingSimPreviewByLatest]);
 
+  useEffect(() => {
+    if (!isAboveMd) {
+      dispatch(setShowLayers(false));
+    } else {
+      dispatch(setShowLayers(true));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAboveMd]);
+
   return (
     <Wrapper>
       <Box
@@ -253,9 +264,10 @@ export const Toolbar = React.memo((props) => {
         justifyContent="space-between"
         alignContent="center"
         width="100%"
+        position="relative"
       >
         {isDesktop ? (
-          <Box display="flex" alignContent="center">
+          <Box display="flex" alignContent="center" flex={1}>
             <LightTooltip title="Toggle Layers" arrow>
               <IconButton onClick={handleToggleLayers}>
                 {showLayers ? <ChevronsLeft /> : <ChevronsRight />}
@@ -268,48 +280,33 @@ export const Toolbar = React.memo((props) => {
             </LightTooltip>
           </Box>
         ) : (
-          <>
+          <Box display="flex" alignContent="center" flex={1}>
             <IconButton onClick={handleToggleProperties}>
               {currentLayer ? <SettingsInputSvideoIcon /> : <TuneIcon />}
             </IconButton>
-          </>
+            <IconButton onClick={handleToggleLayers}>
+              <LayersIcon />
+            </IconButton>
+          </Box>
         )}
-        <Box display="flex" justifyContent="flex-end" alignContent="center">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignContent="center"
+          flex={2}
+        >
           {/* <Button variant="outlined" onClick={handleToggleViewMode} mx={1}>
             Toggle View Mode
           </Button> */}
 
-          <LightTooltip title="Undo" arrow>
-            <Box display="flex">
-              <IconButton
-                disabled={actionHistoryIndex === -1 || actionHistoryMoving}
-                size="small"
-                mx={1}
-                onClick={() => handleUndoRedo(true)}
-              >
-                <FontAwesomeIcon icon={faUndo} size="sm" />
-              </IconButton>
-            </Box>
-          </LightTooltip>
-
-          <LightTooltip title="Redo" arrow>
-            <Box display="flex">
-              <IconButton
-                disabled={
-                  actionHistoryIndex === actionHistory.length - 1 ||
-                  actionHistoryMoving
-                }
-                size="small"
-                mx={1}
-                onClick={() => handleUndoRedo(false)}
-              >
-                <FontAwesomeIcon icon={faRedo} size="sm" />
-              </IconButton>
-            </Box>
+          <LightTooltip title="Rotate View" position="bottom" arrow>
+            <IconButton px={1} onClick={() => handleChangeBoardRotation(false)}>
+              <Rotate90DegreesCcw />
+            </IconButton>
           </LightTooltip>
 
           {isDesktop ? (
-            <Box mx={4} height="100%" display="flex">
+            <Box ml={2} mr={2} height="100%" display="flex">
               <LightTooltip
                 title={
                   downloaderRunning
@@ -364,11 +361,39 @@ export const Toolbar = React.memo((props) => {
             <></>
           )}
         </Box>
-        <Box display="flex" alignContent="center" justifyContent="flex-end">
-          <LightTooltip title="Rotate View" position="bottom" arrow>
-            <IconButton onClick={() => handleChangeBoardRotation(false)}>
-              <Rotate90DegreesCcw />
-            </IconButton>
+        <Box
+          display="flex"
+          alignContent="center"
+          justifyContent="flex-end"
+          flex={1}
+        >
+          <LightTooltip title="Undo" arrow>
+            <Box display="flex" justifyContent="center" width="40px">
+              <IconButton
+                disabled={actionHistoryIndex === -1 || actionHistoryMoving}
+                size="small"
+                px={2}
+                onClick={() => handleUndoRedo(true)}
+              >
+                <FontAwesomeIcon icon={faUndo} size="sm" />
+              </IconButton>
+            </Box>
+          </LightTooltip>
+
+          <LightTooltip title="Redo" arrow>
+            <Box display="flex" justifyContent="center" width="40px">
+              <IconButton
+                disabled={
+                  actionHistoryIndex === actionHistory.length - 1 ||
+                  actionHistoryMoving
+                }
+                size="small"
+                px={2}
+                onClick={() => handleUndoRedo(false)}
+              >
+                <FontAwesomeIcon icon={faRedo} size="sm" />
+              </IconButton>
+            </Box>
           </LightTooltip>
           {isDesktop ? (
             <LightTooltip title="Toggle Properties" arrow>

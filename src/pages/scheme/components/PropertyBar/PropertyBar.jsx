@@ -62,6 +62,7 @@ export const PropertyBar = React.memo((props) => {
   const dispatch = useDispatch();
 
   const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMd = useMediaQuery((theme) => theme.breakpoints.up("md"));
   const currentLayer = useSelector((state) => state.layerReducer.current);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
 
@@ -70,13 +71,13 @@ export const PropertyBar = React.memo((props) => {
   };
 
   useEffect(() => {
-    if (!isDesktop) {
+    if (!isAboveMd) {
       dispatch(setShowProperties(false));
     } else {
       dispatch(setShowProperties(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDesktop]);
+  }, [isAboveMd]);
 
   return (
     <Wrapper>
@@ -97,7 +98,7 @@ export const PropertyBar = React.memo((props) => {
 
       <Box
         overflow="auto"
-        py={5}
+        py={isDesktop ? 5 : 1}
         px={2}
         height="100%"
         width="100%"

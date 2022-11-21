@@ -289,19 +289,15 @@ const Scheme = React.memo((props) => {
             display="flex"
             justifyContent="space-between"
           >
-            {isDesktop ? (
-              <SideBar
-                dialog={dialog}
-                setDialog={setDialog}
-                editable={editable}
-                hoveredLayerJSON={hoveredJSON}
-                stageRef={stageRef}
-                onBack={handleGoBack}
-                onChangeHoverJSONItem={setHoveredJSONItem}
-              />
-            ) : (
-              <></>
-            )}
+            <SideBar
+              dialog={dialog}
+              setDialog={setDialog}
+              editable={editable}
+              hoveredLayerJSON={hoveredJSON}
+              stageRef={stageRef}
+              onBack={handleGoBack}
+              onChangeHoverJSONItem={setHoveredJSONItem}
+            />
             <Box
               bgcolor="#282828"
               overflow="hidden"
