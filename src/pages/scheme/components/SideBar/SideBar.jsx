@@ -4,13 +4,22 @@ import { colorValidator, focusBoardQuickly } from "helper";
 import { FinishOptions, LayerTypes, DialogTypes } from "constant";
 import { EnglishLang } from "constant/language";
 
-import { Box, Typography, Grid, Select, MenuItem } from "@material-ui/core";
+import {
+  Box,
+  Typography,
+  Grid,
+  Select,
+  MenuItem,
+  useMediaQuery,
+  IconButton,
+} from "@material-ui/core";
 import {
   faFont,
   faFolderOpen,
   faShapes,
   faCar,
 } from "@fortawesome/free-solid-svg-icons";
+import { BsChevronDoubleDown } from "react-icons/bs";
 import LogoIcon from "assets/insert-logo.svg";
 import { ColorPickerInput } from "components/common";
 import { TitleBar, PartGroup, DrawerBar } from "./components";
@@ -23,24 +32,20 @@ import {
 } from "./SideBar.style";
 
 import { updateScheme } from "redux/reducers/schemeReducer";
-import { setShowProperties } from "redux/reducers/boardReducer";
+import { setShowLayers, setShowProperties } from "redux/reducers/boardReducer";
 
-export const SideBar = React.memo((props) => {
+const LayersBar = React.memo((props) => {
   const {
-    dialog,
     setDialog,
     editable,
-    stageRef,
     hoveredLayerJSON,
-    onBack,
     onChangeHoverJSONItem,
   } = props;
-
   const dispatch = useDispatch();
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const currentScheme = useSelector((state) => state.schemeReducer.current);
   const layerList = useSelector((state) => state.layerReducer.list);
-  const showLayers = useSelector((state) => state.boardReducer.showLayers);
   const currentCarMake = useSelector((state) => state.carMakeReducer.current);
 
   const baseColor = useMemo(
@@ -134,6 +139,215 @@ export const SideBar = React.memo((props) => {
   ]);
 
   return (
+    <LayerWrapper width="100%" p={isDesktop ? "0 12px 0 0" : "8px"}>
+      <PartGroup
+        title={currentCarMake ? currentCarMake.name : ""}
+        layerList={layerList.filter(
+          (item) => item.layer_type === LayerTypes.CAR
+        )}
+        disabled={!editable}
+        disableLock={true}
+        disableDnd={true}
+        hoveredLayerJSON={hoveredLayerJSON}
+        onChangeHoverJSONItem={onChangeHoverJSONItem}
+        onDoubleClickItem={handleDoubleClickItem}
+      />
+      <PartGroup
+        title="Logos & Text"
+        layerList={layerList.filter(
+          (item) =>
+            item.layer_type === LayerTypes.LOGO ||
+            item.layer_type === LayerTypes.TEXT ||
+            item.layer_type === LayerTypes.UPLOAD
+        )}
+        disabled={!editable}
+        hoveredLayerJSON={hoveredLayerJSON}
+        actions={[
+          {
+            icon: <CustomFontAwesomeIcon icon={faFolderOpen} />,
+            title: EnglishLang.INSERT_MY_LOGO,
+            onClick: showUploadDialog,
+          },
+          {
+            icon: (
+              <img
+                src={LogoIcon}
+                alt="logo"
+                width={30}
+                style={{ marginLeft: "-3px", marginRight: "8px" }}
+              />
+            ),
+            title: EnglishLang.INSERT_LOGO,
+            onClick: showLogoDialog,
+          },
+          {
+            icon: <CustomFontAwesomeIcon icon={faFont} />,
+            title: EnglishLang.INSERT_TEXT,
+            onClick: showTextDialog,
+          },
+        ]}
+        onChangeHoverJSONItem={onChangeHoverJSONItem}
+        onDoubleClickItem={handleDoubleClickItem}
+      />
+      <PartGroup
+        title="Shapes"
+        layerList={layerList.filter(
+          (item) => item.layer_type === LayerTypes.SHAPE
+        )}
+        disabled={!editable}
+        hoveredLayerJSON={hoveredLayerJSON}
+        onChangeHoverJSONItem={onChangeHoverJSONItem}
+        onDoubleClickItem={handleDoubleClickItem}
+      />
+      <PartGroup
+        title="Graphics"
+        layerList={layerList.filter(
+          (item) => item.layer_type === LayerTypes.OVERLAY
+        )}
+        disabled={!editable}
+        hoveredLayerJSON={hoveredLayerJSON}
+        onChangeHoverJSONItem={onChangeHoverJSONItem}
+        onDoubleClickItem={handleDoubleClickItem}
+        actions={[
+          {
+            icon: faShapes,
+            title: EnglishLang.INSERT_GRAPHICS,
+            onClick: showShapeDialog,
+          },
+        ]}
+      />
+      <PartGroup
+        title="Base Paint"
+        layerList={layerList.filter(
+          (item) => item.layer_type === LayerTypes.BASE
+        )}
+        disabled={!editable}
+        disableLock={true}
+        hoveredLayerJSON={hoveredLayerJSON}
+        onChangeHoverJSONItem={onChangeHoverJSONItem}
+        onDoubleClickItem={handleDoubleClickItem}
+        actions={[
+          {
+            icon: faCar,
+            title: EnglishLang.INSERT_BASEPAINT,
+            onClick: showBaseDialog,
+          },
+        ]}
+        extraChildren={
+          <>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              mt={2}
+            >
+              <ColorPickerInput
+                separateValues={true}
+                valuePicker={pickerValue}
+                value={colorInput}
+                disabled={!editable}
+                fullWidth={false}
+                onChange={handleChangeBasePaintColor}
+                onInputChange={handleChangeBasePaintColorInput}
+              />
+              {colorDirty && colorValidator(colorInput, false) ? (
+                <ColorApplyButton
+                  onClick={handleApplyBasePaintColor}
+                  variant="outlined"
+                >
+                  Apply
+                </ColorApplyButton>
+              ) : !colorValidator(colorInput, false) ? (
+                <Typography color="secondary" variant="body2">
+                  Invalid Color
+                </Typography>
+              ) : (
+                <></>
+              )}
+            </Box>
+            {!currentScheme.hide_spec && currentCarMake.car_type !== "Misc" && (
+              <Grid container spacing={2} component={Box} mt={2}>
+                <Grid item xs={6}>
+                  <Box display="flex" alignItems="center" height="100%">
+                    <Typography variant="body1" color="textSecondary" mr={2}>
+                      Finish
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={6}>
+                  <Select
+                    name="layer_data.finish"
+                    variant="outlined"
+                    value={currentScheme.finish || FinishOptions[0].value}
+                    disabled={!editable}
+                    onChange={(event) =>
+                      handleChangeFinishColor(event.target.value)
+                    }
+                    onClose={focusBoardQuickly}
+                    fullWidth
+                  >
+                    {FinishOptions.map((finishItem, index) => (
+                      <MenuItem value={finishItem.value} key={index}>
+                        {finishItem.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+              </Grid>
+            )}
+          </>
+        }
+      />
+    </LayerWrapper>
+  );
+});
+
+export const SideBar = React.memo((props) => {
+  const { dialog, setDialog, editable, stageRef, onBack } = props;
+  const dispatch = useDispatch();
+
+  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const showLayers = useSelector((state) => state.boardReducer.showLayers);
+
+  const hideLayersBar = useCallback(() => {
+    dispatch(setShowLayers(false));
+  }, [dispatch]);
+
+  if (!isDesktop) {
+    return (
+      <>
+        {showLayers ? (
+          <Box
+            position="absolute"
+            display="flex"
+            overflow="visible"
+            width="100%"
+            height="300px"
+            bottom={0}
+            zIndex={1202}
+            flexDirection="column"
+            bgcolor="#666"
+          >
+            <IconButton
+              style={{
+                width: "100%",
+                borderRadius: "0px",
+                background: "black",
+              }}
+              onClick={hideLayersBar}
+            >
+              <BsChevronDoubleDown />
+            </IconButton>
+            <LayersBar {...props} />
+          </Box>
+        ) : (
+          <></>
+        )}
+      </>
+    );
+  }
+
+  return (
     <Box
       display="flex"
       flexDirection="column"
@@ -146,183 +360,17 @@ export const SideBar = React.memo((props) => {
         {showLayers ? <TitleBar editable={editable} onBack={onBack} /> : <></>}
       </TitleWrapper>
       <Wrapper display="flex">
-        <DrawerBar
-          dialog={dialog}
-          setDialog={setDialog}
-          stageRef={stageRef}
-          editable={editable}
-        />
-        {showLayers ? (
-          <LayerWrapper width="100%" pr={3}>
-            <PartGroup
-              title={currentCarMake ? currentCarMake.name : ""}
-              layerList={layerList.filter(
-                (item) => item.layer_type === LayerTypes.CAR
-              )}
-              disabled={!editable}
-              disableLock={true}
-              disableDnd={true}
-              hoveredLayerJSON={hoveredLayerJSON}
-              onChangeHoverJSONItem={onChangeHoverJSONItem}
-              onDoubleClickItem={handleDoubleClickItem}
-            />
-            <PartGroup
-              title="Logos & Text"
-              layerList={layerList.filter(
-                (item) =>
-                  item.layer_type === LayerTypes.LOGO ||
-                  item.layer_type === LayerTypes.TEXT ||
-                  item.layer_type === LayerTypes.UPLOAD
-              )}
-              disabled={!editable}
-              hoveredLayerJSON={hoveredLayerJSON}
-              actions={[
-                {
-                  icon: <CustomFontAwesomeIcon icon={faFolderOpen} />,
-                  title: EnglishLang.INSERT_MY_LOGO,
-                  onClick: showUploadDialog,
-                },
-                {
-                  icon: (
-                    <img
-                      src={LogoIcon}
-                      alt="logo"
-                      width={30}
-                      style={{ marginLeft: "-3px", marginRight: "8px" }}
-                    />
-                  ),
-                  title: EnglishLang.INSERT_LOGO,
-                  onClick: showLogoDialog,
-                },
-                {
-                  icon: <CustomFontAwesomeIcon icon={faFont} />,
-                  title: EnglishLang.INSERT_TEXT,
-                  onClick: showTextDialog,
-                },
-              ]}
-              onChangeHoverJSONItem={onChangeHoverJSONItem}
-              onDoubleClickItem={handleDoubleClickItem}
-            />
-            <PartGroup
-              title="Shapes"
-              layerList={layerList.filter(
-                (item) => item.layer_type === LayerTypes.SHAPE
-              )}
-              disabled={!editable}
-              hoveredLayerJSON={hoveredLayerJSON}
-              onChangeHoverJSONItem={onChangeHoverJSONItem}
-              onDoubleClickItem={handleDoubleClickItem}
-            />
-            <PartGroup
-              title="Graphics"
-              layerList={layerList.filter(
-                (item) => item.layer_type === LayerTypes.OVERLAY
-              )}
-              disabled={!editable}
-              hoveredLayerJSON={hoveredLayerJSON}
-              onChangeHoverJSONItem={onChangeHoverJSONItem}
-              onDoubleClickItem={handleDoubleClickItem}
-              actions={[
-                {
-                  icon: faShapes,
-                  title: EnglishLang.INSERT_GRAPHICS,
-                  onClick: showShapeDialog,
-                },
-              ]}
-            />
-            <PartGroup
-              title="Base Paint"
-              layerList={layerList.filter(
-                (item) => item.layer_type === LayerTypes.BASE
-              )}
-              disabled={!editable}
-              disableLock={true}
-              hoveredLayerJSON={hoveredLayerJSON}
-              onChangeHoverJSONItem={onChangeHoverJSONItem}
-              onDoubleClickItem={handleDoubleClickItem}
-              actions={[
-                {
-                  icon: faCar,
-                  title: EnglishLang.INSERT_BASEPAINT,
-                  onClick: showBaseDialog,
-                },
-              ]}
-              extraChildren={
-                <>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    mt={2}
-                  >
-                    <ColorPickerInput
-                      separateValues={true}
-                      valuePicker={pickerValue}
-                      value={colorInput}
-                      disabled={!editable}
-                      fullWidth={false}
-                      onChange={handleChangeBasePaintColor}
-                      onInputChange={handleChangeBasePaintColorInput}
-                    />
-                    {colorDirty && colorValidator(colorInput, false) ? (
-                      <ColorApplyButton
-                        onClick={handleApplyBasePaintColor}
-                        variant="outlined"
-                      >
-                        Apply
-                      </ColorApplyButton>
-                    ) : !colorValidator(colorInput, false) ? (
-                      <Typography color="secondary" variant="body2">
-                        Invalid Color
-                      </Typography>
-                    ) : (
-                      <></>
-                    )}
-                  </Box>
-                  {!currentScheme.hide_spec &&
-                    currentCarMake.car_type !== "Misc" && (
-                      <Grid container spacing={2} component={Box} mt={2}>
-                        <Grid item xs={6}>
-                          <Box display="flex" alignItems="center" height="100%">
-                            <Typography
-                              variant="body1"
-                              color="textSecondary"
-                              mr={2}
-                            >
-                              Finish
-                            </Typography>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Select
-                            name="layer_data.finish"
-                            variant="outlined"
-                            value={
-                              currentScheme.finish || FinishOptions[0].value
-                            }
-                            disabled={!editable}
-                            onChange={(event) =>
-                              handleChangeFinishColor(event.target.value)
-                            }
-                            onClose={focusBoardQuickly}
-                            fullWidth
-                          >
-                            {FinishOptions.map((finishItem, index) => (
-                              <MenuItem value={finishItem.value} key={index}>
-                                {finishItem.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </Grid>
-                      </Grid>
-                    )}
-                </>
-              }
-            />
-          </LayerWrapper>
+        {isDesktop ? (
+          <DrawerBar
+            dialog={dialog}
+            setDialog={setDialog}
+            stageRef={stageRef}
+            editable={editable}
+          />
         ) : (
           <></>
         )}
+        {showLayers ? <LayersBar {...props} /> : <></>}
       </Wrapper>
     </Box>
   );
