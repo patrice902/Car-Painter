@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     }),
     position: "absolute",
     left: "14px",
-    top: "14px",
+    top: "12px",
   },
   expandOpen: {
     transform: "rotate(180deg)",
