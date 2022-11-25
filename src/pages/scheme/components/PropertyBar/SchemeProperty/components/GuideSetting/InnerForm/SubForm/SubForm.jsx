@@ -121,7 +121,6 @@ export const SubForm = React.memo((props) => {
                         value={values[colorKey]}
                         error={Boolean(errors[colorKey])}
                         helperText={errors[colorKey]}
-                        onUpdateField={onSchemeUpdateOnly}
                         onUpdateDB={onSchemeUpdate}
                       />
                     </Box>

@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { LightTooltip } from "components/common";
 import {
+  DefaultSettingsDialog,
   ShortCutsDialog,
   SimPreviewGuideDialog,
   ZoomPopover,
@@ -47,10 +48,13 @@ import {
 } from "@material-ui/icons";
 
 import { focusBoardQuickly, isWindows } from "helper";
+import DefaultSettingsButton from "../SideBar/components/DrawerBar/DefaultSettingsButton";
+import { updateLayer } from "redux/reducers/layerReducer";
 
 export const Toolbar = React.memo((props) => {
   const {
     stageRef,
+    editable,
     retrieveTGAPNGDataUrl,
     requestSpecTGAPNGDataUrl,
     onChangeBoardRotation,
@@ -240,6 +244,38 @@ export const Toolbar = React.memo((props) => {
     setDialog(DialogTypes.SIM_PREVIEW_GUIDE);
   }, []);
 
+  const handleApplySettings = useCallback(
+    (guide_data) => {
+      if (currentLayer) {
+        dispatch(
+          updateLayer({
+            id: currentLayer.id,
+            layer_data: {
+              ...currentLayer.layer_data,
+              color: guide_data.default_shape_color,
+              opacity: guide_data.default_shape_opacity,
+              scolor: guide_data.default_shape_scolor,
+              stroke: guide_data.default_shape_stroke,
+            },
+          })
+        );
+      } else {
+        dispatch(
+          updateScheme({
+            ...currentScheme,
+            guide_data: {
+              ...currentScheme.guide_data,
+              ...guide_data,
+            },
+          })
+        );
+      }
+      setDialog(null);
+      focusBoardQuickly();
+    },
+    [dispatch, currentScheme, currentLayer, setDialog]
+  );
+
   useEffect(() => {
     if (askingSimPreviewByLatest) {
       applySubmitSimPreview(currentScheme.last_number);
@@ -257,6 +293,83 @@ export const Toolbar = React.memo((props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAboveMd]);
 
+  if (!isDesktop) {
+    return (
+      <Wrapper>
+        <Box
+          display="flex"
+          justifyContent="space-around"
+          alignContent="center"
+          width="100%"
+          position="relative"
+        >
+          <IconButton onClick={handleToggleProperties}>
+            {currentLayer ? <SettingsInputSvideoIcon /> : <TuneIcon />}
+          </IconButton>
+          <IconButton onClick={handleToggleLayers}>
+            <LayersIcon />
+          </IconButton>
+          <IconButton px={1} onClick={() => handleChangeBoardRotation(false)}>
+            <Rotate90DegreesCcw />
+          </IconButton>
+          <Box display="flex" justifyContent="center" width="40px">
+            <IconButton
+              disabled={actionHistoryIndex === -1 || actionHistoryMoving}
+              size="small"
+              px={2}
+              onClick={() => handleUndoRedo(true)}
+            >
+              <FontAwesomeIcon icon={faUndo} size="sm" />
+            </IconButton>
+          </Box>
+          <Box display="flex" justifyContent="center" width="40px">
+            <IconButton
+              disabled={
+                actionHistoryIndex === actionHistory.length - 1 ||
+                actionHistoryMoving
+              }
+              size="small"
+              px={2}
+              onClick={() => handleUndoRedo(false)}
+            >
+              <FontAwesomeIcon icon={faRedo} size="sm" />
+            </IconButton>
+          </Box>
+          <DefaultSettingsButton
+            onClick={() =>
+              editable ? setDialog(DialogTypes.DEFAULT_SHAPE_SETTINGS) : null
+            }
+          />
+        </Box>
+
+        <ZoomPopover
+          anchorEl={anchorEl}
+          zoom={zoom}
+          setZoom={handleZoom}
+          onZoomIn={onZoomIn}
+          onZoomOut={onZoomOut}
+          onZoomFit={onZoomFit}
+          onClose={handleCloseZoomPoper}
+        />
+        <ShortCutsDialog
+          open={dialog === DialogTypes.SHORTCUTS}
+          onCancel={handleCloseDialog}
+        />
+        <SimPreviewGuideDialog
+          open={dialog === DialogTypes.SIM_PREVIEW_GUIDE}
+          applying={simPreviewing}
+          onApply={handleSubmitSimPreview}
+          onCancel={handleCloseDialog}
+        />
+        <DefaultSettingsDialog
+          open={dialog === DialogTypes.DEFAULT_SHAPE_SETTINGS}
+          onApply={handleApplySettings}
+          onCancel={handleCloseDialog}
+        />
+      </Wrapper>
+    );
+  }
+
   return (
     <Wrapper>
       <Box
@@ -266,29 +379,19 @@ export const Toolbar = React.memo((props) => {
         width="100%"
         position="relative"
       >
-        {isDesktop ? (
-          <Box display="flex" alignContent="center" flex={1}>
-            <LightTooltip title="Toggle Layers" arrow>
-              <IconButton onClick={handleToggleLayers}>
-                {showLayers ? <ChevronsLeft /> : <ChevronsRight />}
-              </IconButton>
-            </LightTooltip>
-            <LightTooltip title="Shortcuts" arrow>
-              <IconButton onClick={() => setDialog(DialogTypes.SHORTCUTS)}>
-                <img src={ShortcutIcon} width="20px" alt="shortcuts" />
-              </IconButton>
-            </LightTooltip>
-          </Box>
-        ) : (
-          <Box display="flex" alignContent="center" flex={1}>
-            <IconButton onClick={handleToggleProperties}>
-              {currentLayer ? <SettingsInputSvideoIcon /> : <TuneIcon />}
-            </IconButton>
+        <Box display="flex" alignContent="center" flex={1}>
+          <LightTooltip title="Toggle Layers" arrow>
             <IconButton onClick={handleToggleLayers}>
-              <LayersIcon />
+              {showLayers ? <ChevronsLeft /> : <ChevronsRight />}
             </IconButton>
-          </Box>
-        )}
+          </LightTooltip>
+          <LightTooltip title="Shortcuts" arrow>
+            <IconButton onClick={() => setDialog(DialogTypes.SHORTCUTS)}>
+              <img src={ShortcutIcon} width="20px" alt="shortcuts" />
+            </IconButton>
+          </LightTooltip>
+        </Box>
+
         <Box
           display="flex"
           justifyContent="center"
@@ -305,61 +408,53 @@ export const Toolbar = React.memo((props) => {
             </IconButton>
           </LightTooltip>
 
-          {isDesktop ? (
-            <Box ml={2} mr={2} height="100%" display="flex">
-              <LightTooltip
-                title={
-                  downloaderRunning
-                    ? "Open Sim Preview Dialog (Or just run quick Sim Preview Action by HotKey: P)"
-                    : downloaderRunning === false
-                    ? "Trading Paints Downloader is running but you are not in a iRacing session"
-                    : "Trading Paints Downloader is not detected"
-                }
-                arrow
+          <Box ml={2} mr={2} height="100%" display="flex">
+            <LightTooltip
+              title={
+                downloaderRunning
+                  ? "Open Sim Preview Dialog (Or just run quick Sim Preview Action by HotKey: P)"
+                  : downloaderRunning === false
+                  ? "Trading Paints Downloader is running but you are not in a iRacing session"
+                  : "Trading Paints Downloader is not detected"
+              }
+              arrow
+            >
+              <Button
+                variant="default"
+                disabled={!isWindows() || simPreviewing}
+                onClick={handleClickSimPreview}
               >
-                <Button
-                  variant="default"
-                  disabled={!isWindows() || simPreviewing}
-                  onClick={handleClickSimPreview}
-                >
-                  {simPreviewing ? (
-                    <CircularProgress size={20} />
-                  ) : (
-                    <Typography variant="subtitle2">Sim Preview</Typography>
-                  )}
-                </Button>
-              </LightTooltip>
-            </Box>
-          ) : (
-            <></>
-          )}
+                {simPreviewing ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <Typography variant="subtitle2">Sim Preview</Typography>
+                )}
+              </Button>
+            </LightTooltip>
+          </Box>
 
-          {isDesktop ? (
-            <Box display="flex" alignItems="center">
-              <LightTooltip title="Zoom to fit" position="bottom" arrow>
-                <IconButton onClick={handleZoomToFit} size="small">
-                  <SearchIcon />
-                </IconButton>
-              </LightTooltip>
-              <Box width="80px" ml={2}>
-                <Slider
-                  min={0.1}
-                  max={5}
-                  step={0.1}
-                  value={zoom}
-                  onChange={(event, value) => handleZoom(value)}
-                  aria-labelledby="zoom"
-                />
-              </Box>
-              <ZoomButton variant="default" onClick={handleZoomPoperOpen}>
-                <Typography variant="subtitle2">
-                  {(zoom * 100).toFixed(2)} %
-                </Typography>
-              </ZoomButton>
+          <Box display="flex" alignItems="center">
+            <LightTooltip title="Zoom to fit" position="bottom" arrow>
+              <IconButton onClick={handleZoomToFit} size="small">
+                <SearchIcon />
+              </IconButton>
+            </LightTooltip>
+            <Box width="80px" ml={2}>
+              <Slider
+                min={0.1}
+                max={5}
+                step={0.1}
+                value={zoom}
+                onChange={(event, value) => handleZoom(value)}
+                aria-labelledby="zoom"
+              />
             </Box>
-          ) : (
-            <></>
-          )}
+            <ZoomButton variant="default" onClick={handleZoomPoperOpen}>
+              <Typography variant="subtitle2">
+                {(zoom * 100).toFixed(2)} %
+              </Typography>
+            </ZoomButton>
+          </Box>
         </Box>
         <Box
           display="flex"
@@ -395,15 +490,11 @@ export const Toolbar = React.memo((props) => {
               </IconButton>
             </Box>
           </LightTooltip>
-          {isDesktop ? (
-            <LightTooltip title="Toggle Properties" arrow>
-              <IconButton onClick={handleToggleProperties}>
-                {showProperties ? <ChevronsRight /> : <ChevronsLeft />}
-              </IconButton>
-            </LightTooltip>
-          ) : (
-            <></>
-          )}
+          <LightTooltip title="Toggle Properties" arrow>
+            <IconButton onClick={handleToggleProperties}>
+              {showProperties ? <ChevronsRight /> : <ChevronsLeft />}
+            </IconButton>
+          </LightTooltip>
         </Box>
       </Box>
       <ZoomPopover
