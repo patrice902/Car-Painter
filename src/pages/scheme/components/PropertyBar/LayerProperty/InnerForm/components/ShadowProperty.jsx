@@ -109,7 +109,6 @@ export const ShadowProperty = React.memo((props) => {
                     errors.layer_data && errors.layer_data.shadowColor
                   }
                   fieldFunc={colorMapFunc}
-                  onUpdateField={onLayerDataUpdateOnly}
                   onUpdateDB={onLayerDataUpdate}
                 />
               </Grid>

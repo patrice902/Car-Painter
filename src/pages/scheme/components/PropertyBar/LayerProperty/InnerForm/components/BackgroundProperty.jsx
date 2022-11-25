@@ -77,7 +77,6 @@ export const BackgroundProperty = React.memo((props) => {
                       errors.layer_data && errors.layer_data.bgColor
                     )}
                     helperText={errors.layer_data && errors.layer_data.bgColor}
-                    onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>

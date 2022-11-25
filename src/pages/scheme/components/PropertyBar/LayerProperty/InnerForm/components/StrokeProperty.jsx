@@ -84,7 +84,6 @@ export const StrokeProperty = React.memo((props) => {
                       errors.layer_data && errors.layer_data.scolor
                     )}
                     helperText={errors.layer_data && errors.layer_data.scolor}
-                    onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>
