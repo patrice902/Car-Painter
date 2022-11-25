@@ -1,10 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import useInterval from "react-useinterval";
 import { ColorPicker } from "material-ui-color";
 import { Box, TextField, Typography } from "@material-ui/core";
 import { Palette } from "constant";
 import styled from "styled-components";
 import { focusBoard, focusBoardQuickly } from "helper";
+import { useDebouncedCallback } from "use-debounce";
+import { useEffect } from "react";
 
 const CustomColorPicker = styled(ColorPicker)`
   &.ColorPicker-MuiButton-contained {
@@ -30,14 +32,41 @@ export const ColorPickerInput = React.memo((props) => {
     helperText,
     fullWidth = true,
   } = props;
+  const [innerValue, setInnerValue] = useState(value);
+
+  const onChangeDebounced = useDebouncedCallback(
+    (newValue) => onChange(newValue),
+    300
+  );
+
+  const onInputChangeDebounced = useDebouncedCallback(
+    (newValue) => onInputChange(newValue),
+    500
+  );
+
+  const handleChange = useCallback(
+    (newValue) => {
+      setInnerValue(newValue);
+      onChangeDebounced(newValue);
+    },
+    [onChangeDebounced]
+  );
+
+  const handleInputChange = useCallback(
+    (newValue) => {
+      setInnerValue(newValue);
+      onInputChangeDebounced(newValue);
+    },
+    [onInputChangeDebounced]
+  );
 
   const handleInputKeyDown = useCallback(
     (event) => {
       if (event.key === "Enter") {
-        onChange(event.target.value);
+        handleChange(event.target.value);
       }
     },
-    [onChange]
+    [handleChange]
   );
 
   const handleHexInputKeyDown = useCallback((event) => {
@@ -53,10 +82,10 @@ export const ColorPickerInput = React.memo((props) => {
 
   const handleColorChange = useCallback(
     (color) => {
-      onChange(color.error ? "" : color.css.backgroundColor);
+      handleChange(color.error ? "" : color.css.backgroundColor);
       focusBoard();
     },
-    [onChange]
+    [handleChange]
   );
 
   useInterval(() => {
@@ -64,6 +93,10 @@ export const ColorPickerInput = React.memo((props) => {
     if (hexInput && !hexInput.onkeydown)
       hexInput.onkeydown = handleHexInputKeyDown;
   }, [200]);
+
+  useEffect(() => {
+    setInnerValue(value);
+  }, [value]);
 
   return (
     <Box
@@ -83,13 +116,13 @@ export const ColorPickerInput = React.memo((props) => {
           <Box
             width="24px"
             height="24px"
-            bgcolor={value || "white"}
+            bgcolor={innerValue || "white"}
             borderRadius="5px"
             m="4px"
           ></Box>
         ) : (
           <CustomColorPicker
-            value={separateValues ? valuePicker : value || "#"}
+            value={separateValues ? valuePicker : innerValue || "#"}
             onChange={handleColorChange}
             onOpen={focusBoardQuickly}
             palette={Palette}
@@ -99,11 +132,11 @@ export const ColorPickerInput = React.memo((props) => {
         )}
 
         <CustomTextField
-          value={value || ""}
+          value={innerValue || ""}
           placeholder="default"
           disabled={disabled}
           style={{ width: 85, borderBottom: "1px solid gray", padding: 0 }}
-          onChange={(event) => onInputChange(event.target.value)}
+          onChange={(event) => handleInputChange(event.target.value)}
           onKeyDown={handleInputKeyDown}
         />
       </Box>

@@ -337,6 +337,7 @@ const Scheme = React.memo((props) => {
               <ReconnectionBanner show={!schemeSocketConnected} />
               <Toolbar
                 stageRef={stageRef}
+                editable={editable}
                 retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
                 requestSpecTGAPNGDataUrl={requestSpecTGAPNGDataUrl}
                 onChangeBoardRotation={handleChangeBoardRotation}

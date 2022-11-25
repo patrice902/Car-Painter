@@ -104,7 +104,6 @@ export const ColorProperty = React.memo((props) => {
                       errors.layer_data && errors.layer_data.color
                     )}
                     helperText={errors.layer_data && errors.layer_data.color}
-                    onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
                   />
                 </Grid>
