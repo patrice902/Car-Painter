@@ -20,7 +20,7 @@ const initialState = {
     width: 1024,
     height: 1024,
   },
-  isDesktop: true,
+  isAboveMobile: true,
   isDraggable: true,
   showProperties: true,
   showLayers: true,
@@ -110,8 +110,8 @@ export const slice = createSlice({
     setContextMenu: (state, action) => {
       state.contextMenu = action.payload;
     },
-    setIsDesktop: (state, action) => {
-      state.isDesktop = action.payload;
+    setisAboveMobile: (state, action) => {
+      state.isAboveMobile = action.payload;
     },
     setIsDraggalbe: (state, action) => {
       state.isDraggable = action.payload;
@@ -140,7 +140,7 @@ export const {
   setDownloadSpecTGA,
   setSpecTGADataURL,
   setContextMenu,
-  setIsDesktop,
+  setisAboveMobile,
   setIsDraggalbe,
 } = slice.actions;
 

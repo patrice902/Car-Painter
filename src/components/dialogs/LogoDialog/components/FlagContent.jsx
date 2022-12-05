@@ -14,7 +14,7 @@ import {
 export const FlagContent = React.memo((props) => {
   const { step, logos, search, onOpen } = props;
   const [flagLimit, setFlagLimit] = useState(step);
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const filteredFlags = useMemo(
     () =>
@@ -40,7 +40,7 @@ export const FlagContent = React.memo((props) => {
         loader={<Loader />}
         scrollableTarget="flag-dialog-content"
       >
-        <CustomImageList rowHeight={178} cols={isDesktop ? 3 : 1}>
+        <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 1}>
           {filteredFlags.slice(0, flagLimit).map((logo) => (
             <CustomImageListItem
               key={logo.id}

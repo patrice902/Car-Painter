@@ -52,24 +52,32 @@ export const useKonvaImageInit = ({
   const [image, setImage] = useState(null);
   const imageRef = useRef(null);
   const isSVG = useMemo(() => src.toLowerCase().includes(".svg"), [src]);
-  const isDesktop = useSelector((state) => state.boardReducer.isDesktop);
+  const isAboveMobile = useSelector(
+    (state) => state.boardReducer.isAboveMobile
+  );
 
   const applyCaching = useCallback(() => {
     if (
       imageshapeRef &&
       imageshapeRef.current &&
       imageRef &&
-      imageRef.current &&
-      (filterColor || isDesktop)
+      imageRef.current
     ) {
       clearCache(imageshapeRef.current);
-      const pixelRatio = getPixelRatio(imageshapeRef.current, imageRef.current);
-      imageshapeRef.current.cache({
-        pixelRatio: isDesktop ? pixelRatio : Math.min(pixelRatio * 0.3, 0.3),
-        imageSmoothingEnabled: true,
-      });
+      if (filterColor || isAboveMobile) {
+        const pixelRatio = getPixelRatio(
+          imageshapeRef.current,
+          imageRef.current
+        );
+        imageshapeRef.current.cache({
+          pixelRatio: isAboveMobile
+            ? pixelRatio
+            : Math.min(pixelRatio * 0.3, 0.3),
+          imageSmoothingEnabled: true,
+        });
+      }
     }
-  }, [imageshapeRef, imageRef, isDesktop, filterColor]);
+  }, [imageshapeRef, imageRef, isAboveMobile, filterColor]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {

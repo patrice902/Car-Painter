@@ -42,7 +42,7 @@ const LayersBar = React.memo((props) => {
     onChangeHoverJSONItem,
   } = props;
   const dispatch = useDispatch();
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const currentScheme = useSelector((state) => state.schemeReducer.current);
   const layerList = useSelector((state) => state.layerReducer.list);
@@ -139,7 +139,7 @@ const LayersBar = React.memo((props) => {
   ]);
 
   return (
-    <LayerWrapper width="100%" p={isDesktop ? "0 12px 0 0" : "8px"}>
+    <LayerWrapper width="100%" p={isAboveMobile ? "0 12px 0 0" : "8px"}>
       <PartGroup
         title={currentCarMake ? currentCarMake.name : ""}
         layerList={layerList.filter(
@@ -306,14 +306,14 @@ export const SideBar = React.memo((props) => {
   const { dialog, setDialog, editable, stageRef, onBack } = props;
   const dispatch = useDispatch();
 
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const showLayers = useSelector((state) => state.boardReducer.showLayers);
 
   const hideLayersBar = useCallback(() => {
     dispatch(setShowLayers(false));
   }, [dispatch]);
 
-  if (!isDesktop) {
+  if (!isAboveMobile) {
     return (
       <>
         {showLayers ? (
@@ -360,7 +360,7 @@ export const SideBar = React.memo((props) => {
         {showLayers ? <TitleBar editable={editable} onBack={onBack} /> : <></>}
       </TitleWrapper>
       <Wrapper display="flex">
-        {isDesktop ? (
+        {isAboveMobile ? (
           <DrawerBar
             dialog={dialog}
             setDialog={setDialog}

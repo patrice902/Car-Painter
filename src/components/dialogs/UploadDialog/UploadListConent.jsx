@@ -27,7 +27,7 @@ import SchemeService from "services/schemeService";
 export const UploadListContent = React.memo((props) => {
   const step = 40;
   const dispatch = useDispatch();
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const { uploads, search, setSearch, onOpenUpload } = props;
   const user = useSelector((state) => state.authReducer.user);
@@ -147,7 +147,7 @@ export const UploadListContent = React.memo((props) => {
           loader={<Loader />}
           scrollableTarget="upload-dialog-content"
         >
-          <CustomImageList rowHeight={178} cols={isDesktop ? 3 : 2}>
+          <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 2}>
             {filteredUploads.slice(0, limit).map((uploadItem) => (
               <CustomImageListItem
                 key={uploadItem.id}

@@ -60,8 +60,8 @@ export const Toolbar = React.memo((props) => {
     onChangeBoardRotation,
   } = props;
   const { zoom, onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
-  const isAboveMd = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveTablet = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialog, setDialog] = useState(null);
@@ -285,15 +285,15 @@ export const Toolbar = React.memo((props) => {
   }, [askingSimPreviewByLatest]);
 
   useEffect(() => {
-    if (!isAboveMd) {
+    if (!isAboveTablet) {
       dispatch(setShowLayers(false));
     } else {
       dispatch(setShowLayers(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAboveMd]);
+  }, [isAboveTablet]);
 
-  if (!isDesktop) {
+  if (!isAboveMobile) {
     return (
       <Wrapper>
         <Box
@@ -408,30 +408,34 @@ export const Toolbar = React.memo((props) => {
             </IconButton>
           </LightTooltip>
 
-          <Box ml={2} mr={2} height="100%" display="flex">
-            <LightTooltip
-              title={
-                downloaderRunning
-                  ? "Open Sim Preview Dialog (Or just run quick Sim Preview Action by HotKey: P)"
-                  : downloaderRunning === false
-                  ? "Trading Paints Downloader is running but you are not in a iRacing session"
-                  : "Trading Paints Downloader is not detected"
-              }
-              arrow
-            >
-              <Button
-                variant="default"
-                disabled={!isWindows() || simPreviewing}
-                onClick={handleClickSimPreview}
+          {isAboveTablet ? (
+            <Box ml={2} mr={2} height="100%" display="flex">
+              <LightTooltip
+                title={
+                  downloaderRunning
+                    ? "Open Sim Preview Dialog (Or just run quick Sim Preview Action by HotKey: P)"
+                    : downloaderRunning === false
+                    ? "Trading Paints Downloader is running but you are not in a iRacing session"
+                    : "Trading Paints Downloader is not detected"
+                }
+                arrow
               >
-                {simPreviewing ? (
-                  <CircularProgress size={20} />
-                ) : (
-                  <Typography variant="subtitle2">Sim Preview</Typography>
-                )}
-              </Button>
-            </LightTooltip>
-          </Box>
+                <Button
+                  variant="default"
+                  disabled={!isWindows() || simPreviewing}
+                  onClick={handleClickSimPreview}
+                >
+                  {simPreviewing ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <Typography variant="subtitle2">Sim Preview</Typography>
+                  )}
+                </Button>
+              </LightTooltip>
+            </Box>
+          ) : (
+            <></>
+          )}
 
           <Box display="flex" alignItems="center">
             <LightTooltip title="Zoom to fit" position="bottom" arrow>
