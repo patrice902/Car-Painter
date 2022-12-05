@@ -56,14 +56,15 @@ export const ProjectItem = React.memo((props) => {
   const [actionMenuEl, setActionMenuEl] = useState(null);
   const [deleteMessage, setDeleteMessage] = useState(false);
   const [favoriteInPrgoress, setFavoriteInPrgoress] = useState(false);
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const showActionMenu = useMemo(
-    () => (onCloneProject || onDelete || onAccept) && (!isDesktop || hovered),
-    [onCloneProject, onDelete, onAccept, isDesktop, hovered]
+    () =>
+      (onCloneProject || onDelete || onAccept) && (!isAboveMobile || hovered),
+    [onCloneProject, onDelete, onAccept, isAboveMobile, hovered]
   );
   const showFavoriteButton = useMemo(
-    () => !isDesktop || hovered || isFavorite,
-    [hovered, isDesktop, isFavorite]
+    () => !isAboveMobile || hovered || isFavorite,
+    [hovered, isAboveMobile, isFavorite]
   );
 
   const unsetDeleteMessage = useCallback(() => setDeleteMessage(null), []);

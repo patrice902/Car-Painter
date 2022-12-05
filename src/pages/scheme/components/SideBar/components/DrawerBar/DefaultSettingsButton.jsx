@@ -11,7 +11,7 @@ import styled from "styled-components";
 export const DefaultSettingsButton = React.memo(({ onClick }) => {
   const currentScheme = useSelector((state) => state.schemeReducer.current);
   const currentLayer = useSelector((state) => state.layerReducer.current);
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const bgColor = useMemo(
     () =>
@@ -46,19 +46,19 @@ export const DefaultSettingsButton = React.memo(({ onClick }) => {
     <Box
       display="flex"
       justifyContent="center"
-      width={isDesktop ? "45px" : "30px"}
-      height={isDesktop ? "45px" : "30px"}
+      width={isAboveMobile ? "45px" : "30px"}
+      height={isAboveMobile ? "45px" : "30px"}
       alignItems="center"
     >
       <LightTooltip title="Default Shape Settings" arrow placement="right">
         <Box
           bgcolor="#FFFFFF"
-          height={isDesktop ? "30px" : "20px"}
+          height={isAboveMobile ? "30px" : "20px"}
           borderRadius="3px"
         >
           <CustomButton
-            width={isDesktop ? "30px" : "20px"}
-            height={isDesktop ? "30px" : "20px"}
+            width={isAboveMobile ? "30px" : "20px"}
+            height={isAboveMobile ? "30px" : "20px"}
             bgcolor={bgColor}
             outline={`${outlineWidth}px solid ${outlineColor}`}
             borderRadius="3px"

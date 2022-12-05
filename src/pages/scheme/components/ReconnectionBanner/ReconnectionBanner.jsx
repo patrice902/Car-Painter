@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, useMediaQuery } from "@material-ui/core";
 
 export const ReconnectionBanner = React.memo(({ show }) => {
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   return (
     <Box
@@ -10,7 +10,7 @@ export const ReconnectionBanner = React.memo(({ show }) => {
       left={0}
       right={0}
       top="10px"
-      width={isDesktop ? "520px" : "100%"}
+      width={isAboveMobile ? "520px" : "100%"}
       display="flex"
       justifyContent="center"
       margin="auto"
@@ -23,7 +23,7 @@ export const ReconnectionBanner = React.memo(({ show }) => {
           border="2px solid navajowhite"
           position="relative"
         >
-          {isDesktop ? (
+          {isAboveMobile ? (
             <>
               <Typography>Paint Builder is trying to reconnect.</Typography>
               <Typography>

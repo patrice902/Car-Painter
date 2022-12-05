@@ -25,7 +25,7 @@ export const BasePaintDialog = React.memo((props) => {
   const classes = useStyles();
   const [limit, setLimit] = useState(step);
   const { legacyMode, basePaints, carMake, onCancel, open, onOpenBase } = props;
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const bases = useMemo(
     () =>
@@ -111,7 +111,11 @@ export const BasePaintDialog = React.memo((props) => {
           loader={<Loader />}
           scrollableTarget="base-paint-dialog-content"
         >
-          <CustomImageList rowHeight={178} cols={isDesktop ? 3 : 1} spacing={8}>
+          <CustomImageList
+            rowHeight={178}
+            cols={isAboveMobile ? 3 : 1}
+            spacing={8}
+          >
             {bases.slice(0, limit).map((item, index) => (
               <CustomImageListItem
                 key={index}

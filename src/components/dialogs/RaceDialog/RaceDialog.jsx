@@ -148,7 +148,7 @@ const RaceForm = React.memo(
     setExpanded,
     ...formProps
   }) => {
-    const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+    const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
     const currentCarMake = useSelector((state) => state.carMakeReducer.current);
     const cars = useSelector((state) => state.carReducer.cars);
 
@@ -191,11 +191,11 @@ const RaceForm = React.memo(
             >
               <Grid
                 container
-                justifyContent={isDesktop ? "center" : "left"}
+                justifyContent={isAboveMobile ? "center" : "left"}
                 alignItems="center"
                 spacing={1}
               >
-                {isDesktop ? (
+                {isAboveMobile ? (
                   <CustomGrid item onClick={() => handleChangeNumber(0)}>
                     <Typography>Sim-Stamped Number</Typography>
                   </CustomGrid>
@@ -213,19 +213,19 @@ const RaceForm = React.memo(
                 </Grid>
                 <CustomGrid
                   item
-                  style={{ display: isDesktop ? "block" : "flex" }}
+                  style={{ display: isAboveMobile ? "block" : "flex" }}
                   onClick={() => handleChangeNumber(1)}
                 >
-                  {isDesktop ? (
+                  {isAboveMobile ? (
                     <Typography>Custom Number</Typography>
                   ) : (
                     <Typography>{number ? "Custom" : "Sim-Stamped"}</Typography>
                   )}
 
                   <Box
-                    position={isDesktop ? "absolute" : "relative"}
-                    left={isDesktop ? "calc(50% + 180px)" : 0}
-                    top={isDesktop ? "6px" : 0}
+                    position={isAboveMobile ? "absolute" : "relative"}
+                    left={isAboveMobile ? "calc(50% + 180px)" : 0}
+                    top={isAboveMobile ? "6px" : 0}
                   >
                     {number ? (
                       <CustomTextField
@@ -260,7 +260,7 @@ const RaceForm = React.memo(
               <AccordionDetails>
                 <Box display="flex" flexDirection="column" width="100%" pt={3}>
                   <Grid container mb={4}>
-                    <Grid item xs={isDesktop ? 6 : 12}>
+                    <Grid item xs={isAboveMobile ? 6 : 12}>
                       <FormControlLabel
                         label="Primary paint"
                         control={
@@ -279,7 +279,7 @@ const RaceForm = React.memo(
                         }
                       />
                     </Grid>
-                    <Grid item xs={isDesktop ? 6 : 12}>
+                    <Grid item xs={isAboveMobile ? 6 : 12}>
                       <FormControlLabel
                         label="Night races"
                         control={

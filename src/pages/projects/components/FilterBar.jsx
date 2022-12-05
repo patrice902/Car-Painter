@@ -30,7 +30,7 @@ export const FilterBar = React.memo(
     setSortBy,
     legacyFilter,
   }) => {
-    const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+    const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
     const [actionMenuEl, setActionMenuEl] = useState(null);
     const [showFilter, setShowFilter] = useState(true);
 
@@ -49,8 +49,8 @@ export const FilterBar = React.memo(
     const toggleFilter = () => setShowFilter((prev) => !prev);
 
     useEffect(() => {
-      setShowFilter(isDesktop);
-    }, [isDesktop]);
+      setShowFilter(isAboveMobile);
+    }, [isAboveMobile]);
 
     const sortByComponent = (
       <CustomFormControl variant="outlined">
@@ -70,7 +70,7 @@ export const FilterBar = React.memo(
 
     return (
       <>
-        {!isDesktop ? (
+        {!isAboveMobile ? (
           <Box
             display="flex"
             justifyContent="end"
@@ -99,7 +99,7 @@ export const FilterBar = React.memo(
               <Box maxWidth="300px">
                 <SearchBox value={search} onChange={handleSearchChange} />
               </Box>
-              {isDesktop ? null : sortByComponent}
+              {isAboveMobile ? null : sortByComponent}
             </Wrapper>
 
             <Wrapper
@@ -108,7 +108,7 @@ export const FilterBar = React.memo(
               alignItems="center"
               my={3}
             >
-              {isDesktop ? sortByComponent : null}
+              {isAboveMobile ? sortByComponent : null}
               <StyledCarMakeAutocomplete
                 label="Filter By Vehicle"
                 value={selectedVehicle}
