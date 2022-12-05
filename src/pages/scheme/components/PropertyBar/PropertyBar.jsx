@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { setShowProperties } from "redux/reducers/boardReducer";
 
 const Wrapper = React.memo(({ children }) => {
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const showProperties = useSelector(
     (state) => state.boardReducer.showProperties
   );
@@ -18,7 +18,7 @@ const Wrapper = React.memo(({ children }) => {
     return <></>;
   }
 
-  if (isDesktop) {
+  if (isAboveMobile) {
     return (
       <Box
         position="relative"
@@ -61,8 +61,8 @@ export const PropertyBar = React.memo((props) => {
   } = props;
   const dispatch = useDispatch();
 
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
-  const isAboveMd = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveTablet = useMediaQuery((theme) => theme.breakpoints.up("md"));
   const currentLayer = useSelector((state) => state.layerReducer.current);
   const currentScheme = useSelector((state) => state.schemeReducer.current);
 
@@ -71,17 +71,17 @@ export const PropertyBar = React.memo((props) => {
   };
 
   useEffect(() => {
-    if (!isAboveMd) {
+    if (!isAboveTablet) {
       dispatch(setShowProperties(false));
     } else {
       dispatch(setShowProperties(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAboveMd]);
+  }, [isAboveTablet]);
 
   return (
     <Wrapper>
-      {!isDesktop ? (
+      {!isAboveMobile ? (
         <IconButton
           style={{
             width: "100%",
@@ -98,7 +98,7 @@ export const PropertyBar = React.memo((props) => {
 
       <Box
         overflow="auto"
-        py={isDesktop ? 5 : 1}
+        py={isAboveMobile ? 5 : 1}
         px={2}
         height="100%"
         width="100%"

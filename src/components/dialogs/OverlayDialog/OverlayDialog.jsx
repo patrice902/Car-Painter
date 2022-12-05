@@ -29,7 +29,7 @@ export const OverlayDialog = React.memo((props) => {
   const [limit, setLimit] = useState(step);
   const [search, setSearch] = useState("");
   const { overlays, onCancel, open, onOpenOverlay } = props;
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const guide_data = useSelector(
     (state) => state.schemeReducer.current.guide_data
@@ -71,7 +71,11 @@ export const OverlayDialog = React.memo((props) => {
             loader={<Loader />}
             scrollableTarget="shape-dialog-content"
           >
-            <CustomImageList rowHeight="auto" cols={isDesktop ? 3 : 1} gap={10}>
+            <CustomImageList
+              rowHeight="auto"
+              cols={isAboveMobile ? 3 : 1}
+              gap={10}
+            >
               {filteredOverlays.slice(0, limit).map((shape) => (
                 <CustomImageListItem
                   key={shape.id}

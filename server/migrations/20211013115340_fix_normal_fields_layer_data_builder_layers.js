@@ -21,7 +21,10 @@ exports.up = async function (knex) {
           let fixedLayerDataString = unescape(
             escape(
               originalData.layer_data
-                .replace("	", "")
+                .replace("\b", " ")
+                .replace("\r", " ")
+                .replace("\t", " ")
+                .replace(/\s+/g, " ")
                 .replace("\\", "")
                 .replace("\n", " ")
                 .replace("", "->")
@@ -29,6 +32,13 @@ exports.up = async function (knex) {
                 .toString("utf-8")
             )
           );
+
+          let weirdMatch = /\d\"\"/.exec(fixedLayerDataString);
+          if (weirdMatch) {
+            fixedLayerDataString =
+              fixedLayerDataString.slice(0, weirdMatch.index + 1) +
+              fixedLayerDataString.slice(weirdMatch.index + 2);
+          }
           console.log(originalData.id, fixedLayerDataString);
           let layer_data = JSON.parse(
             fixedLayerDataString && fixedLayerDataString.length
@@ -69,4 +79,4 @@ exports.up = async function (knex) {
     });
 };
 
-exports.down = function (knex) {};
+exports.down = function (knex) { };

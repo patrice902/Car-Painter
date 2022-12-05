@@ -34,7 +34,7 @@ export const LogoDialog = React.memo((props) => {
   const step = 40;
   const [tabValue, setTabValue] = useState(0);
   const [search, setSearch] = useState("");
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const sortedLogos = useMemo(
     () =>
       _.orderBy(
@@ -63,7 +63,7 @@ export const LogoDialog = React.memo((props) => {
     <Dialog aria-labelledby="logo-title" open={open} onClose={onCancel}>
       <DialogTitle id="logo-title" style={{ padding: "0px 24px" }}>
         <Box display="flex" flexDirection="row" alignItems="center">
-          {isDesktop ? (
+          {isAboveMobile ? (
             <Typography variant="h5" mr={2}>
               Insert:
             </Typography>

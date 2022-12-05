@@ -34,7 +34,7 @@ export const InnerForm = React.memo((props) => {
   const dispatch = useDispatch();
   const loadedFontList = useSelector((state) => state.fontReducer.loadedList);
   const previewBoxRef = useRef();
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const loadFont = useCallback(
     (fontFamily, fontFile) => {
@@ -88,10 +88,10 @@ export const InnerForm = React.memo((props) => {
   useEffect(() => {
     fitty("#text-preview", {
       minSize: 10,
-      maxSize: isDesktop ? 512 : 128,
+      maxSize: isAboveMobile ? 512 : 128,
       multiLine: false,
     });
-  }, [values.text, values.font, isDesktop]);
+  }, [values.text, values.font, isAboveMobile]);
 
   useEffect(() => {
     const adjustFont = (e) => {
@@ -205,7 +205,7 @@ export const InnerForm = React.memo((props) => {
 
       <TextPreviewWrapper
         width="100%"
-        height={isDesktop ? "300px" : "100px"}
+        height={isAboveMobile ? "300px" : "100px"}
         my={2}
         display="flex"
         justifyContent="center"

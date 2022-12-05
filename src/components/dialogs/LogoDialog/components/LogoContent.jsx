@@ -13,7 +13,7 @@ import {
 export const LogoContent = React.memo((props) => {
   const { step, logos, search, onOpen } = props;
   const [logoLimit, setLogoLimit] = useState(step);
-  const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
   const filteredLogos = useMemo(
     () =>
@@ -43,7 +43,7 @@ export const LogoContent = React.memo((props) => {
         loader={<Loader />}
         scrollableTarget="logo-dialog-content"
       >
-        <CustomImageList rowHeight="auto" cols={isDesktop ? 3 : 1} gap={10}>
+        <CustomImageList rowHeight="auto" cols={isAboveMobile ? 3 : 1} gap={10}>
           {filteredLogos.slice(0, logoLimit).map((logo) => (
             <CustomImageListItem
               key={logo.id}
