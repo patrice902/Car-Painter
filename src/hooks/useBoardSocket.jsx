@@ -61,6 +61,7 @@ export const useBoardSocket = () => {
     });
 
     SocketClient.on("client-update-layer", (response) => {
+      console.log("client-update-layer: ", response);
       dispatch(mergeLayerListItem(response.data));
     });
 

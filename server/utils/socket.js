@@ -53,6 +53,7 @@ class SocketServer {
   }
 
   async onClientUpdateLayer(socket, requestData) {
+    console.log("client-update-layer: ", socket.room, requestData);
     if (socket.room) {
       socket.broadcast.to(socket.room).emit("client-update-layer", requestData);
       LayerService.updateById(requestData.data.id, requestData.data);
