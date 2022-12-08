@@ -26,6 +26,9 @@ class SocketServer {
       socket.room = room;
       socket.join(room);
     });
+    socket.on("disconnect", () => {
+      console.log("Client Disconnected: ");
+    });
     socket.on("client-create-layer", (data) =>
       this.onClientCreateLayer.bind(this)(socket, data)
     );
