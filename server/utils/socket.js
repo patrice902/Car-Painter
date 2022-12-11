@@ -16,7 +16,7 @@ class SocketServer {
     global.io = this.io;
   }
   initClient(socket) {
-    console.log("New client connected: ", socket.client.id);
+    console.log("New client connected: ", socket.id);
   }
   onConnection(socket) {
     this.initClient(socket);
