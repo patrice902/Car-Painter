@@ -89,10 +89,8 @@ class SchemeController {
       };
       await SchemeService.updateById(schemeID, schemeUpdatePayload);
       scheme = await SchemeService.getById(scheme.id);
-      global.io.sockets.in(schemeID).emit("client-renew-carmake-layers");
-      global.io.sockets
-        .in("general")
-        .emit("client-update-scheme", { data: scheme }); // General Room
+      global.io.in(schemeID).emit("client-renew-carmake-layers");
+      global.io.in("general").emit("client-update-scheme", { data: scheme }); // General Room
       res.json(scheme);
     } catch (err) {
       logger.log("error", err.stack);
@@ -170,8 +168,8 @@ class SchemeController {
       await FileService.deleteFileFromS3(
         `scheme_thumbnails/${req.params.id}.jpg`
       );
-      global.io.sockets.in(req.params.id).emit("client-delete-scheme");
-      global.io.sockets
+      global.io.in(req.params.id).emit("client-delete-scheme");
+      global.io
         .in("general")
         .emit("client-delete-scheme", { data: { id: req.params.id } }); // General Room
       res.json({});
