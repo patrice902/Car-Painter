@@ -22,6 +22,7 @@ app.get("*", (req, res) => {
 });
 
 const server = http.createServer(app);
+
 new SocketServer(server);
 
 const port = config.port;

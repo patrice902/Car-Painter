@@ -9,22 +9,24 @@ class SocketServer {
         origin: "*",
         methods: ["GET", "POST"],
       },
-      perMessageDeflate: {
-        threshold: 32768,
-      },
     });
     this.shapes = [];
     this.io.on("connection", this.onConnection.bind(this));
+    this.io.engine.on("connection_error", this.onConnectinError);
     global.io = this.io;
   }
   initClient(socket) {
-    console.log("New client connected");
+    console.log("New client connected: ", socket.id);
   }
   onConnection(socket) {
     this.initClient(socket);
     socket.on("room", (room) => {
       socket.room = room;
       socket.join(room);
+      console.log(socket.id, "joined", room, "rooms: ", socket.rooms);
+    });
+    socket.on("disconnect", (reason) => {
+      console.log("Client Disconnected: ", socket.id, reason);
     });
     socket.on("client-create-layer", (data) =>
       this.onClientCreateLayer.bind(this)(socket, data)
@@ -52,9 +54,18 @@ class SocketServer {
     );
   }
 
+  onConnectinError(err) {
+    console.log("----Connection Error----------");
+    console.log(err.req); // the request object
+    console.log(err.code); // the error code, for example 1
+    console.log(err.message); // the error message, for example "Session ID unknown"
+    console.log(err.context); // some additional error context
+    console.log("-----------------------------");
+  }
+
   async onClientUpdateLayer(socket, requestData) {
     if (socket.room) {
-      socket.broadcast.to(socket.room).emit("client-update-layer", requestData);
+      socket.to(socket.room).emit("client-update-layer", requestData);
       LayerService.updateById(requestData.data.id, requestData.data);
       const schemeUpdatePayload = {
         date_modified: Math.round(new Date().getTime() / 1000),
@@ -63,7 +74,7 @@ class SocketServer {
         race_updated: 0,
       };
       SchemeService.updateById(socket.room, schemeUpdatePayload);
-      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      this.io.in(socket.room).emit("client-update-scheme", {
         ...requestData,
         data: { id: socket.room, ...schemeUpdatePayload },
       });
@@ -85,7 +96,7 @@ class SocketServer {
         race_updated: 0,
       };
       SchemeService.updateById(socket.room, schemeUpdatePayload);
-      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      this.io.in(socket.room).emit("client-update-scheme", {
         ...requestData,
         data: { id: socket.room, ...schemeUpdatePayload },
       });
@@ -96,7 +107,7 @@ class SocketServer {
 
   async onClientCreateLayer(socket, requestData) {
     if (socket.room) {
-      socket.broadcast.to(socket.room).emit("client-create-layer", requestData);
+      socket.to(socket.room).emit("client-create-layer", requestData);
       const schemeUpdatePayload = {
         date_modified: Math.round(new Date().getTime() / 1000),
         last_modified_by: requestData.userID,
@@ -104,7 +115,7 @@ class SocketServer {
         race_updated: 0,
       };
       SchemeService.updateById(socket.room, schemeUpdatePayload);
-      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      this.io.in(socket.room).emit("client-update-scheme", {
         ...requestData,
         data: { id: socket.room, ...schemeUpdatePayload },
       });
@@ -125,7 +136,7 @@ class SocketServer {
         race_updated: 0,
       };
       SchemeService.updateById(socket.room, schemeUpdatePayload);
-      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      this.io.in(socket.room).emit("client-update-scheme", {
         ...requestData,
         data: { id: socket.room, ...schemeUpdatePayload },
       });
@@ -136,7 +147,7 @@ class SocketServer {
 
   async onClientDeleteLayer(socket, requestData) {
     if (socket.room) {
-      socket.broadcast.to(socket.room).emit("client-delete-layer", requestData);
+      socket.to(socket.room).emit("client-delete-layer", requestData);
       LayerService.deleteById(requestData.data.id);
       const schemeUpdatePayload = {
         date_modified: Math.round(new Date().getTime() / 1000),
@@ -145,7 +156,7 @@ class SocketServer {
         race_updated: 0,
       };
       SchemeService.updateById(socket.room, schemeUpdatePayload);
-      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      this.io.in(socket.room).emit("client-update-scheme", {
         ...requestData,
         data: { id: socket.room, ...schemeUpdatePayload },
       });
@@ -169,7 +180,7 @@ class SocketServer {
         race_updated: 0,
       };
       SchemeService.updateById(socket.room, schemeUpdatePayload);
-      this.io.sockets.in(socket.room).emit("client-update-scheme", {
+      this.io.in(socket.room).emit("client-update-scheme", {
         ...requestData,
         data: { id: socket.room, ...schemeUpdatePayload },
       });
@@ -201,7 +212,7 @@ class SocketServer {
 
   async onClientDeleteScheme(socket, requestData) {
     if (socket.room) {
-      socket.broadcast.to(socket.room).emit("client-delete-scheme");
+      socket.to(socket.room).emit("client-delete-scheme");
       socket.broadcast
         .to("general")
         .emit("client-delete-scheme", { data: { id: socket.room } }); // Broadcast to General room
