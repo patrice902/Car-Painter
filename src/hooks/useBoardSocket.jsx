@@ -61,7 +61,6 @@ export const useBoardSocket = () => {
     });
 
     SocketClient.on("client-update-layer", (response) => {
-      console.log("client-update-layer: ", response);
       dispatch(mergeLayerListItem(response.data));
     });
 
@@ -78,7 +77,6 @@ export const useBoardSocket = () => {
     });
 
     SocketClient.on("client-update-scheme", (response) => {
-      console.log("client-update-scheme: ", response);
       dispatch(updateSchemeListItem(response.data));
       dispatch(setCurrentScheme(response.data));
     });
