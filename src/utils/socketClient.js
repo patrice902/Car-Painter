@@ -5,6 +5,7 @@ class SocketClient {
   static connect = () => {
     this.socket = socketIOClient(config.backendURL, {
       transports: ["websocket"],
+      secure: false,
     });
   };
 
