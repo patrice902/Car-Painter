@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const cors = require("cors");
 const http = require("http");
+const https = require("https");
 const requestLogger = require("./middlewares/requestLogger");
 
 const config = require("./config");
@@ -21,7 +22,17 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
 
-const server = http.createServer(app);
+let server;
+
+if (config.sslKey && config.sslCert) {
+  server = https.createServer(app, {
+    key: config.sslKey,
+    cert: config.sslCert,
+  });
+} else {
+  server = http.createServer(app);
+}
+
 new SocketServer(server);
 
 const port = config.port;
