@@ -1,7 +1,5 @@
 const config = {
   env: process.env.NODE_ENV,
-  sslKey: process.env.SSL_KEY,
-  sslCert: process.env.SSL_CERT,
   assetsURL:
     process.env.REACT_APP_ASSET_URL ||
     (process.env.NODE_ENV !== "development"

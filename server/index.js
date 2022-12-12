@@ -25,6 +25,7 @@ app.get("*", (req, res) => {
 let server;
 
 if (config.sslKey && config.sslCert) {
+  console.log("***Creating https server!***");
   server = https.createServer(app, {
     key: config.sslKey,
     cert: config.sslCert,
