@@ -210,23 +210,24 @@ export const legacyBasePaintAssetURL = (basepaint) => {
 };
 
 export const basePaintAssetURL = (carMake, index) => {
-  return `${config.assetsURL}/templates2048/${carMake.folder_directory.replace(
+  return `${
+    config.assetsURL
+  }/templates2048/${carMake.folder_directory.replaceAll(
     " ",
     "_"
   )}/bases/${index}/`;
 };
 
 export const legacyCarMakeAssetURL = (carMake) => {
-  return `${config.assetsURL}/templates/${carMake.folder_directory.replace(
+  return `${config.assetsURL}/templates/${carMake.folder_directory.replaceAll(
     " ",
     "_"
   )}/`;
 };
 export const carMakeAssetURL = (carMake) => {
-  return `${config.assetsURL}/templates2048/${carMake.folder_directory.replace(
-    " ",
-    "_"
-  )}/`;
+  return `${
+    config.assetsURL
+  }/templates2048/${carMake.folder_directory.replaceAll(" ", "_")}/`;
 };
 
 export const uploadAssetURL = (uploadItem) => {

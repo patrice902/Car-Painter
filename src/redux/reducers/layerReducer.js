@@ -365,7 +365,7 @@ export const createLayersFromBasePaint = (
                 { ...DefaultLayer.layer_data, ...base_item },
                 AllowedLayerTypes.filter((item) =>
                   item.includes("layer_data.")
-                ).map((item) => item.replace("layer_data.", ""))
+                ).map((item) => item.replaceAll("layer_data.", ""))
               ),
               id: basePaintItemOrIndex.id,
               img: base_item.img,
@@ -376,7 +376,7 @@ export const createLayersFromBasePaint = (
                 { ...DefaultLayer.layer_data },
                 AllowedLayerTypes.filter((item) =>
                   item.includes("layer_data.")
-                ).map((item) => item.replace("layer_data.", ""))
+                ).map((item) => item.replaceAll("layer_data.", ""))
               ),
               name: `Base Pattern ${base_item}`,
               basePaintIndex: basePaintItemOrIndex,
@@ -420,7 +420,7 @@ export const createLayerFromOverlay = (schemeID, shape, position) => async (
           DefaultLayer.layer_data,
           AllowedLayerTypes.filter((item) =>
             item.includes("layer_data.")
-          ).map((item) => item.replace("layer_data.", ""))
+          ).map((item) => item.replaceAll("layer_data.", ""))
         ),
         id: shape.id,
         name: shape.name,
@@ -465,7 +465,7 @@ export const createLayerFromLogo = (schemeID, logo, position) => async (
           DefaultLayer.layer_data,
           AllowedLayerTypes.filter((item) =>
             item.includes("layer_data.")
-          ).map((item) => item.replace("layer_data.", ""))
+          ).map((item) => item.replaceAll("layer_data.", ""))
         ),
         id: logo.id,
         name: logo.name,
@@ -503,7 +503,7 @@ export const createLayerFromUpload = (schemeID, upload, position) => async (
           DefaultLayer.layer_data,
           AllowedLayerTypes.filter((item) =>
             item.includes("layer_data.")
-          ).map((item) => item.replace("layer_data.", ""))
+          ).map((item) => item.replaceAll("layer_data.", ""))
         ),
         id: upload.id,
         name: getNameFromUploadFileName(upload.file_name, currentUser),
@@ -540,7 +540,7 @@ export const createTextLayer = (schemeID, textObj, position) => async (
           { ...DefaultLayer.layer_data, ...textObj },
           AllowedLayerTypes.filter((item) =>
             item.includes("layer_data.")
-          ).map((item) => item.replace("layer_data.", ""))
+          ).map((item) => item.replaceAll("layer_data.", ""))
         ),
         name: textObj.text,
         rotation: textObj.rotation - boardRotate,
@@ -608,7 +608,7 @@ export const createShape = (schemeID, newlayer) => async (dispatch) => {
       },
       AllowedLayerTypes.filter((item) =>
         item.includes("layer_data.")
-      ).map((item) => item.replace("layer_data.", ""))
+      ).map((item) => item.replaceAll("layer_data.", ""))
     );
     if (
       [

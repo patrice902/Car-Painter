@@ -45,9 +45,9 @@ exports.up = async function (knex) {
                 nestedSql += "UNION ALL ";
               }
               let fixedLayerDataString = originalData.layer_data
-                .replace("	", "")
-                .replace("\\", "")
-                .replace("\n", " ")
+                .replaceAll("	", "")
+                .replaceAll("\\", "")
+                .replaceAll("\n", " ")
                 .toString("utf-8");
 
               let layer_data = JSON.parse(

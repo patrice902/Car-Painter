@@ -21,14 +21,14 @@ exports.up = async function (knex) {
           let fixedLayerDataString = unescape(
             escape(
               originalData.layer_data
-                .replace("\b", " ")
-                .replace("\r", " ")
-                .replace("\t", " ")
-                .replace(/\s+/g, " ")
-                .replace("\\", "")
-                .replace("\n", " ")
-                .replace("", "->")
-                .replace("", "->")
+                .replaceAll("\b", " ")
+                .replaceAll("\r", " ")
+                .replaceAll("\t", " ")
+                .replaceAll(/\s+/g, " ")
+                .replaceAll("\\", "")
+                .replaceAll("\n", " ")
+                .replaceAll("", "->")
+                .replaceAll("", "->")
                 .toString("utf-8")
             )
           );
@@ -79,4 +79,4 @@ exports.up = async function (knex) {
     });
 };
 
-exports.down = function (knex) { };
+exports.down = function (knex) {};
