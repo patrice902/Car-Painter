@@ -160,7 +160,7 @@ export const useTransform = ({
         transform,
         AllowedLayerTypes.filter((item) =>
           item.includes("layer_data.")
-        ).map((item) => item.replace("layer_data.", ""))
+        ).map((item) => item.replaceAll("layer_data.", ""))
       );
     },
     [AllowedLayerTypes, imageshapeRef, layer, offsetsFromStroke, shapeRef]

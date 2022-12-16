@@ -31,6 +31,4 @@ module.exports = {
   awsRegion: process.env.AWS_REGION,
   bucketURL: process.env.BUCKET_URL,
   storageType: process.env.STORAGE_TYPE || "S3",
-  sslKey: process.env.SSL_KEY,
-  sslCert: process.env.SSL_CERT,
 };

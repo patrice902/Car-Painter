@@ -76,7 +76,7 @@ const LayersBar = React.memo((props) => {
       }
       let base_color = correctedColor;
       if (base_color !== "transparent") {
-        base_color = base_color.replace("#", "");
+        base_color = base_color.replaceAll("#", "");
       }
       dispatch(updateScheme({ id: currentScheme.id, base_color }));
       setColorInput(correctedColor);
@@ -98,7 +98,7 @@ const LayersBar = React.memo((props) => {
   const handleApplyBasePaintColor = useCallback(() => {
     let base_color = colorInput;
     if (base_color !== "transparent") {
-      base_color = base_color.replace("#", "");
+      base_color = base_color.replaceAll("#", "");
     }
     dispatch(updateScheme({ id: currentScheme.id, base_color }));
     setColorDirty(false);

@@ -81,12 +81,12 @@ export const DrawingStatus = {
 export const FinishOptions = [
   {
     label: "Normal",
-    value: "#0000FF",
+    value: "#000000",
     base: "normal",
   },
   {
     label: "Glossy",
-    value: "#0F0F0F",
+    value: "#0F0F00",
     base: "glossy",
   },
   {
@@ -96,17 +96,17 @@ export const FinishOptions = [
   },
   {
     label: "Matte",
-    value: "#1C83B3",
+    value: "#1C8300",
     base: "matte",
   },
   {
     label: "Semi-Metallic",
-    value: "#BB2929",
+    value: "#BB2900",
     base: "semi-metallic",
   },
   {
     label: "Metallic",
-    value: "#FF55FF",
+    value: "#FF5500",
     base: "metallic",
   },
   {

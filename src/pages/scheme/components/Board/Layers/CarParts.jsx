@@ -37,7 +37,7 @@ export const CarParts = React.memo(() => {
       return layer_data.legacy
         ? `${
             config.legacyAssetURL
-          }/templates/${carMake.folder_directory.replace(" ", "_")}/`
+          }/templates/${carMake.folder_directory.replaceAll(" ", "_")}/`
         : (legacyMode
             ? legacyCarMakeAssetURL(carMake)
             : carMakeAssetURL(carMake)) + layer_data.img;
