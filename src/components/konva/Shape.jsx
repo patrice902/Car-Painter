@@ -84,12 +84,11 @@ export const Shape = React.memo(
       onSetTransformingLayer,
     });
 
-    const [
-      ,
+    const {
       handleTransformStart,
       handleTransformEnd,
       handleTransform,
-    ] = useTransform({
+    } = useTransform({
       shapeRef,
       offsetsFromStroke,
       layer,

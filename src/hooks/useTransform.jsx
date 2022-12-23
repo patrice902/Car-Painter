@@ -227,10 +227,10 @@ export const useTransform = ({
     [getTransformChange, layer, onSetTransformingLayer]
   );
 
-  return [
+  return {
     transforming,
     handleTransformStart,
     handleTransformEnd,
     handleTransform,
-  ];
+  };
 };

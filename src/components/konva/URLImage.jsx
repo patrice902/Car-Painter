@@ -94,12 +94,11 @@ export const URLImage = React.memo(
       onDragEnd,
       onCloneMove,
     });
-    const [
-      ,
+    const {
       handleTransformStart,
       handleTransformEnd,
       handleTransform,
-    ] = useTransform({
+    } = useTransform({
       shapeRef,
       layer,
       frameSize,

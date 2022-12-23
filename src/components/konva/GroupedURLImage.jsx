@@ -103,12 +103,11 @@ export const GroupedURLImage = React.memo(
       onCloneMove,
       onSetTransformingLayer,
     });
-    const [
-      ,
+    const {
       handleTransformStart,
       handleTransformEnd,
       handleTransform,
-    ] = useTransform({
+    } = useTransform({
       shapeRef,
       layer,
       imageshapeRef,
