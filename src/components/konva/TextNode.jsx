@@ -59,12 +59,11 @@ export const TextNode = React.memo(
       onSetTransformingLayer,
     });
 
-    const [
-      ,
+    const {
       handleTransformStart,
       handleTransformEnd,
       handleTransform,
-    ] = useTransform({
+    } = useTransform({
       shapeRef,
       layer,
       frameSize,

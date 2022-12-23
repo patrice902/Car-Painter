@@ -31,12 +31,11 @@ import {
   createLayerFromUpload,
   createTextLayer,
   updateLayer,
-  setDrawingStatus,
 } from "redux/reducers/layerReducer";
 import { updateScheme } from "redux/reducers/schemeReducer";
 
 import { getZoomedCenterPosition, focusBoard, focusBoardQuickly } from "helper";
-import { DialogTypes, DrawingStatus, MouseModes } from "constant";
+import { DialogTypes, MouseModes } from "constant";
 
 import {
   BasePaintDialog,
@@ -46,26 +45,17 @@ import {
   TextDialog,
   DefaultSettingsDialog,
 } from "components/dialogs";
-import { LightTooltip } from "components/common";
 import {
-  Wrapper,
-  ToolWrapper,
-  MainItem,
-  ShapeItem,
   CustomFontAwesomeIcon,
-  ShapeWrapper,
   MainSpeedDial,
   MainSpeedDialAction,
   SubSpeedDial,
   SubSpeedDialAction,
   ShapesSpeedDialAction,
-} from "./DrawerBar.style";
-import { DefaultSettingsButton } from "./DefaultSettingsButton";
-import { CustomDrawingItem } from "./DrawerBar.style";
-import { Typography, useMediaQuery } from "@material-ui/core";
+} from "./MobileDrawerBar.style";
 import { SpeedDialIcon } from "@material-ui/lab";
 
-const modes = [
+export const drawModes = [
   {
     value: MouseModes.POLYGON,
     label: "Polygon Mode",
@@ -128,10 +118,9 @@ const modes = [
   },
 ];
 
-export const DrawerBar = React.memo(
+export const MobileDrawerBar = React.memo(
   ({ dialog, setDialog, stageRef, editable }) => {
     const dispatch = useDispatch();
-    const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
 
     const mouseMode = useSelector((state) => state.boardReducer.mouseMode);
     const currentScheme = useSelector((state) => state.schemeReducer.current);
@@ -158,8 +147,8 @@ export const DrawerBar = React.memo(
             <img
               src={BasepaintIcon}
               alt="Base Paint"
-              height={isAboveMobile ? "50px" : "30px"}
-              style={{ margin: isAboveMobile ? "-5px" : "0px" }}
+              height="30px"
+              style={{ margin: "0px" }}
             />
           ),
         },
@@ -170,32 +159,22 @@ export const DrawerBar = React.memo(
             <img
               src={GraphicsIcon}
               alt="Graphics"
-              height={isAboveMobile ? "45px" : "30px"}
-              style={{ margin: isAboveMobile ? "-4px" : "0px" }}
+              height="30px"
+              style={{ margin: "0px" }}
             />
           ),
         },
         {
           value: DialogTypes.LOGO,
           label: "Insert Logo",
-          icon: (
-            <img
-              src={LogoIcon}
-              alt="Logos"
-              height={isAboveMobile ? "40px" : "30px"}
-            />
-          ),
+          icon: <img src={LogoIcon} alt="Logos" height={"30px"} />,
         },
         {
           value: DialogTypes.UPLOAD,
           label: "My Uploads",
           icon: (
             <CustomFontAwesomeIcon
-              style={
-                isAboveMobile
-                  ? { height: "30px", width: "30px" }
-                  : { height: "20px", width: "20px", color: "white" }
-              }
+              style={{ height: "20px", width: "20px", color: "white" }}
               icon={faFolderOpen}
             />
           ),
@@ -205,17 +184,13 @@ export const DrawerBar = React.memo(
           label: "Add Text",
           icon: (
             <CustomFontAwesomeIcon
-              style={
-                isAboveMobile
-                  ? { height: "30px", width: "30px" }
-                  : { height: "20px", width: "20px", color: "white" }
-              }
+              style={{ height: "20px", width: "20px", color: "white" }}
               icon={faFont}
             />
           ),
         },
       ],
-      [isAboveMobile]
+      []
     );
 
     const hideDialog = useCallback(() => {
@@ -375,33 +350,12 @@ export const DrawerBar = React.memo(
       [dispatch, currentScheme, currentLayer, setDialog]
     );
 
-    const handleToggleDrawShapes = useCallback(() => {
-      if (showShapes) {
-        dispatch(setMouseMode(MouseModes.DEFAULT));
-      }
-      setShowShapes((flag) => !flag);
-      if (isAboveMobile) {
-        focusBoardQuickly();
-      }
-    }, [showShapes, dispatch, isAboveMobile]);
-
     const handleCloseDrawShapesMobile = useCallback(
       (e, reason) => {
         setShowShapes(false);
         if (reason === "toggle") {
           dispatch(setMouseMode(MouseModes.DEFAULT));
         }
-      },
-      [dispatch]
-    );
-
-    const handleKeyEventDrawingItem = useCallback(
-      (e) => {
-        if (e.key === "Escape") {
-          dispatch(setMouseMode(MouseModes.DEFAULT));
-          dispatch(setDrawingStatus(DrawingStatus.CLEAR_COMMAND));
-        }
-        focusBoardQuickly();
       },
       [dispatch]
     );
@@ -462,133 +416,64 @@ export const DrawerBar = React.memo(
       </>
     );
 
-    if (!isAboveMobile) {
-      return (
-        <>
-          <MainSpeedDial
-            ariaLabel="Add Layer"
-            icon={<SpeedDialIcon />}
-            onClose={() => setOpenSpeedDial(false)}
-            onOpen={(_, reason) => {
-              if (reason === "toggle") {
-                setOpenSpeedDial(true);
-              }
-            }}
-            open={openSpeedDial}
-            hidden={!editable}
-            direction="left"
-          >
-            <ShapesSpeedDialAction
-              icon={
-                <SubSpeedDial
-                  ariaLabel="Draw Shapes"
-                  icon={
-                    <CustomFontAwesomeIcon
-                      icon={faDrawPolygon}
-                      style={{ fontSize: "20px", color: "white" }}
-                    />
-                  }
-                  onClose={handleCloseDrawShapesMobile}
-                  onOpen={() => setShowShapes(true)}
-                  open={showShapes || mouseMode !== MouseModes.DEFAULT}
-                  hidden={!editable}
-                  direction="down"
-                >
-                  {modes.map((mode) => (
-                    <SubSpeedDialAction
-                      key={mode.value}
-                      icon={mode.icon}
-                      active={mode.value === mouseMode}
-                      tooltipTitle={mode.label}
-                      onClick={() => handleModeChange(mode.value)}
-                    />
-                  ))}
-                </SubSpeedDial>
-              }
-              tooltipTitle="Draw Shapes"
-            />
-            {dialog_modes.map((action) => (
-              <MainSpeedDialAction
-                key={action.label}
-                icon={action.icon}
-                tooltipTitle={action.label}
-                onClick={() => handleOpenDialog(action.value)}
-              />
-            ))}
-          </MainSpeedDial>
-
-          {dialogContents}
-        </>
-      );
-    }
-
     return (
-      <Wrapper
-        height="100%"
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <ToolWrapper>
-          {dialog_modes.map((item) => (
-            <MainItem
-              value={item.value}
-              disabled={!editable}
-              onClick={() => handleOpenDialog(item.value)}
-            >
-              {item.icon}
-              <Typography style={{ fontSize: "10px" }}>{item.label}</Typography>
-            </MainItem>
-          ))}
-          <ShapeItem
-            value={"Draw Shapes"}
-            disabled={!editable}
-            active={showShapes}
-            onClick={handleToggleDrawShapes}
-          >
-            <CustomFontAwesomeIcon
-              icon={faDrawPolygon}
-              style={{ fontSize: "30px" }}
-            />
-            <Typography style={{ fontSize: "10px" }}>Draw Shapes</Typography>
-          </ShapeItem>
-          {showShapes ? (
-            <ShapeWrapper>
-              {modes.map((mode) => (
-                <LightTooltip
-                  key={mode.value}
-                  title={mode.label}
-                  arrow
-                  placement="right"
-                >
-                  <CustomDrawingItem
-                    value={mode.value}
-                    disabled={!editable}
-                    onClick={() => handleModeChange(mode.value)}
-                    onKeyDown={handleKeyEventDrawingItem}
-                    active={mode.value === mouseMode ? "true" : "false"}
-                  >
-                    {mode.icon}
-                  </CustomDrawingItem>
-                </LightTooltip>
-              ))}
-            </ShapeWrapper>
-          ) : (
-            <></>
-          )}
-
-          <DefaultSettingsButton
-            onClick={() =>
-              editable ? setDialog(DialogTypes.DEFAULT_SHAPE_SETTINGS) : null
+      <>
+        <MainSpeedDial
+          ariaLabel="Add Layer"
+          icon={<SpeedDialIcon />}
+          onClose={() => setOpenSpeedDial(false)}
+          onOpen={(_, reason) => {
+            if (reason === "toggle") {
+              setOpenSpeedDial(true);
             }
+          }}
+          open={openSpeedDial}
+          hidden={!editable}
+          direction="left"
+        >
+          <ShapesSpeedDialAction
+            icon={
+              <SubSpeedDial
+                ariaLabel="Draw Shapes"
+                icon={
+                  <CustomFontAwesomeIcon
+                    icon={faDrawPolygon}
+                    style={{ fontSize: "20px", color: "white" }}
+                  />
+                }
+                onClose={handleCloseDrawShapesMobile}
+                onOpen={() => setShowShapes(true)}
+                open={showShapes || mouseMode !== MouseModes.DEFAULT}
+                hidden={!editable}
+                direction="down"
+              >
+                {drawModes.map((mode) => (
+                  <SubSpeedDialAction
+                    key={mode.value}
+                    icon={mode.icon}
+                    active={mode.value === mouseMode}
+                    tooltipTitle={mode.label}
+                    onClick={() => handleModeChange(mode.value)}
+                  />
+                ))}
+              </SubSpeedDial>
+            }
+            tooltipTitle="Draw Shapes"
           />
-        </ToolWrapper>
+          {dialog_modes.map((action) => (
+            <MainSpeedDialAction
+              key={action.label}
+              icon={action.icon}
+              tooltipTitle={action.label}
+              onClick={() => handleOpenDialog(action.value)}
+            />
+          ))}
+        </MainSpeedDial>
 
         {dialogContents}
-      </Wrapper>
+      </>
     );
   }
 );
 
-export default DrawerBar;
+export default MobileDrawerBar;

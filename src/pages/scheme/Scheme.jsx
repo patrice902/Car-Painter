@@ -10,12 +10,14 @@ import { Box, useMediaQuery } from "@material-ui/core";
 
 import { ScreenLoader } from "components/common";
 import {
-  Toolbar,
+  Toolbar as DesktopToolbar,
   Board,
-  SideBar,
-  PropertyBar,
+  LeftBar,
+  MobileLayersBar,
+  PropertyBar as DesktopPropertyBar,
   BoardGuide,
   Header,
+  MobileDrawerBar,
 } from "./components";
 
 import {
@@ -41,7 +43,7 @@ import { MouseModes } from "constant";
 import { focusBoardQuickly, isWindows } from "helper";
 import { useMemo } from "react";
 import { setLoadedStatusAll } from "redux/reducers/layerReducer";
-import { DrawerBar } from "./components/SideBar/components";
+import { MobilePropertyBar, MobileToolbar } from "./components";
 
 const Scheme = React.memo((props) => {
   const {
@@ -115,6 +117,10 @@ const Scheme = React.memo((props) => {
 
   const [showLegacyBanner, setShowLegacyBanner] = useState(false);
   const isInWindows = useMemo(() => isWindows(), []);
+
+  const Toolbar = isAboveMobile ? DesktopToolbar : MobileToolbar;
+  const PropertyBar = isAboveMobile ? DesktopPropertyBar : MobilePropertyBar;
+  const LayersContainer = isAboveMobile ? LeftBar : MobileLayersBar;
 
   const setHoveredJSONItem = useCallback(
     (key, value) => {
@@ -289,7 +295,7 @@ const Scheme = React.memo((props) => {
             display="flex"
             justifyContent="space-between"
           >
-            <SideBar
+            <LayersContainer
               dialog={dialog}
               setDialog={setDialog}
               editable={editable}
@@ -305,7 +311,7 @@ const Scheme = React.memo((props) => {
               position="relative"
             >
               {!isAboveMobile ? (
-                <DrawerBar
+                <MobileDrawerBar
                   dialog={dialog}
                   setDialog={setDialog}
                   stageRef={stageRef}

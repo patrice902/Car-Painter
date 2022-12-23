@@ -11,7 +11,6 @@ import {
   Select,
   MenuItem,
   useMediaQuery,
-  IconButton,
 } from "@material-ui/core";
 import {
   faFont,
@@ -19,22 +18,19 @@ import {
   faShapes,
   faCar,
 } from "@fortawesome/free-solid-svg-icons";
-import { BsChevronDoubleDown } from "react-icons/bs";
 import LogoIcon from "assets/insert-logo.svg";
 import { ColorPickerInput } from "components/common";
-import { TitleBar, PartGroup, DrawerBar } from "./components";
+import { PartGroup } from "./PartGroup";
 import {
   LayerWrapper,
-  TitleWrapper,
-  Wrapper,
   ColorApplyButton,
   CustomFontAwesomeIcon,
-} from "./SideBar.style";
+} from "./LayersBar.style";
 
 import { updateScheme } from "redux/reducers/schemeReducer";
-import { setShowLayers, setShowProperties } from "redux/reducers/boardReducer";
+import { setShowProperties } from "redux/reducers/boardReducer";
 
-const LayersBar = React.memo((props) => {
+export const LayersBar = React.memo((props) => {
   const {
     setDialog,
     editable,
@@ -302,78 +298,4 @@ const LayersBar = React.memo((props) => {
   );
 });
 
-export const SideBar = React.memo((props) => {
-  const { dialog, setDialog, editable, stageRef, onBack } = props;
-  const dispatch = useDispatch();
-
-  const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
-  const showLayers = useSelector((state) => state.boardReducer.showLayers);
-
-  const hideLayersBar = useCallback(() => {
-    dispatch(setShowLayers(false));
-  }, [dispatch]);
-
-  if (!isAboveMobile) {
-    return (
-      <>
-        {showLayers ? (
-          <Box
-            position="absolute"
-            display="flex"
-            overflow="visible"
-            width="100%"
-            height="300px"
-            bottom={0}
-            zIndex={1202}
-            flexDirection="column"
-            bgcolor="#666"
-          >
-            <IconButton
-              style={{
-                width: "100%",
-                borderRadius: "0px",
-                background: "black",
-              }}
-              onClick={hideLayersBar}
-            >
-              <BsChevronDoubleDown />
-            </IconButton>
-            <LayersBar {...props} />
-          </Box>
-        ) : (
-          <></>
-        )}
-      </>
-    );
-  }
-
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      bgcolor="#666666"
-      width={showLayers ? "20%" : "auto"}
-      minWidth={showLayers ? "300px" : "0"}
-      maxWidth="400px"
-    >
-      <TitleWrapper pl={3} pr={1} height="55px">
-        {showLayers ? <TitleBar editable={editable} onBack={onBack} /> : <></>}
-      </TitleWrapper>
-      <Wrapper display="flex">
-        {isAboveMobile ? (
-          <DrawerBar
-            dialog={dialog}
-            setDialog={setDialog}
-            stageRef={stageRef}
-            editable={editable}
-          />
-        ) : (
-          <></>
-        )}
-        {showLayers ? <LayersBar {...props} /> : <></>}
-      </Wrapper>
-    </Box>
-  );
-});
-
-export default SideBar;
+export default LayersBar;
