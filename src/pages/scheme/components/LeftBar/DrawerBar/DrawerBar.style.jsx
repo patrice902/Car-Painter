@@ -2,7 +2,6 @@ import styled from "styled-components/macro";
 
 import { Box, MenuItem } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { SpeedDial, SpeedDialAction } from "@material-ui/lab";
 
 export const Wrapper = styled(Box)`
   background: #666666;

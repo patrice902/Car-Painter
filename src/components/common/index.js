@@ -14,3 +14,4 @@ export { LockButton } from "./LockButton";
 export { NumberModSwitch } from "./NumberModSwitch";
 export { AppHeader } from "./AppHeader";
 export { DefaultSettingsButton } from "./DefaultSettingsButton";
+export { NoRowsOverlay } from "./NoRowsOverlay";

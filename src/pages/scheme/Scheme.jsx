@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import useInterval from "react-useinterval";
@@ -41,7 +47,6 @@ import { getCarRaces } from "redux/reducers/carReducer";
 import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
 import { MouseModes } from "constant";
 import { focusBoardQuickly, isWindows } from "helper";
-import { useMemo } from "react";
 import { setLoadedStatusAll } from "redux/reducers/layerReducer";
 import { MobilePropertyBar, MobileToolbar } from "./components";
 

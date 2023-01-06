@@ -17,11 +17,18 @@ import { withGAPageTracking } from "hooks/withGAPageTracking";
 const renderChildRoutes = (Layout, routes) =>
   routes.map(
     (
-      { path, component: Component, children, guarded, redirectToSignIn },
+      {
+        path,
+        component: Component,
+        children,
+        guarded,
+        redirectToSignIn,
+        adminOnly,
+      },
       index
     ) => {
       const ComponentLayout = withGAPageTracking(
-        guarded ? withAuthGuard(Layout, redirectToSignIn) : Layout
+        guarded ? withAuthGuard(Layout, redirectToSignIn, adminOnly) : Layout
       );
 
       return children ? (
