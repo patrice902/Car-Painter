@@ -8,6 +8,7 @@ const Page500 = async(() => import("pages/auth/Page500"));
 // Main components
 const Scheme = async(() => import("pages/scheme"));
 const Projects = async(() => import("pages/projects"));
+const Admin = async(() => import("pages/admin"));
 
 const authRoutes = {
   id: "Auth",
@@ -78,6 +79,16 @@ const projectRoute = {
   redirectToSignIn: true,
 };
 
+const adminRoute = {
+  id: "admin",
+  path: "/admin",
+  name: "Admin Panel",
+  component: Admin,
+  guarded: true,
+  redirectToSignIn: true,
+  adminOnly: true,
+};
+
 // Routes using the Dashboard layout
 export const mainLayoutRoutes = [
   projectsRoute,
@@ -85,6 +96,7 @@ export const mainLayoutRoutes = [
   sharedProjectRoute,
   favoriteProjectRoute,
   projectRoute,
+  adminRoute,
 ];
 
 // Routes using the Auth layout

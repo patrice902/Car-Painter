@@ -11,6 +11,7 @@ export const ImageWithLoad = React.memo(
     ImageComponent,
     minHeight = "100%",
     minWidth = "100%",
+    height,
     justifyContent = "center",
     alignItems = "start",
     ...props
@@ -22,6 +23,7 @@ export const ImageWithLoad = React.memo(
         position="relative"
         minHeight={minHeight}
         minWidth={minWidth}
+        height={height}
         display="flex"
         justifyContent={justifyContent}
         alignItems={alignItems}

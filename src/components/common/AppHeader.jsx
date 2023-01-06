@@ -17,12 +17,15 @@ import PaintBuilderLogo from "assets/paint-builder-logo.svg";
 import { getUserName } from "helper";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "redux/reducers/authReducer";
+import { useMemo } from "react";
 
 export const AppHeader = React.memo(({ isBoard, children }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.authReducer.user);
+
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const isAdmin = useMemo(() => user.is_admin, [user]);
 
   const handleSignOut = useCallback(() => {
     dispatch(signOut());
@@ -97,6 +100,13 @@ export const AppHeader = React.memo(({ isBoard, children }) => {
             >
               <Box py={2} display="flex" flexDirection="column">
                 <NameItem>{getUserName(user)}</NameItem>
+                {isAdmin ? (
+                  <StyledLink as={Link} to="/admin">
+                    Admin Panel
+                  </StyledLink>
+                ) : (
+                  <></>
+                )}
                 <StyledLink
                   href="https://tradingpaints.com/messages"
                   target="_blank"

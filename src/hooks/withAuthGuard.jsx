@@ -8,7 +8,11 @@ import { ScreenLoader } from "components/common";
 import { setPreviousPath, signInWithCookie } from "redux/reducers/authReducer";
 
 // For routes that can only be accessed by authenticated users
-export const withAuthGuard = (Component, redirectToSignIn = false) =>
+export const withAuthGuard = (
+  Component,
+  redirectToSignIn = false,
+  adminOnly = false
+) =>
   React.memo((props) => {
     const dispatch = useDispatch();
     const auth = useSelector((state) => state.authReducer);
@@ -26,6 +30,9 @@ export const withAuthGuard = (Component, redirectToSignIn = false) =>
           })
         );
       } else {
+        if (adminOnly && !auth.user.is_admin) {
+          history.push("/");
+        }
         if (!auth.user.pro_user) {
           window.location.href = "https://www.tradingpaints.com/page/Builder";
         }
