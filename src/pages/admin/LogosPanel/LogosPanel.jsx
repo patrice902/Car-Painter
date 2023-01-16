@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -19,11 +19,13 @@ import { ImageWithLoad, NoRowsOverlay } from "components/common";
 import config from "config";
 import { useCallback } from "react";
 import { BigTooltip } from "./LogosPanel.style";
+import { AddLogoDialog } from "./AddLogoDialog";
 
 const LogosPanel = () => {
   const dispatch = useDispatch();
   const logoList = useSelector((state) => state.logoReducer.list);
   const loading = useSelector((state) => state.logoReducer.loading);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const handleEditClick = useCallback((id) => {
     console.log("Editing: ", id);
@@ -34,7 +36,7 @@ const LogosPanel = () => {
   }, []);
 
   const handleAddClick = useCallback((id) => {
-    console.log("Adding: ");
+    setAddDialogOpen(true);
   }, []);
 
   const Toolbar = () => {
@@ -55,6 +57,10 @@ const LogosPanel = () => {
         <Button startIcon={<AddIcon />} onClick={handleAddClick}>
           Add Logo
         </Button>
+        <AddLogoDialog
+          open={addDialogOpen}
+          onClose={() => setAddDialogOpen(false)}
+        />
       </Box>
     );
   };

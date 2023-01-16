@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { setMessage } from "./messageReducer";
 import UploadService from "services/uploadService";
-import { v4 as uuidv4 } from "uuid";
+import { modifyFileName } from "helper";
 
 const initialState = {
   list: [],
@@ -86,19 +86,7 @@ export const uploadFiles = (userID, schemeID, files, callback) => async (
     let newNames = {};
     for (let file of files) {
       fileNames.push(file.name);
-
-      let newName = file.name;
-      const firstDotPosition = file.name.indexOf(".");
-      if (firstDotPosition !== -1) {
-        newName =
-          userID +
-          "_" +
-          file.name.slice(0, firstDotPosition) +
-          "." +
-          uuidv4() +
-          file.name.slice(firstDotPosition);
-      }
-      newNames[file.name] = newName;
+      newNames[file.name] = modifyFileName(file, userID);
     }
     formData.append("fileNames", JSON.stringify(fileNames));
     formData.append("newNames", JSON.stringify(newNames));

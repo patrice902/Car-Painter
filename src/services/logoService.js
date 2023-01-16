@@ -13,4 +13,13 @@ export default class LogoService extends BaseAPIService {
   static updateLogo = async (id, payload) => {
     return this.requestWithAuth(`/logo/${id}`, "PUT", payload);
   };
+  static uploadAndCreate = async (formData) => {
+    return this.requestWithAuth(
+      `/logo/upload-and-create`,
+      "POST",
+      formData,
+      0,
+      "multipart/form-data"
+    );
+  };
 }
