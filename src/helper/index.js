@@ -1,6 +1,7 @@
 import config from "config";
 import TGA from "utils/tga";
 import { Browser, LayerTypes, MouseModes } from "constant";
+import { v4 as uuidv4 } from "uuid";
 // import validateColor from "validate-color";
 
 export const getDifferenceFromToday = (past_date) => {
@@ -560,4 +561,18 @@ export const detectBrowser = () => {
   }
 
   return browserName;
+};
+
+export const modifyFileName = (file, userID) => {
+  let newName = file.name;
+  const firstDotPosition = file.name.indexOf(".");
+  const prefix = userID ? userID + "_" : "";
+  newName =
+    prefix +
+    file.name.slice(0, firstDotPosition) +
+    "." +
+    uuidv4() +
+    file.name.slice(firstDotPosition);
+
+  return newName;
 };

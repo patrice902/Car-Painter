@@ -10,6 +10,10 @@ router
   .post(isAuthenticated, LogoController.create);
 
 router
+  .route("/upload-and-create")
+  .post(isAuthenticated, LogoController.uploadAndCreate);
+
+router
   .route("/:id")
   .get(isAuthenticated, LogoController.getByID)
   .put(isAuthenticated, LogoController.update);
