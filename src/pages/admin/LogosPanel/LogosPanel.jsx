@@ -13,31 +13,45 @@ import {
   Add as AddIcon,
 } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getLogoList } from "redux/reducers/logoReducer";
+import { deleteLogo, getLogoList } from "redux/reducers/logoReducer";
 import { Box, Button, IconButton, Typography } from "@material-ui/core";
 import { ImageWithLoad, NoRowsOverlay } from "components/common";
 import config from "config";
 import { useCallback } from "react";
 import { BigTooltip } from "./LogosPanel.style";
 import { AddLogoDialog } from "./AddLogoDialog";
+import { UpdateLogoDialog } from "./UpdateLogoDialog";
+import { ConfirmDialog } from "components/dialogs";
 
 const LogosPanel = () => {
   const dispatch = useDispatch();
   const logoList = useSelector((state) => state.logoReducer.list);
   const loading = useSelector((state) => state.logoReducer.loading);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [logoIDToDelete, setLogoIDToDelete] = useState();
+  const [logoToEdit, setLogoToEdit] = useState();
 
-  const handleEditClick = useCallback((id) => {
-    console.log("Editing: ", id);
+  const handleEditClick = useCallback(
+    (id) => {
+      setLogoToEdit(logoList.find((item) => item.id === id));
+    },
+    [logoList]
+  );
+
+  const handleShowDeleteConfirmation = useCallback((id) => {
+    setLogoIDToDelete(id);
   }, []);
 
-  const handleDeleteClick = useCallback((id) => {
-    console.log("Deleting: ", id);
-  }, []);
+  const handleDeleteClick = useCallback(() => {
+    dispatch(deleteLogo(logoIDToDelete));
+    handleShowDeleteConfirmation();
+  }, [dispatch, logoIDToDelete, handleShowDeleteConfirmation]);
 
-  const handleAddClick = useCallback((id) => {
+  const handleAddClick = useCallback(() => {
     setAddDialogOpen(true);
   }, []);
+
+  const hideDeleteConfirmation = useCallback(() => setLogoIDToDelete(null), []);
 
   const Toolbar = () => {
     return (
@@ -148,7 +162,7 @@ const LogosPanel = () => {
           </IconButton>
           <IconButton
             aria-label="delete"
-            onClick={() => handleDeleteClick(params.id)}
+            onClick={() => handleShowDeleteConfirmation(params.id)}
           >
             <DeleteIcon fontSize="small" />
           </IconButton>
@@ -174,6 +188,21 @@ const LogosPanel = () => {
           Toolbar,
           NoRowsOverlay,
         }}
+      />
+      {logoToEdit ? (
+        <UpdateLogoDialog
+          open
+          data={logoToEdit}
+          onClose={() => setLogoToEdit(undefined)}
+        />
+      ) : (
+        <></>
+      )}
+      <ConfirmDialog
+        text={`Are you sure you want to delete this logo?`}
+        open={!!logoIDToDelete}
+        onCancel={hideDeleteConfirmation}
+        onConfirm={handleDeleteClick}
       />
     </Box>
   );
