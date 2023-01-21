@@ -6,7 +6,7 @@ export const CustomImg = styled.img`
   height: 100%;
   position: relative;
   object-fit: contain;
-  cursor: pointer;
+  cursor: ${(props) => (props.onClick ? "pointer" : "default")};
 `;
 
 export const CustomSkeleton = styled(Skeleton)`

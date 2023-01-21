@@ -16,6 +16,11 @@ router
 router
   .route("/:id")
   .get(isAuthenticated, LogoController.getByID)
-  .put(isAuthenticated, LogoController.update);
+  .put(isAuthenticated, LogoController.update)
+  .delete(isAuthenticated, LogoController.delete);
+
+router
+  .route("/:id/upload-and-update")
+  .put(isAuthenticated, LogoController.uploadAndUpdate);
 
 module.exports = router;
