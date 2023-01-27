@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { setMessage } from "./messageReducer";
 import OverlayService from "services/overlayService";
+import { modifyFileName } from "helper";
 
 const initialState = {
   list: [],
@@ -56,6 +57,79 @@ export const getOverlayList = () => async (dispatch) => {
   try {
     const overlays = await OverlayService.getOverlayList();
     dispatch(setList(overlays));
+  } catch (err) {
+    dispatch(setMessage({ message: err.message }));
+  }
+  dispatch(setLoading(false));
+};
+
+export const uploadAndCreateOverlay = (
+  { name, overlay_file, overlay_thumb, color, stroke_scale, legacy_mode },
+  callback
+) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    let formData = new FormData();
+    formData.append("name", name);
+    formData.append("color", color);
+    formData.append("stroke_scale", stroke_scale);
+    formData.append("legacy_mode", legacy_mode);
+
+    const fileNames = [];
+    fileNames.push(modifyFileName(overlay_file));
+    fileNames.push(modifyFileName(overlay_thumb));
+    formData.append("fileNames", JSON.stringify(fileNames));
+
+    formData.append("overlay_file", overlay_file);
+    formData.append("overlay_thumb", overlay_thumb);
+
+    const overlay = await OverlayService.uploadAndCreate(formData);
+    dispatch(insertToList(overlay));
+    dispatch(
+      setMessage({
+        message: `Create a graphic successfully!`,
+        type: "success",
+      })
+    );
+
+    if (callback) callback();
+  } catch (err) {
+    dispatch(setMessage({ message: err.message }));
+  }
+  dispatch(setLoading(false));
+};
+
+export const uploadAndUpdateOverlay = (
+  id,
+  { name, overlay_file, overlay_thumb, color, stroke_scale, legacy_mode },
+  callback
+) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    let formData = new FormData();
+    formData.append("name", name);
+    formData.append("color", color);
+    formData.append("stroke_scale", stroke_scale);
+    formData.append("legacy_mode", legacy_mode);
+
+    const fileNames = [];
+    fileNames.push(overlay_file ? modifyFileName(overlay_file) : undefined);
+    fileNames.push(overlay_thumb ? modifyFileName(overlay_thumb) : undefined);
+    formData.append("fileNames", JSON.stringify(fileNames));
+
+    if (overlay_file) formData.append("overlay_file", overlay_file);
+    if (overlay_thumb) formData.append("overlay_thumb", overlay_thumb);
+
+    const overlay = await OverlayService.uploadAndUpdate(id, formData);
+    dispatch(updateListItem({ id, ...overlay }));
+    dispatch(
+      setMessage({
+        message: `Update a graphic successfully!`,
+        type: "success",
+      })
+    );
+
+    if (callback) callback();
   } catch (err) {
     dispatch(setMessage({ message: err.message }));
   }

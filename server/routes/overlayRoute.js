@@ -10,8 +10,16 @@ router
   .post(isAuthenticated, OverlayController.create);
 
 router
+  .route("/upload-and-create")
+  .post(isAuthenticated, OverlayController.uploadAndCreate);
+
+router
   .route("/:id")
   .get(isAuthenticated, OverlayController.getByID)
   .put(isAuthenticated, OverlayController.update);
+
+router
+  .route("/:id/upload-and-update")
+  .put(isAuthenticated, OverlayController.uploadAndUpdate);
 
 module.exports = router;

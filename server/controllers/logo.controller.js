@@ -64,7 +64,7 @@ class LogoController {
 
   static async uploadAndCreate(req, res) {
     try {
-      let uploadFiles = LogoService.uploadToS3("logo");
+      let uploadFiles = LogoService.uploadToS3();
       uploadFiles(req, res, async function (err) {
         if (err) {
           console.log(err);
@@ -95,7 +95,7 @@ class LogoController {
 
   static async uploadAndUpdate(req, res) {
     try {
-      let uploadFiles = LogoService.uploadToS3("logo");
+      let uploadFiles = LogoService.uploadToS3();
       uploadFiles(req, res, async function (err) {
         if (err) {
           console.log(err);
