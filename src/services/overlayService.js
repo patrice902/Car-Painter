@@ -13,4 +13,22 @@ export default class OverlayService extends BaseAPIService {
   static updateOverlay = async (id, payload) => {
     return this.requestWithAuth(`/overlay/${id}`, "PUT", payload);
   };
+  static uploadAndCreate = async (formData) => {
+    return this.requestWithAuth(
+      `/overlay/upload-and-create`,
+      "POST",
+      formData,
+      0,
+      "multipart/form-data"
+    );
+  };
+  static uploadAndUpdate = async (id, formData) => {
+    return this.requestWithAuth(
+      `/overlay/${id}/upload-and-update`,
+      "PUT",
+      formData,
+      0,
+      "multipart/form-data"
+    );
+  };
 }

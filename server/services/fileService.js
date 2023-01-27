@@ -4,7 +4,7 @@ const s3 = require("../utils/s3");
 const config = require("../config");
 
 class FileService {
-  // type: "upload", "logo", "thumbnail"
+  // type: "upload", "logo", "overlay", "thumbnail"
   static uploadFiles(type = "upload") {
     let storage = multer.diskStorage({
       destination: function (req, file, cb) {
@@ -14,7 +14,7 @@ class FileService {
       },
       filename: function (req, file, cb) {
         let { userID } = req.body;
-        if (type === "upload" || type === "logo")
+        if (type === "upload" || type === "logo" || type === "overlay")
           cb(null, userID + "_" + file.originalname);
         else cb(null, file.originalname);
       },
@@ -25,7 +25,7 @@ class FileService {
     return upload;
   }
 
-  // type: "upload", "logo", "thumbnail"
+  // type: "upload", "logo", "overlay", "thumbnail"
   static uploadFilesToS3(type = "upload") {
     let filesUploadMulter = multer({
       storage: multerS3({
@@ -36,7 +36,7 @@ class FileService {
           cb(null, file.mimetype);
         },
         key: function (req, file, cb) {
-          if (type === "upload" || type === "logo") {
+          if (type === "upload" || type === "logo" || type === "overlay") {
             let { newNames } = req.body;
             newNames = JSON.parse(newNames);
             cb(null, `${type}s/${newNames[file.originalname]}`);

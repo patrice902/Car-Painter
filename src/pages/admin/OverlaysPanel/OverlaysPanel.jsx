@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -19,11 +19,13 @@ import config from "config";
 import { useCallback } from "react";
 import { BigTooltip } from "./OverlaysPanel.style";
 import { getOverlayList } from "redux/reducers/overlayReducer";
+import { AddOverlayDialog } from "./AddOverlayDialog";
 
 const OverlaysPanel = () => {
   const dispatch = useDispatch();
   const overlayList = useSelector((state) => state.overlayReducer.list);
   const loading = useSelector((state) => state.overlayReducer.loading);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const handleEditClick = useCallback((id) => {
     console.log("Editing: ", id);
@@ -33,8 +35,8 @@ const OverlaysPanel = () => {
     console.log("Deleting: ", id);
   }, []);
 
-  const handleAddClick = useCallback((id) => {
-    console.log("Adding: ");
+  const handleAddClick = useCallback(() => {
+    setAddDialogOpen(true);
   }, []);
 
   const Toolbar = () => {
@@ -55,6 +57,10 @@ const OverlaysPanel = () => {
         <Button startIcon={<AddIcon />} onClick={handleAddClick}>
           Add Graphic
         </Button>
+        <AddOverlayDialog
+          open={addDialogOpen}
+          onClose={() => setAddDialogOpen(false)}
+        />
       </Box>
     );
   };
