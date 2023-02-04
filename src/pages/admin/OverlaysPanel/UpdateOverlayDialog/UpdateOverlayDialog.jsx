@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import {
@@ -10,32 +10,36 @@ import {
 
 import { DropzoneArea } from "material-ui-dropzone";
 
-import { CustomDialogContent } from "./UpdateLogoDialog.style";
+import { CustomDialogContent } from "./UpdateOverlayDialog.style";
 import {
   Box,
   Checkbox,
   FormControlLabel,
   Grid,
   TextField,
+  Typography,
 } from "@material-ui/core";
-import { uploadAndUpdateLogo } from "redux/reducers/logoReducer";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
-import { ImageWithLoad } from "components/common";
+import {
+  ColorPickerInput,
+  ImageWithLoad,
+  SliderInput,
+} from "components/common";
+import { uploadAndUpdateOverlay } from "redux/reducers/overlayReducer";
 import config from "config";
 
-export const UpdateLogoDialog = React.memo((props) => {
+export const UpdateOverlayDialog = React.memo((props) => {
   const { onClose, open, data } = props;
   const dispatch = useDispatch();
 
   const initialValues = useMemo(
     () => ({
       name: data ? data.name : "",
-      source_file: undefined,
-      preview_file: undefined,
-      type: data ? data.type : "0",
-      active: data ? data.active : 1,
-      enable_color: data ? data.enable_color : 0,
+      overlay_file: undefined,
+      overlay_thumb: undefined,
+      color: data ? data.color : "000000",
+      stroke_scale: data ? data.stroke_scale : 1,
+      legacy_mode: data ? data.legacy_mode : 0,
     }),
     [data]
   );
@@ -44,22 +48,24 @@ export const UpdateLogoDialog = React.memo((props) => {
     () =>
       Yup.object().shape({
         name: Yup.string().required(),
+        color: Yup.string().required(),
+        stroke_scale: Yup.number().required().min(1),
       }),
     []
   );
 
   const onApply = useCallback(
     (payload) => {
-      dispatch(uploadAndUpdateLogo(data.id, payload));
+      dispatch(uploadAndUpdateOverlay(data.id, payload));
       onClose();
     },
-    [data, onClose, dispatch]
+    [data.id, dispatch, onClose]
   );
 
   return (
     <>
       <Dialog aria-labelledby="upload-title" open={open} onClose={onClose}>
-        <DialogTitle id="upload-title">Update a Logo</DialogTitle>
+        <DialogTitle id="upload-title">Update a Graphic</DialogTitle>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -70,7 +76,7 @@ export const UpdateLogoDialog = React.memo((props) => {
           onSubmit={onApply}
         >
           {(formProps) => (
-            <UpdateLogoForm onClose={onClose} data={data} {...formProps} />
+            <UpdateOverlayForm onClose={onClose} data={data} {...formProps} />
           )}
         </Formik>
       </Dialog>
@@ -78,44 +84,50 @@ export const UpdateLogoDialog = React.memo((props) => {
   );
 });
 
-const UpdateLogoForm = React.memo(({ onClose, data, ...formProps }) => {
-  const [replaceSource, setReplaceSource] = useState(false);
-  const [replacePreview, setReplacePreview] = useState(false);
+const UpdateOverlayForm = React.memo(({ onClose, data, ...formProps }) => {
+  const [replaceOrigin, setReplaceOrigin] = useState(false);
+  const [replaceThumbnail, setReplaceThumbnail] = useState(false);
 
   const handleUseOriginalSource = useCallback(() => {
-    formProps.setFieldValue("source_file", undefined);
-    setReplaceSource(false);
+    formProps.setFieldValue("overlay_file", undefined);
+    setReplaceOrigin(false);
   }, [formProps]);
 
-  const handleUseOriginalPreview = useCallback(() => {
-    formProps.setFieldValue("preview_file", undefined);
-    setReplacePreview(false);
+  const handleUseOriginalThumbnail = useCallback(() => {
+    formProps.setFieldValue("overlay_thumb", undefined);
+    setReplaceThumbnail(false);
   }, [formProps]);
 
   return (
     <Form onSubmit={formProps.handleSubmit} noValidate>
       <CustomDialogContent dividers>
-        <Grid container spacing={2}>
+        <Grid
+          container
+          spacing={4}
+          component={Box}
+          display="flex"
+          alignItems="center"
+        >
           <Grid item xs={12} sm={6}>
-            {replaceSource ? (
+            {replaceOrigin ? (
               <Box display="flex" flexDirection="column" alignItems="center">
                 <DropzoneArea
                   onChange={(file) =>
                     formProps.setFieldValue(
-                      "source_file",
+                      "overlay_file",
                       file.length ? file[0] : undefined
                     )
                   }
                   value={
-                    formProps.values["source_file"]
-                      ? [formProps.values["source_file"]]
+                    formProps.values["overlay_file"]
+                      ? [formProps.values["overlay_file"]]
                       : []
                   }
                   showPreviewsInDropzone
                   showFileNamesInPreview
                   showFileNames
                   acceptedFiles={["image/*"]}
-                  dropzoneText="Source File"
+                  dropzoneText="Origin File"
                   filesLimit={1}
                 />
                 <Button
@@ -124,13 +136,13 @@ const UpdateLogoForm = React.memo(({ onClose, data, ...formProps }) => {
                   my={2}
                   onClick={handleUseOriginalSource}
                 >
-                  Use Original Source Image
+                  Use Original Image
                 </Button>
               </Box>
             ) : (
               <Box display="flex" flexDirection="column" alignItems="center">
                 <ImageWithLoad
-                  src={`${config.assetsURL}/${data.source_file}`}
+                  src={`${config.assetsURL}/${data.overlay_file}`}
                   alt={data.name}
                   alignItems="center"
                   height={100}
@@ -139,48 +151,48 @@ const UpdateLogoForm = React.memo(({ onClose, data, ...formProps }) => {
                   color="secondary"
                   variant="contained"
                   my={2}
-                  onClick={() => setReplaceSource(true)}
+                  onClick={() => setReplaceOrigin(true)}
                 >
-                  Replace Source Image
+                  Replace Origin Image
                 </Button>
               </Box>
             )}
           </Grid>
           <Grid item xs={12} sm={6}>
-            {replacePreview ? (
+            {replaceThumbnail ? (
               <Box display="flex" flexDirection="column" alignItems="center">
                 <DropzoneArea
                   onChange={(file) =>
                     formProps.setFieldValue(
-                      "preview_file",
+                      "overlay_thumb",
                       file.length ? file[0] : undefined
                     )
                   }
                   value={
-                    formProps.values["preview_file"]
-                      ? [formProps.values["preview_file"]]
+                    formProps.values["overlay_thumb"]
+                      ? [formProps.values["overlay_thumb"]]
                       : []
                   }
                   showPreviewsInDropzone
                   showFileNamesInPreview
                   showFileNames
                   acceptedFiles={["image/*"]}
-                  dropzoneText="Preview File"
+                  dropzoneText="Thumbnail File"
                   filesLimit={1}
                 />
                 <Button
                   color="secondary"
                   variant="contained"
                   my={2}
-                  onClick={handleUseOriginalPreview}
+                  onClick={handleUseOriginalThumbnail}
                 >
-                  Use Original Preview Image
+                  Use Original Thumbnail
                 </Button>
               </Box>
             ) : (
               <Box display="flex" flexDirection="column" alignItems="center">
                 <ImageWithLoad
-                  src={`${config.assetsURL}/${data.preview_file}`}
+                  src={`${config.assetsURL}/${data.overlay_thumb}`}
                   alt={data.name}
                   alignItems="center"
                   height={100}
@@ -189,14 +201,14 @@ const UpdateLogoForm = React.memo(({ onClose, data, ...formProps }) => {
                   color="secondary"
                   variant="contained"
                   my={2}
-                  onClick={() => setReplacePreview(true)}
+                  onClick={() => setReplaceThumbnail(true)}
                 >
-                  Replace Preview Image
+                  Replace Thumbnail Image
                 </Button>
               </Box>
             )}
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12} sm={8}>
             <TextField
               type="text"
               name="name"
@@ -215,52 +227,49 @@ const UpdateLogoForm = React.memo(({ onClose, data, ...formProps }) => {
           <Grid item xs={12} sm={4}>
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={formProps.values.type === "flag"}
-                  onChange={(event) =>
-                    formProps.setFieldValue(
-                      "type",
-                      event.target.checked ? "flag" : "0"
-                    )
-                  }
-                  color="primary"
-                />
+                <Box mt={1}>
+                  <Checkbox
+                    checked={formProps.values.legacy_mode === 1}
+                    onChange={(event) =>
+                      formProps.setFieldValue(
+                        "legacy_mode",
+                        event.target.checked ? 1 : 0
+                      )
+                    }
+                    color="primary"
+                  />
+                </Box>
               }
-              label="Flag"
+              label="Legacy Mode"
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formProps.values.active === 1}
-                  onChange={(event) =>
-                    formProps.setFieldValue(
-                      "active",
-                      event.target.checked ? 1 : 0
-                    )
-                  }
-                  color="primary"
-                />
+          <Grid item xs={12} sm={3}>
+            <Typography variant="body1" color="textSecondary">
+              Color
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <ColorPickerInput
+              value={"#" + (formProps.values.color || "")}
+              onChange={(value) =>
+                formProps.setFieldValue("color", value.replace("#", ""))
               }
-              label="Active"
+              onInputChange={(value) =>
+                formProps.setFieldValue("color", value.replace("#", ""))
+              }
+              error={Boolean(formProps.errors.color)}
+              helperText={formProps.errors.color}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formProps.values.enable_color === 1}
-                  onChange={(event) =>
-                    formProps.setFieldValue(
-                      "enable_color",
-                      event.target.checked ? 1 : 0
-                    )
-                  }
-                  color="primary"
-                />
+          <Grid item xs={12} sm={6}>
+            <SliderInput
+              label="Stroke Scale"
+              min={0}
+              max={10}
+              value={formProps.values.stroke_scale}
+              setValue={(value) =>
+                formProps.setFieldValue("stroke_scale", value)
               }
-              label="Enable Color"
             />
           </Grid>
         </Grid>
@@ -282,4 +291,4 @@ const UpdateLogoForm = React.memo(({ onClose, data, ...formProps }) => {
   );
 });
 
-export default UpdateLogoDialog;
+export default UpdateOverlayDialog;

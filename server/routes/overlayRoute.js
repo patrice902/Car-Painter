@@ -16,7 +16,8 @@ router
 router
   .route("/:id")
   .get(isAuthenticated, OverlayController.getByID)
-  .put(isAuthenticated, OverlayController.update);
+  .put(isAuthenticated, OverlayController.update)
+  .delete(isAuthenticated, OverlayController.delete);
 
 router
   .route("/:id/upload-and-update")

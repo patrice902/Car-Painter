@@ -50,6 +50,18 @@ class OverlayController {
     }
   }
 
+  static async delete(req, res) {
+    try {
+      await OverlayService.deleteById(req.params.id);
+      res.json({});
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
   static async uploadAndCreate(req, res) {
     try {
       let uploadFiles = OverlayService.uploadToS3();

@@ -26,6 +26,12 @@ class OverlayService {
     return overlay;
   }
 
+  static async deleteById(id) {
+    const overlay = await this.getById(id);
+    await overlay.destroy();
+    return true;
+  }
+
   static uploadToS3() {
     let filesUploadMulter = multer({
       storage: multerS3({
