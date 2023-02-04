@@ -18,26 +18,43 @@ import { ImageWithLoad, NoRowsOverlay } from "components/common";
 import config from "config";
 import { useCallback } from "react";
 import { BigTooltip } from "./OverlaysPanel.style";
-import { getOverlayList } from "redux/reducers/overlayReducer";
+import { getOverlayList, deleteOverlay } from "redux/reducers/overlayReducer";
 import { AddOverlayDialog } from "./AddOverlayDialog";
+import { ConfirmDialog } from "components/dialogs";
+import { UpdateOverlayDialog } from "./UpdateOverlayDialog";
 
 const OverlaysPanel = () => {
   const dispatch = useDispatch();
   const overlayList = useSelector((state) => state.overlayReducer.list);
   const loading = useSelector((state) => state.overlayReducer.loading);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [overlayIDToDelete, setOverlayIDToDelete] = useState();
+  const [overlayToEdit, setOverlayToEdit] = useState();
 
-  const handleEditClick = useCallback((id) => {
-    console.log("Editing: ", id);
+  const handleEditClick = useCallback(
+    (id) => {
+      setOverlayToEdit(overlayList.find((item) => item.id === id));
+    },
+    [overlayList]
+  );
+
+  const handleShowDeleteConfirmation = useCallback((id) => {
+    setOverlayIDToDelete(id);
   }, []);
 
-  const handleDeleteClick = useCallback((id) => {
-    console.log("Deleting: ", id);
-  }, []);
+  const handleDeleteClick = useCallback(() => {
+    dispatch(deleteOverlay(overlayIDToDelete));
+    handleShowDeleteConfirmation();
+  }, [dispatch, handleShowDeleteConfirmation, overlayIDToDelete]);
 
   const handleAddClick = useCallback(() => {
     setAddDialogOpen(true);
   }, []);
+
+  const hideDeleteConfirmation = useCallback(
+    () => setOverlayIDToDelete(null),
+    []
+  );
 
   const Toolbar = () => {
     return (
@@ -146,7 +163,7 @@ const OverlaysPanel = () => {
           </IconButton>
           <IconButton
             aria-label="delete"
-            onClick={() => handleDeleteClick(params.id)}
+            onClick={() => setOverlayIDToDelete(params.id)}
           >
             <DeleteIcon fontSize="small" />
           </IconButton>
@@ -172,6 +189,21 @@ const OverlaysPanel = () => {
           Toolbar,
           NoRowsOverlay,
         }}
+      />
+      {overlayToEdit ? (
+        <UpdateOverlayDialog
+          open
+          data={overlayToEdit}
+          onClose={() => setOverlayToEdit(undefined)}
+        />
+      ) : (
+        <></>
+      )}
+      <ConfirmDialog
+        text={`Are you sure you want to delete this overlay?`}
+        open={!!overlayIDToDelete}
+        onCancel={hideDeleteConfirmation}
+        onConfirm={handleDeleteClick}
       />
     </Box>
   );

@@ -35,6 +35,19 @@ export const slice = createSlice({
         state.list = overlayList;
       }
     },
+    deleteListItem: (state, action) => {
+      let overlayList = [...state.list];
+      let foundIndex = overlayList.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      if (foundIndex !== -1) {
+        overlayList.splice(foundIndex, 1);
+        state.list = overlayList;
+      }
+      if (state.current && state.current.id === action.payload.id) {
+        state.current = null;
+      }
+    },
     setCurrent: (state, action) => {
       state.current = action.payload;
     },
@@ -48,6 +61,7 @@ export const {
   insertToList,
   concatList,
   updateListItem,
+  deleteListItem,
 } = slice.actions;
 
 export default slice.reducer;
@@ -125,6 +139,25 @@ export const uploadAndUpdateOverlay = (
     dispatch(
       setMessage({
         message: `Update a graphic successfully!`,
+        type: "success",
+      })
+    );
+
+    if (callback) callback();
+  } catch (err) {
+    dispatch(setMessage({ message: err.message }));
+  }
+  dispatch(setLoading(false));
+};
+
+export const deleteOverlay = (id, callback) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    await OverlayService.deleteOverlay(id);
+    dispatch(deleteListItem({ id }));
+    dispatch(
+      setMessage({
+        message: `Removed a graphic successfully!`,
         type: "success",
       })
     );
