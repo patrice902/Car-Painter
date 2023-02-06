@@ -14,6 +14,7 @@ export const ImageWithLoad = React.memo(
     height,
     justifyContent = "center",
     alignItems = "start",
+    cursorPointer = false,
     ...props
   }) => {
     const [loaded, setLoaded] = useState(false);
@@ -39,6 +40,7 @@ export const ImageWithLoad = React.memo(
           <CustomImg
             src={src}
             {...props}
+            cursorPointer={cursorPointer}
             onClick={onClick}
             onLoad={() => setLoaded(true)}
             onError={(e) => {

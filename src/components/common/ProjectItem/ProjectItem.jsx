@@ -182,6 +182,7 @@ export const ProjectItem = React.memo((props) => {
           fallbackSrc={ShowroomNoCar}
           minHeight="200px"
           alt={scheme.name}
+          cursorPointer
         />
       </a>
       <Box display="flex" justifyContent="space-between">
