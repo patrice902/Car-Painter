@@ -13,23 +13,26 @@ class SocketServer {
     });
 
     this.io.use(async (socket, next) => {
-      const token = JSON.parse(socket.handshake.auth.token);
-      console.log("token: ", token);
-      console.log("token.usr: ", token.usr);
-      if (token && token.usr && token.hash) {
-        try {
-          let user = await UserService.getById(parseInt(token.usr));
-          user = user.toJSON();
-          if (user.password === token.hash) {
-            next();
-          } else {
+      const tokenString = socket.handshake.auth.token;
+      if (!tokenString) {
+        next(new Error("No token"));
+      } else {
+        const token = JSON.parse(tokenString);
+        if (token && token.usr && token.hash) {
+          try {
+            let user = await UserService.getById(parseInt(token.usr));
+            user = user.toJSON();
+            if (user.password === token.hash) {
+              next();
+            } else {
+              next(new Error("Invalid token"));
+            }
+          } catch (_err) {
             next(new Error("Invalid token"));
           }
-        } catch (_err) {
+        } else {
           next(new Error("Invalid token"));
         }
-      } else {
-        next(new Error("Invalid token"));
       }
     });
 
