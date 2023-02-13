@@ -1,31 +1,28 @@
-import React, { useCallback, useState } from "react";
-import { Stage, Layer, Rect, Shape, Group } from "react-konva";
-import { useSelector, ReactReduxContext, Provider } from "react-redux";
-import { useResizeDetector } from "react-resize-detector";
-
-import { MouseModes, ViewModes } from "constant";
-
 import { Box } from "@material-ui/core";
 import { ScreenLoader } from "components/common";
+import { BoardContextMenu } from "components/dialogs";
+import { TransformerComponent } from "components/konva";
+import { MouseModes, ViewModes } from "constant";
+import { useDrawHelper, useZoom } from "hooks";
+import React, { useCallback, useRef, useState } from "react";
+import { Group, Layer, Rect, Shape, Stage } from "react-konva";
+import { Provider, ReactReduxContext, useSelector } from "react-redux";
+import { useResizeDetector } from "react-resize-detector";
+
 import {
-  PaintingGuideTop,
   PaintingGuideCarMask,
   PaintingGuideNumber,
   PaintingGuideSponsor,
+  PaintingGuideTop,
   SpecPaintingGuideCarMask,
 } from "./Guides";
 import {
   BasePaints,
   CarParts,
-  Overlays,
   LogosAndTexts,
+  Overlays,
   Shapes,
 } from "./Layers";
-import { TransformerComponent } from "components/konva";
-
-import { useDrawHelper, useZoom } from "hooks";
-import { BoardContextMenu } from "components/dialogs";
-import { useRef } from "react";
 
 export const Board = React.memo(
   ({

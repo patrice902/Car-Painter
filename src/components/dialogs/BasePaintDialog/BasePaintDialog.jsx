@@ -1,24 +1,24 @@
-import React, { useState, useMemo, useCallback } from "react";
-
+import { ImageWithLoad, Loader } from "components/common";
 import {
   Box,
   Button,
-  Typography,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
   useMediaQuery,
 } from "components/MaterialUI";
 import { basePaintAssetURL, legacyBasePaintAssetURL } from "helper";
-import { ImageWithLoad, Loader } from "components/common";
+import React, { useCallback, useMemo, useState } from "react";
+import { NavLink } from "react-router-dom";
+
 import {
-  CustomInfiniteScroll,
   CustomImageList,
   CustomImageListItem,
+  CustomInfiniteScroll,
   useStyles,
 } from "./BasePaintDialog.style";
-import { NavLink } from "react-router-dom";
 
 export const BasePaintDialog = React.memo((props) => {
   const step = 40;

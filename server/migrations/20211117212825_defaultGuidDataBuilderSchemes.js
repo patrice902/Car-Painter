@@ -17,4 +17,4 @@ exports.up = function (knex) {
     .whereNull("guide_data");
 };
 
-exports.down = function (knex) {};
+exports.down = function () {};

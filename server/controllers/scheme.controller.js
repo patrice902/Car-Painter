@@ -29,7 +29,7 @@ class SchemeController {
       let scheme = await SchemeService.getById(req.params.id);
       scheme = scheme.toJSON();
       res.json({
-        scheme: scheme,
+        scheme,
         carMake: scheme.carMake,
         basePaints: scheme.carMake.bases,
         layers: scheme.layers,

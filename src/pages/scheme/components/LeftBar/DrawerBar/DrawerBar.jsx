@@ -1,51 +1,48 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
 import {
   faDrawPolygon,
-  faFont,
   faFolderOpen,
+  faFont,
 } from "@fortawesome/free-solid-svg-icons";
+import { Typography } from "@material-ui/core";
 import BasepaintIcon from "assets/base-paint.svg";
 import GraphicsIcon from "assets/insert-graphics.svg";
 import LogoIcon from "assets/insert-logo.svg";
-
+import { DefaultSettingsButton, LightTooltip } from "components/common";
+import {
+  BasePaintDialog,
+  DefaultSettingsDialog,
+  LogoDialog,
+  OverlayDialog,
+  TextDialog,
+  UploadDialog,
+} from "components/dialogs";
+import { DialogTypes, DrawingStatus, MouseModes } from "constant";
+import { focusBoard, focusBoardQuickly, getZoomedCenterPosition } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setMouseMode } from "redux/reducers/boardReducer";
 import {
-  setCurrent as setCurrentLayer,
-  createLayersFromBasePaint,
-  createLayerFromOverlay,
   createLayerFromLogo,
+  createLayerFromOverlay,
   createLayerFromUpload,
+  createLayersFromBasePaint,
   createTextLayer,
-  updateLayer,
+  setCurrent as setCurrentLayer,
   setDrawingStatus,
+  updateLayer,
 } from "redux/reducers/layerReducer";
 import { updateScheme } from "redux/reducers/schemeReducer";
 
-import { getZoomedCenterPosition, focusBoard, focusBoardQuickly } from "helper";
-import { DialogTypes, DrawingStatus, MouseModes } from "constant";
-
+import { drawModes } from "../../MobileDrawerBar/MobileDrawerBar";
 import {
-  BasePaintDialog,
-  OverlayDialog,
-  LogoDialog,
-  UploadDialog,
-  TextDialog,
-  DefaultSettingsDialog,
-} from "components/dialogs";
-import { LightTooltip, DefaultSettingsButton } from "components/common";
-import {
-  Wrapper,
-  ToolWrapper,
+  CustomDrawingItem,
+  CustomFontAwesomeIcon,
   MainItem,
   ShapeItem,
-  CustomFontAwesomeIcon,
   ShapeWrapper,
+  ToolWrapper,
+  Wrapper,
 } from "./DrawerBar.style";
-import { CustomDrawingItem } from "./DrawerBar.style";
-import { Typography } from "@material-ui/core";
-import { drawModes } from "../../MobileDrawerBar/MobileDrawerBar";
 
 export const DrawerBar = React.memo(
   ({ dialog, setDialog, stageRef, editable }) => {
@@ -363,6 +360,7 @@ export const DrawerBar = React.memo(
             <MainItem
               value={item.value}
               disabled={!editable}
+              key={item.value}
               onClick={() => handleOpenDialog(item.value)}
             >
               {item.icon}

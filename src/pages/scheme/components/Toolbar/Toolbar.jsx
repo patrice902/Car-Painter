@@ -1,46 +1,44 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { DialogTypes } from "constant";
-
-import {
-  IconButton,
-  Typography,
-  Box,
-  Button,
-  CircularProgress,
-  Slider,
-  useMediaQuery,
-} from "components/MaterialUI";
-import { Wrapper, ZoomButton } from "./Toolbar.style";
-import { ChevronsLeft, ChevronsRight } from "react-feather";
+import { faRedo, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUndo, faRedo } from "@fortawesome/free-solid-svg-icons";
+import { Rotate90DegreesCcw, Search as SearchIcon } from "@material-ui/icons";
+import ShortcutIcon from "assets/keyboard-shortcuts.svg";
 import { LightTooltip } from "components/common";
 import {
   ShortCutsDialog,
   SimPreviewGuideDialog,
   ZoomPopover,
 } from "components/dialogs";
-import ShortcutIcon from "assets/keyboard-shortcuts.svg";
-
 import {
-  setZoom,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Slider,
+  Typography,
+  useMediaQuery,
+} from "components/MaterialUI";
+import { DialogTypes } from "constant";
+import { focusBoardQuickly, isWindows } from "helper";
+import { useZoom } from "hooks";
+import React, { useCallback, useEffect, useState } from "react";
+import { ChevronsLeft, ChevronsRight } from "react-feather";
+import { useDispatch, useSelector } from "react-redux";
+import {
   historyActionBack,
   historyActionUp,
   setShowLayers,
   setShowProperties,
   setSpecTGADataURL,
+  setZoom,
   // setViewMode,
 } from "redux/reducers/boardReducer";
-import { useZoom } from "hooks";
-import { updateScheme } from "redux/reducers/schemeReducer";
 import {
   setAskingSimPreviewByLatest,
   submitSimPreview,
 } from "redux/reducers/downloaderReducer";
-import { Rotate90DegreesCcw, Search as SearchIcon } from "@material-ui/icons";
+import { updateScheme } from "redux/reducers/schemeReducer";
 
-import { focusBoardQuickly, isWindows } from "helper";
+import { Wrapper, ZoomButton } from "./Toolbar.style";
 
 export const Toolbar = React.memo((props) => {
   const {

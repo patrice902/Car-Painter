@@ -1,36 +1,35 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { DialogTypes } from "constant";
-
-import {
-  Typography,
-  Box,
-  Button,
-  Popover,
-  useMediaQuery,
-  IconButton,
-} from "components/MaterialUI";
-import {
-  DropDownIcon,
-  ShareIcon,
-  DropDownButton,
-  CustomButtonGroup,
-  CustomIcon,
-} from "./Header.style";
-import { AppHeader } from "components/common";
-import RaceIcon from "assets/race.svg";
-import { FaDownload } from "react-icons/fa";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { Settings as SettingsIcon } from "@material-ui/icons";
-
-import RaceDialog from "components/dialogs/RaceDialog/RaceDialog";
-import { getCarRaces, setCarRace } from "redux/reducers/carReducer";
-import { dataURItoBlob, focusBoardQuickly } from "helper";
-import { CircularProgress } from "components/MaterialUI";
-import { setMessage } from "redux/reducers/messageReducer";
-import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
-import { updateScheme } from "redux/reducers/schemeReducer";
+import RaceIcon from "assets/race.svg";
+import { AppHeader } from "components/common";
 import { SchemeSettingsDialog, SharingDialog } from "components/dialogs";
+import RaceConfirmDialog from "components/dialogs/RaceConfirmDialog";
+import RaceDialog from "components/dialogs/RaceDialog/RaceDialog";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Popover,
+  Typography,
+  useMediaQuery,
+} from "components/MaterialUI";
+import { DialogTypes } from "constant";
+import { dataURItoBlob, focusBoardQuickly } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
+import { FaDownload } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { getCarRaces, setCarRace } from "redux/reducers/carReducer";
+import { setMessage } from "redux/reducers/messageReducer";
+import { updateScheme } from "redux/reducers/schemeReducer";
+
+import {
+  CustomButtonGroup,
+  CustomIcon,
+  DropDownButton,
+  DropDownIcon,
+  ShareIcon,
+} from "./Header.style";
 
 export const Header = React.memo((props) => {
   const {

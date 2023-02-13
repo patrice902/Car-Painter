@@ -1,9 +1,9 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import logger from "redux-logger";
-import { routerMiddleware } from "connected-react-router";
-
 import config from "config";
+import { routerMiddleware } from "connected-react-router";
+import logger from "redux-logger";
 import history from "utils/history";
+
 import createRootReducer from "./reducers";
 
 const devMode = config.env === "development";

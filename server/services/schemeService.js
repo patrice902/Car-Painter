@@ -19,7 +19,7 @@ class SchemeService {
 
   static async getListByUserID(user_id) {
     const schemes = await Scheme.where({
-      user_id: user_id,
+      user_id,
       avail: 1,
     }).fetchAll({
       withRelated: [

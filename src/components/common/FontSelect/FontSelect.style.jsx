@@ -1,5 +1,5 @@
-import styled from "styled-components/macro";
 import { Select } from "components/MaterialUI";
+import styled from "styled-components/macro";
 
 export const CustomSelect = styled(Select)`
   .MuiMenu-paper {

@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setMessage } from "./messageReducer";
-import UploadService from "services/uploadService";
 import { modifyFileName } from "helper";
+import UploadService from "services/uploadService";
+
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],

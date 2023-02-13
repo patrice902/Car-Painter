@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
-
-import { Text } from "react-konva";
 import { useDrag, useTransform } from "hooks";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Text } from "react-konva";
 
 export const TextNode = React.memo(
   ({
@@ -13,7 +12,6 @@ export const TextNode = React.memo(
     layer,
     cloningLayer,
     loadedFontList,
-    loadedList,
     shadowColor,
     shadowBlur,
     shadowOpacity,

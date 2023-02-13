@@ -1,11 +1,11 @@
-import { useCallback, useMemo, useState } from "react";
-import Konva from "konva";
 import { PaintingGuides } from "constant";
 import { getCenterOfPoints, getDistance, mathRound2 } from "helper";
-import { useReducerRef } from "./useReducerRef";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import Konva from "konva";
+import { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setZoom } from "redux/reducers/boardReducer";
+
+import { useReducerRef } from "./useReducerRef";
 
 export const useDrag = ({
   stageRef,
@@ -113,8 +113,8 @@ export const useDrag = ({
           // if the distance between guild line and object snap point is close we can consider this for snapping
           if (diff < GUIDELINE_OFFSET) {
             resultV.push({
-              lineGuide: lineGuide,
-              diff: diff,
+              lineGuide,
+              diff,
               snap: itemBound.snap,
               offset: itemBound.offset,
             });
@@ -127,8 +127,8 @@ export const useDrag = ({
           var diff = Math.abs(lineGuide - itemBound.guide);
           if (diff < GUIDELINE_OFFSET) {
             resultH.push({
-              lineGuide: lineGuide,
-              diff: diff,
+              lineGuide,
+              diff,
               snap: itemBound.snap,
               offset: itemBound.offset,
             });
@@ -260,7 +260,7 @@ export const useDrag = ({
     [dispatch, lastCenter, lastDist, stageRef]
   );
 
-  const handleTouchEnd = useCallback((e) => {
+  const handleTouchEnd = useCallback(() => {
     setDragEnabled(true);
     setLastDist(0);
     setLastCenter(null);
@@ -389,7 +389,7 @@ export const useDrag = ({
     ]
   );
 
-  const handleDragStart = (e) => {
+  const handleDragStart = () => {
     setDragging(true);
     if (onDragStart) onDragStart(layerRef.current);
     if (onSetTransformingLayer) {

@@ -1,16 +1,15 @@
-import React, { useMemo, useState } from "react";
-
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 import {
   Box,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
   Typography,
 } from "components/MaterialUI";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
 
 export const RaceConfirmDialog = React.memo((props) => {
   const { open, onCancel, onConfirm } = props;

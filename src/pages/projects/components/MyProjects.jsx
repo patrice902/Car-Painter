@@ -1,14 +1,11 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
-import _ from "lodash";
-import { useHistory } from "react-router";
-
-import styled from "styled-components/macro";
-
+import { ProjectItem, ScreenLoader } from "components/common";
 import { Box, Grid, Typography } from "components/MaterialUI";
-
-import InfiniteScroll from "react-infinite-scroll-component";
-import { ScreenLoader, ProjectItem } from "components/common";
 import { scrollBackOnProjectList } from "helper";
+import _ from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { useHistory } from "react-router";
+import styled from "styled-components/macro";
 
 const CustomInfiniteScroll = styled(InfiniteScroll)`
   &.infinite-scroll-component {

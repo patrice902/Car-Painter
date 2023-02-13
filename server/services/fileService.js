@@ -7,21 +7,19 @@ class FileService {
   // type: "upload", "logo", "overlay", "thumbnail"
   static uploadFiles(type = "upload") {
     let storage = multer.diskStorage({
-      destination: function (req, file, cb) {
+      destination(req, file, cb) {
         if (type === "upload") cb(null, `./server/assets/uploads/`);
         if (type === "logo") cb(null, `./server/assets/logos/`);
         else cb(null, "./server/assets/scheme_thumbnails/");
       },
-      filename: function (req, file, cb) {
+      filename(req, file, cb) {
         let { userID } = req.body;
         if (type === "upload" || type === "logo" || type === "overlay")
           cb(null, userID + "_" + file.originalname);
         else cb(null, file.originalname);
       },
     });
-    let upload = multer({ storage: storage }).fields([
-      { name: "files", maxCount: 3 },
-    ]);
+    let upload = multer({ storage }).fields([{ name: "files", maxCount: 3 }]);
     return upload;
   }
 
@@ -29,13 +27,13 @@ class FileService {
   static uploadFilesToS3(type = "upload") {
     let filesUploadMulter = multer({
       storage: multerS3({
-        s3: s3,
+        s3,
         bucket: config.bucketURL,
         acl: "public-read",
-        contentType: function (req, file, cb) {
+        contentType(req, file, cb) {
           cb(null, file.mimetype);
         },
-        key: function (req, file, cb) {
+        key(req, file, cb) {
           if (type === "upload" || type === "logo" || type === "overlay") {
             let { newNames } = req.body;
             newNames = JSON.parse(newNames);

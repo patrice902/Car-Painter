@@ -1,15 +1,15 @@
-import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import Canvg from "canvg";
+import { Canvg } from "canvg";
+import { Browser } from "constant";
 import {
-  mathRound2,
+  detectBrowser,
   getPixelRatio,
   loadImage,
+  mathRound2,
   rotatePoint,
-  detectBrowser,
 } from "helper";
 import { replaceColors, svgToURL, urlToString } from "helper/svg";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Browser } from "constant";
 
 const clearCache = (node) => {
   const canvasCache = node._cache.get("canvas");
@@ -95,6 +95,7 @@ export const useKonvaImageInit = ({
     }
     return () => {
       if (imageRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         imageRef.current.removeEventListener("load", handleLoad);
       }
     };
@@ -207,7 +208,7 @@ export const useKonvaImageInit = ({
         if (filterColor || stroke || strokeWidth) {
           svgString = replaceColors(svgString, {
             color: filterColor,
-            stroke: stroke,
+            stroke,
             strokeWidth: strokeWidth * strokeScale,
           });
         }

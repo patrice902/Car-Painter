@@ -1,11 +1,8 @@
+import { LightTooltip } from "components/common";
+import { Box, useMediaQuery } from "components/MaterialUI";
+import { alphaToHex } from "helper";
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
-
-import { Box, useMediaQuery } from "components/MaterialUI";
-
-import { alphaToHex } from "helper";
-
-import { LightTooltip } from "components/common";
 import styled from "styled-components";
 
 export const DefaultSettingsButton = React.memo(({ onClick }) => {

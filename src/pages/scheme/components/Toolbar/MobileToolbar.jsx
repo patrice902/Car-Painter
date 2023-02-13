@@ -1,43 +1,41 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { DialogTypes } from "constant";
-
-import { IconButton, Box } from "components/MaterialUI";
-import { Wrapper } from "./Toolbar.style";
+import { faRedo, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUndo, faRedo } from "@fortawesome/free-solid-svg-icons";
+import {
+  Layers as LayersIcon,
+  Rotate90DegreesCcw,
+  SettingsInputSvideo as SettingsInputSvideoIcon,
+  Tune as TuneIcon,
+} from "@material-ui/icons";
+import { DefaultSettingsButton } from "components/common";
 import {
   DefaultSettingsDialog,
   ShortCutsDialog,
   SimPreviewGuideDialog,
   ZoomPopover,
 } from "components/dialogs";
-
+import { Box, IconButton } from "components/MaterialUI";
+import { DialogTypes } from "constant";
+import { focusBoardQuickly } from "helper";
+import { useZoom } from "hooks";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  setZoom,
   historyActionBack,
   historyActionUp,
   setShowLayers,
   setShowProperties,
   setSpecTGADataURL,
+  setZoom,
   // setViewMode,
 } from "redux/reducers/boardReducer";
-import { useZoom } from "hooks";
-import { updateScheme } from "redux/reducers/schemeReducer";
 import {
   setAskingSimPreviewByLatest,
   submitSimPreview,
 } from "redux/reducers/downloaderReducer";
-import {
-  Rotate90DegreesCcw,
-  Tune as TuneIcon,
-  SettingsInputSvideo as SettingsInputSvideoIcon,
-  Layers as LayersIcon,
-} from "@material-ui/icons";
-
-import { focusBoardQuickly } from "helper";
-import { DefaultSettingsButton } from "components/common";
 import { updateLayer } from "redux/reducers/layerReducer";
+import { updateScheme } from "redux/reducers/schemeReducer";
+
+import { Wrapper } from "./Toolbar.style";
 
 export const MobileToolbar = React.memo((props) => {
   const {

@@ -1,12 +1,11 @@
-import React, { useCallback, useState } from "react";
-import useInterval from "react-useinterval";
-import { ColorPicker } from "material-ui-color";
 import { Box, TextField, Typography } from "@material-ui/core";
 import { Palette } from "constant";
-import styled from "styled-components";
 import { focusBoard, focusBoardQuickly } from "helper";
+import { ColorPicker } from "material-ui-color";
+import React, { useCallback, useEffect, useState } from "react";
+import useInterval from "react-useinterval";
+import styled from "styled-components";
 import { useDebouncedCallback } from "use-debounce";
-import { useEffect } from "react";
 
 const CustomColorPicker = styled(ColorPicker)`
   &.ColorPicker-MuiButton-contained {

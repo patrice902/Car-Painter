@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setMessage } from "./messageReducer";
-import OverlayService from "services/overlayService";
 import { modifyFileName } from "helper";
+import OverlayService from "services/overlayService";
+
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],

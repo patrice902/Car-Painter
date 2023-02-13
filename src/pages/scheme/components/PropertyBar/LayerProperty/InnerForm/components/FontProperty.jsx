@@ -1,26 +1,26 @@
-import React, { useState, useMemo } from "react";
-import styled from "styled-components/macro";
-import { AllowedLayerProps, LayerTypes } from "constant";
-
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   FormControl as MuiFormControl,
-  Typography,
-  InputLabel,
   Grid,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  InputLabel,
+  Typography,
 } from "@material-ui/core";
-import { spacing } from "@material-ui/system";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { LabelTypography } from "../../../PropertyBar.style";
+import { spacing } from "@material-ui/system";
+import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly } from "helper";
+import React, { useMemo, useState } from "react";
+import styled from "styled-components/macro";
+
 import {
   FormColorPickerInput,
   FormFontSelect,
   FormSliderInput,
 } from "../../../components";
+import { LabelTypography } from "../../../PropertyBar.style";
 
 const FormControl = styled(MuiFormControl)(spacing);
 

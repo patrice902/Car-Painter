@@ -1,12 +1,11 @@
+import { Box } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { Box } from "@material-ui/core";
-import { TitleBar } from "./TitleBar";
+import { LayersBar } from "../LayersBar";
 import { DrawerBar } from "./DrawerBar";
 import { TitleWrapper, Wrapper } from "./LeftBar.style";
-
-import { LayersBar } from "../LayersBar";
+import { TitleBar } from "./TitleBar";
 
 export const LeftBar = React.memo((props) => {
   const { dialog, setDialog, editable, stageRef, onBack } = props;

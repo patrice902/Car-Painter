@@ -1,28 +1,28 @@
-import React, { useState, useMemo } from "react";
-import { AllowedLayerProps, LayerTypes } from "constant";
-
 import {
-  Box,
-  Typography,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
+  Box,
   Grid,
+  Typography,
 } from "@material-ui/core";
 import {
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
+  ExpandMore as ExpandMoreIcon,
   Lock as LockIcon,
   LockOpen as LockOpenIcon,
-  ExpandMore as ExpandMoreIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
 } from "@material-ui/icons";
-import { LabelTypography } from "../../../PropertyBar.style";
+import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly } from "helper";
+import React, { useMemo, useState } from "react";
+
 import {
   FormIconButton,
   FormSliderInput,
   FormTextField,
 } from "../../../components";
+import { LabelTypography } from "../../../PropertyBar.style";
 
 export const GeneralProperty = React.memo((props) => {
   const {

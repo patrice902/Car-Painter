@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { Box } from "components/MaterialUI";
-import { CustomImg, CustomSkeleton } from "./SVGImageWithLoad.style";
 import { replaceColors, svgToURL, urlToString } from "helper/svg";
+import React, { useEffect, useState } from "react";
+
+import { CustomImg, CustomSkeleton } from "./SVGImageWithLoad.style";
 
 export const SVGImageWithLoad = React.memo(
   ({

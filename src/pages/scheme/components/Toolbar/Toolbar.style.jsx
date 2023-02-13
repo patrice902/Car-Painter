@@ -1,6 +1,5 @@
-import styled from "styled-components/macro";
-
 import { Button } from "@material-ui/core";
+import styled from "styled-components/macro";
 
 export const Wrapper = styled.div`
   width: 100%;

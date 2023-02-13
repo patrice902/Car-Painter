@@ -1,10 +1,9 @@
+import { useTheme } from "@material-ui/core";
+import { ScreenLoader } from "components/common";
+import { Box } from "components/MaterialUI";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-
-import { Box } from "components/MaterialUI";
-import { useTheme } from "@material-ui/core";
-import { ScreenLoader } from "components/common";
 import { setPreviousPath, signInWithCookie } from "redux/reducers/authReducer";
 
 // For routes that can only be accessed by authenticated users

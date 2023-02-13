@@ -1,25 +1,23 @@
-import React, { useState, useMemo } from "react";
-
-import { AllowedLayerProps, LayerTypes } from "constant";
-
 import {
-  Box,
-  Typography,
-  Grid,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
+  Box,
+  Grid,
   MenuItem,
+  Typography,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-
-import { LabelTypography } from "../../../PropertyBar.style";
+import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly } from "helper";
+import React, { useMemo, useState } from "react";
+
 import {
   FormColorPickerInput,
   FormSelect,
   FormSliderInput,
 } from "../../../components";
+import { LabelTypography } from "../../../PropertyBar.style";
 
 export const StrokeProperty = React.memo((props) => {
   const {

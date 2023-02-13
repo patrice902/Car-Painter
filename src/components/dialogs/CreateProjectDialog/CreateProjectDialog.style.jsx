@@ -1,5 +1,5 @@
-import styled from "styled-components/macro";
 import { DialogActions, TextField } from "components/MaterialUI";
+import styled from "styled-components/macro";
 
 export const CustomDialogActions = styled(DialogActions)`
   padding-right: 24px;

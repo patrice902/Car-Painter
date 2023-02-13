@@ -1,17 +1,16 @@
-import React, { useMemo, useCallback } from "react";
-import _ from "lodash";
-import { useSelector, useDispatch } from "react-redux";
-import { createCarPin, deleteCarPin } from "redux/reducers/carPinReducer";
-
 import {
-  TextField,
   Autocomplete,
   Box,
   Checkbox,
-  Typography,
   CircularProgress,
+  TextField,
+  Typography,
 } from "components/MaterialUI";
-import { BsPinAngleFill, BsPinAngle } from "react-icons/bs";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { BsPinAngle, BsPinAngleFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { createCarPin, deleteCarPin } from "redux/reducers/carPinReducer";
 
 export const CarMakeAutocomplete = React.memo(({ label, ...props }) => {
   const dispatch = useDispatch();

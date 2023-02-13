@@ -1,16 +1,3 @@
-import React, { useCallback, useMemo } from "react";
-import * as Yup from "yup";
-import { Formik, Form } from "formik";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-} from "components/MaterialUI";
-
-import { DropzoneArea } from "material-ui-dropzone";
-
-import { CustomDialogContent } from "./AddOverlayDialog.style";
 import {
   Box,
   Checkbox,
@@ -20,9 +7,21 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { useDispatch } from "react-redux";
 import { ColorPickerInput, SliderInput } from "components/common";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+} from "components/MaterialUI";
+import { Form, Formik } from "formik";
+import { DropzoneArea } from "material-ui-dropzone";
+import React, { useCallback, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { uploadAndCreateOverlay } from "redux/reducers/overlayReducer";
+import * as Yup from "yup";
+
+import { CustomDialogContent } from "./AddOverlayDialog.style";
 
 export const AddOverlayDialog = React.memo((props) => {
   const { onClose, open } = props;
@@ -66,7 +65,7 @@ export const AddOverlayDialog = React.memo((props) => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           enableReinitialize
-          validate={(values) => {
+          validate={() => {
             return {};
           }}
           onSubmit={onApply}

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import { Box } from "components/MaterialUI";
+import React, { useState } from "react";
+
 import { CustomImg, CustomSkeleton } from "./ImageWithLoad.style";
 
 export const ImageWithLoad = React.memo(

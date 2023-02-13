@@ -1,13 +1,11 @@
-import React, { useMemo, useCallback } from "react";
-import _ from "lodash";
-
-import { FinishOptions, LayerTypes, ViewModes } from "constant";
-import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
-import config from "config";
-
 import { URLImage } from "components/konva";
-import { useSelector } from "react-redux";
+import config from "config";
+import { FinishOptions, LayerTypes, ViewModes } from "constant";
+import { carMakeAssetURL, legacyCarMakeAssetURL } from "helper";
 import { useLayer, useScheme } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 
 export const CarParts = React.memo(() => {
   const { legacyMode } = useScheme();

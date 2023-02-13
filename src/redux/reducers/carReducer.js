@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import CarService from "services/carService";
+
 import { setMessage } from "./messageReducer";
-import { updateScheme, setCurrent as setCurrentScheme } from "./schemeReducer";
+import { setCurrent as setCurrentScheme, updateScheme } from "./schemeReducer";
 
 const initialState = {
   cars: [],

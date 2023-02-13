@@ -1,7 +1,6 @@
-import styled from "styled-components/macro";
-
-import { Box, Button } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Button } from "@material-ui/core";
+import styled from "styled-components/macro";
 
 export const LayerWrapper = styled(Box)`
   background: #666666;

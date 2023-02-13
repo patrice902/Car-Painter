@@ -1,16 +1,15 @@
-import React, { useState, useCallback } from "react";
-import clsx from "clsx";
-
 import { Box, IconButton, Popover, Typography } from "@material-ui/core";
 import {
-  ExpandMore as ExpandMoreIcon,
   Add as AddIcon,
+  ExpandMore as ExpandMoreIcon,
 } from "@material-ui/icons";
+import clsx from "clsx";
 import { LightTooltip } from "components/common";
-
 import { EnglishLang } from "constant/language";
-import { useStyles, CustomIconButton } from "./PartAction.style";
 import { focusBoardQuickly } from "helper";
+import React, { useCallback, useState } from "react";
+
+import { CustomIconButton, useStyles } from "./PartAction.style";
 
 export const PartAction = React.memo((props) => {
   const classes = useStyles();

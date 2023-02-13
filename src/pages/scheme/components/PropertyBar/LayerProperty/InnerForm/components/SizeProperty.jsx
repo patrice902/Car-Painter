@@ -1,15 +1,15 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { AllowedLayerProps, LayerTypes, MouseModes } from "constant";
-import { focusBoardQuickly, mathRound2 } from "helper";
-
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { AllowedLayerProps, LayerTypes, MouseModes } from "constant";
+import { focusBoardQuickly, mathRound2 } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
+
 import { FormLockButton, FormTextField } from "../../../components";
 
 export const SizeProperty = React.memo((props) => {

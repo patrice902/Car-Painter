@@ -1,24 +1,22 @@
-import React, { useState, useMemo } from "react";
-import { AllowedLayerProps, LayerTypes } from "constant";
-import { focusBoardQuickly, mathRound2 } from "helper";
-
 import {
-  Box,
-  Typography,
-  Grid,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
+  Box,
+  Grid,
+  Typography,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { AllowedLayerProps, LayerTypes } from "constant";
+import { focusBoardQuickly, mathRound2 } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
 
-import { LabelTypography } from "../../../PropertyBar.style";
-import { useCallback } from "react";
 import {
   FormColorPickerInput,
   FormSliderInput,
   FormTextField,
 } from "../../../components";
+import { LabelTypography } from "../../../PropertyBar.style";
 
 export const ShadowProperty = React.memo((props) => {
   const DefaultBlurToSet = 10;

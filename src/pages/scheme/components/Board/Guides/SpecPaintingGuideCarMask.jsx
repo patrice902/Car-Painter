@@ -1,9 +1,8 @@
-import React, { useCallback, useMemo } from "react";
-
-import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
-import { useSelector } from "react-redux";
+import { carMakeAssetURL, legacyCarMakeAssetURL } from "helper";
 import { useLayer, useScheme } from "hooks";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 
 export const SpecPaintingGuideCarMask = React.memo(() => {
   const { schemeFinishBase: finishBase, legacyMode } = useScheme();

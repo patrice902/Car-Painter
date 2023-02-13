@@ -1,6 +1,5 @@
+import { IconButton, makeStyles } from "@material-ui/core";
 import styled from "styled-components/macro";
-
-import { makeStyles, IconButton } from "@material-ui/core";
 
 export const useStyles = makeStyles((theme) => ({
   expand: {

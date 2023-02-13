@@ -1,21 +1,15 @@
-import { useEffect, useCallback, useMemo, useState } from "react";
+import { LayerTypes, ViewModes } from "constant";
+import {
+  addImageProcess,
+  dataURItoBlob,
+  downloadTGA,
+  getTGABlob,
+  sleep,
+} from "helper";
 import { useReducerRef, useScheme } from "hooks";
 import _ from "lodash";
-
-import { useSelector, useDispatch } from "react-redux";
-
-import { LayerTypes, ViewModes } from "constant";
-
-import {
-  setSaving,
-  setCurrent as setCurrentScheme,
-} from "redux/reducers/schemeReducer";
-import { setMessage } from "redux/reducers/messageReducer";
-import {
-  setCurrent as setCurrentLayer,
-  updateLayer,
-  setLoadedStatus,
-} from "redux/reducers/layerReducer";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setDownloadSpecTGA,
   setShowProperties,
@@ -23,12 +17,15 @@ import {
   setViewMode,
 } from "redux/reducers/boardReducer";
 import {
-  dataURItoBlob,
-  addImageProcess,
-  downloadTGA,
-  getTGABlob,
-  sleep,
-} from "helper";
+  setCurrent as setCurrentLayer,
+  setLoadedStatus,
+  updateLayer,
+} from "redux/reducers/layerReducer";
+import { setMessage } from "redux/reducers/messageReducer";
+import {
+  setCurrent as setCurrentScheme,
+  setSaving,
+} from "redux/reducers/schemeReducer";
 import SchemeService from "services/schemeService";
 
 export const useCapture = (

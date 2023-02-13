@@ -1,16 +1,3 @@
-import React, { useCallback, useMemo } from "react";
-import * as Yup from "yup";
-import { Formik, Form } from "formik";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-} from "components/MaterialUI";
-
-import { DropzoneArea } from "material-ui-dropzone";
-
-import { CustomDialogContent } from "./AddLogoDialog.style";
 import {
   Checkbox,
   FormControlLabel,
@@ -18,8 +5,20 @@ import {
   Grid,
   TextField,
 } from "@material-ui/core";
-import { uploadAndCreateLogo } from "redux/reducers/logoReducer";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+} from "components/MaterialUI";
+import { Form, Formik } from "formik";
+import { DropzoneArea } from "material-ui-dropzone";
+import React, { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
+import { uploadAndCreateLogo } from "redux/reducers/logoReducer";
+import * as Yup from "yup";
+
+import { CustomDialogContent } from "./AddLogoDialog.style";
 
 export const AddLogoDialog = React.memo((props) => {
   const { onClose, open } = props;
@@ -61,7 +60,7 @@ export const AddLogoDialog = React.memo((props) => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           enableReinitialize
-          validate={(values) => {
+          validate={() => {
             return {};
           }}
           onSubmit={onApply}

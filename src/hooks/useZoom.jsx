@@ -1,8 +1,7 @@
-import { useCallback } from "react";
-
-import { useSelector, useDispatch } from "react-redux";
-import { setZoom } from "redux/reducers/boardReducer";
 import { mathRound4 } from "helper";
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setZoom } from "redux/reducers/boardReducer";
 
 export const useZoom = (stageRef) => {
   const scaleBy = 1.2;

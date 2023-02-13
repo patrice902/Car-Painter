@@ -1,14 +1,12 @@
-import React, { useCallback, useState } from "react";
-import config from "config";
-
-import { Box, MenuItem, TextField, List } from "@material-ui/core";
-import { CustomSelect, FontImage } from "./FontSelect.style";
+import { Box, List, MenuItem, TextField } from "@material-ui/core";
 import { ImageWithLoad } from "components/common";
-import { useMemo } from "react";
-import { updateScheme } from "redux/reducers/schemeReducer";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import config from "config";
 import { focusBoardQuickly } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateScheme } from "redux/reducers/schemeReducer";
+
+import { CustomSelect, FontImage } from "./FontSelect.style";
 
 export const FontSelect = React.memo((props) => {
   const { fontList, value, disabled, onChange } = props;

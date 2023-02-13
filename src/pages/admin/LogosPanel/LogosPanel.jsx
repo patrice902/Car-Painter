@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
+import { Box, Button, IconButton, Typography } from "@material-ui/core";
 import {
   DataGrid,
-  GridToolbarContainer,
   GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarExport,
+  GridToolbarContainer,
   GridToolbarDensitySelector,
+  GridToolbarExport,
+  GridToolbarFilterButton,
 } from "@material-ui/data-grid";
 import {
+  Add as AddIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
-  Add as AddIcon,
 } from "@material-ui/icons";
+import { ImageWithLoad, NoRowsOverlay } from "components/common";
+import { ConfirmDialog } from "components/dialogs";
+import config from "config";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteLogo, getLogoList } from "redux/reducers/logoReducer";
-import { Box, Button, IconButton, Typography } from "@material-ui/core";
-import { ImageWithLoad, NoRowsOverlay } from "components/common";
-import config from "config";
-import { useCallback } from "react";
-import { BigTooltip } from "./LogosPanel.style";
+
 import { AddLogoDialog } from "./AddLogoDialog";
+import { BigTooltip } from "./LogosPanel.style";
 import { UpdateLogoDialog } from "./UpdateLogoDialog";
-import { ConfirmDialog } from "components/dialogs";
 
 const LogosPanel = () => {
   const dispatch = useDispatch();

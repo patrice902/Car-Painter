@@ -1,15 +1,14 @@
-import React from "react";
+import { Box, Link, Typography } from "components/MaterialUI";
 import config from "config";
-import * as Yup from "yup";
 import { Formik } from "formik";
+import React from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
-
 import { useHistory } from "react-router-dom";
-import { Box, Link, Typography } from "components/MaterialUI";
-import { InnerForm } from "./InnerForm";
-
 import { signIn } from "redux/reducers/authReducer";
+import * as Yup from "yup";
+
+import { InnerForm } from "./InnerForm";
 
 export const SignIn = React.memo(() => {
   const dispatch = useDispatch();

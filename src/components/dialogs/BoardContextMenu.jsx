@@ -1,30 +1,29 @@
-import React, { useCallback } from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
 import {
   Box,
   Button,
   Divider,
-  Typography,
   Popover,
+  Typography,
 } from "components/MaterialUI";
-import {
-  MdVisibilityOff,
-  MdRotateRight,
-  MdLock,
-  MdDelete,
-  MdSwapHoriz,
-  MdSwapVert,
-} from "react-icons/md";
-import { ImCopy } from "react-icons/im";
-import { useDispatch } from "react-redux";
-import { updateLayer } from "redux/reducers/layerReducer";
 import {
   focusBoardQuickly,
   isCenterBasedShape,
   rotateAroundCenter,
 } from "helper";
+import React, { useCallback } from "react";
+import { ImCopy } from "react-icons/im";
+import {
+  MdDelete,
+  MdLock,
+  MdRotateRight,
+  MdSwapHoriz,
+  MdSwapVert,
+  MdVisibilityOff,
+} from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { setContextMenu } from "redux/reducers/boardReducer";
+import { updateLayer } from "redux/reducers/layerReducer";
+import styled from "styled-components";
 
 export const BoardContextMenu = React.memo((props) => {
   const { stageRef, wrapperPosition, onDeleteLayer, onCloneLayer } = props;

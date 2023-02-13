@@ -1,28 +1,26 @@
-import React, { useState, useCallback, useRef, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import _ from "lodash";
-
-import { getNameFromUploadFileName, uploadAssetURL } from "helper";
-
-import { DropzoneArea } from "material-ui-dropzone";
 import { Delete as DeleteIcon } from "@material-ui/icons";
-import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
 import { ImageWithLoad, Loader, ScreenLoader } from "components/common";
 import { ConfirmDialog, YesNoDialog } from "components/dialogs";
-import {
-  CustomInfiniteScroll,
-  CustomImageList,
-  CustomImageListItem,
-  DeleteButton,
-} from "./UploadDialog.style";
-
-import { uploadFiles, deleteUpload } from "redux/reducers/uploadReducer";
+import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
+import { getNameFromUploadFileName, uploadAssetURL } from "helper";
+import _ from "lodash";
+import { DropzoneArea } from "material-ui-dropzone";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   deleteItemsByUploadID as deleteLayerItemsByUploadID,
   setCurrent as setCurrentLayer,
 } from "redux/reducers/layerReducer";
 import { setMessage } from "redux/reducers/messageReducer";
+import { deleteUpload, uploadFiles } from "redux/reducers/uploadReducer";
 import SchemeService from "services/schemeService";
+
+import {
+  CustomImageList,
+  CustomImageListItem,
+  CustomInfiniteScroll,
+  DeleteButton,
+} from "./UploadDialog.style";
 
 export const UploadListContent = React.memo((props) => {
   const step = 40;

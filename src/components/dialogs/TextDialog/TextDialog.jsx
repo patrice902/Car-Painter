@@ -1,18 +1,17 @@
-import React from "react";
-import * as Yup from "yup";
-
-import { colorValidator } from "helper";
-
-import { Formik, Form } from "formik";
 import {
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "components/MaterialUI";
-import { InnerForm } from "./InnerForm";
+import { Form, Formik } from "formik";
+import { colorValidator } from "helper";
+import React from "react";
 import { useSelector } from "react-redux";
+import * as Yup from "yup";
+
+import { InnerForm } from "./InnerForm";
 
 export const TextDialog = React.memo((props) => {
   const {

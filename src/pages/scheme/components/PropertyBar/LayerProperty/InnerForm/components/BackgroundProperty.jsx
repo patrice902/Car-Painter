@@ -1,20 +1,18 @@
-import React, { useState, useMemo } from "react";
-
+import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Grid,
+  Typography,
+} from "components/MaterialUI";
 import { AllowedLayerProps, LayerTypes } from "constant";
 import { focusBoardQuickly, mathRound2 } from "helper";
+import React, { useMemo, useState } from "react";
 
-import {
-  Box,
-  Typography,
-  Grid,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-} from "components/MaterialUI";
-import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-
+import { FormColorPickerInput, FormTextField } from "../../../components";
 import { LabelTypography } from "../../../PropertyBar.style";
-import { FormTextField, FormColorPickerInput } from "../../../components";
 
 export const BackgroundProperty = React.memo((props) => {
   const {

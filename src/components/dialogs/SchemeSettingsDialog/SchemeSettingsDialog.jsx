@@ -1,16 +1,15 @@
-import React, { useCallback, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
 import { Dialog, DialogTitle } from "components/MaterialUI";
-import { GeneralSetting } from "./components";
-
+import React, { useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  updateScheme,
   createFavoriteScheme,
+  deleteAndCreateNewCarMakeLayers,
   deleteFavoriteItem,
   deleteScheme,
-  deleteAndCreateNewCarMakeLayers,
+  updateScheme,
 } from "redux/reducers/schemeReducer";
+
+import { GeneralSetting } from "./components";
 
 export const SchemeSettingsDialog = React.memo((props) => {
   const { editable, onCancel, open } = props;

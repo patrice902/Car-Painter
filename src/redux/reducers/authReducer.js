@@ -1,14 +1,15 @@
-import _ from "lodash";
 import { createSlice } from "@reduxjs/toolkit";
+import _ from "lodash";
 import AuthService from "services/authService";
 import BlockedUserService from "services/blockedUserService";
 import CookieService from "services/cookieService";
+
 import { setMessage } from "./messageReducer";
 import {
   clearCurrent as clearCurrentScheme,
+  clearFavoriteList,
   clearList as clearSchemeList,
   clearSharedList,
-  clearFavoriteList,
 } from "./schemeReducer";
 import { setIntialized } from "./uploadReducer";
 

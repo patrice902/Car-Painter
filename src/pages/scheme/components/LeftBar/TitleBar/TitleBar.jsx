@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { DialogTypes } from "constant";
-
-import { Box, IconButton } from "@material-ui/core";
-import { SchemeSettingsDialog } from "components/dialogs";
-import { LightTooltip } from "components/common";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { Box, IconButton } from "@material-ui/core";
 import { Settings as SettingsIcon } from "@material-ui/icons";
-import { CustomIcon, NameInput } from "./TitleBar.style";
-
+import { LightTooltip } from "components/common";
+import { SchemeSettingsDialog } from "components/dialogs";
+import { DialogTypes } from "constant";
+import { focusBoardQuickly } from "helper";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { updateScheme } from "redux/reducers/schemeReducer";
 import { useDebouncedCallback } from "use-debounce";
-import { focusBoardQuickly } from "helper";
+
+import { CustomIcon, NameInput } from "./TitleBar.style";
 
 export const TitleBar = React.memo((props) => {
   const { editable, onBack } = props;

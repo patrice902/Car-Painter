@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
-
+import { Typography } from "@material-ui/core";
 import {
-  Popover,
   Box,
   Button,
   InputAdornment,
   OutlinedInput,
+  Popover,
 } from "components/MaterialUI";
-import { Typography } from "@material-ui/core";
+import React, { useCallback, useEffect, useState } from "react";
 
 export const ZoomPopover = React.memo(
   ({ anchorEl, zoom, setZoom, onZoomIn, onZoomOut, onZoomFit, onClose }) => {

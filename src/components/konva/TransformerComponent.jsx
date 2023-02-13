@@ -1,16 +1,15 @@
-import React, { useEffect, useMemo, useCallback } from "react";
-
-import { Transformer } from "react-konva";
+import RotateIcon from "assets/rotate-left.svg";
+import { rgb } from "color";
+import { LayerTypes } from "constant";
 import {
   getSnapRotation,
-  rotateAroundCenter,
   isCenterBasedShape,
+  rotateAroundCenter,
 } from "helper";
-import { LayerTypes } from "constant";
-import useImage from "use-image";
-import { rgb } from "color";
-import RotateIcon from "assets/rotate-left.svg";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Transformer } from "react-konva";
 import { useSelector } from "react-redux";
+import useImage from "use-image";
 
 export const TransformerComponent = React.memo(
   ({ trRef, selectedLayer, hoveredTransform }) => {

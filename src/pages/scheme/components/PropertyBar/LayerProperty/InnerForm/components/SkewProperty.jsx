@@ -1,16 +1,16 @@
-import React, { useState, useMemo } from "react";
-import { AllowedLayerProps, LayerTypes } from "constant";
-import { focusBoardQuickly, mathRound2 } from "helper";
-
 import {
-  Box,
-  Typography,
   Accordion,
-  AccordionSummary,
   AccordionDetails,
+  AccordionSummary,
+  Box,
   Grid,
+  Typography,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { AllowedLayerProps, LayerTypes } from "constant";
+import { focusBoardQuickly, mathRound2 } from "helper";
+import React, { useMemo, useState } from "react";
+
 import { FormTextField } from "../../../components";
 
 export const SkewProperty = React.memo((props) => {

@@ -1,12 +1,11 @@
+import { Box, IconButton } from "components/MaterialUI";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { BsChevronDoubleDown } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowProperties } from "redux/reducers/boardReducer";
 
 import { LayerProperty } from "./LayerProperty";
 import { SchemeProperty } from "./SchemeProperty";
-import { Box, IconButton } from "components/MaterialUI";
-import { BsChevronDoubleDown } from "react-icons/bs";
-import { useDispatch } from "react-redux";
-import { setShowProperties } from "redux/reducers/boardReducer";
 
 const Wrapper = React.memo(({ children }) => {
   const showProperties = useSelector(

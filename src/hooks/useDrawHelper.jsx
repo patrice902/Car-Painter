@@ -1,12 +1,8 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import useInterval from "react-useinterval";
-
 import {
-  MouseModes,
-  LayerTypes,
   DefaultLayer,
   DrawingStatus,
+  LayerTypes,
+  MouseModes,
   PaintingGuides,
 } from "constant";
 import {
@@ -15,7 +11,9 @@ import {
   getRelativePointerPosition,
   removeDuplicatedPointFromEnd,
 } from "helper";
-
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import useInterval from "react-useinterval";
 import {
   setContextMenu,
   setIsDraggalbe,
@@ -24,10 +22,10 @@ import {
   setZoom,
 } from "redux/reducers/boardReducer";
 import {
-  setCurrent as setCurrentLayer,
   createShape,
-  setDrawingStatus,
   setCloningLayer,
+  setCurrent as setCurrentLayer,
+  setDrawingStatus,
 } from "redux/reducers/layerReducer";
 
 export const useDrawHelper = (stageRef) => {
@@ -113,72 +111,74 @@ export const useDrawHelper = (stageRef) => {
     },
     [dispatch, mouseMode, currentLayer]
   );
-  const onContentMouseDown = useCallback(
-    (e) => {
-      if (mouseMode !== MouseModes.DEFAULT) {
-        const position = getRelativePointerPosition(stageRef.current);
-        if (!drawingLayerRef.current) {
-          let newLayer = {
-            ...DefaultLayer,
-            layer_type: LayerTypes.SHAPE,
+  const onContentMouseDown = useCallback(() => {
+    if (mouseMode !== MouseModes.DEFAULT) {
+      const position = getRelativePointerPosition(stageRef.current);
+      if (!drawingLayerRef.current) {
+        let newLayer = {
+          ...DefaultLayer,
+          layer_type: LayerTypes.SHAPE,
+          layer_data: {
+            ...DefaultLayer.layer_data,
+            type: mouseMode,
+            name: mouseMode,
+            left: position.x,
+            top: position.y,
+            color: currentScheme.guide_data.default_shape_color || "#000000",
+            opacity: currentScheme.guide_data.default_shape_opacity || 1,
+            scolor: currentScheme.guide_data.default_shape_scolor || "#000000",
+            stroke: currentScheme.guide_data.default_shape_stroke || 0,
+          },
+        };
+
+        if (
+          [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
+            mouseMode
+          )
+        ) {
+          newLayer.layer_data.stroke = 5;
+          newLayer.layer_data.points = [0, 0, 0, 0];
+        }
+        if (mouseMode === MouseModes.PEN) {
+          newLayer.layer_data.stroke = 5;
+          newLayer.layer_data.points = [0, 0];
+        }
+        drawingLayerRef.current = newLayer;
+        dispatch(setDrawingStatus(DrawingStatus.DRAWING_SHAPE));
+      } else {
+        if (
+          [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
+            mouseMode
+          )
+        ) {
+          let layer = {
+            ...drawingLayerRef.current,
             layer_data: {
-              ...DefaultLayer.layer_data,
-              type: mouseMode,
-              name: mouseMode,
-              left: position.x,
-              top: position.y,
-              color: currentScheme.guide_data.default_shape_color || "#000000",
-              opacity: currentScheme.guide_data.default_shape_opacity || 1,
-              scolor:
-                currentScheme.guide_data.default_shape_scolor || "#000000",
-              stroke: currentScheme.guide_data.default_shape_stroke || 0,
+              ...drawingLayerRef.current.layer_data,
+              points: removeDuplicatedPointFromEnd(
+                drawingLayerRef.current.layer_data.points
+              ),
             },
           };
+          layer.layer_data.points = layer.layer_data.points.concat([
+            position.x - drawingLayerRef.current.layer_data.left,
+            position.y - drawingLayerRef.current.layer_data.top,
+            position.x - drawingLayerRef.current.layer_data.left,
+            position.y - drawingLayerRef.current.layer_data.top,
+          ]);
 
-          if (
-            [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
-              mouseMode
-            )
-          ) {
-            newLayer.layer_data.stroke = 5;
-            newLayer.layer_data.points = [0, 0, 0, 0];
-          }
-          if (mouseMode === MouseModes.PEN) {
-            newLayer.layer_data.stroke = 5;
-            newLayer.layer_data.points = [0, 0];
-          }
-          drawingLayerRef.current = newLayer;
+          drawingLayerRef.current = layer;
           dispatch(setDrawingStatus(DrawingStatus.DRAWING_SHAPE));
-        } else {
-          if (
-            [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
-              mouseMode
-            )
-          ) {
-            let layer = {
-              ...drawingLayerRef.current,
-              layer_data: {
-                ...drawingLayerRef.current.layer_data,
-                points: removeDuplicatedPointFromEnd(
-                  drawingLayerRef.current.layer_data.points
-                ),
-              },
-            };
-            layer.layer_data.points = layer.layer_data.points.concat([
-              position.x - drawingLayerRef.current.layer_data.left,
-              position.y - drawingLayerRef.current.layer_data.top,
-              position.x - drawingLayerRef.current.layer_data.left,
-              position.y - drawingLayerRef.current.layer_data.top,
-            ]);
-
-            drawingLayerRef.current = layer;
-            dispatch(setDrawingStatus(DrawingStatus.DRAWING_SHAPE));
-          }
         }
       }
-    },
-    [dispatch, mouseMode, currentScheme.guide_data, drawingLayerRef, stageRef]
-  );
+    }
+  }, [
+    dispatch,
+    mouseMode,
+    currentScheme.guide_data,
+    drawingLayerRef,
+    stageRef,
+  ]);
   const onContentMousemove = useCallback(() => {
     if (mouseMode !== MouseModes.DEFAULT && drawingLayerRef.current) {
       const position = getRelativePointerPosition(stageRef.current);
@@ -243,39 +243,33 @@ export const useDrawHelper = (stageRef) => {
       prevTick.current = currentTick.current;
     }
   }, [mouseMode, drawingLayerRef, stageRef, currentTick]);
-  const onContentMouseup = useCallback(
-    (e) => {
-      if (
-        ![
-          MouseModes.DEFAULT,
-          MouseModes.LINE,
-          MouseModes.ARROW,
-          MouseModes.POLYGON,
-        ].includes(mouseMode)
-      ) {
-        dispatch(setDrawingStatus(DrawingStatus.ADD_TO_SHAPE));
-      }
-      const position = getRelativePointerPosition(stageRef.current);
-      setPrevPosition(position);
-    },
-    [mouseMode, stageRef, dispatch]
-  );
-  const onDoubleClick = useCallback(
-    (e) => {
-      const position = getRelativePointerPosition(stageRef.current);
-      if (
-        [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
-          mouseMode
-        ) &&
-        drawingLayerRef.current &&
-        prevPosition.x === position.x &&
-        prevPosition.y === position.y
-      ) {
-        dispatch(setDrawingStatus(DrawingStatus.ADD_TO_SHAPE));
-      }
-    },
-    [stageRef, mouseMode, prevPosition, dispatch]
-  );
+  const onContentMouseup = useCallback(() => {
+    if (
+      ![
+        MouseModes.DEFAULT,
+        MouseModes.LINE,
+        MouseModes.ARROW,
+        MouseModes.POLYGON,
+      ].includes(mouseMode)
+    ) {
+      dispatch(setDrawingStatus(DrawingStatus.ADD_TO_SHAPE));
+    }
+    const position = getRelativePointerPosition(stageRef.current);
+    setPrevPosition(position);
+  }, [mouseMode, stageRef, dispatch]);
+  const onDoubleClick = useCallback(() => {
+    const position = getRelativePointerPosition(stageRef.current);
+    if (
+      [MouseModes.LINE, MouseModes.ARROW, MouseModes.POLYGON].includes(
+        mouseMode
+      ) &&
+      drawingLayerRef.current &&
+      prevPosition.x === position.x &&
+      prevPosition.y === position.y
+    ) {
+      dispatch(setDrawingStatus(DrawingStatus.ADD_TO_SHAPE));
+    }
+  }, [stageRef, mouseMode, prevPosition, dispatch]);
 
   const showGuideForRepositioning = useCallback(
     (show = true) => {

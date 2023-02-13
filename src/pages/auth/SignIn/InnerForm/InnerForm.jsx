@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import config from "config";
-
 import {
   Alert,
   Button,
-  Link,
   FormControl,
   FormHelperText,
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   OutlinedInput,
   TextField,
 } from "components/MaterialUI";
+import config from "config";
+import React, { useState } from "react";
+
 import { FullForm, VisibilityIcon, VisibilityOffIcon } from "./InnerForm.style";
 
 export const InnerForm = React.memo((props) => {

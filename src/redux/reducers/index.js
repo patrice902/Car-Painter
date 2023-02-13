@@ -2,22 +2,22 @@ import { combineReducers } from "@reduxjs/toolkit";
 import { connectRouter } from "connected-react-router";
 
 import authReducer from "./authReducer";
-import boardReducer from "./boardReducer";
-import messageReducer from "./messageReducer";
-import themeReducer from "./themeReducer";
-import schemeReducer from "./schemeReducer";
-import carMakeReducer from "./carMakeReducer";
-import carReducer from "./carReducer";
 import basePaintReducer from "./basePaintReducer";
-import layerReducer from "./layerReducer";
-import overlayReducer from "./overlayReducer";
-import logoReducer from "./logoReducer";
-import uploadReducer from "./uploadReducer";
-import fontReducer from "./fontReducer";
-import teamReducer from "./teamReducer";
+import boardReducer from "./boardReducer";
+import carMakeReducer from "./carMakeReducer";
 import carPinReducer from "./carPinReducer";
+import carReducer from "./carReducer";
 import downloaderReducer from "./downloaderReducer";
+import fontReducer from "./fontReducer";
+import layerReducer from "./layerReducer";
 import leagueSeriesReducer from "./leagueSeriesReducer";
+import logoReducer from "./logoReducer";
+import messageReducer from "./messageReducer";
+import overlayReducer from "./overlayReducer";
+import schemeReducer from "./schemeReducer";
+import teamReducer from "./teamReducer";
+import themeReducer from "./themeReducer";
+import uploadReducer from "./uploadReducer";
 
 const reducers = (history) =>
   combineReducers({

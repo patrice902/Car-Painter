@@ -33,7 +33,7 @@ exports.up = async function (knex) {
             )
           );
 
-          let weirdMatch = /\d\"\"/.exec(fixedLayerDataString);
+          let weirdMatch = /\d""/.exec(fixedLayerDataString);
           if (weirdMatch) {
             fixedLayerDataString =
               fixedLayerDataString.slice(0, weirdMatch.index + 1) +
@@ -79,4 +79,4 @@ exports.up = async function (knex) {
     });
 };
 
-exports.down = function (knex) {};
+exports.down = function () {};

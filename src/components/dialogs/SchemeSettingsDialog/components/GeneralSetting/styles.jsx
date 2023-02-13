@@ -1,10 +1,10 @@
-import styled from "styled-components/macro";
 import {
   Button,
   DialogContent,
-  TextField,
   FormControlLabel,
+  TextField,
 } from "components/MaterialUI";
+import styled from "styled-components/macro";
 
 export const CustomDialogContent = styled(DialogContent)``;
 

@@ -1,7 +1,6 @@
-import styled from "styled-components/macro";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SpeedDial, SpeedDialAction } from "@material-ui/lab";
+import styled from "styled-components/macro";
 
 export const MainSpeedDial = styled(SpeedDial)`
   position: absolute;

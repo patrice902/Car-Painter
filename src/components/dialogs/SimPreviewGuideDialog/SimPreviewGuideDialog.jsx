@@ -1,22 +1,21 @@
-import React, { useCallback, useState, useEffect } from "react";
-
+import { Check, Warning } from "@material-ui/icons";
+import { NumberModSwitch } from "components/common";
 import {
   Box,
   Button,
   CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Typography,
+  DialogContent,
+  DialogTitle,
   Grid,
+  Typography,
 } from "components/MaterialUI";
-import { Warning, Check } from "@material-ui/icons";
-import { NumberModSwitch } from "components/common";
-import styled from "styled-components";
+import { isWindows } from "helper";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
-import { isWindows } from "helper";
+import styled from "styled-components";
 
 export const SimPreviewGuideDialog = React.memo((props) => {
   const { open, applying, onApply, onCancel } = props;

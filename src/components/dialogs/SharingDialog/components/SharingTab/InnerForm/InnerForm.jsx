@@ -1,21 +1,20 @@
-import React, { useCallback, useMemo } from "react";
-import { Form } from "formik";
-
 import {
   Box,
   Button,
   DialogActions,
-  Typography,
-  Select,
   MenuItem,
+  Select,
   TextField,
+  Typography,
   useMediaQuery,
 } from "components/MaterialUI";
+import { Form } from "formik";
+import { getUserName } from "helper";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
+import UserService from "services/userService";
 
 import { CustomDialogContent } from "./styles";
-import UserService from "services/userService";
-import { getUserName } from "helper";
-import { useSelector } from "react-redux";
 
 export const InnerForm = React.memo(
   ({ owner, editable, currentUserID, schemeID, onCancel, ...formProps }) => {
@@ -59,7 +58,9 @@ export const InnerForm = React.memo(
                 editable: 0,
               });
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+          }
         }
       },
       [schemeID, setFieldValue, values.sharedUsers, blockedUsers, blockedBy]

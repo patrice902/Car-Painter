@@ -1,15 +1,15 @@
-import React, { useRef, useCallback } from "react";
-import clsx from "clsx";
-
 import { Box } from "@material-ui/core";
-import { Wrapper, CustomTypography, SmallIconButton } from "./PartItem.style";
 import {
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
   Lock as LockIcon,
   LockOpen as LockOpenIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
 } from "@material-ui/icons";
+import clsx from "clsx";
 import { focusBoardQuickly } from "helper";
+import React, { useCallback, useRef } from "react";
+
+import { CustomTypography, SmallIconButton, Wrapper } from "./PartItem.style";
 
 export const PartItem = React.memo((props) => {
   const {

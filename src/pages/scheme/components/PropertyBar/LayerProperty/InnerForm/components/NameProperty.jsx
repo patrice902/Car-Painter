@@ -1,8 +1,8 @@
-import React, { useMemo, useCallback } from "react";
-import styled from "styled-components/macro";
-import { AllowedLayerProps, LayerTypes } from "constant";
-
 import { Box } from "@material-ui/core";
+import { AllowedLayerProps, LayerTypes } from "constant";
+import React, { useCallback, useMemo } from "react";
+import styled from "styled-components/macro";
+
 import { FormTextField } from "../../../components";
 
 const CustomeTextField = styled(FormTextField)`

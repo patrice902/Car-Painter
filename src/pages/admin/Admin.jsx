@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-
-import { Box, Tabs, Tab, Paper } from "components/MaterialUI";
-import { AppHeader } from "components/common";
 import GraphicsIcon from "assets/insert-graphics.svg";
 import LogoIcon from "assets/insert-logo.svg";
+import { AppHeader } from "components/common";
+import { Box, Paper, Tab, Tabs } from "components/MaterialUI";
+import React, { useState } from "react";
+
 import LogosPanel from "./LogosPanel";
 import OverlaysPanel from "./OverlaysPanel";
 

@@ -1,16 +1,3 @@
-import React, { useCallback, useMemo } from "react";
-import * as Yup from "yup";
-import { Formik, Form } from "formik";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-} from "components/MaterialUI";
-
-import { DropzoneArea } from "material-ui-dropzone";
-
-import { CustomDialogContent } from "./UpdateLogoDialog.style";
 import {
   Box,
   Checkbox,
@@ -18,11 +5,22 @@ import {
   Grid,
   TextField,
 } from "@material-ui/core";
-import { uploadAndUpdateLogo } from "redux/reducers/logoReducer";
-import { useDispatch } from "react-redux";
-import { useState } from "react";
 import { ImageWithLoad } from "components/common";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+} from "components/MaterialUI";
 import config from "config";
+import { Form, Formik } from "formik";
+import { DropzoneArea } from "material-ui-dropzone";
+import React, { useCallback, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { uploadAndUpdateLogo } from "redux/reducers/logoReducer";
+import * as Yup from "yup";
+
+import { CustomDialogContent } from "./UpdateLogoDialog.style";
 
 export const UpdateLogoDialog = React.memo((props) => {
   const { onClose, open, data } = props;
@@ -64,7 +62,7 @@ export const UpdateLogoDialog = React.memo((props) => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           enableReinitialize
-          validate={(values) => {
+          validate={() => {
             return {};
           }}
           onSubmit={onApply}

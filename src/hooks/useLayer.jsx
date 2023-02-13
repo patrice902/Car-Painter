@@ -1,20 +1,20 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
 import {
   setFrameSizeToMax,
   setShowProperties,
 } from "redux/reducers/boardReducer";
 import {
+  cloneLayer,
+  deleteCloningQueueByID,
+  insertToCloningQueue,
+  setCloningLayer,
+  setCurrent as setCurrentLayer,
   setLoadedStatus,
   updateLayer,
-  setCurrent as setCurrentLayer,
-  setCloningLayer,
-  insertToCloningQueue,
-  deleteCloningQueueByID,
-  cloneLayer,
   updateLayerOnly,
 } from "redux/reducers/layerReducer";
+import { v4 as uuidv4 } from "uuid";
 
 export const useLayer = () => {
   const dispatch = useDispatch();

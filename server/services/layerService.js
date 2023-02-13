@@ -65,6 +65,7 @@ class LayerService {
 
     for (let item of payload) {
       promises.push(
+        // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve) => {
           const layer = await this.getById(item.id);
           const layerInfo = layer.toJSON();

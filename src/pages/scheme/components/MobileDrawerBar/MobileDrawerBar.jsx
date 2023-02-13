@@ -1,59 +1,56 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
-import { Octagon as OctagonIcon } from "react-feather";
+import { faCuttlefish } from "@fortawesome/free-brands-svg-icons";
 import {
-  SignalWifi4Bar as WedgeIcon,
-  ShowChart as LineIcon,
-  TrendingUp as ArrowIcon,
-} from "@material-ui/icons";
-import {
-  faSquare,
   faCircle,
-  faStar,
   faDotCircle,
   faDrawPolygon,
-  faPaintBrush,
-  faFont,
   faFolderOpen,
+  faFont,
+  faPaintBrush,
+  faSquare,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
-import { faCuttlefish } from "@fortawesome/free-brands-svg-icons";
+import {
+  ShowChart as LineIcon,
+  SignalWifi4Bar as WedgeIcon,
+  TrendingUp as ArrowIcon,
+} from "@material-ui/icons";
+import { SpeedDialIcon } from "@material-ui/lab";
 import BasepaintIcon from "assets/base-paint.svg";
 import GraphicsIcon from "assets/insert-graphics.svg";
 import LogoIcon from "assets/insert-logo.svg";
-
+import {
+  BasePaintDialog,
+  DefaultSettingsDialog,
+  LogoDialog,
+  OverlayDialog,
+  TextDialog,
+  UploadDialog,
+} from "components/dialogs";
+import { DialogTypes, MouseModes } from "constant";
+import { focusBoard, focusBoardQuickly, getZoomedCenterPosition } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
+import { Octagon as OctagonIcon } from "react-feather";
+import { useDispatch, useSelector } from "react-redux";
 import { setMouseMode } from "redux/reducers/boardReducer";
 import {
-  setCurrent as setCurrentLayer,
-  createLayersFromBasePaint,
-  createLayerFromOverlay,
   createLayerFromLogo,
+  createLayerFromOverlay,
   createLayerFromUpload,
+  createLayersFromBasePaint,
   createTextLayer,
+  setCurrent as setCurrentLayer,
   updateLayer,
 } from "redux/reducers/layerReducer";
 import { updateScheme } from "redux/reducers/schemeReducer";
 
-import { getZoomedCenterPosition, focusBoard, focusBoardQuickly } from "helper";
-import { DialogTypes, MouseModes } from "constant";
-
-import {
-  BasePaintDialog,
-  OverlayDialog,
-  LogoDialog,
-  UploadDialog,
-  TextDialog,
-  DefaultSettingsDialog,
-} from "components/dialogs";
 import {
   CustomFontAwesomeIcon,
   MainSpeedDial,
   MainSpeedDialAction,
+  ShapesSpeedDialAction,
   SubSpeedDial,
   SubSpeedDialAction,
-  ShapesSpeedDialAction,
 } from "./MobileDrawerBar.style";
-import { SpeedDialIcon } from "@material-ui/lab";
 
 export const drawModes = [
   {

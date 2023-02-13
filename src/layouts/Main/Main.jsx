@@ -1,10 +1,9 @@
+import { CssBaseline, withWidth } from "@material-ui/core";
+import { withMessage } from "hooks/withMessage";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-
-import { CssBaseline, withWidth } from "@material-ui/core";
-
 import { useHistory } from "react-router";
-import { withMessage } from "hooks/withMessage";
+
 import { GlobalStyle, Root } from "./Main.style";
 
 export const Main = withMessage(

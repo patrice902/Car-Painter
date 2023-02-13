@@ -8,7 +8,7 @@ class UploadService {
 
   static async getListByUserID(user_id) {
     const uploads = await Upload.where({
-      user_id: user_id,
+      user_id,
     }).fetchAll();
     return uploads;
   }

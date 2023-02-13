@@ -1,6 +1,5 @@
-import styled from "styled-components/macro";
-
 import { Typography } from "@material-ui/core";
+import styled from "styled-components/macro";
 
 export const KeyText = styled(Typography)`
   color: #ca812c;
