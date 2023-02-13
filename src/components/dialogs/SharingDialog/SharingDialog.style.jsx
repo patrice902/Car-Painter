@@ -1,7 +1,6 @@
-import React from "react";
-
-import { Tab, Tabs, Box } from "@material-ui/core";
+import { Box, Tab, Tabs } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import React from "react";
 
 export const TabPanel = (props) => {
   const { children, value, index, ...other } = props;

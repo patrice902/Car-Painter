@@ -1,11 +1,11 @@
-import React, { useCallback, useRef, useState } from "react";
-import config from "config";
 import {
   Button,
   DialogActions,
-  Typography,
   DialogContent,
+  Typography,
 } from "components/MaterialUI";
+import config from "config";
+import React, { useCallback, useRef, useState } from "react";
 
 export const ShowroomTab = React.memo((props) => {
   const { schemeID, retrieveTGAPNGDataUrl, onClose } = props;
@@ -32,7 +32,7 @@ export const ShowroomTab = React.memo((props) => {
           action={`${config.parentAppURL}/showroom/upload/${schemeID}`}
           method="post"
           target="_blank"
-          enctype="multipart/form-data"
+          encType="multipart/form-data"
         >
           <input type="hidden" name="car_file" value={showroomFile} />
         </form>

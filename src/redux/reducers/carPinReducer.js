@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setMessage } from "./messageReducer";
 import CarPinService from "services/carPinService";
+
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],

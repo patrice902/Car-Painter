@@ -1,6 +1,5 @@
+import { TextField, Typography } from "components/MaterialUI";
 import styled from "styled-components/macro";
-
-import { Typography, TextField } from "components/MaterialUI";
 
 export const LabelTypography = styled(Typography)`
   font-size: 14px;

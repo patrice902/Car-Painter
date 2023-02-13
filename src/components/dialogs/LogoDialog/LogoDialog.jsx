@@ -1,25 +1,24 @@
-import React, { useState, useCallback, useMemo } from "react";
-import _ from "lodash";
-
+import { SearchBox } from "components/common";
 import {
   Box,
   Button,
   Dialog,
-  DialogTitle,
   DialogActions,
+  DialogTitle,
   Typography,
   useMediaQuery,
 } from "components/MaterialUI";
-import { SearchBox } from "components/common";
+import _ from "lodash";
+import React, { useCallback, useMemo, useState } from "react";
 
+import { FlagContent, LogoContent, UploadContent } from "./components";
 import {
-  CustomDialogContent,
-  StyledTabs,
-  StyledTab,
-  TabPanel,
   a11yProps,
+  CustomDialogContent,
+  StyledTab,
+  StyledTabs,
+  TabPanel,
 } from "./LogoDialog.style";
-import { LogoContent, FlagContent, UploadContent } from "./components";
 
 export const LogoDialog = React.memo((props) => {
   const {

@@ -1,13 +1,11 @@
-import React, { useMemo, useCallback } from "react";
-import _ from "lodash";
-
+import { GroupedURLImage, TextNode } from "components/konva";
 import config from "config";
 import { FinishOptions, LayerTypes, MouseModes, ViewModes } from "constant";
 import { getRelativeShadowOffset } from "helper";
-
-import { GroupedURLImage, TextNode } from "components/konva";
-import { useDispatch, useSelector } from "react-redux";
 import { useLayer, useScheme } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { insertToLoadedList as insertToLoadedFontList } from "redux/reducers/fontReducer";
 
 export const LogosAndTexts = React.memo((props) => {

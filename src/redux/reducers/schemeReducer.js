@@ -1,16 +1,17 @@
-import _ from "lodash";
 import { createSlice } from "@reduxjs/toolkit";
 import { HistoryActions } from "constant";
 import { clearScrollPosition, mergeTwoScheme, parseScheme } from "helper";
+import _ from "lodash";
+import FavoriteSchemeService from "services/favoriteSchemeService";
 import SchemeService from "services/schemeService";
 import SharedSchemeService from "services/sharedSchemeService";
-import FavoriteSchemeService from "services/favoriteSchemeService";
-import { setMessage } from "./messageReducer";
-import { setCurrent as setCurrentCarMake } from "./carMakeReducer";
-import { setList as setLayerList, setLoadedStatusAll } from "./layerReducer";
+import SocketClient from "utils/socketClient";
+
 import { setList as setBasePaintList } from "./basePaintReducer";
 import { pushToActionHistory } from "./boardReducer";
-import SocketClient from "utils/socketClient";
+import { setCurrent as setCurrentCarMake } from "./carMakeReducer";
+import { setList as setLayerList, setLoadedStatusAll } from "./layerReducer";
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],
@@ -31,7 +32,7 @@ export const slice = createSlice({
   name: "schemeReducer",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: () => initialState,
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -157,7 +158,7 @@ export const slice = createSlice({
     setLastModifier: (state, action) => {
       state.lastModifier = action.payload;
     },
-    clearCurrent: (state, action) => {
+    clearCurrent: (state) => {
       state.current = null;
     },
     setCurrentName: (state, action) => {

@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setMessage } from "./messageReducer";
-import LogoService from "services/logoService";
 import { modifyFileName } from "helper";
+import LogoService from "services/logoService";
+
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],

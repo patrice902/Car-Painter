@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useCallback } from "react";
-import styled from "styled-components/macro";
+import { Add as AddIcon } from "@material-ui/icons";
+import { Box, Button, Typography, useMediaQuery } from "components/MaterialUI";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
-
-import { Box, Typography, Button, useMediaQuery } from "components/MaterialUI";
-import { Add as AddIcon } from "@material-ui/icons";
+import styled from "styled-components/macro";
 
 const tabURLs = ["mine", "shared", "favorite"];
 

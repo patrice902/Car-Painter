@@ -1,5 +1,5 @@
+import { Box, Grid, Input } from "@material-ui/core";
 import styled from "styled-components/macro";
-import { Box, Input, Grid } from "@material-ui/core";
 
 export const CustomInput = styled(Input)`
   .MuiInputBase-inputMarginDense {

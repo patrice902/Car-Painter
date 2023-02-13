@@ -1,6 +1,5 @@
+import { CardContent, Typography } from "@material-ui/core";
 import styled from "styled-components/macro";
-
-import { Typography, CardContent } from "@material-ui/core";
 
 export const HeaderTitle = styled(Typography)`
   text-overflow: ellipsis;

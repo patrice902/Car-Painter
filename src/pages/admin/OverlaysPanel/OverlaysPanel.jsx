@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
+import { Box, Button, IconButton, Typography } from "@material-ui/core";
 import {
   DataGrid,
-  GridToolbarContainer,
   GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarExport,
+  GridToolbarContainer,
   GridToolbarDensitySelector,
+  GridToolbarExport,
+  GridToolbarFilterButton,
 } from "@material-ui/data-grid";
 import {
+  Add as AddIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
-  Add as AddIcon,
 } from "@material-ui/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, IconButton, Typography } from "@material-ui/core";
 import { ImageWithLoad, NoRowsOverlay } from "components/common";
-import config from "config";
-import { useCallback } from "react";
-import { BigTooltip } from "./OverlaysPanel.style";
-import { getOverlayList, deleteOverlay } from "redux/reducers/overlayReducer";
-import { AddOverlayDialog } from "./AddOverlayDialog";
 import { ConfirmDialog } from "components/dialogs";
+import config from "config";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteOverlay, getOverlayList } from "redux/reducers/overlayReducer";
+
+import { AddOverlayDialog } from "./AddOverlayDialog";
+import { BigTooltip } from "./OverlaysPanel.style";
 import { UpdateOverlayDialog } from "./UpdateOverlayDialog";
 
 const OverlaysPanel = () => {

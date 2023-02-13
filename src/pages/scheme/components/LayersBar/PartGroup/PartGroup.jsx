@@ -1,24 +1,21 @@
-import React, { useState, useMemo, useCallback } from "react";
-
-import _ from "lodash";
-import { useSelector, useDispatch } from "react-redux";
-import { ReactSortable } from "react-sortablejs";
-
-import { MouseModes, LayerTypes } from "constant";
-import {
-  updateLayer,
-  setCurrent as setCurrentLayer,
-  bulkUpdateLayer,
-} from "redux/reducers/layerReducer";
-import { setMouseMode } from "redux/reducers/boardReducer";
-
 import { Box, Card, Collapse } from "@material-ui/core";
 import { LightTooltip } from "components/common";
-import { HeaderTitle, CustomCardContent } from "./PartGroup.style";
-
-import { PartItem } from "../PartItem";
-import { PartAction } from "../PartAction";
+import { LayerTypes, MouseModes } from "constant";
 import { focusBoardQuickly } from "helper";
+import _ from "lodash";
+import React, { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ReactSortable } from "react-sortablejs";
+import { setMouseMode } from "redux/reducers/boardReducer";
+import {
+  bulkUpdateLayer,
+  setCurrent as setCurrentLayer,
+  updateLayer,
+} from "redux/reducers/layerReducer";
+
+import { PartAction } from "../PartAction";
+import { PartItem } from "../PartItem";
+import { CustomCardContent, HeaderTitle } from "./PartGroup.style";
 
 export const PartGroup = (props) => {
   const dispatch = useDispatch();

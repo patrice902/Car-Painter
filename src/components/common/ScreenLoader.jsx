@@ -1,7 +1,6 @@
-import React from "react";
-
 import { Box } from "@material-ui/core";
 import Loading from "assets/loading.svg";
+import React from "react";
 
 export const ScreenLoader = React.memo(() => {
   return (

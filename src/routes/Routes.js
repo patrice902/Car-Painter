@@ -1,18 +1,17 @@
+import { withAuthGuard } from "hooks";
+import { withGAPageTracking } from "hooks/withGAPageTracking";
+import AuthLayout from "layouts/Auth";
+import MainLayout from "layouts/Main";
 import React from "react";
 import {
   BrowserRouter as Router,
+  Redirect,
   Route,
   Switch,
-  Redirect,
 } from "react-router-dom";
-import { mainLayoutRoutes, authLayoutRoutes } from "./index";
 
-import MainLayout from "layouts/Main";
-import AuthLayout from "layouts/Auth";
-import Page404 from "../pages/auth/Page404";
-
-import { withAuthGuard } from "hooks";
-import { withGAPageTracking } from "hooks/withGAPageTracking";
+import { Page404 } from "../pages/auth/Page404";
+import { authLayoutRoutes, mainLayoutRoutes } from "./index";
 
 const renderChildRoutes = (Layout, routes) =>
   routes.map(

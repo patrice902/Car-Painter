@@ -1,7 +1,6 @@
-import React, { useCallback } from "react";
-
-import { Box, Typography, Grid } from "components/MaterialUI";
 import { ColorPickerInput, SliderInput } from "components/common";
+import { Box, Grid, Typography } from "components/MaterialUI";
+import React, { useCallback } from "react";
 
 export const SubForm = (props) => {
   const {

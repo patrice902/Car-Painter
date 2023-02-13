@@ -1,24 +1,22 @@
-import React, { useEffect, useCallback, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
-import config from "config";
-import fitty from "fitty";
-
+import { Box, useMediaQuery } from "@material-ui/core";
+import { ColorPickerInput, FontSelect, SliderInput } from "components/common";
 import {
   FormControl,
+  Grid,
   InputLabel,
   Typography,
-  Grid,
 } from "components/MaterialUI";
-import { ColorPickerInput, SliderInput, FontSelect } from "components/common";
+import config from "config";
+import fitty from "fitty";
+import React, { useCallback, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { insertToLoadedList as insertToLoadedFontList } from "redux/reducers/fontReducer";
+
 import {
   CustomeTextField,
-  TextPreviewWrapper,
   TextPreview,
+  TextPreviewWrapper,
 } from "./InnerForm.style";
-
-import { insertToLoadedList as insertToLoadedFontList } from "redux/reducers/fontReducer";
-import { Box, useMediaQuery } from "@material-ui/core";
 
 export const InnerForm = React.memo((props) => {
   const {

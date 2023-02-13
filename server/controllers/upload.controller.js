@@ -117,6 +117,7 @@ class UploadController {
 
         for (let layer of layers) {
           promises.push(
+            // eslint-disable-next-line no-async-promise-executor
             new Promise(async (resolve) => {
               await LayerService.deleteById(layer.id);
               resolve();

@@ -1,8 +1,8 @@
-import React from "react";
-
-import Helmet from "react-helmet";
-import { Link } from "react-router-dom";
 import { Button, Typography } from "components/MaterialUI";
+import React from "react";
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
+
 import { Wrapper } from "./Page404.style";
 
 export const Page404 = React.memo(() => {

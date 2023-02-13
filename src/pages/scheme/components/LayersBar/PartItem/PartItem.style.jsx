@@ -1,6 +1,5 @@
-import styled from "styled-components/macro";
-
 import { Box, IconButton, Typography } from "@material-ui/core";
+import styled from "styled-components/macro";
 
 export const Wrapper = styled(Box)`
   cursor: pointer;

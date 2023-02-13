@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
 import { InputBase } from "@material-ui/core";
-import { useStyles, SearchIcon } from "./SearchBox.style";
+import React, { useCallback } from "react";
+
+import { SearchIcon, useStyles } from "./SearchBox.style";
 
 export const SearchBox = React.memo((props) => {
   const { value, onChange } = props;

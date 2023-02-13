@@ -1,37 +1,33 @@
-import React from "react";
-import * as Yup from "yup";
-import { Formik, Form } from "formik";
-import { useSelector } from "react-redux";
-
+import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { NumberModSwitch } from "components/common";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Chip,
   CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
   FormControlLabel,
+  Grid,
+  InputLabel,
   MenuItem,
   Select,
   Switch,
-  Typography,
   TextField,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  FormControl,
-  Grid,
-  InputLabel,
+  Typography,
   useMediaQuery,
 } from "components/MaterialUI";
-import { NumberModSwitch } from "components/common";
-import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { Form, Formik } from "formik";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { useState } from "react";
-import { useMemo } from "react";
-import { useCallback, useEffect } from "react";
+import * as Yup from "yup";
 
 export const RaceDialog = React.memo((props) => {
   const { open, applying, onApply, onCancel } = props;
@@ -79,7 +75,7 @@ export const RaceDialog = React.memo((props) => {
     (values) => {
       let payload = {
         ...values,
-        number: number,
+        number,
       };
       if (!expanded) {
         payload.primary = true;

@@ -1,12 +1,61 @@
 {
-    "extends": [
-        "react-app",
-        "prettier"
-    ],
-    "plugins": [
-        "prettier"
-    ],
-    "rules": {
-        "prettier/prettier": "error"
+  "extends": [
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:import/recommended",
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "plugins": [
+    "prettier", 
+    "react",
+    "react-hooks",
+    "simple-import-sort",
+    "eslint-plugin-import"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "project": "./jsconfig.json",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true,
+      "experimentalObjectRestSpread": true
     }
+  },
+  "env": {
+    "browser": true,
+    "node": true, 
+    "es6": true
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "rules": {
+    "prettier/prettier": ["error"],
+    "no-console": "off",
+    "linebreak-style": "off",
+    "object-shorthand": 2,
+    "no-param-reassign": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/require-default-props": "off",
+    "simple-import-sort/imports": "error",
+    "no-unused-vars": ["error"],
+    "react/display-name": "off",
+    "react/prop-types": "off"
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "17.0.1"
+    },
+    "import/resolver": {
+      "node": {
+        "paths": ["src", "server"],
+        "extensions": [".js", ".jsx"]
+      }
+    }
+  }
 }

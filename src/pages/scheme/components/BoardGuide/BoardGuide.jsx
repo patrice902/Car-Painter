@@ -1,8 +1,8 @@
-import React from "react";
+import { Box, Typography } from "@material-ui/core";
 import { MouseModes } from "constant";
+import React from "react";
 import { useSelector } from "react-redux";
 
-import { Box, Typography } from "@material-ui/core";
 import { useStyles } from "./BoardGuide.style";
 
 export const BoardGuide = React.memo(() => {

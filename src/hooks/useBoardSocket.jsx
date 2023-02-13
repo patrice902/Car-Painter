@@ -1,21 +1,20 @@
 import { useEffect } from "react";
-import { useHistory, useParams } from "react-router";
 import { useDispatch } from "react-redux";
-
+import { useHistory, useParams } from "react-router";
 import {
-  updateListItem as updateSchemeListItem,
-  setCurrent as setCurrentScheme,
-  setSocketConnected,
-} from "redux/reducers/schemeReducer";
-import { setMessage } from "redux/reducers/messageReducer";
-import {
-  mergeListItem as mergeLayerListItem,
-  mergeListItems as mergeLayerListItems,
+  concatList as concatToLayerList,
   deleteListItem as deleteLayerListItem,
   deleteListItems as deleteLayerListItems,
   insertToList as insertToLayerList,
-  concatList as concatToLayerList,
+  mergeListItem as mergeLayerListItem,
+  mergeListItems as mergeLayerListItems,
 } from "redux/reducers/layerReducer";
+import { setMessage } from "redux/reducers/messageReducer";
+import {
+  setCurrent as setCurrentScheme,
+  setSocketConnected,
+  updateListItem as updateSchemeListItem,
+} from "redux/reducers/schemeReducer";
 import SocketClient from "utils/socketClient";
 
 export const useBoardSocket = () => {
@@ -32,7 +31,8 @@ export const useBoardSocket = () => {
       SocketClient.emit("room", params.id);
     });
 
-    SocketClient.on("connect_error", () => {
+    SocketClient.on("connect_error", (err) => {
+      console.log("WebSocket Error: ", err);
       dispatch(setSocketConnected(false));
       setTimeout(() => {
         SocketClient.connect();

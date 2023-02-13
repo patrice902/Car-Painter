@@ -845,8 +845,8 @@ Targa.prototype.getImageData = function targaGetImageData(imageData) {
     // In Thread context ?
     else {
       imageData = {
-        width: width,
-        height: height,
+        width,
+        height,
         data: new Uint8ClampedArray(width * height * 4),
       };
     }

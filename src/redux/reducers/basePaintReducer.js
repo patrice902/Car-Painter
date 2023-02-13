@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setMessage } from "./messageReducer";
-// import BasePaintService from "services/basePaintService";
 
 const initialState = {
   list: [],
@@ -47,7 +45,6 @@ export const slice = createSlice({
   },
 });
 
-const { setLoading } = slice.actions;
 export const {
   setCurrent,
   setList,

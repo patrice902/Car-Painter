@@ -1,5 +1,5 @@
+import { Autocomplete, DialogContent } from "components/MaterialUI";
 import styled from "styled-components/macro";
-import { DialogContent, Autocomplete } from "components/MaterialUI";
 
 export const CustomDialogContent = styled(DialogContent)`
   padding-right: 0;

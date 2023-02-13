@@ -1,13 +1,11 @@
-import React, { useMemo, useCallback } from "react";
-import _ from "lodash";
-
-import { FinishOptions, LayerTypes, ViewModes } from "constant";
-import { basePaintAssetURL, legacyBasePaintAssetURL } from "helper";
-
 import { URLImage } from "components/konva";
 import config from "config";
-import { useSelector } from "react-redux";
+import { FinishOptions, LayerTypes, ViewModes } from "constant";
+import { basePaintAssetURL, legacyBasePaintAssetURL } from "helper";
 import { useLayer, useScheme } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 
 export const BasePaints = React.memo(() => {
   const { legacyMode } = useScheme();

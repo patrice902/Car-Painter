@@ -1,39 +1,37 @@
-import React, { useState, useMemo, useCallback } from "react";
-
-import config from "config";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Box,
-  IconButton,
-  Typography,
-  MenuItem,
-  CircularProgress,
   Avatar,
+  Box,
+  CircularProgress,
+  IconButton,
   LinearProgress,
   Menu,
+  MenuItem,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import { AvatarGroup } from "@material-ui/lab";
+import ShowroomNoCar from "assets/showroom_no_car.svg";
 import { ImageWithLoad, LightTooltip } from "components/common";
 import { ConfirmDialog } from "components/dialogs";
-import {
-  ActionIcon,
-  BreakableTypography,
-  faStarOn,
-  faStarOff,
-} from "./ProjectItem.style";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ShowroomNoCar from "assets/showroom_no_car.svg";
-
+import config from "config";
 import {
   getDifferenceFromToday,
   getUserName,
   reduceString,
   setScrollPostion,
 } from "helper";
-import { AvatarGroup } from "@material-ui/lab";
-import { setPreviousPath } from "redux/reducers/authReducer";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { setPreviousPath } from "redux/reducers/authReducer";
 import CarService from "services/carService";
+
+import {
+  ActionIcon,
+  BreakableTypography,
+  faStarOff,
+  faStarOn,
+} from "./ProjectItem.style";
 
 export const ProjectItem = React.memo((props) => {
   const {
@@ -113,7 +111,8 @@ export const ProjectItem = React.memo((props) => {
     setDeleteMessage(
       <>
         Are you sure you want to{" "}
-        {!shared ? "delete" : !accepted ? "reject" : "remove"} "{scheme.name}"?
+        {!shared ? "delete" : !accepted ? "reject" : "remove"} &quot;
+        {scheme.name}&quot;?
         <LinearProgress color="secondary" style={{ margin: "10px 0" }} />
       </>
     );
@@ -133,7 +132,8 @@ export const ProjectItem = React.memo((props) => {
     setDeleteMessage(
       <>
         Are you sure you want to{" "}
-        {!shared ? "delete" : !accepted ? "reject" : "remove"} "{scheme.name}"?
+        {!shared ? "delete" : !accepted ? "reject" : "remove"} &quot;
+        {scheme.name}&quot;?
         {hasPrimaryRace && (
           <>
             <br />

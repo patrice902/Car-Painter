@@ -1,6 +1,6 @@
 import config from "config";
-import TGA from "utils/tga";
 import { Browser, LayerTypes, MouseModes } from "constant";
+import TGA from "utils/tga";
 import { v4 as uuidv4 } from "uuid";
 // import validateColor from "validate-color";
 
@@ -348,8 +348,8 @@ export const dataURItoBlob = (dataURI, type = "image/png") => {
 export const getTGA = (ctx, width, height) => {
   let imageData = ctx.getImageData(0, 0, width, height);
   var tga = new TGA({
-    width: width,
-    height: height,
+    width,
+    height,
     imageType: TGA.Type.RGB,
   });
   tga.setImageData(imageData);

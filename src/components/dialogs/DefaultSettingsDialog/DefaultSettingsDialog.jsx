@@ -1,23 +1,21 @@
-import React from "react";
-import * as Yup from "yup";
-import { Formik, Form } from "formik";
-import { useSelector } from "react-redux";
-
-import { colorValidator } from "helper";
-
+import { ColorPickerInput, SliderInput } from "components/common";
 import {
   Box,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Typography,
+  DialogContent,
+  DialogTitle,
   Grid,
+  Typography,
 } from "components/MaterialUI";
-import { ColorPickerInput, SliderInput } from "components/common";
+import { Form, Formik } from "formik";
+import { colorValidator } from "helper";
+import React, { useCallback } from "react";
+import { useSelector } from "react-redux";
+import * as Yup from "yup";
+
 import { SubForm } from "./SubForm";
-import { useCallback } from "react";
 
 export const DefaultSettingsDialog = React.memo((props) => {
   const { onCancel, open, onApply } = props;
@@ -68,7 +66,7 @@ export const DefaultSettingsDialog = React.memo((props) => {
             .test("color-validation", "Incorrect Color Format", colorValidator),
         })}
         enableReinitialize
-        validate={(values) => {
+        validate={() => {
           return {};
         }}
         onSubmit={onApply}

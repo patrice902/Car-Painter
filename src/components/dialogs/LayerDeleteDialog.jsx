@@ -1,16 +1,15 @@
-import React, { useState, useCallback } from "react";
-
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  CircularProgress,
   Checkbox,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControlLabel,
+  Typography,
 } from "components/MaterialUI";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
 export const LayerDeleteDialog = React.memo((props) => {

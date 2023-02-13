@@ -1,21 +1,20 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Helmet } from "react-helmet";
-import ReactGA from "react-ga";
 import DateFnsUtils from "@date-io/date-fns";
-import { ThemeProvider } from "styled-components/macro";
-
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import {
   StylesProvider,
   ThemeProvider as MuiThemeProvider,
 } from "@material-ui/core/styles";
-
-import createTheme from "./theme";
-import Routes from "./routes/Routes";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import config from "config";
+import React from "react";
+import { initialize as initializeGA } from "react-ga";
+import { Helmet } from "react-helmet";
+import { useSelector } from "react-redux";
+import { ThemeProvider } from "styled-components";
 
-ReactGA.initialize(config.gaTrackingID);
+import Routes from "./routes/Routes";
+import createTheme from "./theme";
+
+initializeGA(config.gaTrackingID);
 
 function App() {
   const theme = useSelector((state) => state.themeReducer);

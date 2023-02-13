@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setMessage } from "./messageReducer";
 import FontService from "services/fontService";
+
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],

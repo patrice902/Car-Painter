@@ -1,21 +1,20 @@
-import React, { useState, useMemo } from "react";
-
-import { AllowedLayerProps, LayerTypes, FinishOptions } from "constant";
-
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
-  Typography,
   Grid,
   MenuItem,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  Typography,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
-import { useSelector } from "react-redux";
-import { LabelTypography } from "../../../PropertyBar.style";
+import { AllowedLayerProps, FinishOptions, LayerTypes } from "constant";
 import { focusBoardQuickly } from "helper";
+import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+
 import { FormColorPickerInput, FormSelect } from "../../../components";
+import { LabelTypography } from "../../../PropertyBar.style";
 
 export const ColorProperty = React.memo((props) => {
   const {

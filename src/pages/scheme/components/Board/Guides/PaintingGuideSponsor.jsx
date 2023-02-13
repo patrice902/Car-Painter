@@ -1,12 +1,11 @@
-import React, { useCallback } from "react";
-import { PaintingGuides } from "constant";
-
-import { legacyCarMakeAssetURL, carMakeAssetURL } from "helper";
 import { URLImage } from "components/konva";
-import { useSelector } from "react-redux";
+import { PaintingGuides } from "constant";
+import { carMakeAssetURL, legacyCarMakeAssetURL } from "helper";
 import { useLayer, useScheme } from "hooks";
+import React, { useCallback } from "react";
+import { useSelector } from "react-redux";
 
-export const PaintingGuideSponsor = React.memo((props) => {
+export const PaintingGuideSponsor = React.memo(() => {
   const { legacyMode, guideData } = useScheme();
   const { loadedStatuses, onLoadLayer, onExpandFrameFromImage } = useLayer();
 

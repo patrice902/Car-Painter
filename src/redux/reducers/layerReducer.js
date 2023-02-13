@@ -1,27 +1,27 @@
-import _ from "lodash";
 import { createSlice } from "@reduxjs/toolkit";
-import SocketClient from "utils/socketClient";
-
 import {
-  LayerTypes,
-  DefaultLayer,
   AllowedLayerProps,
-  HistoryActions,
+  DefaultLayer,
   DrawingStatus,
+  HistoryActions,
+  LayerTypes,
   MouseModes,
 } from "constant";
 import {
+  clearScrollPosition,
   fitPoints,
   getNameFromUploadFileName,
+  mergeTwoLayer,
   parseLayer,
   rotatePoint,
   stringifyLayer,
-  mergeTwoLayer,
-  clearScrollPosition,
 } from "helper";
+import _ from "lodash";
 import LayerService from "services/layerService";
-import { setMessage } from "./messageReducer";
+import SocketClient from "utils/socketClient";
+
 import { pushToActionHistory } from "./boardReducer";
+import { setMessage } from "./messageReducer";
 
 const initialState = {
   list: [],
@@ -39,7 +39,7 @@ export const slice = createSlice({
   name: "layerReducer",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: () => initialState,
     setLoading: (state, action) => {
       state.loading = action.payload;
     },

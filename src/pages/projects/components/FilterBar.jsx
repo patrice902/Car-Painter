@@ -1,22 +1,21 @@
-import React, { useCallback, useState } from "react";
-import styled from "styled-components/macro";
-
+import { IconButton, Menu, useMediaQuery } from "@material-ui/core";
+import { MoreVert as ActionIcon } from "@material-ui/icons";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import { SearchBox } from "components/common";
 import {
   Box,
-  Select,
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
-  FormControl,
-  Checkbox,
-  FormControlLabel,
-  Button,
+  Select,
 } from "components/MaterialUI";
-import { MoreVert as ActionIcon } from "@material-ui/icons";
-import { SearchBox } from "components/common";
+import React, { useCallback, useEffect, useState } from "react";
+import styled from "styled-components/macro";
+
 import CarMakeAutocomplete from "./CarMakeAutocomplete";
-import { IconButton, Menu, useMediaQuery } from "@material-ui/core";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import { useEffect } from "react";
 
 export const FilterBar = React.memo(
   ({

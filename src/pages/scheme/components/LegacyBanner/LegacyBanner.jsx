@@ -1,8 +1,8 @@
-import React from "react";
-
-import { NavLink } from "react-router-dom";
-import { Box, Typography, IconButton, useMediaQuery } from "@material-ui/core";
+import { Box, IconButton, Typography, useMediaQuery } from "@material-ui/core";
 import { HighlightOff as CloseIcon } from "@material-ui/icons";
+import React from "react";
+import { NavLink } from "react-router-dom";
+
 import { useStyles } from "./LegacyBanner.style";
 
 export const LegacyBanner = React.memo(({ show, carMakeID, onDismiss }) => {

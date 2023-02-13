@@ -1,35 +1,34 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { useHistory } from "react-router";
-
-import {
-  Box,
-  Button,
-  IconButton,
-  CircularProgress,
-  Checkbox,
-  DialogActions,
-  Typography,
-  useMediaQuery,
-} from "components/MaterialUI";
-import { LightTooltip } from "components/common";
-import { ConfirmDialog } from "components/dialogs";
-import {
-  CustomDialogContent,
-  CustomButton,
-  NameInput,
-  CustomFormControlLabel,
-} from "./styles";
-
+import { faStar as faStarOff } from "@fortawesome/free-regular-svg-icons";
+import { faStar as faStarOn } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Save as SaveIcon,
   SettingsBackupRestore as BackUpIcon,
 } from "@material-ui/icons";
-import { faStar as faStarOn } from "@fortawesome/free-solid-svg-icons";
-import { faStar as faStarOff } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch, useSelector } from "react-redux";
-import { updateScheme } from "redux/reducers/schemeReducer";
+import { LightTooltip } from "components/common";
+import { ConfirmDialog } from "components/dialogs";
+import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  DialogActions,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from "components/MaterialUI";
 import { getUserName } from "helper";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
+import { updateScheme } from "redux/reducers/schemeReducer";
+
+import {
+  CustomButton,
+  CustomDialogContent,
+  CustomFormControlLabel,
+  NameInput,
+} from "./styles";
 
 export const GeneralSetting = React.memo((props) => {
   const {
@@ -230,14 +229,15 @@ export const GeneralSetting = React.memo((props) => {
               onClick={() =>
                 setDeleteMessage(
                   <>
-                    Are you sure you want to delete "{scheme.name}"?
+                    Are you sure you want to delete &quot;{scheme.name}&quot;?
                     {hasPrimaryRace && (
                       <>
                         <br />
-                        This project is associated with an active paint for your{" "}
+                        This project is associated with an active paint for
+                        your&nbsp;
                         {currentCarMake.name}. <br />
-                        If you delete this project, you won’t be able to make
-                        changes.
+                        If you delete this project, you won&quot;t be able to
+                        make changes.
                       </>
                     )}
                   </>

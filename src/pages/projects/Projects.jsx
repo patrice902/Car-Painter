@@ -1,44 +1,42 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import _ from "lodash";
-
-import { Box, Typography, useMediaQuery } from "components/MaterialUI";
-
+import { Button } from "@material-ui/core";
 import { Add as AddIcon } from "@material-ui/icons";
 import { AppHeader, ScreenLoader } from "components/common";
-import {
-  MyProjects,
-  SharedProjects,
-  FavoriteProjects,
-  TabBar,
-  FilterBar,
-} from "./components";
-
-import {
-  getSchemeList,
-  deleteScheme,
-  cloneScheme,
-  getSharedList,
-  updateSharedItem,
-  deleteSharedItem,
-  getFavoriteList,
-  deleteFavoriteItem,
-  createFavoriteScheme,
-  clearCurrent as clearCurrentScheme,
-  clearSharedUsers,
-  setLoaded as setSchemeLoaded,
-  createScheme,
-} from "redux/reducers/schemeReducer";
-import { reset as resetLayerReducer } from "redux/reducers/layerReducer";
+import { CreateProjectDialog } from "components/dialogs";
+import { Box, Typography, useMediaQuery } from "components/MaterialUI";
+import { scrollTopOnProjectList } from "helper";
+import { useGeneralSocket } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 import { reset as resetBoardReducer } from "redux/reducers/boardReducer";
 import { getCarMakeList } from "redux/reducers/carMakeReducer";
-import { useGeneralSocket } from "hooks";
 import { getCarPinListByUserID } from "redux/reducers/carPinReducer";
-import { CreateProjectDialog } from "components/dialogs";
-import { useHistory } from "react-router";
+import { reset as resetLayerReducer } from "redux/reducers/layerReducer";
+import {
+  clearCurrent as clearCurrentScheme,
+  clearSharedUsers,
+  cloneScheme,
+  createFavoriteScheme,
+  createScheme,
+  deleteFavoriteItem,
+  deleteScheme,
+  deleteSharedItem,
+  getFavoriteList,
+  getSchemeList,
+  getSharedList,
+  setLoaded as setSchemeLoaded,
+  updateSharedItem,
+} from "redux/reducers/schemeReducer";
 import styled from "styled-components";
-import { scrollTopOnProjectList } from "helper";
-import { Button } from "@material-ui/core";
+
+import {
+  FavoriteProjects,
+  FilterBar,
+  MyProjects,
+  SharedProjects,
+  TabBar,
+} from "./components";
 
 export const Projects = React.memo(() => {
   const dispatch = useDispatch();

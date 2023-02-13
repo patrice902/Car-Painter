@@ -1,8 +1,8 @@
-import styled from "styled-components";
 import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from "@material-ui/icons";
+import styled from "styled-components";
 
 export { VisibilityIcon, VisibilityOffIcon };
 

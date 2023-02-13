@@ -1,11 +1,14 @@
-import socketIOClient from "socket.io-client";
 import config from "config";
+import CookieService from "services/cookieService";
+import socketIOClient from "socket.io-client";
 
 class SocketClient {
   static connect = () => {
     this.socket = socketIOClient(config.backendURL, {
       transports: ["websocket"],
-      secure: false,
+      auth: {
+        token: JSON.stringify(CookieService.getSiteLogin()),
+      },
     });
   };
 

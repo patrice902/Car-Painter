@@ -1,13 +1,11 @@
-import React, { useMemo, useCallback } from "react";
-import _ from "lodash";
-
+import { GroupedURLImage } from "components/konva";
 import config from "config";
 import { FinishOptions, LayerTypes, MouseModes, ViewModes } from "constant";
 import { getRelativeShadowOffset } from "helper";
-
-import { GroupedURLImage } from "components/konva";
-import { useSelector } from "react-redux";
 import { useLayer, useScheme } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 
 export const Overlays = React.memo((props) => {
   const {

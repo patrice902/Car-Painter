@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
-import _ from "lodash";
 import { AllowedLayerProps, LayerTypes, MouseModes } from "constant";
 import { mathRound2 } from "helper";
+import _ from "lodash";
+import { useCallback, useMemo, useState } from "react";
 
 export const useTransform = ({
   shapeRef,
@@ -166,66 +166,57 @@ export const useTransform = ({
     [AllowedLayerTypes, imageshapeRef, layer, offsetsFromStroke, shapeRef]
   );
 
-  const handleTransformStart = useCallback(
-    (e) => {
-      setTransforming(true);
-      if (onSetTransformingLayer) {
-        onSetTransformingLayer(layer);
-      }
-      if (onDragStart) onDragStart();
-    },
-    [layer, onDragStart, onSetTransformingLayer]
-  );
+  const handleTransformStart = useCallback(() => {
+    setTransforming(true);
+    if (onSetTransformingLayer) {
+      onSetTransformingLayer(layer);
+    }
+    if (onDragStart) onDragStart();
+  }, [layer, onDragStart, onSetTransformingLayer]);
 
-  const handleTransformEnd = useCallback(
-    (e) => {
-      setTransforming(false);
-      if (onSetTransformingLayer) {
-        onSetTransformingLayer(null);
-      }
-      // const opacity = layer ? layer.layer_data.opacity : 1;
-      // e.target.opacity(opacity);
-      if (onChange) {
-        onChange(getTransformChange(true));
-        if (applyCaching) applyCaching();
-        if (onDragEnd) onDragEnd();
-      }
-    },
-    [
-      onSetTransformingLayer,
-      onChange,
-      getTransformChange,
-      applyCaching,
-      onDragEnd,
-    ]
-  );
+  const handleTransformEnd = useCallback(() => {
+    setTransforming(false);
+    if (onSetTransformingLayer) {
+      onSetTransformingLayer(null);
+    }
+    // const opacity = layer ? layer.layer_data.opacity : 1;
+    // e.target.opacity(opacity);
+    if (onChange) {
+      onChange(getTransformChange(true));
+      if (applyCaching) applyCaching();
+      if (onDragEnd) onDragEnd();
+    }
+  }, [
+    onSetTransformingLayer,
+    onChange,
+    getTransformChange,
+    applyCaching,
+    onDragEnd,
+  ]);
 
-  const handleTransform = useCallback(
-    (e) => {
-      // let opacity = layer ? layer.layer_data.opacity : 1;
-      // var box = getShapeClientRect(e.target);
-      // if (
-      //   box.x < 0 ||
-      //   box.y < 0 ||
-      //   box.x + box.width > frameSize.width ||
-      //   box.y + box.height > frameSize.height
-      // ) {
-      //   e.target.opacity(opacity / 2);
-      // } else {
-      //   e.target.opacity(opacity);
-      // }
-      if (onSetTransformingLayer) {
-        onSetTransformingLayer({
-          ...layer,
-          layer_data: {
-            ...layer.layer_data,
-            ...getTransformChange(),
-          },
-        });
-      }
-    },
-    [getTransformChange, layer, onSetTransformingLayer]
-  );
+  const handleTransform = useCallback(() => {
+    // let opacity = layer ? layer.layer_data.opacity : 1;
+    // var box = getShapeClientRect(e.target);
+    // if (
+    //   box.x < 0 ||
+    //   box.y < 0 ||
+    //   box.x + box.width > frameSize.width ||
+    //   box.y + box.height > frameSize.height
+    // ) {
+    //   e.target.opacity(opacity / 2);
+    // } else {
+    //   e.target.opacity(opacity);
+    // }
+    if (onSetTransformingLayer) {
+      onSetTransformingLayer({
+        ...layer,
+        layer_data: {
+          ...layer.layer_data,
+          ...getTransformChange(),
+        },
+      });
+    }
+  }, [getTransformChange, layer, onSetTransformingLayer]);
 
   return {
     transforming,

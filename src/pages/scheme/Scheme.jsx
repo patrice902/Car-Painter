@@ -1,54 +1,51 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
-
-import { useSelector, useDispatch } from "react-redux";
-import useInterval from "react-useinterval";
-import KeyboardEventHandler from "react-keyboard-event-handler";
-import { Helmet } from "react-helmet";
-import { useHistory, useParams } from "react-router";
-
 import { Box, useMediaQuery } from "@material-ui/core";
-
 import { ScreenLoader } from "components/common";
-import {
-  Toolbar as DesktopToolbar,
-  Board,
-  LeftBar,
-  MobileLayersBar,
-  PropertyBar as DesktopPropertyBar,
-  BoardGuide,
-  Header,
-  MobileDrawerBar,
-} from "./components";
-
-import {
-  getScheme,
-  setLoaded,
-  getSharedUsers,
-  getFavoriteList,
-} from "redux/reducers/schemeReducer";
-import { getOverlayList } from "redux/reducers/overlayReducer";
-import { getFontList } from "redux/reducers/fontReducer";
-import { getLogoList } from "redux/reducers/logoReducer";
-import { setMessage } from "redux/reducers/messageReducer";
-import { setBoardRotate, setisAboveMobile } from "redux/reducers/boardReducer";
-import { getUploadListByUserID } from "redux/reducers/uploadReducer";
-
-import { useBoardSocket, useCapture, useZoom, withKeyEvent } from "hooks";
-import { withWrapper } from "./withWrapper";
-import { LegacyBanner } from "./components/LegacyBanner";
-import { ReconnectionBanner } from "./components/ReconnectionBanner";
-import { getCarRaces } from "redux/reducers/carReducer";
-import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
 import { MouseModes } from "constant";
 import { focusBoardQuickly, isWindows } from "helper";
+import { useBoardSocket, useCapture, useZoom, withKeyEvent } from "hooks";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Helmet } from "react-helmet";
+import KeyboardEventHandler from "react-keyboard-event-handler";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router";
+import useInterval from "react-useinterval";
+import { setBoardRotate, setisAboveMobile } from "redux/reducers/boardReducer";
+import { getCarRaces } from "redux/reducers/carReducer";
+import { getDownloaderStatus } from "redux/reducers/downloaderReducer";
+import { getFontList } from "redux/reducers/fontReducer";
 import { setLoadedStatusAll } from "redux/reducers/layerReducer";
-import { MobilePropertyBar, MobileToolbar } from "./components";
+import { getLogoList } from "redux/reducers/logoReducer";
+import { setMessage } from "redux/reducers/messageReducer";
+import { getOverlayList } from "redux/reducers/overlayReducer";
+import {
+  getFavoriteList,
+  getScheme,
+  getSharedUsers,
+  setLoaded,
+} from "redux/reducers/schemeReducer";
+import { getUploadListByUserID } from "redux/reducers/uploadReducer";
+
+import {
+  Board,
+  BoardGuide,
+  Header,
+  LeftBar,
+  MobileDrawerBar,
+  MobileLayersBar,
+  MobilePropertyBar,
+  MobileToolbar,
+  PropertyBar as DesktopPropertyBar,
+  Toolbar as DesktopToolbar,
+} from "./components";
+import { LegacyBanner } from "./components/LegacyBanner";
+import { ReconnectionBanner } from "./components/ReconnectionBanner";
+import { withWrapper } from "./withWrapper";
 
 const Scheme = React.memo((props) => {
   const {

@@ -1,21 +1,20 @@
-import React, { useCallback } from "react";
-import { Form } from "formik";
-
-import { Box, Grid } from "components/MaterialUI";
-import { SubForm } from "./SubForm";
-
 import { LightTooltip } from "components/common";
-import { CustomFormControlLabel } from "./styles";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  updateScheme,
-  setCurrent as setCurrentScheme,
-} from "redux/reducers/schemeReducer";
-import { setPaintingGuides } from "redux/reducers/boardReducer";
+import { Box, Grid } from "components/MaterialUI";
+import { Form } from "formik";
 import {
   FormCheckbox,
   FormSliderInput,
 } from "pages/scheme/components/PropertyBar/components";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setPaintingGuides } from "redux/reducers/boardReducer";
+import {
+  setCurrent as setCurrentScheme,
+  updateScheme,
+} from "redux/reducers/schemeReducer";
+
+import { CustomFormControlLabel } from "./styles";
+import { SubForm } from "./SubForm";
 
 export const InnerForm = React.memo(
   ({ editable, initialValues, ...formProps }) => {

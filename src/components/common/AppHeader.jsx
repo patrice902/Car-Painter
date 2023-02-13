@@ -1,23 +1,21 @@
-import React, { useCallback, useState } from "react";
-
 import {
   Avatar,
   Box,
   Button,
   Divider,
   Link as MuiLink,
-  Typography,
   Popover,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import TradingPaintsLogo from "assets/trading-paints-logo.svg";
 import PaintBuilderLogo from "assets/paint-builder-logo.svg";
+import TradingPaintsLogo from "assets/trading-paints-logo.svg";
 import { getUserName } from "helper";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { signOut } from "redux/reducers/authReducer";
-import { useMemo } from "react";
+import styled from "styled-components";
 
 export const AppHeader = React.memo(({ isBoard, children }) => {
   const dispatch = useDispatch();

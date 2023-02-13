@@ -1,5 +1,6 @@
+import { Box, Grid, Slider, Tooltip, Typography } from "components/MaterialUI";
 import React, { useCallback } from "react";
-import { Slider, Tooltip, Box, Grid, Typography } from "components/MaterialUI";
+
 import { CustomInput, SliderWrapper, Wrapper } from "./SliderInput.style";
 
 const ValueLabelComponent = React.memo((props) => (
@@ -68,8 +69,8 @@ export const SliderInput = React.memo((props) => {
               }
               onBlur={handleBlur}
               inputProps={{
-                min: min,
-                max: max,
+                min,
+                max,
                 step: step || 1,
                 "aria-labelledby": "input-slider",
               }}

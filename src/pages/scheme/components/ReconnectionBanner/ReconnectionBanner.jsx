@@ -1,5 +1,5 @@
-import React from "react";
 import { Box, Typography, useMediaQuery } from "@material-ui/core";
+import React from "react";
 
 export const ReconnectionBanner = React.memo(({ show }) => {
   const isAboveMobile = useMediaQuery((theme) => theme.breakpoints.up("sm"));

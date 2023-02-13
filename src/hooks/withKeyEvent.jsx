@@ -1,51 +1,46 @@
-import React, { useRef, useCallback, useEffect, useState } from "react";
-
-import _ from "lodash";
-
-import { useSelector, useDispatch } from "react-redux";
-import { usePageVisibility } from "react-page-visibility";
-
+import LayerDeleteDialog from "components/dialogs/LayerDeleteDialog";
 import {
+  Browser,
+  DialogTypes,
+  DrawingStatus,
+  LayerTypes,
   MouseModes,
   PaintingGuides,
-  DialogTypes,
-  LayerTypes,
-  DrawingStatus,
-  Browser,
 } from "constant";
-
 import {
-  setCurrent as setCurrentLayer,
-  updateLayer,
-  updateLayerOnly,
-  setClipboard as setLayerClipboard,
-  setDrawingStatus,
-  deleteLayer,
-  cloneLayer,
-} from "redux/reducers/layerReducer";
-import {
-  setZoom,
-  setMouseMode,
-  setPressedKey,
-  setPressedEventKey,
-  historyActionUp,
-  historyActionBack,
-  setPaintingGuides,
-  setBoardRotate,
-} from "redux/reducers/boardReducer";
-import { useZoom } from "hooks";
-import {
-  getZoomedCenterPosition,
+  detectBrowser,
   focusBoard,
+  getZoomedCenterPosition,
   isInSameSideBar,
   isWindows,
-  detectBrowser,
 } from "helper";
-
-import LayerDeleteDialog from "components/dialogs/LayerDeleteDialog";
-import SchemeService from "services/schemeService";
-import { deleteUpload } from "redux/reducers/uploadReducer";
+import { useZoom } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { usePageVisibility } from "react-page-visibility";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  historyActionBack,
+  historyActionUp,
+  setBoardRotate,
+  setMouseMode,
+  setPaintingGuides,
+  setPressedEventKey,
+  setPressedKey,
+  setZoom,
+} from "redux/reducers/boardReducer";
 import { setAskingSimPreviewByLatest } from "redux/reducers/downloaderReducer";
+import {
+  cloneLayer,
+  deleteLayer,
+  setClipboard as setLayerClipboard,
+  setCurrent as setCurrentLayer,
+  setDrawingStatus,
+  updateLayer,
+  updateLayerOnly,
+} from "redux/reducers/layerReducer";
+import { deleteUpload } from "redux/reducers/uploadReducer";
+import SchemeService from "services/schemeService";
 import { useDebouncedCallback } from "use-debounce";
 
 const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
@@ -210,7 +205,7 @@ export const withKeyEvent = (Component) =>
         dispatch(
           updateLayer({
             id: currentLayer.id,
-            layer_data: layer_data,
+            layer_data,
           })
         );
       },
@@ -428,7 +423,7 @@ export const withKeyEvent = (Component) =>
               dispatch(
                 updateLayerOnly({
                   id: currentLayer.id,
-                  layer_data: layer_data,
+                  layer_data,
                 })
               );
               handleDebouncedLayerDataUpdate(layer_data);

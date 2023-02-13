@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react";
-import styled from "styled-components/macro";
-import { funWords } from "constant";
-import { getTwoRandomNumbers } from "helper";
-
 import {
+  Box,
   Button,
   Dialog,
-  DialogTitle,
   DialogContent,
-  Box,
+  DialogTitle,
 } from "components/MaterialUI";
-import { CustomDialogActions, NameField } from "./CreateProjectDialog.style";
+import { funWords } from "constant";
+import { getTwoRandomNumbers } from "helper";
 import CarMakeAutocomplete from "pages/projects/components/CarMakeAutocomplete";
+import React, { useCallback, useEffect, useState } from "react";
+import styled from "styled-components/macro";
+
+import { CustomDialogActions, NameField } from "./CreateProjectDialog.style";
 
 export const CreateProjectDialog = React.memo((props) => {
   const {

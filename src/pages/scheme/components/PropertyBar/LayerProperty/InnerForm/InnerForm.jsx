@@ -1,25 +1,24 @@
-import React, { useCallback } from "react";
-import { Form } from "formik";
-
 import { DefaultLayer } from "constant";
-
-import {
-  NameProperty,
-  GeneralProperty,
-  SizeProperty,
-  PositionProperty,
-  FontProperty,
-  StrokeProperty,
-  ColorProperty,
-  BackgroundProperty,
-  RotationProperty,
-  ShadowProperty,
-  CornerProperty,
-  ExtraProperty,
-  SkewProperty,
-} from "./components";
+import { Form } from "formik";
+import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { updateLayer, updateLayerOnly } from "redux/reducers/layerReducer";
+
+import {
+  BackgroundProperty,
+  ColorProperty,
+  CornerProperty,
+  ExtraProperty,
+  FontProperty,
+  GeneralProperty,
+  NameProperty,
+  PositionProperty,
+  RotationProperty,
+  ShadowProperty,
+  SizeProperty,
+  SkewProperty,
+  StrokeProperty,
+} from "./components";
 
 export const InnerForm = React.memo(
   ({

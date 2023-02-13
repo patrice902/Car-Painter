@@ -1,6 +1,6 @@
 import axios from "axios";
-import https from "https";
 import config from "config";
+import https from "https";
 
 import CookieService from "./cookieService";
 const baseURL = config.apiURL || "";
@@ -62,7 +62,7 @@ export default class BaseAPIService {
   ) => {
     return axios
       .request({
-        url: url,
+        url,
         headers: {
           "Content-Type": contentType,
         },
@@ -85,7 +85,7 @@ export default class BaseAPIService {
   ) => {
     return axios
       .request({
-        url: url,
+        url,
         headers: {
           Authorization: JSON.stringify(CookieService.getSiteLogin()),
           "Content-Type": contentType,

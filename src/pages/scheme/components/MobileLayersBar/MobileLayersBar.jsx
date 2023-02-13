@@ -1,10 +1,9 @@
+import { Box, IconButton } from "@material-ui/core";
 import React, { useCallback, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
-import { IconButton, Box } from "@material-ui/core";
 import { BsChevronDoubleDown } from "react-icons/bs";
-
+import { useDispatch, useSelector } from "react-redux";
 import { setShowLayers } from "redux/reducers/boardReducer";
+
 import { LayersBar } from "../LayersBar";
 
 export const MobileLayersBar = React.memo((props) => {

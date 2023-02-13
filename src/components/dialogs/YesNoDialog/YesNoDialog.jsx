@@ -1,12 +1,12 @@
-import React from "react";
-
 import {
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "components/MaterialUI";
+import React from "react";
+
 import { TextWrapper } from "./YesNoDialog.style";
 
 export const YesNoDialog = React.memo((props) => {

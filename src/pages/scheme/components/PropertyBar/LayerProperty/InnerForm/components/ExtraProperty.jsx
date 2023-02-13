@@ -1,8 +1,6 @@
-import React, { useMemo } from "react";
-
-import { AllowedLayerProps, LayerTypes } from "constant";
-
 import { Box, Button } from "@material-ui/core";
+import { AllowedLayerProps, LayerTypes } from "constant";
+import React, { useMemo } from "react";
 
 export const ExtraProperty = React.memo((props) => {
   const { editable, values, onClone, onDelete } = props;

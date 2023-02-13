@@ -1,14 +1,13 @@
-import React, { useState, useMemo, useCallback } from "react";
-
-import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
 import { Loader } from "components/common";
+import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
 import config from "config";
+import React, { useCallback, useMemo, useState } from "react";
 
 import {
-  CustomInfiniteScroll,
   CustomImageList,
   CustomImageListItem,
   CustomImg,
+  CustomInfiniteScroll,
 } from "./common.style";
 
 export const FlagContent = React.memo((props) => {

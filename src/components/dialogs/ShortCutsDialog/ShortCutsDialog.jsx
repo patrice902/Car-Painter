@@ -1,8 +1,8 @@
-import React from "react";
+import { Dialog, DialogContent, DialogTitle, Grid } from "@material-ui/core";
 import { ShortCuts } from "constant/shortcuts";
+import React from "react";
 
-import { Grid, Dialog, DialogTitle, DialogContent } from "@material-ui/core";
-import { KeyText, DescriptionText } from "./ShortCutsDialog.style";
+import { DescriptionText, KeyText } from "./ShortCutsDialog.style";
 
 export const ShortCutsDialog = React.memo((props) => {
   const { onCancel, open } = props;

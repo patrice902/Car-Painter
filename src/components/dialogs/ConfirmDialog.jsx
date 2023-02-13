@@ -1,14 +1,13 @@
-import React from "react";
-
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
 } from "components/MaterialUI";
+import React from "react";
 
 export const ConfirmDialog = React.memo((props) => {
   const { text, open, confirmLoading, onCancel, onConfirm } = props;

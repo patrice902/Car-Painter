@@ -1,11 +1,10 @@
-import React, { useMemo } from "react";
-import * as Yup from "yup";
 import { Formik } from "formik";
-
 import { colorValidator } from "helper";
+import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
+import * as Yup from "yup";
 
 import { InnerForm } from "./InnerForm";
-import { useSelector } from "react-redux";
 
 export const GuidesSetting = React.memo((props) => {
   const { editable } = props;
@@ -76,7 +75,7 @@ export const GuidesSetting = React.memo((props) => {
           .nullable()
           .test("color-validation", "Incorrect Color Format", colorValidator),
       })}
-      validate={(values) => {
+      validate={() => {
         return {};
       }}
       enableReinitialize

@@ -1,25 +1,25 @@
-import React, { useState, useMemo, useCallback } from "react";
-
-import {
-  Accordion,
-  AccordionDetails,
-  Box,
-  Typography,
-  Grid,
-  IconButton,
-} from "components/MaterialUI";
 import {
   ExpandMore as ExpandMoreIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from "@material-ui/icons";
-import { CustomAccordionSummary } from "./styles";
-import { LabelTypography } from "pages/scheme/components/PropertyBar/PropertyBar.style";
+import {
+  Accordion,
+  AccordionDetails,
+  Box,
+  Grid,
+  IconButton,
+  Typography,
+} from "components/MaterialUI";
 import { focusBoardQuickly } from "helper";
 import {
   FormColorPickerInput,
   FormSliderInput,
 } from "pages/scheme/components/PropertyBar/components";
+import { LabelTypography } from "pages/scheme/components/PropertyBar/PropertyBar.style";
+import React, { useCallback, useMemo, useState } from "react";
+
+import { CustomAccordionSummary } from "./styles";
 
 export const SubForm = React.memo((props) => {
   const {

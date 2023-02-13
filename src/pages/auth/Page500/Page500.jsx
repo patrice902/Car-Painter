@@ -1,8 +1,8 @@
-import React from "react";
-
-import Helmet from "react-helmet";
-import { Link } from "react-router-dom";
 import { Button, Typography } from "components/MaterialUI";
+import React from "react";
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
+
 import { Wrapper } from "./Page500.style";
 
 export const Page500 = React.memo(() => {
@@ -16,7 +16,7 @@ export const Page500 = React.memo(() => {
         Internal server error.
       </Typography>
       <Typography component="h2" variant="body1" align="center" gutterBottom>
-        The server encountered something unexpected that didn't allow it to
+        The server encountered something unexpected that didn&apos;t allow it to
         complete the request.
       </Typography>
 

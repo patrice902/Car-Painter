@@ -1,12 +1,10 @@
-import React, { useMemo, useCallback } from "react";
-import _ from "lodash";
-
+import { Shape } from "components/konva";
 import { FinishOptions, LayerTypes, MouseModes, ViewModes } from "constant";
 import { getRelativeShadowOffset, removeDuplicatedPointFromEnd } from "helper";
-
-import { Shape } from "components/konva";
-import { useSelector } from "react-redux";
 import { useLayer, useScheme } from "hooks";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 
 export const Shapes = React.memo((props) => {
   const {

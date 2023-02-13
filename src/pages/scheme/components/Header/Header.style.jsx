@@ -1,11 +1,10 @@
-import styled from "styled-components/macro";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, ButtonGroup } from "@material-ui/core";
 import {
   ArrowDropDown as DropDownIcon,
   Share as ShareIcon,
 } from "@material-ui/icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styled from "styled-components/macro";
 
 export { DropDownIcon, ShareIcon };
 

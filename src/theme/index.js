@@ -1,10 +1,11 @@
 import { createTheme as createMuiTheme } from "@material-ui/core/styles";
-import variants from "./variants";
-import typography from "./typography";
-import overrides from "./overrides";
+
 import breakpoints from "./breakpoints";
+import overrides from "./overrides";
 import props from "./props";
 import shadows from "./shadows";
+import typography from "./typography";
+import variants from "./variants";
 
 const createTheme = (name) => {
   let themeConfig = variants.find((variant) => variant.name === name);
@@ -17,11 +18,11 @@ const createTheme = (name) => {
   return createMuiTheme(
     {
       spacing: 4,
-      breakpoints: breakpoints,
-      overrides: overrides,
-      props: props,
-      typography: typography,
-      shadows: shadows,
+      breakpoints,
+      overrides,
+      props,
+      typography,
+      shadows,
       palette: themeConfig.palette,
     },
     {

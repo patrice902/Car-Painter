@@ -35,13 +35,13 @@ class LogoService {
   static uploadToS3() {
     let filesUploadMulter = multer({
       storage: multerS3({
-        s3: s3,
+        s3,
         bucket: config.bucketURL,
         acl: "public-read",
-        contentType: function (req, file, cb) {
+        contentType(req, file, cb) {
           cb(null, file.mimetype);
         },
-        key: function (req, file, cb) {
+        key(req, file, cb) {
           let { fileNames } = req.body;
           fileNames = JSON.parse(fileNames);
           const path =

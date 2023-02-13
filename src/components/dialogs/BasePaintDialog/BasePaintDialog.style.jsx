@@ -1,7 +1,6 @@
-import styled from "styled-components/macro";
-import InfiniteScroll from "react-infinite-scroll-component";
-
 import { ImageList, ImageListItem, makeStyles } from "@material-ui/core";
+import InfiniteScroll from "react-infinite-scroll-component";
+import styled from "styled-components/macro";
 
 export const CustomInfiniteScroll = styled(InfiniteScroll)`
   &.infinite-scroll-component {

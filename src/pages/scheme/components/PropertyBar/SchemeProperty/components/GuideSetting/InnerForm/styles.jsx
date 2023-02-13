@@ -1,5 +1,5 @@
-import styled from "styled-components/macro";
 import { DialogContent, FormControlLabel } from "components/MaterialUI";
+import styled from "styled-components/macro";
 
 export const CustomFormControlLabel = styled(FormControlLabel)`
   margin-left: 0;

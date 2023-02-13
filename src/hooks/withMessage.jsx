@@ -1,8 +1,7 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Snackbar } from "components/MaterialUI";
 import { Alert } from "@material-ui/lab";
-
+import { Snackbar } from "components/MaterialUI";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setMessage } from "redux/reducers/messageReducer";
 
 const Message = React.memo(() => {

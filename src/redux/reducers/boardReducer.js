@@ -1,17 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  MouseModes,
   HistoryActions,
+  MouseModes,
   PaintingGuides,
   ViewModes,
 } from "constant";
+
 import {
-  updateLayer,
-  deleteLayer,
+  bulkUpdateLayer,
   createLayer,
   createLayerList,
+  deleteLayer,
   deleteLayerList,
-  bulkUpdateLayer,
+  updateLayer,
 } from "./layerReducer";
 import { updateScheme } from "./schemeReducer";
 
@@ -43,11 +44,11 @@ export const slice = createSlice({
   name: "boardReducer",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: () => initialState,
     setFrameSize: (state, action) => {
       state.frameSize = action.payload;
     },
-    clearFrameSize: (state, action) => {
+    clearFrameSize: (state) => {
       state.frameSize = initialState.frameSize;
     },
     setFrameSizeToMax: (state, action) => {

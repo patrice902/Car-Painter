@@ -82,4 +82,4 @@ exports.up = async function (knex) {
   return Promise.all(queries);
 };
 
-exports.down = function (knex) {};
+exports.down = function () {};

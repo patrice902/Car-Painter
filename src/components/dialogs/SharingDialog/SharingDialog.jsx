@@ -1,21 +1,20 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
 import { Box, Dialog, DialogTitle } from "components/MaterialUI";
-import { SharingTab, ShowroomTab } from "./components";
-import {
-  StyledTabs,
-  StyledTab,
-  TabPanel,
-  a11yProps,
-} from "./SharingDialog.style";
-
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setMessage } from "redux/reducers/messageReducer";
 import {
   createSharedUser,
-  updateSharedUserItem,
   deleteSharedUserItem,
+  updateSharedUserItem,
 } from "redux/reducers/schemeReducer";
+
+import { SharingTab, ShowroomTab } from "./components";
+import {
+  a11yProps,
+  StyledTab,
+  StyledTabs,
+  TabPanel,
+} from "./SharingDialog.style";
 
 export const SharingDialog = React.memo((props) => {
   const { editable, onCancel, open, tab, retrieveTGAPNGDataUrl } = props;

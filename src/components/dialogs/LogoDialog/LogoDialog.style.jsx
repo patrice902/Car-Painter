@@ -1,6 +1,7 @@
-import styled from "styled-components/macro";
 import { DialogContent, Tab, Tabs } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import React from "react";
+import styled from "styled-components/macro";
 
 export const CustomDialogContent = styled(DialogContent)(
   ({ theme }) => `

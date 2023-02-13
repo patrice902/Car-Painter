@@ -1,30 +1,29 @@
-import React, { useState, useMemo, useCallback } from "react";
-
-import { AllowedLayerProps, LayerTypes } from "constant";
+import { faSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  rotateAroundCenter,
-  isCenterBasedShape,
-  focusBoardQuickly,
-} from "helper";
-
-import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@material-ui/core";
 import {
   ExpandMore as ExpandMoreIcon,
-  SwapHoriz as SwapHorizIcon,
-  SwapVert as SwapVertIcon,
   RotateLeft as RotateLeftIcon,
   RotateRight as RotateRightIcon,
+  SwapHoriz as SwapHorizIcon,
+  SwapVert as SwapVertIcon,
 } from "@material-ui/icons";
-import { faSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LabelTypography } from "../../../PropertyBar.style";
+import { AllowedLayerProps, LayerTypes } from "constant";
+import {
+  focusBoardQuickly,
+  isCenterBasedShape,
+  rotateAroundCenter,
+} from "helper";
+import React, { useCallback, useMemo, useState } from "react";
+
 import { FormIconButton, FormSliderInput } from "../../../components";
+import { LabelTypography } from "../../../PropertyBar.style";
 
 export const RotationProperty = React.memo((props) => {
   const {

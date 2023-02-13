@@ -1,12 +1,11 @@
-import React, { useMemo, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { AllowedLayerProps, DefaultLayer, LayerTypes } from "constant";
 import { Formik } from "formik";
+import { colorValidator, focusBoardQuickly } from "helper";
+import _ from "lodash";
+import React, { useCallback, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useDebounce } from "use-debounce";
 import * as Yup from "yup";
-import _ from "lodash";
-
-import { AllowedLayerProps, LayerTypes, DefaultLayer } from "constant";
-import { colorValidator, focusBoardQuickly } from "helper";
 
 import { InnerForm } from "./InnerForm";
 

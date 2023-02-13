@@ -1,34 +1,33 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { colorValidator, focusBoardQuickly } from "helper";
-import { FinishOptions, LayerTypes, DialogTypes } from "constant";
-import { EnglishLang } from "constant/language";
-
+import {
+  faCar,
+  faFolderOpen,
+  faFont,
+  faShapes,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Box,
-  Typography,
   Grid,
-  Select,
   MenuItem,
+  Select,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import {
-  faFont,
-  faFolderOpen,
-  faShapes,
-  faCar,
-} from "@fortawesome/free-solid-svg-icons";
 import LogoIcon from "assets/insert-logo.svg";
 import { ColorPickerInput } from "components/common";
-import { PartGroup } from "./PartGroup";
+import { DialogTypes, FinishOptions, LayerTypes } from "constant";
+import { EnglishLang } from "constant/language";
+import { colorValidator, focusBoardQuickly } from "helper";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowProperties } from "redux/reducers/boardReducer";
+import { updateScheme } from "redux/reducers/schemeReducer";
+
 import {
-  LayerWrapper,
   ColorApplyButton,
   CustomFontAwesomeIcon,
+  LayerWrapper,
 } from "./LayersBar.style";
-
-import { updateScheme } from "redux/reducers/schemeReducer";
-import { setShowProperties } from "redux/reducers/boardReducer";
+import { PartGroup } from "./PartGroup";
 
 export const LayersBar = React.memo((props) => {
   const {

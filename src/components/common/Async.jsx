@@ -16,7 +16,7 @@ export const asyncComponent = (importComponent) => {
       const { default: component } = await importComponent();
 
       this.setState({
-        component: component,
+        component,
       });
     }
 
