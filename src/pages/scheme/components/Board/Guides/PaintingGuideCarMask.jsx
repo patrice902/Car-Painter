@@ -18,13 +18,9 @@ export const PaintingGuideCarMask = React.memo(() => {
   const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const getCarMakeImage = useCallback(
-    (image) => {
-      return (
-        (legacyMode
-          ? legacyCarMakeAssetURL(carMake)
-          : carMakeAssetURL(carMake)) + image
-      );
-    },
+    (image) =>
+      (legacyMode ? legacyCarMakeAssetURL(carMake) : carMakeAssetURL(carMake)) +
+      image,
     [legacyMode, carMake]
   );
 

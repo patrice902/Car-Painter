@@ -39,12 +39,14 @@ export const useDrag = ({
     () => (guideData ? Math.max(guideData.grid_padding / 10, 2) : 10),
     [guideData]
   );
-  const getShapeClientRect = useCallback(() => {
-    return shapeRef.current.getClientRect({
-      relativeTo: shapeRef.current.getParent().getParent(),
-      skipShadow: true,
-    });
-  }, [shapeRef]);
+  const getShapeClientRect = useCallback(
+    () =>
+      shapeRef.current.getClientRect({
+        relativeTo: shapeRef.current.getParent().getParent(),
+        skipShadow: true,
+      }),
+    [shapeRef]
+  );
 
   const getLineGuideStops = useCallback(() => {
     var vertical = Array.from(

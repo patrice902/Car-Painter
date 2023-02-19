@@ -148,7 +148,7 @@ export const InnerForm = React.memo((props) => {
             setValue={handleChangeStroke}
           />
         </Grid>
-        <Grid item xs={12} sm={6}></Grid>
+        <Grid item xs={12} sm={6} />
 
         <Grid item xs={12} sm={6}>
           <Grid

@@ -20,13 +20,9 @@ export const PaintingGuideTop = React.memo(() => {
   const gridStroke = useMemo(() => guideData.grid_stroke || 0.1, [guideData]);
 
   const getCarMakeImage = useCallback(
-    (image) => {
-      return (
-        (legacyMode
-          ? legacyCarMakeAssetURL(carMake)
-          : carMakeAssetURL(carMake)) + image
-      );
-    },
+    (image) =>
+      (legacyMode ? legacyCarMakeAssetURL(carMake) : carMakeAssetURL(carMake)) +
+      image,
     [legacyMode, carMake]
   );
 
@@ -50,50 +46,38 @@ export const PaintingGuideTop = React.memo(() => {
         onLoadLayer={onLoadLayer}
       />
 
-      {Array.from(Array(Math.round(frameSize.width / gridPadding)), (e, i) => {
-        return (
-          <Line
-            key={`x-${i}`}
-            points={[
-              Math.round(i * gridPadding),
-              0,
-              Math.round(i * gridPadding),
-              frameSize.width,
-            ]}
-            stroke={guideData.grid_color || "#ddd"}
-            opacity={
-              guideData.grid_opacity != null ? guideData.grid_opacity : 1
-            }
-            strokeWidth={gridStroke}
-            listening={false}
-            visible={
-              paintingGuides.includes(PaintingGuides.GRID) ? true : false
-            }
-          />
-        );
-      })}
-      {Array.from(Array(Math.round(frameSize.height / gridPadding)), (e, i) => {
-        return (
-          <Line
-            key={`y-${i}`}
-            points={[
-              0,
-              Math.round(i * gridPadding),
-              frameSize.height,
-              Math.round(i * gridPadding),
-            ]}
-            stroke={guideData.grid_color || "#ddd"}
-            opacity={
-              guideData.grid_opacity != null ? guideData.grid_opacity : 1
-            }
-            strokeWidth={gridStroke}
-            listening={false}
-            visible={
-              paintingGuides.includes(PaintingGuides.GRID) ? true : false
-            }
-          />
-        );
-      })}
+      {Array.from(Array(Math.round(frameSize.width / gridPadding)), (e, i) => (
+        <Line
+          key={`x-${i}`}
+          points={[
+            Math.round(i * gridPadding),
+            0,
+            Math.round(i * gridPadding),
+            frameSize.width,
+          ]}
+          stroke={guideData.grid_color || "#ddd"}
+          opacity={guideData.grid_opacity != null ? guideData.grid_opacity : 1}
+          strokeWidth={gridStroke}
+          listening={false}
+          visible={paintingGuides.includes(PaintingGuides.GRID) ? true : false}
+        />
+      ))}
+      {Array.from(Array(Math.round(frameSize.height / gridPadding)), (e, i) => (
+        <Line
+          key={`y-${i}`}
+          points={[
+            0,
+            Math.round(i * gridPadding),
+            frameSize.height,
+            Math.round(i * gridPadding),
+          ]}
+          stroke={guideData.grid_color || "#ddd"}
+          opacity={guideData.grid_opacity != null ? guideData.grid_opacity : 1}
+          strokeWidth={gridStroke}
+          listening={false}
+          visible={paintingGuides.includes(PaintingGuides.GRID) ? true : false}
+        />
+      ))}
     </>
   );
 });

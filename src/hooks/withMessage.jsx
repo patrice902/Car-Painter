@@ -35,11 +35,9 @@ const Message = React.memo(() => {
 });
 
 export const withMessage = (Component) =>
-  React.memo((props) => {
-    return (
-      <React.Fragment>
-        <Message />
-        <Component {...props} />
-      </React.Fragment>
-    );
-  });
+  React.memo((props) => (
+    <React.Fragment>
+      <Message />
+      <Component {...props} />
+    </React.Fragment>
+  ));

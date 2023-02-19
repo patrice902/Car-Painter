@@ -3,7 +3,7 @@ import { LightTooltip } from "components/common";
 import { LayerTypes, MouseModes } from "constant";
 import { focusBoardQuickly } from "helper";
 import _ from "lodash";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactSortable } from "react-sortablejs";
 import { setMouseMode } from "redux/reducers/boardReducer";

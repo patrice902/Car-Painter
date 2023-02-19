@@ -3,12 +3,10 @@ import React from "react";
 
 import { Root } from "./Loader.style";
 
-export const Loader = React.memo(() => {
-  return (
-    <Root>
-      <CircularProgress m={2} color="secondary" />
-    </Root>
-  );
-});
+export const Loader = React.memo(() => (
+  <Root>
+    <CircularProgress m={2} color="secondary" />
+  </Root>
+));
 
 export default Loader;

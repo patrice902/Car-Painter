@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 
 export const withWrapper = (Component) => (props) => {

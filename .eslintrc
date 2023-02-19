@@ -1,10 +1,12 @@
 {
   "extends": [
+    "eslint:recommended",
     "prettier",
     "plugin:prettier/recommended",
     "plugin:import/recommended",
-    "eslint:recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended"
   ],
   "plugins": [
     "prettier", 
@@ -43,8 +45,10 @@
     "react/require-default-props": "off",
     "simple-import-sort/imports": "error",
     "no-unused-vars": ["error"],
+    "arrow-body-style": ["error", "as-needed"],
     "react/display-name": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "react/self-closing-comp": ["error", { "component": true, "html": true }]
   },
   "settings": {
     "react": {

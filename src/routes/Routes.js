@@ -2,7 +2,6 @@ import { withAuthGuard } from "hooks";
 import { withGAPageTracking } from "hooks/withGAPageTracking";
 import AuthLayout from "layouts/Auth";
 import MainLayout from "layouts/Main";
-import React from "react";
 import {
   BrowserRouter as Router,
   Redirect,

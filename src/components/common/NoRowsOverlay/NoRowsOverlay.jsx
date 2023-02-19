@@ -1,5 +1,4 @@
 import { GridOverlay } from "@material-ui/data-grid";
-import React from "react";
 
 import { useStyles } from "./NoRowsOverlay.style";
 

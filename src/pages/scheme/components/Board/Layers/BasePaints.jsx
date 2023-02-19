@@ -31,14 +31,13 @@ export const BasePaints = React.memo(() => {
     [layerList]
   );
   const getLayerImage = useCallback(
-    (layer) => {
-      return layer.layer_data.legacy
+    (layer) =>
+      layer.layer_data.legacy
         ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
         : legacyMode
         ? legacyBasePaintAssetURL(layer.layer_data) + layer.layer_data.img
         : basePaintAssetURL(carMake, layer.layer_data.basePaintIndex) +
-          layer.layer_data.img;
-    },
+          layer.layer_data.img,
     [legacyMode, carMake]
   );
 

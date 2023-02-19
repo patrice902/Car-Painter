@@ -236,7 +236,7 @@ export const Projects = React.memo(() => {
 
   return (
     <Box width="100%" height="100%" display="flex" flexDirection="column">
-      <AppHeader></AppHeader>
+      <AppHeader />
       <Box
         width="100%"
         height={innerHeight - 56}

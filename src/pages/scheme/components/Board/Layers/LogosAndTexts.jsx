@@ -71,30 +71,30 @@ export const LogosAndTexts = React.memo((props) => {
   }, [cloningLayer, cloningQueue, filteredLayers]);
 
   const layerFont = useCallback(
-    (layer) => {
-      return fonts.length
+    (layer) =>
+      fonts.length
         ? fonts.find((item) => item.id === layer.layer_data.font)
-        : {};
-    },
+        : {},
     [fonts]
   );
   const getShadowOffset = useCallback(
-    (layer) => {
-      return getRelativeShadowOffset(boardRotate, {
+    (layer) =>
+      getRelativeShadowOffset(boardRotate, {
         x: layer.layer_data.shadowOffsetX,
         y: layer.layer_data.shadowOffsetY,
-      });
-    },
+      }),
     [boardRotate]
   );
 
-  const getLayerImage = useCallback((layer) => {
-    return layer.layer_data.legacy
-      ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
-      : layer.layer_data.fromOldSource
-      ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
-      : `${config.assetsURL}/${layer.layer_data.source_file}`;
-  }, []);
+  const getLayerImage = useCallback(
+    (layer) =>
+      layer.layer_data.legacy
+        ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
+        : layer.layer_data.fromOldSource
+        ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
+        : `${config.assetsURL}/${layer.layer_data.source_file}`,
+    []
+  );
 
   const onFontLoad = useCallback(
     (fontFamily) => {

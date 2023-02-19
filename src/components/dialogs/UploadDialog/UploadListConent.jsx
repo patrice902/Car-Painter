@@ -187,7 +187,7 @@ export const UploadListContent = React.memo((props) => {
             <></>
           )}
 
-          <div ref={scrollToRef}></div>
+          <div ref={scrollToRef} />
         </CustomInfiniteScroll>
       </Box>
 

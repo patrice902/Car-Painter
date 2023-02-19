@@ -118,7 +118,7 @@ export const ColorPickerInput = React.memo((props) => {
             bgcolor={innerValue || "white"}
             borderRadius="5px"
             m="4px"
-          ></Box>
+          />
         ) : (
           <CustomColorPicker
             value={separateValues ? valuePicker : innerValue || "#"}

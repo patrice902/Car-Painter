@@ -75,9 +75,7 @@ export const GuidesSetting = React.memo((props) => {
           .nullable()
           .test("color-validation", "Incorrect Color Format", colorValidator),
       })}
-      validate={() => {
-        return {};
-      }}
+      validate={() => ({})}
       enableReinitialize
     >
       {(formProps) => (
