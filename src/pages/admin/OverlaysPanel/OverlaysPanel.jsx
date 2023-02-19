@@ -15,7 +15,7 @@ import {
 import { ImageWithLoad, NoRowsOverlay } from "components/common";
 import { ConfirmDialog } from "components/dialogs";
 import config from "config";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteOverlay, getOverlayList } from "redux/reducers/overlayReducer";
 
@@ -56,31 +56,29 @@ const OverlaysPanel = () => {
     []
   );
 
-  const Toolbar = () => {
-    return (
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        py={2}
-        pr={2}
-        borderBottom="1px solid rgb(81, 81, 81)"
-      >
-        <GridToolbarContainer>
-          <GridToolbarColumnsButton />
-          <GridToolbarFilterButton />
-          <GridToolbarDensitySelector />
-          <GridToolbarExport />
-        </GridToolbarContainer>
-        <Button startIcon={<AddIcon />} onClick={handleAddClick}>
-          Add Graphic
-        </Button>
-        <AddOverlayDialog
-          open={addDialogOpen}
-          onClose={() => setAddDialogOpen(false)}
-        />
-      </Box>
-    );
-  };
+  const Toolbar = () => (
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      py={2}
+      pr={2}
+      borderBottom="1px solid rgb(81, 81, 81)"
+    >
+      <GridToolbarContainer>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <GridToolbarExport />
+      </GridToolbarContainer>
+      <Button startIcon={<AddIcon />} onClick={handleAddClick}>
+        Add Graphic
+      </Button>
+      <AddOverlayDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+      />
+    </Box>
+  );
 
   const columns = [
     { field: "id", headerName: "ID", width: 90 },

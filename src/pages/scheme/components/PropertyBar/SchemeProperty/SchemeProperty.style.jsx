@@ -1,6 +1,5 @@
 import { Box, Tab, Tabs } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import React from "react";
 
 export const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -18,12 +17,10 @@ export const TabPanel = (props) => {
   );
 };
 
-export const a11yProps = (index) => {
-  return {
-    id: `project-settings-tab-${index}`,
-    "aria-controls": `project-settings-tabpanel-${index}`,
-  };
-};
+export const a11yProps = (index) => ({
+  id: `project-settings-tab-${index}`,
+  "aria-controls": `project-settings-tabpanel-${index}`,
+});
 
 export const StyledTabs = withStyles({
   indicator: {

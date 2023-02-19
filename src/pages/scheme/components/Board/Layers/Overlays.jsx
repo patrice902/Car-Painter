@@ -62,20 +62,21 @@ export const Overlays = React.memo((props) => {
   }, [cloningLayer, cloningQueue, filteredLayers]);
 
   const getShadowOffset = useCallback(
-    (layer) => {
-      return getRelativeShadowOffset(boardRotate, {
+    (layer) =>
+      getRelativeShadowOffset(boardRotate, {
         x: layer.layer_data.shadowOffsetX,
         y: layer.layer_data.shadowOffsetY,
-      });
-    },
+      }),
     [boardRotate]
   );
 
-  const getLayerImage = useCallback((layer) => {
-    return layer.layer_data.legacy
-      ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
-      : `${config.assetsURL}/${layer.layer_data.source_file}`;
-  }, []);
+  const getLayerImage = useCallback(
+    (layer) =>
+      layer.layer_data.legacy
+        ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
+        : `${config.assetsURL}/${layer.layer_data.source_file}`,
+    []
+  );
 
   return (
     <>

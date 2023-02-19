@@ -31,15 +31,14 @@ export const CarParts = React.memo(() => {
     [layerList]
   );
   const getCarMakeImage = useCallback(
-    (layer_data) => {
-      return layer_data.legacy
+    (layer_data) =>
+      layer_data.legacy
         ? `${
             config.legacyAssetURL
           }/templates/${carMake.folder_directory.replaceAll(" ", "_")}/`
         : (legacyMode
             ? legacyCarMakeAssetURL(carMake)
-            : carMakeAssetURL(carMake)) + layer_data.img;
-    },
+            : carMakeAssetURL(carMake)) + layer_data.img,
     [legacyMode, carMake]
   );
 

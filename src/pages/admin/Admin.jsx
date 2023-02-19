@@ -12,7 +12,7 @@ export const Admin = React.memo(() => {
 
   return (
     <Box width="100%" height="100%" display="flex" flexDirection="column">
-      <AppHeader></AppHeader>
+      <AppHeader />
       <Box p={2}>
         <Paper variant="outlined">
           <Tabs
@@ -51,23 +51,21 @@ export const Admin = React.memo(() => {
   );
 });
 
-const TabPanel = ({ children, value, index, ...props }) => {
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`projects-tabpanel-${index}`}
-      aria-labelledby={`projects-tab-${index}`}
-      width="100%"
-      {...props}
-    >
-      {value === index && (
-        <Box display="flex" flexDirection="column">
-          {children}
-        </Box>
-      )}
-    </Box>
-  );
-};
+const TabPanel = ({ children, value, index, ...props }) => (
+  <Box
+    role="tabpanel"
+    hidden={value !== index}
+    id={`projects-tabpanel-${index}`}
+    aria-labelledby={`projects-tab-${index}`}
+    width="100%"
+    {...props}
+  >
+    {value === index && (
+      <Box display="flex" flexDirection="column">
+        {children}
+      </Box>
+    )}
+  </Box>
+);
 
 export default Admin;

@@ -12,8 +12,8 @@ const getQueryVariable = (variable) => {
 };
 
 export default class CookieService {
-  static getSiteLogin = () => {
-    return getQueryVariable(
+  static getSiteLogin = () =>
+    getQueryVariable(
       Cookies.get(
         "site_login_v2"
         // {
@@ -21,7 +21,6 @@ export default class CookieService {
         // }
       )
     );
-  };
 
   static setSiteLogin = (token) => {
     Cookies.set(

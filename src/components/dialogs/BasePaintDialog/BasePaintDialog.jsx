@@ -47,17 +47,14 @@ export const BasePaintDialog = React.memo((props) => {
   );
 
   const getPreviewURL = useCallback(
-    (base) => {
-      return legacyMode
+    (base) =>
+      legacyMode
         ? legacyBasePaintAssetURL(base) + "preview.jpg" // For Legacy basepaint
-        : basePaintAssetURL(carMake, base) + "preview.jpg";
-    },
+        : basePaintAssetURL(carMake, base) + "preview.jpg",
     [legacyMode, carMake]
   );
   const getTitle = useCallback(
-    (base) => {
-      return legacyMode ? base.base_name : `Base Paint ${base}`;
-    },
+    (base) => (legacyMode ? base.base_name : `Base Paint ${base}`),
     [legacyMode]
   );
 

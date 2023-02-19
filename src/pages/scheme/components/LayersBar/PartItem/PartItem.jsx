@@ -105,7 +105,7 @@ export const PartItem = React.memo((props) => {
                 {layer_visible ? <VisibilityIcon /> : <VisibilityOffIcon />}
               </SmallIconButton>
             ) : (
-              <Box width="24px" height="24px"></Box>
+              <Box width="24px" height="24px" />
             )}
           </Box>
         ) : (

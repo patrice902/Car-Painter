@@ -1,6 +1,5 @@
 import { DialogContent, Tab, Tabs } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import React from "react";
 import styled from "styled-components/macro";
 
 export const CustomDialogContent = styled(DialogContent)(
@@ -56,9 +55,7 @@ export const TabPanel = (props) => {
   );
 };
 
-export const a11yProps = (index) => {
-  return {
-    id: `logo-tab-${index}`,
-    "aria-controls": `logo-tabpanel-${index}`,
-  };
-};
+export const a11yProps = (index) => ({
+  id: `logo-tab-${index}`,
+  "aria-controls": `logo-tabpanel-${index}`,
+});

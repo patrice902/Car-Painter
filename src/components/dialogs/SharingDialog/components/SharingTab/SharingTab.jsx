@@ -29,9 +29,7 @@ export const SharingTab = React.memo((props) => {
       // validationSchema={Yup.object().shape({
       //   user_id: Yup.number().min(0),
       // })}
-      validate={() => {
-        return {};
-      }}
+      validate={() => ({})}
       onSubmit={onApply}
     >
       {(formProps) => (

@@ -12,8 +12,8 @@ export default class BaseAPIService {
     data,
     timeout = 0,
     contentType = "application/json"
-  ) => {
-    return axios
+  ) =>
+    axios
       .request({
         url: baseURL + url,
         headers: {
@@ -27,7 +27,6 @@ export default class BaseAPIService {
         }),
       })
       .then((res) => res.data);
-  };
 
   static requestWithAuth = (
     url,
@@ -35,8 +34,8 @@ export default class BaseAPIService {
     data,
     timeout = 0,
     contentType = "application/json"
-  ) => {
-    return axios
+  ) =>
+    axios
       .request({
         url: baseURL + url,
         headers: {
@@ -51,7 +50,6 @@ export default class BaseAPIService {
         }),
       })
       .then((res) => res.data);
-  };
 
   static directRequest = (
     url,
@@ -59,8 +57,8 @@ export default class BaseAPIService {
     data,
     timeout = 0,
     contentType = "application/json"
-  ) => {
-    return axios
+  ) =>
+    axios
       .request({
         url,
         headers: {
@@ -74,7 +72,6 @@ export default class BaseAPIService {
         }),
       })
       .then((res) => res.data);
-  };
 
   static directRequestWithAuth = (
     url,
@@ -82,8 +79,8 @@ export default class BaseAPIService {
     data,
     timeout = 0,
     contentType = "application/json"
-  ) => {
-    return axios
+  ) =>
+    axios
       .request({
         url,
         headers: {
@@ -98,5 +95,4 @@ export default class BaseAPIService {
         }),
       })
       .then((res) => res.data);
-  };
 }

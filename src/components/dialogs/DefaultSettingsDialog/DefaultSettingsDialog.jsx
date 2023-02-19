@@ -66,9 +66,7 @@ export const DefaultSettingsDialog = React.memo((props) => {
             .test("color-validation", "Incorrect Color Format", colorValidator),
         })}
         enableReinitialize
-        validate={() => {
-          return {};
-        }}
+        validate={() => ({})}
         onSubmit={onApply}
       >
         {(formProps) => (

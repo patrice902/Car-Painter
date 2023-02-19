@@ -15,13 +15,9 @@ export const PaintingGuideSponsor = React.memo(() => {
   );
 
   const getCarMakeImage = useCallback(
-    (image) => {
-      return (
-        (legacyMode
-          ? legacyCarMakeAssetURL(carMake)
-          : carMakeAssetURL(carMake)) + image
-      );
-    },
+    (image) =>
+      (legacyMode ? legacyCarMakeAssetURL(carMake) : carMakeAssetURL(carMake)) +
+      image,
     [legacyMode, carMake]
   );
 

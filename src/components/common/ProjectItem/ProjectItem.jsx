@@ -157,13 +157,15 @@ export const ProjectItem = React.memo((props) => {
     return false;
   }, [dispatch, onOpenScheme, scheme, sharedID]);
 
-  const schemeThumbnailURL = useCallback((id) => {
-    return `${config.assetsURL}/scheme_thumbnails/${id}.jpg`;
-  }, []);
+  const schemeThumbnailURL = useCallback(
+    (id) => `${config.assetsURL}/scheme_thumbnails/${id}.jpg`,
+    []
+  );
 
-  const legacySchemeThumbnailURL = useCallback((id) => {
-    return `${config.legacyAssetURL}/thumbs/${id}.jpg`;
-  }, []);
+  const legacySchemeThumbnailURL = useCallback(
+    (id) => `${config.legacyAssetURL}/thumbs/${id}.jpg`,
+    []
+  );
 
   return (
     <Box

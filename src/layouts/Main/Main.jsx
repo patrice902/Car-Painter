@@ -1,6 +1,6 @@
 import { CssBaseline, withWidth } from "@material-ui/core";
 import { withMessage } from "hooks/withMessage";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 

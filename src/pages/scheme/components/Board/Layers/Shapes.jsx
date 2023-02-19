@@ -62,12 +62,11 @@ export const Shapes = React.memo((props) => {
   }, [cloningLayer, cloningQueue, filteredLayers]);
 
   const getShadowOffset = useCallback(
-    (layer) => {
-      return getRelativeShadowOffset(boardRotate, {
+    (layer) =>
+      getRelativeShadowOffset(boardRotate, {
         x: layer.layer_data.shadowOffsetX,
         y: layer.layer_data.shadowOffsetY,
-      });
-    },
+      }),
     [boardRotate]
   );
   const getOffsetsFromStroke = useCallback((layer) => {

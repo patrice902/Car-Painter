@@ -185,14 +185,13 @@ export const parseScheme = (scheme) => {
   return newScheme;
 };
 
-export const addImageProcess = (src) => {
-  return new Promise((resolve, reject) => {
+export const addImageProcess = (src) =>
+  new Promise((resolve, reject) => {
     let img = new Image();
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
-};
 
 export const alphaToHex = (alpha) => {
   let s = Math.floor(alpha * 255).toString(16);
@@ -206,36 +205,30 @@ export const correctColor = (color) => {
   return null;
 };
 
-export const legacyBasePaintAssetURL = (basepaint) => {
-  return `${config.assetsURL}/bases/${basepaint.id}/`;
-};
+export const legacyBasePaintAssetURL = (basepaint) =>
+  `${config.assetsURL}/bases/${basepaint.id}/`;
 
-export const basePaintAssetURL = (carMake, index) => {
-  return `${
-    config.assetsURL
-  }/templates2048/${carMake.folder_directory.replaceAll(
+export const basePaintAssetURL = (carMake, index) =>
+  `${config.assetsURL}/templates2048/${carMake.folder_directory.replaceAll(
     " ",
     "_"
   )}/bases/${index}/`;
-};
 
-export const legacyCarMakeAssetURL = (carMake) => {
-  return `${config.assetsURL}/templates/${carMake.folder_directory.replaceAll(
+export const legacyCarMakeAssetURL = (carMake) =>
+  `${config.assetsURL}/templates/${carMake.folder_directory.replaceAll(
     " ",
     "_"
   )}/`;
-};
-export const carMakeAssetURL = (carMake) => {
-  return `${
-    config.assetsURL
-  }/templates2048/${carMake.folder_directory.replaceAll(" ", "_")}/`;
-};
+export const carMakeAssetURL = (carMake) =>
+  `${config.assetsURL}/templates2048/${carMake.folder_directory.replaceAll(
+    " ",
+    "_"
+  )}/`;
 
-export const uploadAssetURL = (uploadItem) => {
-  return uploadItem.legacy_mode
+export const uploadAssetURL = (uploadItem) =>
+  uploadItem.legacy_mode
     ? `${config.legacyAssetURL}/${uploadItem.file_name}`
     : `${config.assetsURL}/${uploadItem.file_name}`;
-};
 
 export const getZoomedCenterPosition = (
   stageRef,
@@ -268,18 +261,16 @@ export const rotatePoint = (x, y, angle) => {
   return { x: nx, y: ny };
 };
 
-export const getCenter = (shape, flop = 0, flip = 0) => {
-  return {
-    x:
-      shape.x +
-      shape.width * (flop ? -0.5 : 0.5) * Math.cos(shape.rotation) +
-      shape.height * (flip ? -0.5 : 0.5) * Math.sin(-shape.rotation),
-    y:
-      shape.y +
-      shape.height * (flip ? -0.5 : 0.5) * Math.cos(shape.rotation) +
-      shape.width * (flop ? -0.5 : 0.5) * Math.sin(shape.rotation),
-  };
-};
+export const getCenter = (shape, flop = 0, flip = 0) => ({
+  x:
+    shape.x +
+    shape.width * (flop ? -0.5 : 0.5) * Math.cos(shape.rotation) +
+    shape.height * (flip ? -0.5 : 0.5) * Math.sin(-shape.rotation),
+  y:
+    shape.y +
+    shape.height * (flip ? -0.5 : 0.5) * Math.cos(shape.rotation) +
+    shape.width * (flop ? -0.5 : 0.5) * Math.sin(shape.rotation),
+});
 
 export const rotateAroundPoint = (shape, deltaDeg, point) => {
   const x = Math.round(
@@ -527,22 +518,18 @@ export const scrollTopOnProjectList = () => {
   }
 };
 
-export const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
+export const sleep = (milliseconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 export const isWindows = () => window.navigator.userAgent.includes("Win");
 
-export const getDistance = (p1, p2) => {
-  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-};
+export const getDistance = (p1, p2) =>
+  Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
-export const getCenterOfPoints = (p1, p2) => {
-  return {
-    x: (p1.x + p2.x) / 2,
-    y: (p1.y + p2.y) / 2,
-  };
-};
+export const getCenterOfPoints = (p1, p2) => ({
+  x: (p1.x + p2.x) / 2,
+  y: (p1.y + p2.y) / 2,
+});
 
 export const detectBrowser = () => {
   let userAgent = navigator.userAgent;

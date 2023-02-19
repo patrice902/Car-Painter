@@ -62,9 +62,7 @@ export const UpdateLogoDialog = React.memo((props) => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           enableReinitialize
-          validate={() => {
-            return {};
-          }}
+          validate={() => ({})}
           onSubmit={onApply}
         >
           {(formProps) => (
