@@ -1,3 +1,4 @@
+const { LayerTypes } = require("../constants");
 const Layer = require("../models/layer.model");
 const { getLayerUpdatingInfo } = require("../utils/common");
 
@@ -14,7 +15,7 @@ class LayerService {
 
   static async getListByUploadID(uploadID) {
     const layers = await Layer.where({
-      layer_type: 5,
+      layer_type: LayerTypes.UPLOAD,
       upload_id: uploadID,
     }).fetchAll({
       withRelated: ["scheme"],

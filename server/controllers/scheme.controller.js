@@ -4,6 +4,7 @@ const LayerService = require("../services/layerService");
 const FileService = require("../services/fileService");
 const CarMakeService = require("../services/carMakeService");
 const logger = require("../config/winston");
+const { LayerTypes } = require("../constants");
 
 class SchemeController {
   static async getList(req, res) {
@@ -62,7 +63,12 @@ class SchemeController {
         legacyMode
       );
       scheme = scheme.toJSON();
-      await SchemeService.createCarmakeLayers(scheme, carMake, legacyMode);
+      await SchemeService.createCarmakeLayers(
+        scheme,
+        carMake,
+        req.user,
+        legacyMode
+      );
       scheme = await SchemeService.getById(scheme.id);
       res.json(scheme);
     } catch (err) {
@@ -79,10 +85,10 @@ class SchemeController {
       let scheme = await SchemeService.getById(schemeID);
       await LayerService.deleteByQuery({
         scheme_id: schemeID,
-        layer_type: 6,
+        layer_type: LayerTypes.CAR,
       });
       scheme = scheme.toJSON();
-      await SchemeService.createCarmakeLayers(scheme, scheme.carMake);
+      await SchemeService.createCarmakeLayers(scheme, scheme.carMake, req.user);
       const schemeUpdatePayload = {
         date_modified: Math.round(new Date().getTime() / 1000),
         last_modified_by: req.user.id,
