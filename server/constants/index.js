@@ -4,6 +4,17 @@ const StorageType = {
   LOCAL: "LOCAL", // Local
 };
 
+const LayerTypes = {
+  TEXT: 1,
+  LOGO: 2,
+  BASE: 3,
+  OVERLAY: 4,
+  UPLOAD: 5,
+  CAR: 6,
+  SHAPE: 7,
+};
+
 module.exports = {
   StorageType,
+  LayerTypes,
 };
