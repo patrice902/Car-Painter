@@ -14,6 +14,10 @@ router
   .get(isAuthenticated, UploadController.getListByUserID);
 
 router
+  .route("/byUserID/:id/removeLegacy")
+  .delete(isAuthenticated, UploadController.deleteLegacyByUserID);
+
+router
   .route("/uploadFiles")
   .post(isAuthenticated, UploadController.uploadFiles);
 

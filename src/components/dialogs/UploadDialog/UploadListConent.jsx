@@ -1,7 +1,14 @@
 import { Delete as DeleteIcon } from "@material-ui/icons";
 import { ImageWithLoad, Loader, ScreenLoader } from "components/common";
 import { ConfirmDialog, YesNoDialog } from "components/dialogs";
-import { Box, ImageListItemBar, useMediaQuery } from "components/MaterialUI";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  ImageListItemBar,
+  useMediaQuery,
+} from "components/MaterialUI";
 import { getNameFromUploadFileName, uploadAssetURL } from "helper";
 import _ from "lodash";
 import { DropzoneArea } from "material-ui-dropzone";
@@ -12,7 +19,11 @@ import {
   setCurrent as setCurrentLayer,
 } from "redux/reducers/layerReducer";
 import { setMessage } from "redux/reducers/messageReducer";
-import { deleteUpload, uploadFiles } from "redux/reducers/uploadReducer";
+import {
+  deleteLegacyUploadsByUserID,
+  deleteUpload,
+  uploadFiles,
+} from "redux/reducers/uploadReducer";
 import SchemeService from "services/schemeService";
 
 import {
@@ -32,9 +43,11 @@ export const UploadListContent = React.memo((props) => {
   const currentScheme = useSelector((state) => state.schemeReducer.current);
 
   const [uploadToDelete, setUploadToDelete] = useState(null);
+  const [showLegacyDelete, setShowLegacyDelete] = useState(false);
   const [associatedSchemes, setAssociatedSchemes] = useState([]);
   const [limit, setLimit] = useState(step);
   const [loading, setLoading] = useState(false);
+  const [showLegacy, setShowLegacy] = useState(false);
   const [fetchingDeleteList, setFetchingDeleteList] = useState(false);
   const [files, setFiles] = useState([]);
   const [dropZoneKey, setDropZoneKey] = useState(1);
@@ -43,12 +56,19 @@ export const UploadListContent = React.memo((props) => {
 
   const filteredUploads = useMemo(
     () =>
-      _.orderBy(uploads, ["id"], "desc").filter((item) =>
-        getNameFromUploadFileName(item.file_name, user)
-          .toLowerCase()
-          .includes(search.toLowerCase())
+      _.orderBy(uploads, ["id"], "desc").filter(
+        (item) =>
+          getNameFromUploadFileName(item.file_name, user)
+            .toLowerCase()
+            .includes(search.toLowerCase()) &&
+          (showLegacy || !item.legacy_mode)
       ),
-    [uploads, user, search]
+    [uploads, user, search, showLegacy]
+  );
+
+  const hasLegacyUploads = useMemo(
+    () => uploads.some((item) => item.legacy_mode),
+    [uploads]
   );
 
   const increaseData = useCallback(() => {
@@ -98,6 +118,11 @@ export const UploadListContent = React.memo((props) => {
     }
   }, [dispatch, uploadToDelete, setAssociatedSchemes, setUploadToDelete]);
 
+  const handleDeleteAllLegacyConfirm = useCallback(async () => {
+    setShowLegacyDelete(false);
+    dispatch(deleteLegacyUploadsByUserID(user.id, true));
+  }, [dispatch, user]);
+
   const handleDeleteUploadFinally = useCallback(
     (deleteFromAll = true) => {
       if (deleteFromAll) {
@@ -118,8 +143,40 @@ export const UploadListContent = React.memo((props) => {
 
   const unsetUploadToDelete = useCallback(() => setUploadToDelete(null), []);
 
+  const unsetShowLegacyDelete = useCallback(
+    () => setShowLegacyDelete(false),
+    []
+  );
+
   return (
     <>
+      {hasLegacyUploads ? (
+        <Box
+          display="flex"
+          mb={2}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showLegacy}
+                onChange={(e) => setShowLegacy(e.target.checked)}
+              />
+            }
+            label="Show Legacy Uploads"
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setShowLegacyDelete(true)}
+          >
+            Remove Legacy Uploads
+          </Button>
+        </Box>
+      ) : (
+        <></>
+      )}
       <DropzoneArea
         onChange={handleDropZoneChange}
         value={files}
@@ -204,6 +261,25 @@ export const UploadListContent = React.memo((props) => {
         onCancel={unsetUploadToDelete}
         onConfirm={handleDeleteUploadConfirm}
         confirmLoading={fetchingDeleteList}
+      />
+      <ConfirmDialog
+        text={
+          uploadToDelete
+            ? `Are you sure you want to delete "${getNameFromUploadFileName(
+                uploadToDelete.file_name,
+                user
+              )}"?`
+            : ""
+        }
+        open={!!uploadToDelete}
+        onCancel={unsetUploadToDelete}
+        onConfirm={handleDeleteUploadConfirm}
+      />
+      <ConfirmDialog
+        text="Are you sure you want to delete all legacy uploads?"
+        open={showLegacyDelete}
+        onCancel={unsetShowLegacyDelete}
+        onConfirm={handleDeleteAllLegacyConfirm}
       />
       <YesNoDialog
         text={
