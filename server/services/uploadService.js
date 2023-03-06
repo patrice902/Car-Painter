@@ -13,6 +13,14 @@ class UploadService {
     return uploads;
   }
 
+  static async getLegacyListByUserID(user_id) {
+    const uploads = await Upload.where({
+      user_id,
+      legacy_mode: 1,
+    }).fetchAll();
+    return uploads;
+  }
+
   static async getById(id) {
     const upload = await Upload.where({ id }).fetch();
     return upload;
@@ -30,8 +38,12 @@ class UploadService {
   }
 
   static async deleteById(id) {
-    const upload = await this.getById(id);
-    await upload.destroy();
+    await Upload.where({ id }).destroy({ require: false });
+    return true;
+  }
+
+  static async deleteByMultiId(ids) {
+    await Upload.where("id", "IN", ids).destroy({ require: false });
     return true;
   }
 }

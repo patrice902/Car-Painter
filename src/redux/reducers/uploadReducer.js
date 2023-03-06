@@ -128,4 +128,25 @@ export const deleteUpload = (upload, deleteFromAll) => async (dispatch) => {
   // dispatch(setLoading(false));
 };
 
+export const deleteLegacyUploadsByUserID = (userID, deleteFromAll) => async (
+  dispatch
+) => {
+  // dispatch(setLoading(true));
+
+  try {
+    await UploadService.deleteLegacyByUserID(userID, deleteFromAll);
+    const uploads = await UploadService.getUploadListByUserID(userID);
+    dispatch(setList(uploads));
+    dispatch(
+      setMessage({
+        message: "Removed your legacy uploads successfully!",
+        type: "success",
+      })
+    );
+  } catch (err) {
+    dispatch(setMessage({ message: err.message }));
+  }
+  // dispatch(setLoading(false));
+};
+
 export default slice.reducer;

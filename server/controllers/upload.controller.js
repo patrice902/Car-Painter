@@ -111,22 +111,30 @@ class UploadController {
       upload = upload.toJSON();
       if (deleteFromAll) {
         await FileService.deleteFileFromS3(upload.file_name);
-        let layers = await LayerService.getListByUploadID(req.params.id);
-        layers = layers.toJSON();
-        let promises = [];
-
-        for (let layer of layers) {
-          promises.push(
-            // eslint-disable-next-line no-async-promise-executor
-            new Promise(async (resolve) => {
-              await LayerService.deleteById(layer.id);
-              resolve();
-            })
-          );
-        }
-        await Promise.all(promises);
+        await LayerService.deleteByUploadID(req.params.id);
       }
       await UploadService.deleteById(upload.id);
+      res.json({});
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
+  static async deleteLegacyByUserID(req, res) {
+    try {
+      let { deleteFromAll } = req.body;
+      let uploads = await UploadService.getLegacyListByUserID(req.params.id);
+      uploads = uploads.toJSON();
+      const upload_ids = uploads.map((upload) => upload.id);
+      if (deleteFromAll) {
+        const filePaths = uploads.map((upload) => upload.file_name);
+        FileService.deleteMultiFilesFromS3(filePaths);
+        await LayerService.deleteByMultiUploadIDs(upload_ids);
+      }
+      await UploadService.deleteByMultiId(upload_ids);
       res.json({});
     } catch (err) {
       logger.log("error", err.stack);

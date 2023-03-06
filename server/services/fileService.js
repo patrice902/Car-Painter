@@ -66,6 +66,29 @@ class FileService {
       .promise();
     return true;
   }
+
+  static async deleteMultiFilesFromS3(file_paths) {
+    const objects = file_paths.map((file_path) => ({ Key: file_path }));
+    return s3.deleteObjects({
+      Bucket: config.bucketURL,
+      Delete: {
+        Objects: objects,
+      },
+    });
+  }
+
+  static async deleteMultiFilesFromS3Async(file_paths) {
+    const objects = file_paths.map((file_path) => ({ Key: file_path }));
+    await s3
+      .deleteObjects({
+        Bucket: config.bucketURL,
+        Delete: {
+          Objects: objects,
+        },
+      })
+      .promise();
+    return true;
+  }
 }
 
 module.exports = FileService;

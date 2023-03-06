@@ -23,6 +23,19 @@ class LayerService {
     return layers;
   }
 
+  static async getListByMultiUploadIDs(uploadIDs) {
+    const layers = await Layer.query((qb) =>
+      qb
+        .where({
+          layer_type: LayerTypes.UPLOAD,
+        })
+        .andWhere("upload_id", "IN", uploadIDs)
+    ).fetchAll({
+      withRelated: ["scheme"],
+    });
+    return layers;
+  }
+
   static async create(payload) {
     let scheme_layers = await Layer.where({
       scheme_id: payload.scheme_id,
@@ -86,26 +99,43 @@ class LayerService {
   }
 
   static async deleteById(id) {
-    const layer = await this.getById(id);
-    await layer.destroy();
+    await Layer.where({ id }).destroy({ require: false });
+    return true;
+  }
+
+  static async deleteByMultiId(ids) {
+    await Layer.where("id", "IN", ids).destroy({ require: false });
+    return true;
+  }
+
+  static async deleteByUploadID(uploadID) {
+    await Layer.where({
+      layer_type: LayerTypes.UPLOAD,
+      upload_id: uploadID,
+    }).destroy({ require: false });
+    return true;
+  }
+
+  static async deleteByMultiUploadIDs(uploadIDs) {
+    await Layer.query((qb) =>
+      qb
+        .where({
+          layer_type: LayerTypes.UPLOAD,
+        })
+        .andWhere("upload_id", "IN", uploadIDs)
+    ).destroy({ require: false });
     return true;
   }
 
   static async deleteAllBySchemeId(scheme_id) {
-    let scheme_layers = await Layer.where({
+    await Layer.where({
       scheme_id,
-    }).fetchAll();
-    for (let layer of scheme_layers) {
-      await layer.destroy();
-    }
+    }).destroy({ require: false });
     return true;
   }
 
   static async deleteByQuery(query) {
-    let scheme_layers = await Layer.where(query).fetchAll();
-    for (let layer of scheme_layers) {
-      await layer.destroy();
-    }
+    await Layer.where(query).destroy({ require: false });
     return true;
   }
 }

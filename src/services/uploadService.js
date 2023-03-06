@@ -14,6 +14,10 @@ export default class UploadService extends BaseAPIService {
     this.requestWithAuth(`/upload/${id}`, "DELETE", {
       deleteFromAll,
     });
+  static deleteLegacyByUserID = async (userID, deleteFromAll) =>
+    this.requestWithAuth(`/upload/byUserID/${userID}/removeLegacy`, "DELETE", {
+      deleteFromAll,
+    });
   static uploadFiles = async (formData) =>
     this.requestWithAuth(
       `/upload/uploadFiles`,
