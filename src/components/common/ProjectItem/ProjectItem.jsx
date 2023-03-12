@@ -108,6 +108,7 @@ export const ProjectItem = React.memo((props) => {
   }, [onAccept, sharedID]);
 
   const handleDelete = useCallback(async () => {
+    handleActionMenuClose();
     setDeleteMessage(
       <>
         Are you sure you want to{" "}

@@ -9,6 +9,7 @@ const LayerService = require("./layerService");
 const { LayerTypes } = require("../constants");
 const logger = require("../config/winston");
 const LogoService = require("./logoService");
+const FontService = require("./fontService");
 
 class SchemeService {
   static async getList() {
@@ -102,7 +103,13 @@ class SchemeService {
     return scheme;
   }
 
-  static async createCarmakeLayers(scheme, carMake, user, legacy = false) {
+  static async createCarmakeLayers(
+    scheme,
+    carMake,
+    user,
+    legacy = false,
+    shouldCreateLogosTexts = false
+  ) {
     let carMake_builder_layers = JSON.parse(
       legacy ? carMake.builder_layers : carMake.builder_layers_2048
     );
@@ -127,79 +134,90 @@ class SchemeService {
       );
     }
 
-    let builder_logos =
-      carMake.builder_logo && carMake.builder_logo.length
-        ? JSON.parse(carMake.builder_logo)
-        : [];
-    for (let layer of builder_logos) {
-      if (layer.id) {
-        try {
-          let logo = await LogoService.getById(layer.id);
-          if (logo) {
-            logo = logo.toJSON();
-            builder_layers.push(
-              await LayerService.create({
-                layer_type: LayerTypes.LOGO,
-                scheme_id: scheme.id,
-                upload_id: 0,
-                layer_data: JSON.stringify({
-                  id: logo.id,
-                  name: logo.name,
-                  rotation: parseFloat(layer.rotation) || 0,
-                  left: parseFloat(layer.left) || 0,
-                  top: parseFloat(layer.top) || 0,
-                  width: parseFloat(layer.width) || 0,
-                  height: parseFloat(layer.height) || 0,
-                  source_file: logo.source_file,
-                  preview_file: logo.preview_file,
-                }),
-                layer_visible: 1,
-                layer_order: layer_index++,
-                layer_locked: 0,
-                time_modified: 0,
-                confirm: "",
-              })
-            );
+    if (shouldCreateLogosTexts) {
+      let builder_logos =
+        carMake.builder_logo && carMake.builder_logo.length
+          ? JSON.parse(carMake.builder_logo)
+          : [];
+      for (let layer of builder_logos) {
+        if (layer.id) {
+          try {
+            let logo = await LogoService.getById(layer.id);
+            if (logo) {
+              logo = logo.toJSON();
+              builder_layers.push(
+                await LayerService.create({
+                  layer_type: LayerTypes.LOGO,
+                  scheme_id: scheme.id,
+                  upload_id: 0,
+                  layer_data: JSON.stringify({
+                    id: logo.id,
+                    name: logo.name,
+                    rotation: parseFloat(layer.rotation) || 0,
+                    left: parseFloat(layer.left) || 0,
+                    top: parseFloat(layer.top) || 0,
+                    width: parseFloat(layer.width) || 0,
+                    height: parseFloat(layer.height) || 0,
+                    source_file: logo.source_file,
+                    preview_file: logo.preview_file,
+                  }),
+                  layer_visible: 1,
+                  layer_order: layer_index++,
+                  layer_locked: 0,
+                  time_modified: 0,
+                  confirm: "",
+                })
+              );
+            }
+          } catch (err) {
+            logger.log("error", err.stack);
           }
-        } catch (err) {
-          logger.log("error", err.stack);
         }
       }
-    }
 
-    let builder_signature =
-      carMake.builder_signature && carMake.builder_signature.length
-        ? JSON.parse(carMake.builder_signature)
-        : [];
+      let builder_signature =
+        carMake.builder_signature && carMake.builder_signature.length
+          ? JSON.parse(carMake.builder_signature)
+          : [];
 
-    const guide_data = JSON.parse(scheme.guide_data);
-    for (let layer of builder_signature) {
-      builder_layers.push(
-        await LayerService.create({
-          layer_type: LayerTypes.TEXT,
-          scheme_id: scheme.id,
-          upload_id: 0,
-          layer_data: JSON.stringify({
-            name: user.drivername,
-            text: user.drivername,
-            font: layer.font || scheme.last_font || 1,
-            size: parseInt(layer.size),
-            color: layer.color || guide_data.defaultColor,
-            stroke: 0,
-            scolor: layer.scolor || guide_data.default_shape_scolor,
-            rotation: parseFloat(layer.rotation) || 0,
-            left: parseFloat(layer.left) || 0,
-            top: parseFloat(layer.top) || 0,
-            width: parseFloat(layer.width) || 0,
-            height: parseFloat(layer.height) || 0,
-          }),
-          layer_visible: 1,
-          layer_order: layer_index++,
-          layer_locked: 0,
-          time_modified: 0,
-          confirm: "",
-        })
-      );
+      const guide_data = JSON.parse(scheme.guide_data);
+      for (let layer of builder_signature) {
+        if (layer.font) {
+          try {
+            let font = await FontService.getById(layer.font);
+            if (font) {
+              builder_layers.push(
+                await LayerService.create({
+                  layer_type: LayerTypes.TEXT,
+                  scheme_id: scheme.id,
+                  upload_id: 0,
+                  layer_data: JSON.stringify({
+                    name: user.drivername,
+                    text: user.drivername,
+                    font: parseInt(layer.font),
+                    size: parseInt(layer.size),
+                    color: layer.color || guide_data.defaultColor,
+                    stroke: 0,
+                    scolor: layer.scolor || guide_data.default_shape_scolor,
+                    rotation: parseFloat(layer.rotation) || 0,
+                    left: parseFloat(layer.left) || 0,
+                    top: parseFloat(layer.top) || 0,
+                    width: parseFloat(layer.width) || 0,
+                    height: parseFloat(layer.height) || 0,
+                  }),
+                  layer_visible: 1,
+                  layer_order: layer_index++,
+                  layer_locked: 0,
+                  time_modified: 0,
+                  confirm: "",
+                })
+              );
+            }
+          } catch (err) {
+            logger.log("error", err.stack);
+          }
+        }
+      }
     }
 
     return builder_layers;

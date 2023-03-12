@@ -73,7 +73,9 @@ export const LogosAndTexts = React.memo((props) => {
   const layerFont = useCallback(
     (layer) =>
       fonts.length
-        ? fonts.find((item) => item.id === layer.layer_data.font)
+        ? fonts.find(
+            (item) => item.id.toString() === layer.layer_data.font.toString()
+          )
         : {},
     [fonts]
   );
