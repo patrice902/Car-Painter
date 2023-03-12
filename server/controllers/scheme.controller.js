@@ -67,7 +67,8 @@ class SchemeController {
         scheme,
         carMake,
         req.user,
-        legacyMode
+        legacyMode,
+        true
       );
       scheme = await SchemeService.getById(scheme.id);
       res.json(scheme);

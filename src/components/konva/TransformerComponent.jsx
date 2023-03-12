@@ -24,7 +24,7 @@ export const TransformerComponent = React.memo(
                 selectedLayer.layer_data.width / 3,
                 selectedLayer.layer_data.height / 3
               ) * zoom,
-              15
+              3
             )
           : 0,
       [zoom, selectedLayer]
@@ -33,6 +33,7 @@ export const TransformerComponent = React.memo(
     const anchorSize = useMemo(() => Math.min(15, minScaledSize || 15), [
       minScaledSize,
     ]);
+
     const [icon] = useImage(RotateIcon);
     const keepRatio = useMemo(
       () =>
