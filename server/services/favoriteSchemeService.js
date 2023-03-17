@@ -48,8 +48,9 @@ class FavoriteSchemeService {
   }
 
   static async deleteById(id) {
-    const favorite = await FavoriteScheme.where({ id }).fetch();
-    await favorite.destroy();
+    await FavoriteScheme.where({ id }).destroy({
+      require: false,
+    });
     return true;
   }
 }

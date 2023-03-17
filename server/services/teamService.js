@@ -31,8 +31,7 @@ class TeamService {
   }
 
   static async deleteById(id) {
-    const team = await Team.where({ id }).fetch();
-    await team.destroy();
+    await Team.where({ id }).destroy({ require: false });
     return true;
   }
 }

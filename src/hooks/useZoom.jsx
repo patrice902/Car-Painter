@@ -40,31 +40,50 @@ export const useZoom = (stageRef) => {
     [dispatch, currentLayer, stageRef]
   );
 
-  const onWheelZoom = useCallback(
+  const onWheel = useCallback(
     (event) => {
       event.evt.preventDefault();
-      if (stageRef.current !== null && event.evt.ctrlKey) {
-        const stage = stageRef.current;
-        const oldScale = stage.scaleX();
-        const { x: pointerX, y: pointerY } = stage.getPointerPosition();
-        const mousePointTo = {
-          x: (pointerX - stage.x()) / oldScale,
-          y: (pointerY - stage.y()) / oldScale,
-        };
-        const newScale = Math.max(
-          Math.min(
-            event.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy,
-            10
-          ),
-          0.1
-        );
-        dispatch(setZoom(newScale));
-        const newPos = {
-          x: pointerX - mousePointTo.x * newScale,
-          y: pointerY - mousePointTo.y * newScale,
-        };
-        stage.position(newPos);
-        stage.batchDraw();
+      const stage = stageRef.current;
+      if (stage) {
+        if (event.evt.ctrlKey) {
+          // Zooming
+          const oldScale = stage.scaleX();
+          const { x: pointerX, y: pointerY } = stage.getPointerPosition();
+          const mousePointTo = {
+            x: (pointerX - stage.x()) / oldScale,
+            y: (pointerY - stage.y()) / oldScale,
+          };
+          const newScale = Math.max(
+            Math.min(
+              event.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy,
+              10
+            ),
+            0.1
+          );
+          dispatch(setZoom(newScale));
+          const newPos = {
+            x: pointerX - mousePointTo.x * newScale,
+            y: pointerY - mousePointTo.y * newScale,
+          };
+          stage.position(newPos);
+          stage.batchDraw();
+        } else if (event.evt.shiftKey) {
+          // PanningX axis
+          const newPos = {
+            x: stage.x() - event.evt.deltaY,
+            y: stage.y(),
+          };
+          stage.position(newPos);
+          stage.batchDraw();
+        } else {
+          // PanningY axis
+          const newPos = {
+            x: stage.x(),
+            y: stage.y() - event.evt.deltaY,
+          };
+          stage.position(newPos);
+          stage.batchDraw();
+        }
       }
     },
     [dispatch, stageRef]
@@ -97,5 +116,5 @@ export const useZoom = (stageRef) => {
     }
   }, [dispatch, stageRef, frameSize]);
 
-  return { zoom, onZoomIn, onZoomOut, onZoomFit, onWheelZoom };
+  return { zoom, onZoomIn, onZoomOut, onZoomFit, onWheel };
 };

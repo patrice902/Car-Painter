@@ -55,8 +55,7 @@ class SharedSchemeService {
   }
 
   static async deleteById(id) {
-    const shared = await SharedScheme.where({ id }).fetch();
-    await shared.destroy();
+    await SharedScheme.where({ id }).destroy({ require: false });
     return true;
   }
 }
