@@ -27,8 +27,7 @@ class OverlayService {
   }
 
   static async deleteById(id) {
-    const overlay = await this.getById(id);
-    await overlay.destroy();
+    await Overlay.where({ id }).destroy({ require: false });
     return true;
   }
 

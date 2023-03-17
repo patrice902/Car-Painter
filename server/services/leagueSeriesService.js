@@ -34,8 +34,9 @@ class LeagueSeriesService {
   }
 
   static async deleteById(id) {
-    const leagueSeries = await LeagueSeries.where({ id }).fetch();
-    await leagueSeries.destroy();
+    await LeagueSeries.where({ id }).destroy({
+      require: false,
+    });
     return true;
   }
 }

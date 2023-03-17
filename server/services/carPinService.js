@@ -31,8 +31,7 @@ class CarPinService {
   }
 
   static async deleteById(id) {
-    const carPin = await CarPin.where({ id }).fetch();
-    await carPin.destroy();
+    await CarPin.where({ id }).destroy({ require: false });
     return true;
   }
 }

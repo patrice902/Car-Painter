@@ -243,8 +243,7 @@ class SchemeService {
       return null;
     }
 
-    const scheme = await this.getById(id);
-    await scheme.destroy();
+    await Scheme.where({ id }).destroy({ require: false });
     return true;
   }
 

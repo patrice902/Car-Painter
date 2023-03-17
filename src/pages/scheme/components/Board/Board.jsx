@@ -56,7 +56,7 @@ export const Board = React.memo(
       onTap,
       onDbltap,
     } = useDrawHelper(stageRef);
-    const { zoom, onWheelZoom } = useZoom(stageRef);
+    const { zoom, onWheel } = useZoom(stageRef);
     const mainGroupRef = useRef();
 
     const frameSize = useSelector((state) => state.boardReducer.frameSize);
@@ -119,7 +119,7 @@ export const Board = React.memo(
                 onDblClick={onDoubleClick}
                 onTap={onTap}
                 onDbltap={onDbltap}
-                onWheel={onWheelZoom}
+                onWheel={onWheel}
                 scaleX={zoom || 1}
                 scaleY={zoom || 1}
                 rotation={boardRotate}

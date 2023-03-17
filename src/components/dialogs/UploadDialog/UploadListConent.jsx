@@ -263,19 +263,6 @@ export const UploadListContent = React.memo((props) => {
         confirmLoading={fetchingDeleteList}
       />
       <ConfirmDialog
-        text={
-          uploadToDelete
-            ? `Are you sure you want to delete "${getNameFromUploadFileName(
-                uploadToDelete.file_name,
-                user
-              )}"?`
-            : ""
-        }
-        open={!!uploadToDelete}
-        onCancel={unsetUploadToDelete}
-        onConfirm={handleDeleteUploadConfirm}
-      />
-      <ConfirmDialog
         text="Are you sure you want to delete all legacy uploads?"
         open={showLegacyDelete}
         onCancel={unsetShowLegacyDelete}
@@ -298,7 +285,7 @@ export const UploadListContent = React.memo((props) => {
           )
         }
         open={!!associatedSchemes.length}
-        onYes={handleDeleteUploadFinally}
+        onYes={() => handleDeleteUploadFinally(true)}
         onNo={handleCancelForDeleteUploadFinally}
       />
     </>

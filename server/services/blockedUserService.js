@@ -36,8 +36,9 @@ class BlockedUserSchemeService {
   }
 
   static async deleteById(id) {
-    const blockRow = await BlockedUserScheme.where({ id }).fetch();
-    await blockRow.destroy();
+    await BlockedUserScheme.where({ id }).destroy({
+      require: false,
+    });
     return true;
   }
 }

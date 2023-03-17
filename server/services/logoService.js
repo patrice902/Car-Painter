@@ -27,8 +27,7 @@ class LogoService {
   }
 
   static async deleteById(id) {
-    const logo = await this.getById(id);
-    await logo.destroy();
+    await Logo.where({ id }).destroy({ require: false });
     return true;
   }
 
