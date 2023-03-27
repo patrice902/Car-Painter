@@ -45,6 +45,15 @@ export const useZoom = (stageRef) => {
       event.evt.preventDefault();
       const stage = stageRef.current;
       if (stage) {
+        let width = stageRef.current.attrs.width || 1024;
+        let height = stageRef.current.attrs.height || 1024;
+        const fitZoom = mathRound4(
+          Math.min(
+            width / (frameSize.width || 1024),
+            height / (frameSize.height || 1024)
+          )
+        );
+
         if (event.evt.ctrlKey) {
           // Zooming
           const oldScale = stage.scaleX();
@@ -69,24 +78,40 @@ export const useZoom = (stageRef) => {
           stage.batchDraw();
         } else if (event.evt.shiftKey) {
           // PanningX axis
+          const newX = stage.x() - event.evt.deltaY;
+          const virtualMinX = stage.width() - (frameSize.width * zoom) / 2;
+          const virtualMaxX = (frameSize.width * zoom) / 2;
+
+          const offsetX = zoom >= fitZoom ? 100 : 0;
+          const minX = Math.min(virtualMinX, virtualMaxX) - offsetX;
+          const maxX = Math.max(virtualMinX, virtualMaxX) + offsetX;
+
           const newPos = {
-            x: stage.x() - event.evt.deltaY,
+            x: Math.min(Math.max(newX, minX), maxX),
             y: stage.y(),
           };
           stage.position(newPos);
           stage.batchDraw();
         } else {
           // PanningY axis
+          const newY = stage.y() - event.evt.deltaY;
+          const virtualMinY = stage.height() - (frameSize.height * zoom) / 2;
+          const virtualMaxY = (frameSize.height * zoom) / 2;
+
+          const offsetY = zoom >= fitZoom ? 100 : 0;
+          const minY = Math.min(virtualMinY, virtualMaxY) - offsetY;
+          const maxY = Math.max(virtualMinY, virtualMaxY) + offsetY;
+
           const newPos = {
             x: stage.x(),
-            y: stage.y() - event.evt.deltaY,
+            y: Math.min(Math.max(newY, minY), maxY),
           };
           stage.position(newPos);
           stage.batchDraw();
         }
       }
     },
-    [dispatch, stageRef]
+    [dispatch, stageRef, frameSize, zoom]
   );
 
   const onZoomIn = useCallback(() => {
