@@ -28,8 +28,8 @@ class LeagueSeriesController {
 
   static async getByID(req, res) {
     try {
-      let favorite = await LeagueSeriesService.getById(req.params.id);
-      res.json(favorite);
+      const league_series = await LeagueSeriesService.getById(req.params.id);
+      res.json(league_series);
     } catch (err) {
       logger.log("error", err.stack);
       res.status(500).json({
@@ -40,8 +40,8 @@ class LeagueSeriesController {
 
   static async create(req, res) {
     try {
-      let favorite = await LeagueSeriesService.create(req.body);
-      res.json(favorite);
+      const league_series = await LeagueSeriesService.create(req.body);
+      res.json(league_series);
     } catch (err) {
       logger.log("error", err.stack);
       res.status(500).json({
@@ -52,11 +52,11 @@ class LeagueSeriesController {
 
   static async update(req, res) {
     try {
-      let favorite = await LeagueSeriesService.updateById(
+      const league_series = await LeagueSeriesService.updateById(
         req.params.id,
         req.body
       );
-      res.json(favorite);
+      res.json(league_series);
     } catch (err) {
       logger.log("error", err.stack);
       res.status(500).json({
