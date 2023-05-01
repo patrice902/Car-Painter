@@ -1,0 +1,22 @@
+export type GuideSettingFormValues = {
+  carmask_color: string;
+  carmask_opacity: number;
+  wireframe_color: string;
+  wireframe_opacity: number;
+  sponsor_color: string;
+  sponsor_opacity: number;
+  numberblock_color: string;
+  numberblock_opacity: number;
+  grid_color: string;
+  grid_opacity: number;
+  grid_padding: number;
+  grid_stroke: number;
+  show_wireframe: boolean;
+  show_sponsor: boolean;
+  show_numberBlocks: boolean;
+  show_grid: boolean;
+  snap_grid: boolean;
+  show_carparts_on_top: boolean;
+  show_sponsor_block_on_top: boolean;
+  show_number_block_on_top: boolean;
+};

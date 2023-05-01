@@ -82,3 +82,7 @@ body {
 .ColorPicker-MuiButton-contained {
   margin-left: 0;
 }
+
+.infinite-scroll-component {
+  overflow: hidden !important;
+}
