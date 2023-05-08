@@ -1,16 +1,26 @@
 import Konva from "konva";
 import { Image } from "konva/types/shapes/Image";
+import _ from "lodash";
 import React, { RefObject, useCallback, useEffect, useMemo } from "react";
 import { Transformer } from "react-konva";
 import { useSelector } from "react-redux";
 import RotateIcon from "src/assets/rotate-left.svg";
 import {
+  getPointsBoxSize,
   getSnapRotation,
   isCenterBasedShape,
   rotateAroundCenter,
 } from "src/helper";
 import { RootState } from "src/redux";
-import { RectObjLayerData } from "src/types/common";
+import {
+  ArcObjLayerData,
+  CircleObjLayerData,
+  LineObjLayerData,
+  MovableObjLayerData,
+  RectObjLayerData,
+  ShapeObjLayerData,
+  TextObjLayerData,
+} from "src/types/common";
 import { LayerTypes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 import useImage from "use-image";
@@ -21,6 +31,9 @@ type TransformerComponentProps = {
   hoveredTransform?: boolean;
 };
 
+const ANCHOR_SIZE_UPPER = 15;
+const ANCHOR_SIZE_LOWER = 5;
+
 export const TransformerComponent = React.memo(
   ({ trRef, selectedLayer, hoveredTransform }: TransformerComponentProps) => {
     const zoom = useSelector((state: RootState) => state.boardReducer.zoom);
@@ -28,23 +41,56 @@ export const TransformerComponent = React.memo(
       (state: RootState) => state.boardReducer.pressedKey
     );
 
-    const minScaledSize = useMemo(
-      () =>
-        selectedLayer
-          ? Math.max(
-              Math.min(
-                ((selectedLayer.layer_data as RectObjLayerData).width ?? 0) / 3,
-                ((selectedLayer.layer_data as RectObjLayerData).height ?? 0) / 3
-              ) * zoom,
-              3
-            )
-          : 0,
-      [zoom, selectedLayer]
-    );
+    const minScaledSize = useMemo(() => {
+      if (!selectedLayer) return 0;
 
-    const anchorSize = useMemo(() => Math.min(15, minScaledSize || 15), [
-      minScaledSize,
-    ]);
+      if (selectedLayer.layer_type === LayerTypes.TEXT) {
+        const textLayerData = selectedLayer.layer_data as TextObjLayerData;
+
+        return (
+          textLayerData.size *
+          Math.min(textLayerData.scaleX ?? 1, textLayerData.scaleY ?? 1)
+        );
+      }
+
+      if (selectedLayer.layer_type === LayerTypes.SHAPE) {
+        const shapeLayerData = selectedLayer.layer_data as ShapeObjLayerData;
+
+        if ((shapeLayerData as CircleObjLayerData).radius) {
+          return (shapeLayerData as CircleObjLayerData).radius;
+        }
+
+        if ((shapeLayerData as ArcObjLayerData).outerRadius) {
+          return (shapeLayerData as ArcObjLayerData).outerRadius;
+        }
+
+        if ((shapeLayerData as LineObjLayerData).points) {
+          const boundBox = getPointsBoxSize(
+            (shapeLayerData as LineObjLayerData).points
+          );
+
+          return Math.min(boundBox.width, boundBox.height);
+        }
+      }
+
+      const movableLayerData = selectedLayer.layer_data as MovableObjLayerData;
+
+      if (!movableLayerData.width || !movableLayerData.height) {
+        return ANCHOR_SIZE_UPPER;
+      }
+
+      return Math.min(movableLayerData.width, movableLayerData.height);
+    }, [selectedLayer]);
+
+    const anchorSize = useMemo(
+      () =>
+        _.clamp(
+          (minScaledSize * zoom) / 5,
+          ANCHOR_SIZE_LOWER,
+          ANCHOR_SIZE_UPPER
+        ),
+      [zoom, minScaledSize]
+    );
 
     const [icon] = useImage(RotateIcon);
     const keepRatio = useMemo(
@@ -89,9 +135,6 @@ export const TransformerComponent = React.memo(
         if (!stage) return;
 
         const selectedNode = stage.findOne("." + selectedLayer.id);
-        if (selectedNode === tr.getNode()) {
-          return;
-        }
 
         if (selectedNode) {
           tr.nodes([selectedNode]);

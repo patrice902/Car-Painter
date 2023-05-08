@@ -16,6 +16,7 @@ import { getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import UserService from "src/services/userService";
 import { User } from "src/types/model";
+import { useDebouncedCallback } from "use-debounce";
 
 import { SharingTabFormValues } from "./model";
 import { CustomDialogContent } from "./styles";
@@ -61,7 +62,7 @@ export const InnerForm = React.memo(
       [owner, currentUserID]
     );
 
-    const handleNewUserChange = useCallback(
+    const setNewUser = useCallback(
       async (userID) => {
         setFieldValue(`newUser`, null);
         if (userID && userID.length) {
@@ -84,12 +85,24 @@ export const InnerForm = React.memo(
                 editable: 0,
               });
             }
-          } catch (error) {
-            console.log(error);
+          } catch (_error) {
+            setFieldValue(`newUser`, {
+              user_id: userID,
+              user: undefined,
+              pro_user: false,
+              scheme_id: schemeID,
+              accepted: 0,
+              editable: 0,
+            });
           }
         }
       },
       [schemeID, setFieldValue, values.sharedUsers, blockedUsers, blockedBy]
+    );
+
+    const debouncedSetNewUser = useDebouncedCallback(
+      (userID) => setNewUser(userID),
+      500
     );
 
     const handleNewUserPermissionChange = useCallback(
@@ -120,41 +133,54 @@ export const InnerForm = React.memo(
                 label="Enter Customer ID"
                 variant="outlined"
                 name="newUser"
-                onChange={(event) => handleNewUserChange(event.target.value)}
+                type="number"
+                onChange={(e) => debouncedSetNewUser(e.target.value)}
                 style={{ width: isAboveMobile ? 200 : "100%" }}
               />
               {values.newUser ? (
                 <Box
                   display="flex"
-                  justifyContent="space-between"
+                  justifyContent={
+                    values.newUser?.user ? "space-between" : "flex-end"
+                  }
                   alignItems="center"
                   flexGrow={1}
                   ml={isAboveMobile ? 5 : 0}
                   mt={isAboveMobile ? 0 : 5}
                 >
-                  <Box mt="-7px">
-                    <Typography>{getUserName(values.newUser.user)}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      ID #{values.newUser.user.id}
+                  {values.newUser?.user ? (
+                    <>
+                      <Box mt="-7px">
+                        <Typography>
+                          {getUserName(values.newUser.user)}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          ID #{values.newUser.user.id}
+                        </Typography>
+                      </Box>
+                      <Box height="31px">
+                        {values.newUser.pro_user ? (
+                          <Select
+                            variant="outlined"
+                            value={values.newUser.editable}
+                            onChange={(event) =>
+                              handleNewUserPermissionChange(event.target.value)
+                            }
+                          >
+                            <MenuItem value={0}>Can view</MenuItem>
+                            <MenuItem value={1}>{"Can view & edit"}</MenuItem>
+                            <MenuItem value={-1}>Cancel</MenuItem>
+                          </Select>
+                        ) : (
+                          <Typography>not a Pro member </Typography>
+                        )}
+                      </Box>
+                    </>
+                  ) : (
+                    <Typography>
+                      No User with ID #{values.newUser.user_id}
                     </Typography>
-                  </Box>
-                  <Box height="31px">
-                    {values.newUser.pro_user ? (
-                      <Select
-                        variant="outlined"
-                        value={values.newUser.editable}
-                        onChange={(event) =>
-                          handleNewUserPermissionChange(event.target.value)
-                        }
-                      >
-                        <MenuItem value={0}>Can view</MenuItem>
-                        <MenuItem value={1}>{"Can view & edit"}</MenuItem>
-                        <MenuItem value={-1}>Cancel</MenuItem>
-                      </Select>
-                    ) : (
-                      <Typography>not a Pro member </Typography>
-                    )}
-                  </Box>
+                  )}
                 </Box>
               ) : (
                 <></>

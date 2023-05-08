@@ -547,6 +547,40 @@ export const fitPoints = (points: number[]) => {
   return { leftTopOffset, newPoints };
 };
 
+export const getPointsBoxSize = (points: number[]) => {
+  const leftTop: Position = {
+    x: points[0],
+    y: points[1],
+  };
+  const rightBottom: Position = {
+    x: points[0],
+    y: points[1],
+  };
+  for (const index in points) {
+    if (+index % 2 === 0) {
+      if (leftTop.x > points[index]) {
+        leftTop.x = points[index];
+      }
+      if (rightBottom.x < points[index]) {
+        rightBottom.x = points[index];
+      }
+    }
+    if (+index % 2 === 1) {
+      if (leftTop.y > points[index]) {
+        leftTop.y = points[index];
+      }
+      if (rightBottom.y < points[index]) {
+        rightBottom.y = points[index];
+      }
+    }
+  }
+
+  return {
+    width: rightBottom.x - leftTop.x,
+    height: rightBottom.y - leftTop.y,
+  };
+};
+
 export const getPixelRatio = (node: Node, image: HTMLImageElement) => {
   if (image) {
     if (image.width && image.height)

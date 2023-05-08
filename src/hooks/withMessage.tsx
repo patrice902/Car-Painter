@@ -13,9 +13,13 @@ const Message = React.memo(() => {
     dispatch(setMessage({ message: null }));
   };
 
+  if (!message.msg?.length) {
+    return <></>;
+  }
+
   return (
     <Snackbar
-      open={message.msg ? true : false}
+      open
       autoHideDuration={3000}
       onClose={handleClose}
       anchorOrigin={{
@@ -23,13 +27,9 @@ const Message = React.memo(() => {
         horizontal: "right",
       }}
     >
-      {message?.msg?.length ? (
-        <Alert onClose={handleClose} severity={message.type}>
-          {message.msg}
-        </Alert>
-      ) : (
-        <></>
-      )}
+      <Alert onClose={handleClose} severity={message.type}>
+        {message.msg}
+      </Alert>
     </Snackbar>
   );
 });
