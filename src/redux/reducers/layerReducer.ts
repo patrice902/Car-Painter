@@ -4,6 +4,7 @@ import { AllowedLayerProps, DefaultLayer } from "src/constant";
 import {
   clearScrollPosition,
   fitPoints,
+  getAllowedLayerTypes,
   getNameFromUploadFileName,
   mergeTwoLayer,
   parseLayer,
@@ -102,6 +103,23 @@ export const slice = createSlice({
       );
       if (foundIndex !== -1) {
         layerList[foundIndex] = parseLayer(action.payload);
+        state.list = layerList;
+      }
+    },
+    mergeListItemOnly: (
+      state,
+      action: PayloadAction<Partial<BuilderLayer | BuilderLayerJSON>>
+    ) => {
+      const layerList = [...state.list];
+      const foundIndex = layerList.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      if (foundIndex !== -1) {
+        const newLayer = mergeTwoLayer(
+          layerList[foundIndex],
+          action.payload as BuilderLayerJSON
+        ) as BuilderLayerJSON;
+        layerList[foundIndex] = newLayer;
         state.list = layerList;
       }
     },
@@ -269,6 +287,7 @@ export const {
   concatList,
   updateListItem,
   mergeListItem,
+  mergeListItemOnly,
   mergeListItems,
   deleteListItem,
   deleteListItems,
@@ -753,14 +772,36 @@ export const createShape = (
 
 export const updateLayer = (
   layer: Partial<BuilderLayerJSON>,
-  pushingToHistory = true
+  pushingToHistory = true,
+  _previousLayer?: BuilderLayerJSON
 ) => async (dispatch: AppDispatch, getState: GetState) => {
   // dispatch(setLoading(true));
   try {
     const currentUser = getState().authReducer.user;
-    const previousLayer = getState().layerReducer.list.find(
-      (item) => item.id === layer.id
+    const previousLayer =
+      _previousLayer ??
+      getState().layerReducer.list.find((item) => item.id === layer.id);
+    const allowedLayerTypes = getAllowedLayerTypes(previousLayer);
+    const pickedDefaultLayer = _.pick(
+      {
+        ...DefaultLayer,
+        layer_data: _.pick(
+          DefaultLayer.layer_data,
+          allowedLayerTypes
+            .filter((item) => item.includes("layer_data."))
+            .map((item) => item.replaceAll("layer_data.", ""))
+        ),
+      },
+      allowedLayerTypes.filter((item) => !item.includes("layer_data."))
     );
+    const previousLayerWithDefault = {
+      ...pickedDefaultLayer,
+      ...previousLayer,
+      layer_data: {
+        ...pickedDefaultLayer.layer_data,
+        ...previousLayer?.layer_data,
+      },
+    };
 
     dispatch(mergeListItem(layer));
     const currentLayer = getState().layerReducer.current;
@@ -783,9 +824,9 @@ export const updateLayer = (
       dispatch(
         pushToActionHistory({
           action: HistoryActions.LAYER_CHANGE_ACTION,
-          prev_data: previousLayer,
+          prev_data: previousLayerWithDefault,
           next_data: {
-            ...previousLayer,
+            ...previousLayerWithDefault,
             ...layer,
           },
         })

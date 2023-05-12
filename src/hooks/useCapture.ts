@@ -85,157 +85,146 @@ export const useCapture = (
     [currentCarMakeRef]
   );
 
-  const takeScreenshot = useCallback(
-    async (isPNG = true) => {
-      if (
-        !stageRef?.current ||
-        !baseLayerRef?.current ||
-        !mainLayerRef?.current ||
-        !carMaskLayerRef?.current
-      ) {
-        return {};
-      }
+  const takeScreenshot = useCallback(async () => {
+    if (
+      !stageRef?.current ||
+      !baseLayerRef?.current ||
+      !mainLayerRef?.current ||
+      !carMaskLayerRef?.current
+    ) {
+      return {};
+    }
 
-      setCapturing(true);
-      await sleep(500);
+    setCapturing(true);
+    await sleep(500);
 
-      if (
-        currentLayerRef.current &&
-        ![LayerTypes.BASE, LayerTypes.CAR].includes(
-          currentLayerRef.current.layer_type
-        )
-      ) {
-        dispatch(updateLayer(currentLayerRef.current));
-        dispatch(setCurrentLayer(null));
-        unsetDeleteLayerState();
-      }
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const pixelRatio = carMakeSize / frameSizeRef.current.width;
+    if (
+      currentLayerRef.current &&
+      ![LayerTypes.BASE, LayerTypes.CAR].includes(
+        currentLayerRef.current.layer_type
+      )
+    ) {
+      dispatch(updateLayer(currentLayerRef.current));
+      dispatch(setCurrentLayer(null));
+      unsetDeleteLayerState();
+    }
+    const pixelRatio = carMakeSize / frameSizeRef.current.width;
 
-      const width = frameSizeRef.current.width * pixelRatio;
-      const height = frameSizeRef.current.height * pixelRatio;
-      let baseLayerImg, mainLayerImg, carMaskLayerImg;
-      const stageAttrs = { ...stageRef.current.attrs };
+    const width = frameSizeRef.current.width * pixelRatio;
+    const height = frameSizeRef.current.height * pixelRatio;
 
-      const boardWrapper = document.getElementById("board-wrapper");
-      if (boardWrapper) {
-        boardWrapper.style.width = `${frameSizeRef.current.width}px`;
-        boardWrapper.style.height = `${frameSizeRef.current.height}px`;
-      }
+    const stageAttrs = { ...stageRef.current.attrs };
 
-      const originShowProperties = showPropertiesRef.current;
-      dispatch(setShowProperties(false));
+    const boardWrapper = document.getElementById("board-wrapper");
+    if (boardWrapper) {
+      boardWrapper.style.width = `${frameSizeRef.current.width}px`;
+      boardWrapper.style.height = `${frameSizeRef.current.height}px`;
+    }
 
-      const baseLayerAbPos = baseLayerRef.current.absolutePosition();
-      const mainLayerAbPos = mainLayerRef.current.absolutePosition();
-      const carMaskLayerAbPos = carMaskLayerRef.current.absolutePosition();
-      stageRef.current.setAttrs({
-        x: 0,
-        y: 0,
-        offsetX: 0,
-        offsetY: 0,
-        scaleX: 1,
-        scaleY: 1,
-        rotation: 0,
-        width: frameSizeRef.current.width,
-        height: frameSizeRef.current.height,
-      });
-      stageRef.current.draw();
+    const originShowProperties = showPropertiesRef.current;
+    dispatch(setShowProperties(false));
 
-      if (baseLayerRef.current) {
-        baseLayerRef.current.absolutePosition({
-          x: 0,
-          y: 0,
-        });
-        const baseLayerURL = baseLayerRef.current.toDataURL({
-          pixelRatio,
-          x: 0,
-          y: 0,
-          width: frameSizeRef.current.width,
-          height: frameSizeRef.current.height,
-        });
-        baseLayerImg = await addImageProcess(baseLayerURL);
-      }
+    // Getting Original Screenshot
+    stageRef.current.setAttrs({
+      x: 0,
+      y: 0,
+      offsetX: 0,
+      offsetY: 0,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    });
+    stageRef.current.draw();
 
-      if (mainLayerRef.current) {
-        mainLayerRef.current.absolutePosition({
-          x: 0,
-          y: 0,
-        });
-        const mainLayerURL = mainLayerRef.current.toDataURL({
-          pixelRatio,
-          x: 0,
-          y: 0,
-          width: frameSizeRef.current.width,
-          height: frameSizeRef.current.height,
-        });
-        mainLayerImg = await addImageProcess(mainLayerURL);
-      }
-      if (carMaskLayerRef.current) {
-        carMaskLayerRef.current.absolutePosition({
-          x: 0,
-          y: 0,
-        });
-        const carMaskLayerURL = carMaskLayerRef.current.toDataURL({
-          pixelRatio,
-          x: 0,
-          y: 0,
-          width: frameSizeRef.current.width,
-          height: frameSizeRef.current.height,
-        });
-        carMaskLayerImg = await addImageProcess(carMaskLayerURL);
-      }
+    const schemeLayerURL = stageRef.current.toDataURL({
+      pixelRatio,
+      x: 0,
+      y: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    });
+    const schemeLayerImg = await addImageProcess(schemeLayerURL);
 
-      stageRef.current.setAttrs(_.omit(stageAttrs, ["container"]));
-      stageRef.current.draw();
-      setTimeout(() => {
-        stageRef.current?.x(stageAttrs.x);
-        stageRef.current?.y(stageAttrs.y);
-        stageRef.current?.draw();
-      }, 100);
+    // Getting TGA Screenshot
+    carMaskLayerRef.current?.hide();
+    stageRef.current.setAttrs({
+      x: 0,
+      y: 0,
+      offsetX: 0,
+      offsetY: 0,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    });
+    stageRef.current.draw();
 
-      baseLayerRef.current.absolutePosition(baseLayerAbPos);
-      mainLayerRef.current.absolutePosition(mainLayerAbPos);
-      carMaskLayerRef.current.absolutePosition(carMaskLayerAbPos);
+    const tgaSchemeLayerURL = stageRef.current.toDataURL({
+      pixelRatio,
+      x: 0,
+      y: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    });
+    const tgaSchemeLayerImg = await addImageProcess(tgaSchemeLayerURL);
 
-      if (boardWrapper) {
-        boardWrapper.style.width = `100%`;
-        boardWrapper.style.height = `100%`;
-      }
-      dispatch(setShowProperties(originShowProperties));
-      canvas.width = width;
-      canvas.height = height;
+    // Backup it's original States
+    carMaskLayerRef.current?.show();
+    stageRef.current.setAttrs(_.omit(stageAttrs, ["container"]));
+    stageRef.current.draw();
+    setTimeout(() => {
+      stageRef.current?.x(stageAttrs.x);
+      stageRef.current?.y(stageAttrs.y);
+      stageRef.current?.draw();
+    }, 100);
 
-      if (baseLayerImg) {
-        ctx?.drawImage(baseLayerImg, 0, 0, width, height);
-      }
-      if (mainLayerImg) {
-        ctx?.drawImage(mainLayerImg, 0, 0, width, height);
-      }
-      if (carMaskLayerImg && isPNG) {
-        ctx?.drawImage(carMaskLayerImg, 0, 0, width, height);
-      }
-      setCapturing(false);
-      return {
-        canvas,
-        ctx,
-        carMaskLayerImg,
-      };
-    },
-    [
-      currentLayerRef,
-      carMakeSize,
-      frameSizeRef,
-      stageRef,
-      showPropertiesRef,
-      dispatch,
-      baseLayerRef,
-      mainLayerRef,
-      carMaskLayerRef,
-      unsetDeleteLayerState,
-    ]
-  );
+    if (boardWrapper) {
+      boardWrapper.style.width = `100%`;
+      boardWrapper.style.height = `100%`;
+    }
+    dispatch(setShowProperties(originShowProperties));
+
+    // Draw Screenshot Image on Canvas
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx?.drawImage(schemeLayerImg, 0, 0, width, height);
+
+    // Draw TGA Screenshot Image on tgaCanvas
+
+    const tgaCanvas = document.createElement("canvas");
+    const tgaCtx = tgaCanvas.getContext("2d");
+
+    tgaCanvas.width = width;
+    tgaCanvas.height = height;
+
+    tgaCtx?.drawImage(tgaSchemeLayerImg, 0, 0, width, height);
+
+    setCapturing(false);
+    return {
+      canvas,
+      ctx,
+      tgaCanvas,
+      tgaCtx,
+    };
+  }, [
+    currentLayerRef,
+    carMakeSize,
+    frameSizeRef,
+    stageRef,
+    showPropertiesRef,
+    dispatch,
+    baseLayerRef,
+    mainLayerRef,
+    carMaskLayerRef,
+    unsetDeleteLayerState,
+  ]);
 
   const uploadThumbnail = useCallback(
     async (dataURL) => {
@@ -282,8 +271,7 @@ export const useCapture = (
         }
         try {
           dispatch(setSaving(true));
-          const { canvas, ctx, carMaskLayerImg } = await takeScreenshot();
-          if (carMaskLayerImg) ctx?.drawImage(carMaskLayerImg, 0, 0);
+          const { canvas } = await takeScreenshot();
           const dataURL = canvas?.toDataURL("image/jpeg", 0.5);
           if (uploadLater) dispatch(setSaving(false));
           await uploadThumbnail(dataURL);
@@ -309,8 +297,7 @@ export const useCapture = (
     if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
         dispatch(setSaving(true));
-        const { canvas, ctx, carMaskLayerImg } = await takeScreenshot();
-        if (carMaskLayerImg) ctx?.drawImage(carMaskLayerImg, 0, 0);
+        const { canvas } = await takeScreenshot();
         const dataURL = canvas?.toDataURL("image/png", 0.5);
         dispatch(setSaving(false));
         return dataURL;
@@ -326,9 +313,9 @@ export const useCapture = (
     if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
         dispatch(setSaving(true));
-        const { canvas } = await takeScreenshot(false);
+        const { tgaCanvas } = await takeScreenshot();
 
-        const dataURL = canvas?.toDataURL("image/png", 1);
+        const dataURL = tgaCanvas?.toDataURL("image/png", 1);
         dispatch(setSaving(false));
         return dataURL;
       } catch (err) {
@@ -344,13 +331,13 @@ export const useCapture = (
       if (stageRef.current && currentSchemeRef.current && !capturing) {
         try {
           dispatch(setSaving(true));
-          const { ctx } = await takeScreenshot(false);
+          const { tgaCtx } = await takeScreenshot();
 
           dispatch(setSaving(false));
 
-          if (!ctx) return null;
+          if (!tgaCtx) return null;
 
-          const blob = getTGABlob(ctx, carMakeSize, carMakeSize);
+          const blob = getTGABlob(tgaCtx, carMakeSize, carMakeSize);
           const fileOfBlob = new File(
             [blob],
             isCustomNumber
@@ -380,14 +367,14 @@ export const useCapture = (
       if (stageRef.current && currentSchemeRef.current && !capturing) {
         try {
           dispatch(setSaving(true));
-          const { canvas, ctx, carMaskLayerImg } = await takeScreenshot(false);
+          const { canvas, tgaCtx } = await takeScreenshot();
 
           dispatch(setSaving(false));
 
-          if (!ctx) return;
+          if (!tgaCtx) return;
 
           downloadTGA(
-            ctx,
+            tgaCtx,
             carMakeSize,
             carMakeSize,
             isCustomNumberTGA
@@ -395,9 +382,7 @@ export const useCapture = (
               : `car_${userRef.current?.id ?? ""}.tga`
           );
 
-          if (carMaskLayerImg)
-            ctx.drawImage(carMaskLayerImg, 0, 0, carMakeSize, carMakeSize);
-          const dataURL = canvas?.toDataURL("image/jpeg", 0.1);
+          const dataURL = canvas?.toDataURL("image/jpeg", 0.5);
           if (!currentSchemeRef.current.thumbnail_updated)
             await uploadThumbnail(dataURL);
         } catch (err) {
@@ -440,7 +425,7 @@ export const useCapture = (
       loadedStatuses[`guide-mask-${schemeFinishBase}`]
     ) {
       try {
-        const { ctx, canvas } = await takeScreenshot(false);
+        const { tgaCtx, canvas } = await takeScreenshot();
 
         dispatch(setViewMode(ViewModes.NORMAL_VIEW));
         dispatch(
@@ -451,11 +436,11 @@ export const useCapture = (
         );
         setTimeout(() => dispatch(setSaving(false)), 1000);
 
-        if (!ctx) return;
+        if (!tgaCtx) return;
 
         if (downloadSpecTGA) {
           downloadTGA(
-            ctx,
+            tgaCtx,
             carMakeSize,
             carMakeSize,
             `car_spec_${userRef.current?.id ?? ""}.tga`
@@ -482,7 +467,7 @@ export const useCapture = (
   ]);
 
   useEffect(() => {
-    handleDownloadSpecPNG;
+    handleDownloadSpecPNG();
   }, [handleDownloadSpecPNG]);
 
   useEffect(() => {

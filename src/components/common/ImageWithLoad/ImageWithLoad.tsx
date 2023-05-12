@@ -11,6 +11,8 @@ type ImageWithLoadProps = {
   ImageComponent?: React.ElementType;
   minHeight?: string | number;
   minWidth?: string | number;
+  maxHeight?: string | number;
+  maxWidth?: string | number;
   height?: string | number;
   justifyContent?: string;
   alignItems?: string;
@@ -24,8 +26,10 @@ export const ImageWithLoad = React.memo(
     fallbackSrc,
     onClick,
     ImageComponent,
-    minHeight = "100%",
-    minWidth = "100%",
+    minHeight,
+    minWidth,
+    maxHeight,
+    maxWidth,
     height,
     justifyContent = "center",
     alignItems = "start",
@@ -39,6 +43,8 @@ export const ImageWithLoad = React.memo(
         position="relative"
         minHeight={minHeight}
         minWidth={minWidth}
+        maxHeight={maxHeight}
+        maxWidth={maxWidth}
         height={height}
         display="flex"
         justifyContent={justifyContent}

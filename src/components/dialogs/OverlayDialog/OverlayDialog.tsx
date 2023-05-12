@@ -112,6 +112,8 @@ export const OverlayDialog = React.memo(
                       <ImageWithLoad
                         src={`${config.assetsURL}/${shape.overlay_thumb}`}
                         alt={shape.name}
+                        height="100%"
+                        maxHeight="250px"
                       />
                     )}
                   </CustomImageListItem>

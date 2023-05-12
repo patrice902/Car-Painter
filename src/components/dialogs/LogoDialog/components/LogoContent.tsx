@@ -64,6 +64,8 @@ export const LogoContent = React.memo(
                   src={`${config.assetsURL}/${logo.preview_file}`}
                   alt={logo.name}
                   alignItems="center"
+                  height="100%"
+                  maxHeight="250px"
                 />
               </CustomImageListItem>
             ))}

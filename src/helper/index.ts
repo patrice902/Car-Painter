@@ -244,6 +244,9 @@ export const mergeTwoScheme = (
   return newScheme as BuilderSchemeJSON;
 };
 
+const stringifyReplacer = (key: string, value: unknown) =>
+  typeof value === "undefined" ? null : value;
+
 export const stringifyLayerData = (
   layer:
     | Partial<BuilderLayer>
@@ -255,7 +258,7 @@ export const stringifyLayerData = (
 
   const newLayer: Partial<BuilderLayer> | Partial<BuilderLayerPayload> = {
     ...layer,
-    layer_data: JSON.stringify(layer.layer_data),
+    layer_data: JSON.stringify(layer.layer_data, stringifyReplacer),
   };
 
   return newLayer;
@@ -275,7 +278,7 @@ export const stringifySchemeGuideData = (
 
   const newScheme: BuilderScheme | Partial<BuilderScheme> = {
     ...scheme,
-    guide_data: JSON.stringify(scheme.guide_data),
+    guide_data: JSON.stringify(scheme.guide_data, stringifyReplacer),
   };
 
   return newScheme;

@@ -2,7 +2,10 @@ import { Form, FormikProps } from "formik";
 import Konva from "konva";
 import React, { RefObject, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { updateLayer, updateLayerOnly } from "src/redux/reducers/layerReducer";
+import {
+  mergeListItemOnly as mergeLayerListItemOnly,
+  updateLayer,
+} from "src/redux/reducers/layerReducer";
 import {
   BuilderLayerJSONParitalAll,
   PartialAllLayerData,
@@ -68,10 +71,14 @@ export const InnerForm = React.memo(
         if (!currentLayer) return;
 
         dispatch(
-          updateLayer({
-            ...valueMap,
-            id: currentLayer.id,
-          })
+          updateLayer(
+            {
+              ...valueMap,
+              id: currentLayer.id,
+            },
+            true,
+            currentLayer
+          )
         );
       },
       [currentLayer, dispatch]
@@ -83,7 +90,7 @@ export const InnerForm = React.memo(
 
         setMultiFieldValue(valueMap);
         dispatch(
-          updateLayerOnly({
+          mergeLayerListItemOnly({
             ...valueMap,
             id: currentLayer.id,
           } as Partial<BuilderLayerJSON>)
@@ -97,10 +104,14 @@ export const InnerForm = React.memo(
         if (!currentLayer) return;
 
         dispatch(
-          updateLayer({
-            id: currentLayer.id,
-            layer_data: valueMap,
-          } as Partial<BuilderLayerJSON>)
+          updateLayer(
+            {
+              id: currentLayer.id,
+              layer_data: valueMap,
+            } as Partial<BuilderLayerJSON>,
+            true,
+            currentLayer
+          )
         );
       },
       [currentLayer, dispatch]
@@ -112,7 +123,7 @@ export const InnerForm = React.memo(
 
         setMultiFieldValue(valueMap, "layer_data");
         dispatch(
-          updateLayerOnly({
+          mergeLayerListItemOnly({
             id: currentLayer.id,
             layer_data: valueMap,
           } as Partial<BuilderLayerJSON>)

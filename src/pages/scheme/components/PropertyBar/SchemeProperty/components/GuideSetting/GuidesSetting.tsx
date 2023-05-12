@@ -67,8 +67,7 @@ export const GuidesSetting = React.memo((props: GuidesSettingProps) => {
         guide_data.grid_opacity != null ? guide_data.grid_opacity : 1,
       grid_padding:
         guide_data.grid_padding != null ? guide_data.grid_padding : 10,
-      grid_stroke:
-        guide_data.grid_stroke != null ? guide_data.grid_stroke : 0.1,
+      grid_stroke: guide_data.grid_stroke != null ? guide_data.grid_stroke : 1,
       show_wireframe: guide_data.show_wireframe || false,
       show_sponsor: guide_data.show_sponsor || false,
       show_numberBlocks: guide_data.show_numberBlocks || false,

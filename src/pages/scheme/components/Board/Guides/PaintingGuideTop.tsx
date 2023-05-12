@@ -22,7 +22,7 @@ export const PaintingGuideTop = React.memo(() => {
   );
 
   const gridPadding = useMemo(() => guideData?.grid_padding ?? 10, [guideData]);
-  const gridStroke = useMemo(() => guideData?.grid_stroke ?? 0.1, [guideData]);
+  const gridStroke = useMemo(() => guideData?.grid_stroke ?? 1, [guideData]);
 
   const getCarMakeImage = useCallback(
     (image: string) =>

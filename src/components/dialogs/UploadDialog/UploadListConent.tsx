@@ -244,6 +244,8 @@ export const UploadListContent = React.memo(
                     src={uploadAssetURL(uploadItem)}
                     alt={getNameFromUploadFileName(uploadItem.file_name, user)}
                     alignItems="center"
+                    height="100%"
+                    maxHeight="250px"
                   />
                   <ImageListItemBar
                     title={getNameFromUploadFileName(
