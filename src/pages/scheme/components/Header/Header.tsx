@@ -67,6 +67,9 @@ export const Header = React.memo(
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
     );
+    // const viewMode = useSelector(
+    //   (state: RootState) => state.boardReducer.viewMode
+    // );
     const cars = useSelector((state: RootState) => state.carReducer.cars);
     const primaryRaceNumber = useMemo(() => {
       if (!cars) return -1;
@@ -235,6 +238,14 @@ export const Header = React.memo(
       handleTGAOptionsClose();
     };
 
+    // const handleToggleSpecView = () => {
+    //   if (viewMode === ViewModes.NORMAL_VIEW) {
+    //     dispatch(setViewMode(ViewModes.SPEC_VIEW));
+    //   } else {
+    //     dispatch(setViewMode(ViewModes.NORMAL_VIEW));
+    //   }
+    // };
+
     const handleDownloadSpecMapTGA = () => {
       onDownloadSpecTGA();
       handleTGAOptionsClose();
@@ -301,6 +312,7 @@ export const Header = React.memo(
           ) : (
             <></>
           )}
+          {/* <Button onClick={handleToggleSpecView}>Toggle Spec</Button> */}
           <Box
             mr={isAboveMobile ? 4 : 0}
             height="100%"

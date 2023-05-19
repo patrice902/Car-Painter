@@ -85,9 +85,9 @@ export const useZoom = (stageRef: RefObject<Stage | undefined>) => {
           };
           stage.position(newPos);
           stage.batchDraw();
-        } else if (event.evt.shiftKey) {
+        } else if (event.evt.shiftKey || event.evt.deltaX) {
           // PanningX axis
-          const newX = stage.x() - event.evt.deltaY;
+          const newX = stage.x() - (event.evt.deltaX || event.evt.deltaY);
           const virtualMinX = stage.width() - (frameSize.width * zoom) / 2;
           const virtualMaxX = (frameSize.width * zoom) / 2;
 

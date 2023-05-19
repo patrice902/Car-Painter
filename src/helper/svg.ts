@@ -70,6 +70,8 @@ export function replaceColors(
       element.remove();
       continue;
     }
+    element.removeAttribute("style");
+
     // Fill
     if (options.color) element.setAttribute("fill", options.color);
 
