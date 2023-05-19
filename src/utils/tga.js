@@ -704,6 +704,7 @@ function getImageDataGrey16bits(
  */
 Targa.prototype.open = function targaOpen(path, callback) {
   var req,
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     tga = this;
   req = new XMLHttpRequest();
   req.open("GET", path, true);

@@ -20,16 +20,13 @@ class LeagueSeriesService {
   }
 
   static async create(payload) {
-    let leagueSeries = await LeagueSeries.forge(payload).save();
-    leagueSeries = leagueSeries.toJSON();
-    leagueSeries = this.getByID(leagueSeries.id);
+    const leagueSeries = await LeagueSeries.forge(payload).save();
     return leagueSeries;
   }
 
   static async updateById(id, payload) {
-    let leagueSeries = await LeagueSeries.where({ id }).fetch();
+    const leagueSeries = await LeagueSeries.where({ id }).fetch();
     await leagueSeries.save(payload);
-    leagueSeries = this.getByID(id);
     return leagueSeries;
   }
 

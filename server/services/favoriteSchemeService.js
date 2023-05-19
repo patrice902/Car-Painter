@@ -28,7 +28,14 @@ class FavoriteSchemeService {
 
   static async getByID(id) {
     const favorite = await FavoriteScheme.where({ id }).fetch({
-      withRelated: ["user", "scheme", "scheme.carMake", "scheme.user"],
+      withRelated: [
+        "user",
+        "scheme",
+        "scheme.carMake",
+        "scheme.user",
+        "scheme.sharedUsers",
+        "scheme.sharedUsers.user",
+      ],
     });
     return favorite;
   }
