@@ -187,6 +187,7 @@ export const useKonvaImageInit = ({
         const v = await Canvg.from(ctx, imageRef.current.src, {
           enableRedraw: true,
         });
+        v.resize(targetWidth * 2, targetHeight * 2, "xMidYMid meet");
         await v.render();
         setImage(canvas);
       }
