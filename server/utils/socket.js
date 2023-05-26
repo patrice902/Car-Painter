@@ -57,7 +57,7 @@ class SocketServer {
       this.onClientCreateLayer.bind(this)(socket, data)
     );
     socket.on("client-create-layer-list", (data) =>
-      this.onClientCreateLayer.bind(this)(socket, data)
+      this.onClientCreateLayerList.bind(this)(socket, data)
     );
     socket.on("client-update-layer", (data) =>
       this.onClientUpdateLayer.bind(this)(socket, data)
