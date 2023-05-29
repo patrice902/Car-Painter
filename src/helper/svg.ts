@@ -12,6 +12,27 @@ export function parseSVG(svgString: string) {
   return doc;
 }
 
+export function getViewBoxSizeFromSVG(svgDoc: Document) {
+  const svgElement = svgDoc.querySelector("svg");
+
+  if (svgElement) {
+    const viewBoxValue = svgElement.getAttribute("viewBox");
+    if (viewBoxValue) {
+      const [, , viewBoxWidth, viewBoxHeight] = viewBoxValue.split(" ");
+      return {
+        width: Number(viewBoxWidth),
+        height: Number(viewBoxHeight),
+      };
+    }
+  }
+}
+
+// convert svg document to string
+export function svgToString(svgDoc: Document) {
+  const s = new XMLSerializer();
+  return s.serializeToString(svgDoc);
+}
+
 // get color of element
 // we can also check styles of element and other properties like "stroke"
 export function getElementColor(el: Element) {
