@@ -199,7 +199,11 @@ export const useKonvaImageInit = ({
       width: imageRef.current.width,
       height: imageRef.current.height,
     });
-    const targetSize = { width, height } || originSize;
+
+    const targetSize = {
+      width: width || originSize?.width,
+      height: height || originSize?.height,
+    };
 
     if (isSVG && detectBrowser() === Browser.FIREFOX) {
       if (svgDocRef.current && !targetSize.width && !targetSize.height) {
