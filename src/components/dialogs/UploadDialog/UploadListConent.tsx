@@ -308,18 +308,20 @@ export const UploadListContent = React.memo(
           text={
             associatedSchemes.length ? (
               <>
-                The Projects below have the associated file:
+                This logo is being used on the following projects:
                 <ul>
                   {associatedSchemes.map((item, index) => (
                     <li key={index}>{item.name}</li>
                   ))}
                 </ul>
-                Would you like delete all of them?
+                Delete the logo from these projects?
               </>
             ) : (
               ""
             )
           }
+          yesText="Delete"
+          noText="Keep"
           open={!!associatedSchemes.length}
           onYes={() => handleDeleteUploadFinally(true)}
           onNo={handleCancelForDeleteUploadFinally}
