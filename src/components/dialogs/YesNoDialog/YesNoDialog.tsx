@@ -14,10 +14,12 @@ type YesNoDialogProps = {
   open: boolean;
   onYes: () => void;
   onNo: () => void;
+  yesText?: string;
+  noText?: string;
 };
 
 export const YesNoDialog = React.memo((props: YesNoDialogProps) => {
-  const { text, open, onYes, onNo } = props;
+  const { text, open, onYes, onNo, yesText, noText } = props;
 
   return (
     <Dialog aria-labelledby="confirm-title" open={open}>
@@ -27,10 +29,10 @@ export const YesNoDialog = React.memo((props: YesNoDialogProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onYes} color="secondary" variant="outlined" autoFocus>
-          Yes
+          {yesText ?? "Yes"}
         </Button>
         <Button onClick={onNo} color="primary" variant="outlined">
-          No
+          {noText ?? "No"}
         </Button>
       </DialogActions>
     </Dialog>
