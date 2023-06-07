@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BuilderBase } from "src/types/model";
+import { BuilderBase, BuilderBaseDataItem } from "src/types/model";
 
 export type BasepaintReducerState = {
   list: BuilderBase[];
@@ -24,7 +24,7 @@ export const slice = createSlice({
       const list = action.payload;
       for (const item of list) {
         if (typeof item.base_data === "string") {
-          item.base_data = JSON.parse(item.base_data);
+          item.base_data = JSON.parse(item.base_data) as BuilderBaseDataItem[];
         }
       }
       state.list = list;
