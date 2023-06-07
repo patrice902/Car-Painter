@@ -195,7 +195,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
   );
 
   const legacySchemeThumbnailURL = useCallback(
-    (id) => `${config.legacyAssetURL}/thumbs/${id}.jpg`,
+    (id) => `${config.legacyAssetURL}/thumbnails/${id}.jpg`,
     []
   );
 

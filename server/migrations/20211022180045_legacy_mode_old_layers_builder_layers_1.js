@@ -15,7 +15,7 @@ exports.up = async function (knex) {
         .select("id")
         .select("layer_type")
         .select("layer_data")
-        .whereIn("layer_type", [1, 2, 4, 5])
+        .where("layer_type", "=", 1)
         .andWhere("builder_layers.id", ">=", offset)
         .andWhere("builder_layers.id", "<", offset + QUERY_LIMIT)
         .on("query", function (data) {
