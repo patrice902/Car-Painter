@@ -63,23 +63,22 @@ export const SimPreviewGuideDialog = React.memo(
         <DialogTitle>Sim Preview</DialogTitle>
         <DialogContent dividers id="seam-preview-dialog-content">
           <Typography>
-            Preview your Paint Builder project in the iRacing sim!
+            Preview your Paint Builder project in iRacing’s 3D car model viewer.
           </Typography>
           <Box>
             <ol>
               <Typography component="li">
-                Ensure the{" "}
+                Ensure{" "}
                 <a
                   href="https://www.tradingpaints.com/install"
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: "#f48fb1", textDecoration: "none" }}
                 >
-                  Trading Paints downloader program
+                  Trading Paints Downloader
                 </a>{" "}
-                is installed, open, and running on your computer. If it’s not
-                detected, click this button to prompt Paint Builder to try
-                detecting it again:
+                is installed and running, and that your firewall & network
+                settings allow Downloader to communicate.
                 {iracing ? (
                   <Check
                     style={{ color: "#f48fb1", margin: "0 0 -5px 10px" }}
@@ -104,32 +103,30 @@ export const SimPreviewGuideDialog = React.memo(
                 )}
               </Typography>
               <Typography component="li">
-                Ensure “Automatically refresh paints” is checked and the option
-                is saved.
+                <a
+                  href="https://iracing.link/owned/cars"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: "#f48fb1", textDecoration: "none" }}
+                >
+                  Open the iRacing UI
+                </a>{" "}
+                and select {currentCarMake?.name} from the My Content → Cars
+                menu.
               </Typography>
               <Typography component="li">
-                Open an iRacing session where you’re driving the{" "}
-                {currentCarMake?.name}
+                Select the Car Model tab to open iRacing’s 3D car viewer.
               </Typography>
               <Typography component="li">
-                Once Trading Paints and iRacing are running, the Sim Preview
-                button should activate.
-              </Typography>
-              <Typography component="li">
-                Ensure your car is not parked in the pits—otherwise, iRacing
-                will not refresh paints. You may need to drive forward a bit,
-                get out of the car, and move the replay to the point when you
-                drove out of your pit stall.
-              </Typography>
-              <Typography component="li">
-                Press the “Sim Preview” button inside Paint Builder. This will
-                send the current progress of your paint to iRacing and reload
-                the car in the sim. This may take a few seconds—your car will
-                briefly turn white and then show the latest version of your
-                Paint Builder paint.
+                Choose Sim-Stamped Number or Custom Number below, then press
+                Update to load the project into the iRacing UI.
               </Typography>
             </ol>
           </Box>
+          <TipTypography>
+            Tip: You can also press the <KeyText>P</KeyText> key in Paint
+            Builder to update your changes in the iRacing UI.
+          </TipTypography>
           {iracing ? (
             <Grid
               container
@@ -199,7 +196,7 @@ export const SimPreviewGuideDialog = React.memo(
                 onClick={handleSubmit}
                 style={{ marginLeft: "10px" }}
               >
-                {applying ? <CircularProgress size={20} /> : "Apply"}
+                {applying ? <CircularProgress size={20} /> : "Update"}
               </Button>
             ) : (
               <></>
@@ -213,6 +210,20 @@ export const SimPreviewGuideDialog = React.memo(
 
 const CustomGrid = styled(Grid)`
   cursor: pointer;
+`;
+
+export const TipTypography = styled(Typography)`
+  align-items: center;
+`;
+
+export const KeyText = styled(Typography)`
+  display: inline-flex;
+  color: #ca812c;
+  background: #000000;
+  width: fit-content;
+  padding: 0px 10px;
+  border-radius: 3px;
+  font-family: AkkuratMonoLLWeb-Regular;
 `;
 
 export default SimPreviewGuideDialog;

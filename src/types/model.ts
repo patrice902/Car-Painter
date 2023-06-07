@@ -15,12 +15,18 @@ export type Team = {
   team_name: string;
 };
 
+export type BuilderBaseDataItem = {
+  color: string;
+  img: string;
+  name: string;
+};
+
 export type BuilderBase = {
   id: number;
   base_name: string;
   car_make: number;
   base_description: string;
-  base_data: string;
+  base_data: string | BuilderBaseDataItem[];
   base_color: string;
   userid: number;
 };

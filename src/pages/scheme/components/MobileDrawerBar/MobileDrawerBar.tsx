@@ -42,6 +42,7 @@ import {
   createLayerFromOverlay,
   createLayerFromUpload,
   createLayersFromBasePaint,
+  createLayersFromLegacyBasePaint,
   createTextLayer,
   setCurrent as setCurrentLayer,
   updateLayer,
@@ -244,13 +245,20 @@ export const MobileDrawerBar = React.memo(
         if (!currentScheme) return;
 
         dispatch(setMouseMode(MouseModes.DEFAULT));
-        dispatch(
-          createLayersFromBasePaint(
-            currentScheme.id,
-            basePaintItemORIndex,
-            currentScheme.legacy_mode
-          )
-        );
+
+        if (currentScheme.legacy_mode) {
+          dispatch(
+            createLayersFromLegacyBasePaint(
+              currentScheme.id,
+              basePaintItemORIndex
+            )
+          );
+        } else {
+          dispatch(
+            createLayersFromBasePaint(currentScheme.id, basePaintItemORIndex)
+          );
+        }
+
         setDialog(undefined);
         focusBoard();
       },

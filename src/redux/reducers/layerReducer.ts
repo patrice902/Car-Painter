@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
+import config from "src/config";
 import { AllowedLayerProps, DefaultLayer } from "src/constant";
 import {
   clearScrollPosition,
@@ -29,6 +30,7 @@ import {
 } from "src/types/enum";
 import {
   BuilderBase,
+  BuilderBaseDataItem,
   BuilderLayer,
   BuilderLogo,
   BuilderOverlay,
@@ -455,15 +457,12 @@ export const createLayerList = (
 
 export const createLayersFromBasePaint = (
   schemeID: number,
-  basePaintItemOrIndex: BuilderBase | number,
-  legacyMode?: boolean
+  basePaintIndex: number
 ) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
 
   try {
-    const baseData = legacyMode
-      ? JSON.parse((basePaintItemOrIndex as BuilderBase).base_data ?? "[]")
-      : Array.from({ length: 3 }, (_, i) => i + 1); // There are 3 basepaints for each carMake.
+    const baseData = Array.from({ length: 3 }, (_, i) => i + 1); // There are 3 basepaints for each carMake.
 
     const layers: BuilderLayerPayload[] = [];
     let index = 0;
@@ -474,42 +473,79 @@ export const createLayersFromBasePaint = (
         layer_type: LayerTypes.BASE,
         scheme_id: schemeID,
         layer_order: baseData.length - index,
-        layer_data: legacyMode
-          ? JSON.stringify({
-              ..._.pick(
-                { ...DefaultLayer.layer_data, ...base_item },
-                AllowedLayerTypes.filter((item) =>
-                  item.includes("layer_data.")
-                ).map((item) => item.replaceAll("layer_data.", ""))
-              ),
-              id: (basePaintItemOrIndex as BuilderBase).id,
-              img: base_item.img,
-              opacity: 1,
-            })
-          : JSON.stringify({
-              ..._.pick(
-                { ...DefaultLayer.layer_data },
-                AllowedLayerTypes.filter((item) =>
-                  item.includes("layer_data.")
-                ).map((item) => item.replaceAll("layer_data.", ""))
-              ),
-              name: `Base Pattern ${base_item}`,
-              basePaintIndex: basePaintItemOrIndex as number,
-              img: `${base_item}.png`,
-              opacity: 1,
-              color:
-                base_item === 1
-                  ? "#ff0000"
-                  : base_item === 2
-                  ? "#00ff00"
-                  : "#0000ff",
-            }),
+        layer_data: JSON.stringify({
+          ..._.pick(
+            { ...DefaultLayer.layer_data },
+            AllowedLayerTypes.filter((item) =>
+              item.includes("layer_data.")
+            ).map((item) => item.replaceAll("layer_data.", ""))
+          ),
+          name: `Base Pattern ${base_item}`,
+          basePaintIndex,
+          img: `${base_item}.png`,
+          opacity: 1,
+          color:
+            base_item === 1
+              ? "#ff0000"
+              : base_item === 2
+              ? "#00ff00"
+              : "#0000ff",
+        }),
       };
       layers.push(layer);
       index++;
     }
     dispatch(createLayerList(layers));
   } catch (err) {
+    if (config.env === "development") {
+      console.log("Error on [createLayersFromBasePaint]: ", err);
+    }
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+  dispatch(setLoading(false));
+};
+
+export const createLayersFromLegacyBasePaint = (
+  schemeID: number,
+  basePaintItem: BuilderBase
+) => async (dispatch: AppDispatch) => {
+  dispatch(setLoading(true));
+
+  try {
+    const baseData = (basePaintItem.base_data as BuilderBaseDataItem[]) ?? [];
+
+    const layers: BuilderLayerPayload[] = [];
+    let index = 0;
+    for (const base_item of baseData) {
+      const AllowedLayerTypes = AllowedLayerProps[LayerTypes.BASE];
+      const layer: BuilderLayerPayload = {
+        ...DefaultLayer,
+        layer_type: LayerTypes.BASE,
+        scheme_id: schemeID,
+        layer_order: baseData.length - index,
+        layer_data: JSON.stringify({
+          ..._.pick(
+            {
+              ...DefaultLayer.layer_data,
+              ...base_item,
+            },
+            AllowedLayerTypes.filter((item) =>
+              item.includes("layer_data.")
+            ).map((item) => item.replaceAll("layer_data.", ""))
+          ),
+          id: basePaintItem.id,
+          img: base_item.img,
+          opacity: 1,
+        }),
+      };
+      layers.push(layer);
+      index++;
+    }
+    dispatch(createLayerList(layers));
+  } catch (err) {
+    if (config.env === "development") {
+      console.log("Error on [createLayersFromLegacyBasePaint]: ", err);
+    }
     dispatch(setMessage({ message: (err as Error).message }));
   }
   dispatch(setLoading(false));

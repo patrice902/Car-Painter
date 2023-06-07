@@ -5,7 +5,7 @@ const config = {
     (process.env.NODE_ENV !== "development"
       ? "/assets"
       : "http://localhost:3000/assets"),
-  legacyAssetURL: "https://www.tradingpaints.com/builder",
+  legacyAssetURL: "https://paintbuilder-assets.tradingpaints.gg/legacy",
   parentAppURL: process.env.REACT_APP_PARENT_APP_URL,
   backendURL:
     process.env.NODE_ENV !== "development" ? "/" : "http://localhost:3000",
