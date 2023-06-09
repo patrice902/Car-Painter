@@ -117,8 +117,16 @@ export const BasePaintDialog = React.memo(
               </Typography>
 
               <Typography>
+                <a
+                  href={`https://help.tradingpaints.com/kb/guide/en/about-legacy-projects-UNQoD95JTD/Steps/2522705`}
+                  className={classes.moreLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  More Info
+                </a>
                 <NavLink to={`/?make=${carMake?.id}`} className={classes.link}>
-                  Create a new project for more Base Paint options.
+                  Create a new project
                 </NavLink>
               </Typography>
             </Box>

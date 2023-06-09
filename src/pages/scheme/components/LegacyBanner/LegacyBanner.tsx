@@ -30,7 +30,7 @@ export const LegacyBanner = React.memo(
         left={0}
         right={0}
         top="10px"
-        width={isAboveMobile ? "500px" : "350px"}
+        width={isAboveMobile ? "600px" : "350px"}
         display="flex"
         justifyContent="center"
         margin="auto"
@@ -51,10 +51,20 @@ export const LegacyBanner = React.memo(
             </Box>
             <Typography>
               This project was created with an old version of Paint Builder.
+              Legacy projects have some limitations compared to new projects. We
+              suggest creating a new project.
             </Typography>
             <Typography>
+              <a
+                href={`https://help.tradingpaints.com/kb/guide/en/about-legacy-projects-UNQoD95JTD/Steps/2522705`}
+                className={classes.moreLink}
+                target="_blank"
+                rel="noreferrer"
+              >
+                More Info
+              </a>
               <NavLink to={`/?make=${carMakeID}`} className={classes.link}>
-                Create a new project to design using the latest features.
+                Create a new project
               </NavLink>
             </Typography>
           </Box>

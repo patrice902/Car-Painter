@@ -338,7 +338,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
                 open={Boolean(actionMenuEl)}
                 onClose={handleActionMenuClose}
               >
-                {onCloneProject && (
+                {onCloneProject && !scheme.legacy_mode && (
                   <MenuItem onClick={handleCloneProject}>Clone</MenuItem>
                 )}
 
