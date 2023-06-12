@@ -1,3 +1,4 @@
+import config from "src/config";
 import { Car } from "src/types/model";
 import { CarPayload, GetCarRaceResponse } from "src/types/query";
 
@@ -24,13 +25,13 @@ export default class CarService extends BaseAPIService {
     number: number
   ): Promise<GetCarRaceResponse> =>
     this.directRequestWithAuth(
-      `https://www.tradingpaints.com/builder.php?cmd=loadrace&builder_id=${builderID}&number=${number}`,
+      `${config.parentAppURL}/builder.php?cmd=loadrace&builder_id=${builderID}&number=${number}`,
       "GET"
     );
 
   static setCarRace = async (payload: FormData) =>
     this.directRequestWithAuth(
-      `https://www.tradingpaints.com/builder.php?cmd=set`,
+      `${config.parentAppURL}/builder.php?cmd=set`,
       "POST",
       payload,
       0,
