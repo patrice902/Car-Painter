@@ -139,6 +139,12 @@ export const AppHeader = React.memo(({ isBoard, children }: AppHeaderProps) => {
                 ) : (
                   <></>
                 )}
+                <StyledLink
+                  href="https://help.tradingpaints.com/kb/en/paint-builder-337264"
+                  target="_blank"
+                >
+                  Help
+                </StyledLink>
                 <StyledDivider />
                 <SignOutButton onClick={handleSignOut}>Sign out</SignOutButton>
               </Box>

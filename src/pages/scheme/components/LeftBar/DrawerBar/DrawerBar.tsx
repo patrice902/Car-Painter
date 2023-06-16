@@ -5,7 +5,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Typography } from "@material-ui/core";
 import { Stage } from "konva/types/Stage";
-import React, { RefObject, useCallback, useMemo, useState } from "react";
+import React, {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BasepaintIcon from "src/assets/base-paint.svg";
 import GraphicsIcon from "src/assets/insert-graphics.svg";
@@ -350,6 +356,14 @@ export const DrawerBar = React.memo(
       },
       [setDialog]
     );
+
+    useEffect(() => {
+      if (mouseMode !== MouseModes.DEFAULT) {
+        setShowShapes(true);
+      } else {
+        setShowShapes(false);
+      }
+    }, [mouseMode]);
 
     if (!currentScheme || !user) return <></>;
 
