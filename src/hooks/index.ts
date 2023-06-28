@@ -12,3 +12,4 @@ export { useCapture } from "./useCapture";
 export { useDrawHelper } from "./useDrawHelper";
 export { withAuthGuard } from "./withAuthGuard";
 export { withKeyEvent } from "./withKeyEvent";
+export { withEmergencyShutdown } from "./withEmergencyShutdown";

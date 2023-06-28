@@ -2,9 +2,9 @@ import { CssBaseline } from "@material-ui/core";
 import { withEmergencyShutdown } from "src/hooks";
 import { withMessage } from "src/hooks/withMessage";
 
-import { GlobalStyle, Root } from "./Auth.style";
+import { GlobalStyle, Root } from "./Fallback.style";
 
-export const Auth = withEmergencyShutdown(
+export const Fallback = withEmergencyShutdown(
   withMessage(({ children }) => (
     <Root>
       <CssBaseline />

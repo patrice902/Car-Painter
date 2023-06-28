@@ -7,10 +7,16 @@ import {
 import { withAuthGuard } from "src/hooks";
 import { withGAPageTracking } from "src/hooks/withGAPageTracking";
 import AuthLayout from "src/layouts/Auth";
+import FallbackLayout from "src/layouts/Fallback";
 import MainLayout from "src/layouts/Main";
 
-import { Page404 } from "../pages/auth/Page404";
-import { authLayoutRoutes, mainLayoutRoutes, RouteItem } from "./index";
+import { Page404 } from "../pages/fallback/Page404";
+import {
+  authLayoutRoutes,
+  fallbackLayoutRoutes,
+  mainLayoutRoutes,
+  RouteItem,
+} from "./index";
 
 const renderChildRoutes = (
   Layout: React.ComponentType,
@@ -55,6 +61,7 @@ const Routes = () => (
     <Switch>
       {renderChildRoutes(MainLayout, mainLayoutRoutes)}
       {renderChildRoutes(AuthLayout, authLayoutRoutes)}
+      {renderChildRoutes(FallbackLayout, fallbackLayoutRoutes)}
       <Route exact path="/scheme/:id">
         <Redirect to="/project/:id" />
       </Route>

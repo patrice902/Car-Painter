@@ -102,3 +102,7 @@ export enum HistoryActions {
   LAYER_LIST_ADD_ACTION = "LAYER_LIST_ADD_ACTION",
   LAYER_LIST_DELETE_ACTION = "LAYER_LIST_DELETE_ACTION",
 }
+
+export enum ConfigCatFlags {
+  EMERGENCY_SHUT_DOWN = "emergencyShutDown",
+}

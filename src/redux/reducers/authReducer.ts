@@ -44,7 +44,7 @@ export const slice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    setPreviousPath: (state, action: PayloadAction<string>) => {
+    setPreviousPath: (state, action: PayloadAction<string | null>) => {
       state.previousPath = action.payload;
     },
     setBlockedUsers: (state, action: PayloadAction<number[]>) => {

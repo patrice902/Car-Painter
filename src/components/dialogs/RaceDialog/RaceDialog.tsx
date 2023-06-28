@@ -27,6 +27,7 @@ import { Form, Formik, FormikProps } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { NumberModSwitch } from "src/components/common";
+import { HelpLinks } from "src/constant";
 import { RootState } from "src/redux";
 import { CarRaceLeague, CarRaceTeam } from "src/types/query";
 import styled from "styled-components";
@@ -218,9 +219,9 @@ const RaceForm = React.memo(
               mb={4}
               display="flex"
               justifyContent="space-between"
-              position="relative"
+              alignItems="center"
             >
-              <Grid
+              <SelectionWrapper
                 container
                 justifyContent={isAboveMobile ? "center" : "flex-start"}
                 alignItems="center"
@@ -279,7 +280,14 @@ const RaceForm = React.memo(
                     )}
                   </Box>
                 </CustomGrid>
-              </Grid>
+              </SelectionWrapper>
+              <MoreInfo
+                href={HelpLinks.RacingNumbers}
+                target="_blank"
+                rel="noreferrer"
+              >
+                More Info
+              </MoreInfo>
             </Box>
             <Accordion
               expanded={expanded}
@@ -445,6 +453,10 @@ const CustomGrid = styled(Grid)`
   cursor: pointer;
 `;
 
+const SelectionWrapper = styled(Grid)`
+  position: relative;
+`;
+
 const CustomTextField = styled(TextField)`
   margin: 0 10px;
   width: 65px;
@@ -458,6 +470,14 @@ const CustomTextField = styled(TextField)`
 export const CustomAccordionSummary = styled(AccordionSummary)`
   background: #3f3f3f;
   border-radius: 5px;
+`;
+
+const MoreInfo = styled.a`
+  font-size: 13px;
+  font-family: CircularXXWeb-Regular;
+  color: #f48fb1;
+  text-decoration: none;
+  width: 70px;
 `;
 
 export default RaceDialog;

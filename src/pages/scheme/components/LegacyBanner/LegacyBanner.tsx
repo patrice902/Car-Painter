@@ -8,6 +8,7 @@ import {
 import { HighlightOff as CloseIcon } from "@material-ui/icons";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { HelpLinks } from "src/constant";
 
 import { useStyles } from "./LegacyBanner.style";
 
@@ -56,7 +57,7 @@ export const LegacyBanner = React.memo(
             </Typography>
             <Typography>
               <a
-                href={`https://help.tradingpaints.com/kb/guide/en/about-legacy-projects-UNQoD95JTD/Steps/2522705`}
+                href={HelpLinks.LegacyProjects}
                 className={classes.moreLink}
                 target="_blank"
                 rel="noreferrer"

@@ -13,6 +13,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { NavLink } from "react-router-dom";
 import { ImageWithLoad, Loader } from "src/components/common";
+import { HelpLinks } from "src/constant";
 import { basePaintAssetURL, legacyBasePaintAssetURL } from "src/helper";
 import { BuilderBase, CarMake } from "src/types/model";
 
@@ -118,7 +119,7 @@ export const BasePaintDialog = React.memo(
 
               <Typography>
                 <a
-                  href={`https://help.tradingpaints.com/kb/guide/en/about-legacy-projects-UNQoD95JTD/Steps/2522705`}
+                  href={HelpLinks.LegacyProjects}
                   className={classes.moreLink}
                   target="_blank"
                   rel="noreferrer"
