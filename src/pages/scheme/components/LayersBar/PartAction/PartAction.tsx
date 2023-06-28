@@ -6,7 +6,6 @@ import {
 import clsx from "clsx";
 import React, { useCallback, useState } from "react";
 import { LightTooltip } from "src/components/common";
-import { EnglishLang } from "src/constant/language";
 import { focusBoardQuickly } from "src/helper";
 
 import { CustomIconButton, useStyles } from "./PartAction.style";
@@ -19,12 +18,22 @@ export type PartActionItem = {
 
 type PartActionProps = {
   expanded: boolean;
+  isPopover?: boolean;
+  popoverTooltip?: string;
+  hideActionLabel?: boolean;
   actions?: PartActionItem[];
   onExpandClick: () => void;
 };
 
 export const PartAction = React.memo(
-  ({ expanded, actions, onExpandClick }: PartActionProps) => {
+  ({
+    expanded,
+    actions,
+    isPopover,
+    hideActionLabel,
+    popoverTooltip,
+    onExpandClick,
+  }: PartActionProps) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -54,7 +63,7 @@ export const PartAction = React.memo(
         </IconButton>
         {!actions ? (
           <></>
-        ) : actions.length === 1 ? (
+        ) : !isPopover ? (
           <LightTooltip title={actions[0].title} arrow>
             <IconButton size="small" onClick={actions[0].onClick}>
               <AddIcon />
@@ -62,7 +71,7 @@ export const PartAction = React.memo(
           </LightTooltip>
         ) : (
           <>
-            <LightTooltip title={EnglishLang.INSERT_LOGO_OR_TEXT} arrow>
+            <LightTooltip title={popoverTooltip ?? ""} arrow>
               <IconButton size="small" onClick={handlePoperOpen}>
                 <AddIcon />
               </IconButton>
@@ -81,33 +90,42 @@ export const PartAction = React.memo(
                 horizontal: "right",
               }}
             >
-              <Box
-                display="flex"
-                flexDirection="column"
-                border="1px solid gray"
-                borderRadius={5}
-                p={1}
-              >
-                {actions.map((action, index) => (
-                  <CustomIconButton
-                    size="small"
-                    key={index}
-                    onClick={() => {
-                      handleClosePoper();
-                      action.onClick();
-                    }}
-                  >
-                    <Box
-                      display="flex"
-                      justifyContent="flex-start"
-                      alignItems="center"
-                      width="100%"
+              <Box display="flex" flexDirection="column" p={1}>
+                {actions.map((action, index) =>
+                  hideActionLabel ? (
+                    <LightTooltip key={index} title={action.title} arrow>
+                      <CustomIconButton
+                        size="small"
+                        key={index}
+                        onClick={() => {
+                          handleClosePoper();
+                          action.onClick();
+                        }}
+                      >
+                        {action.icon}
+                      </CustomIconButton>
+                    </LightTooltip>
+                  ) : (
+                    <CustomIconButton
+                      size="small"
+                      key={index}
+                      onClick={() => {
+                        handleClosePoper();
+                        action.onClick();
+                      }}
                     >
-                      {action.icon}
-                      <Typography>{action.title}</Typography>
-                    </Box>
-                  </CustomIconButton>
-                ))}
+                      <Box
+                        display="flex"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                        width="100%"
+                      >
+                        {action.icon}
+                        <Typography>{action.title}</Typography>
+                      </Box>
+                    </CustomIconButton>
+                  )
+                )}
               </Box>
             </Popover>
           </>

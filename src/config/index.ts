@@ -1,5 +1,6 @@
 const config = {
   env: process.env.NODE_ENV,
+  configCatKey: process.env.REACT_APP_CONFIGCAT_KEY,
   assetsURL:
     process.env.REACT_APP_ASSET_URL ||
     (process.env.NODE_ENV !== "development"

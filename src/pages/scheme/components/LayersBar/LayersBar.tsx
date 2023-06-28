@@ -18,13 +18,17 @@ import { useDispatch, useSelector } from "react-redux";
 import LogoIcon from "src/assets/insert-logo.svg";
 import { ColorPickerInput } from "src/components/common";
 import { FinishOptions } from "src/constant";
-import { EnglishLang } from "src/constant/language";
 import { colorValidatorWithoutAlpha, focusBoardQuickly } from "src/helper";
 import { RootState } from "src/redux";
-import { setShowProperties } from "src/redux/reducers/boardReducer";
+import {
+  setMouseMode,
+  setShowProperties,
+} from "src/redux/reducers/boardReducer";
+import { setCurrent as setCurrentLayer } from "src/redux/reducers/layerReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
-import { DialogTypes, LayerTypes } from "src/types/enum";
+import { DialogTypes, LayerTypes, MouseModes } from "src/types/enum";
 
+import { drawModes } from "../MobileDrawerBar/MobileDrawerBar";
 import {
   ColorApplyButton,
   CustomFontAwesomeIcon,
@@ -158,6 +162,17 @@ export const LayersBar = React.memo(
       setDialog,
     ]);
 
+    const handleModeChange = useCallback(
+      (value) => {
+        dispatch(setMouseMode(value));
+        if (value !== MouseModes.DEFAULT) {
+          dispatch(setCurrentLayer(null));
+        }
+        focusBoardQuickly();
+      },
+      [dispatch]
+    );
+
     if (!currentScheme) return <></>;
 
     return (
@@ -187,7 +202,7 @@ export const LayersBar = React.memo(
           actions={[
             {
               icon: <CustomFontAwesomeIcon icon={faFolderOpen} />,
-              title: EnglishLang.INSERT_MY_LOGO,
+              title: "Insert My Logo",
               onClick: showUploadDialog,
             },
             {
@@ -199,15 +214,19 @@ export const LayersBar = React.memo(
                   style={{ marginLeft: "-3px", marginRight: "8px" }}
                 />
               ),
-              title: EnglishLang.INSERT_LOGO,
+              title: "Insert Logo",
               onClick: showLogoDialog,
             },
             {
               icon: <CustomFontAwesomeIcon icon={faFont} />,
-              title: EnglishLang.INSERT_TEXT,
+              title: "Insert Text",
               onClick: showTextDialog,
             },
           ]}
+          actionProps={{
+            isPopover: true,
+            popoverTooltip: "Insert Logo or Text",
+          }}
           onChangeHoverJSONItem={onChangeHoverJSONItem}
           onDoubleClickItem={handleDoubleClickItem}
         />
@@ -220,6 +239,16 @@ export const LayersBar = React.memo(
           hoveredLayerJSON={hoveredLayerJSON}
           onChangeHoverJSONItem={onChangeHoverJSONItem}
           onDoubleClickItem={handleDoubleClickItem}
+          actions={drawModes.map((drawMode) => ({
+            icon: drawMode.icon,
+            title: drawMode.label,
+            onClick: () => handleModeChange(drawMode.value),
+          }))}
+          actionProps={{
+            isPopover: true,
+            popoverTooltip: "Insert Shape",
+            hideActionLabel: true,
+          }}
         />
         <PartGroup
           title="Graphics"
@@ -233,7 +262,7 @@ export const LayersBar = React.memo(
           actions={[
             {
               icon: faShapes,
-              title: EnglishLang.INSERT_GRAPHICS,
+              title: "Insert Graphics",
               onClick: showShapeDialog,
             },
           ]}
@@ -251,7 +280,7 @@ export const LayersBar = React.memo(
           actions={[
             {
               icon: faCar,
-              title: EnglishLang.INSERT_BASEPAINT,
+              title: "Insert Base Paint",
               onClick: showBaseDialog,
             },
           ]}

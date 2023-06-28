@@ -13,8 +13,8 @@ export type RouteItem = {
 
 // Auth components
 const SignIn = async(() => import("src/pages/auth/SignIn"));
-const Page404 = async(() => import("src/pages/auth/Page404"));
-const Page500 = async(() => import("src/pages/auth/Page500"));
+const Page404 = async(() => import("src/pages/fallback/Page404"));
+const Page500 = async(() => import("src/pages/fallback/Page500"));
 
 // Main components
 const Scheme = async(() => import("src/pages/scheme"));
@@ -30,13 +30,21 @@ const authRoutes: RouteItem = {
       name: "Sign In",
       component: SignIn,
     },
+  ],
+  component: null,
+};
+
+const fallbackRoutes: RouteItem = {
+  id: "Fallback",
+  path: "/fallback",
+  children: [
     {
-      path: "/auth/404",
+      path: "/fallback/404",
       name: "404 Page",
       component: Page404,
     },
     {
-      path: "/auth/500",
+      path: "/fallback/500",
       name: "500 Page",
       component: Page500,
     },
@@ -111,3 +119,6 @@ export const mainLayoutRoutes: RouteItem[] = [
 
 // Routes using the Auth layout
 export const authLayoutRoutes: RouteItem[] = [authRoutes];
+
+// Routes using the Fallback layout
+export const fallbackLayoutRoutes: RouteItem[] = [fallbackRoutes];

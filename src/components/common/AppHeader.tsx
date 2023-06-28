@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import PaintBuilderLogo from "src/assets/paint-builder-logo.svg";
 import TradingPaintsLogo from "src/assets/trading-paints-logo.svg";
+import { HelpLinks } from "src/constant";
 import { getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import { signOut } from "src/redux/reducers/authReducer";
@@ -139,6 +140,9 @@ export const AppHeader = React.memo(({ isBoard, children }: AppHeaderProps) => {
                 ) : (
                   <></>
                 )}
+                <StyledLink href={HelpLinks.Menu} target="_blank">
+                  Help
+                </StyledLink>
                 <StyledDivider />
                 <SignOutButton onClick={handleSignOut}>Sign out</SignOutButton>
               </Box>

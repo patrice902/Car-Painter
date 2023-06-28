@@ -24,6 +24,11 @@ type PartGroupProps = {
   title: string;
   disabled?: boolean;
   actions?: PartActionItem[];
+  actionProps?: {
+    isPopover?: boolean;
+    popoverTooltip?: string;
+    hideActionLabel?: boolean;
+  };
   extraChildren?: React.ReactNode;
   disableLock?: boolean;
   disableDnd?: boolean;
@@ -37,6 +42,7 @@ export const PartGroup = ({
   title,
   disabled,
   actions,
+  actionProps = {},
   extraChildren,
   disableLock,
   disableDnd,
@@ -151,6 +157,7 @@ export const PartGroup = ({
             expanded={expanded}
             actions={!disabled ? actions : undefined}
             onExpandClick={handleExpandClick}
+            {...actionProps}
           />
         </Box>
         <Collapse in={expanded}>
