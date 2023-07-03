@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { GroupedURLImage, TextNode } from "src/components/konva";
 import config from "src/config";
 import { FinishOptions } from "src/constant";
-import { getRelativeShadowOffset } from "src/helper";
+import { decodeHtml, getRelativeShadowOffset } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { insertToLoadedList as insertToLoadedFontList } from "src/redux/reducers/fontReducer";
@@ -237,7 +237,7 @@ export const LogosAndTexts = React.memo(
               stageRef={stageRef}
               frameSize={frameSize}
               name={layer.id.toString()}
-              text={textLayerData.text}
+              text={decodeHtml(textLayerData.text)}
               fontFamily={font?.font_name}
               fontFile={
                 font?.font_file

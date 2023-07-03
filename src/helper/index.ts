@@ -750,3 +750,9 @@ export const getAllowedLayerTypes = (
         (values.layer_data as ShapeObjLayerData)
           .type as keyof typeof AllowedLayerProps[LayerTypes.SHAPE]
       ];
+
+export const decodeHtml = (html: string) => {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
