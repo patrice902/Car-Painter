@@ -15,7 +15,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
 import { ImageWithLoad, Loader, ScreenLoader } from "src/components/common";
 import { ConfirmDialog, YesNoDialog } from "src/components/dialogs";
-import { getNameFromUploadFileName, uploadAssetURL } from "src/helper";
+import {
+  decodeHtml,
+  getNameFromUploadFileName,
+  uploadAssetURL,
+} from "src/helper";
 import { RootState } from "src/redux";
 import {
   deleteItemsByUploadID as deleteLayerItemsByUploadID,
@@ -311,7 +315,7 @@ export const UploadListContent = React.memo(
                 This logo is being used on the following projects:
                 <ul>
                   {associatedSchemes.map((item, index) => (
-                    <li key={index}>{item.name}</li>
+                    <li key={index}>{decodeHtml(item.name)}</li>
                   ))}
                 </ul>
                 Delete the logo from these projects?

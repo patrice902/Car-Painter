@@ -13,7 +13,7 @@ import { Check, Warning } from "@material-ui/icons";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NumberModSwitch } from "src/components/common";
-import { isWindows } from "src/helper";
+import { decodeHtml, isWindows } from "src/helper";
 import { RootState } from "src/redux";
 import { getDownloaderStatus } from "src/redux/reducers/downloaderReducer";
 import styled from "styled-components";
@@ -111,8 +111,8 @@ export const SimPreviewGuideDialog = React.memo(
                 >
                   Open the iRacing UI
                 </a>{" "}
-                and select {currentCarMake?.name} from the My Content → Cars
-                menu.
+                and select {decodeHtml(currentCarMake?.name)} from the My
+                Content → Cars menu.
               </Typography>
               <Typography component="li">
                 Select the Car Model tab to open iRacing’s 3D car viewer.

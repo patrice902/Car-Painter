@@ -15,7 +15,11 @@ import {
 } from "@material-ui/icons";
 import { FormikProps } from "formik";
 import React, { useMemo, useState } from "react";
-import { focusBoardQuickly, getAllowedLayerTypes } from "src/helper";
+import {
+  decodeHtml,
+  focusBoardQuickly,
+  getAllowedLayerTypes,
+} from "src/helper";
 import {
   BuilderLayerJSONParitalAll,
   PartialAllLayerData,
@@ -83,7 +87,7 @@ export const GeneralProperty = React.memo(
                   fieldKey="text"
                   label="Text"
                   variant="outlined"
-                  value={values.layer_data.text}
+                  value={decodeHtml(values.layer_data.text)}
                   disabled={!editable}
                   error={Boolean(
                     touched.layer_data?.text && errors.layer_data?.text

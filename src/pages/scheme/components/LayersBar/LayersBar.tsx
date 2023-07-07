@@ -18,7 +18,11 @@ import { useDispatch, useSelector } from "react-redux";
 import LogoIcon from "src/assets/insert-logo.svg";
 import { ColorPickerInput } from "src/components/common";
 import { FinishOptions } from "src/constant";
-import { colorValidatorWithoutAlpha, focusBoardQuickly } from "src/helper";
+import {
+  colorValidatorWithoutAlpha,
+  decodeHtml,
+  focusBoardQuickly,
+} from "src/helper";
 import { RootState } from "src/redux";
 import {
   setMouseMode,
@@ -178,7 +182,7 @@ export const LayersBar = React.memo(
     return (
       <LayerWrapper width="100%" p={isAboveMobile ? "0 12px 0 0" : "8px"}>
         <PartGroup
-          title={currentCarMake ? currentCarMake.name : ""}
+          title={decodeHtml(currentCarMake?.name ?? "")}
           layerList={layerList.filter(
             (item) => item.layer_type === LayerTypes.CAR
           )}

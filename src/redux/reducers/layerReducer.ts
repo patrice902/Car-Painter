@@ -4,6 +4,7 @@ import config from "src/config";
 import { AllowedLayerProps, DefaultLayer } from "src/constant";
 import {
   clearScrollPosition,
+  decodeHtml,
   fitPoints,
   getAllowedLayerTypes,
   getNameFromUploadFileName,
@@ -699,7 +700,7 @@ export const createTextLayer = (
             item.includes("layer_data.")
           ).map((item) => item.replaceAll("layer_data.", ""))
         ),
-        name: textObj.text,
+        name: decodeHtml(textObj.text),
         rotation: textObj.rotation - boardRotate,
         left: position.x,
         top: position.y,

@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router";
 import { ProjectItem, ScreenLoader } from "src/components/common";
-import { parseScheme, scrollBackOnProjectList } from "src/helper";
+import { decodeHtml, parseScheme, scrollBackOnProjectList } from "src/helper";
 import { CarMake } from "src/types/model";
 import {
   BuilderSchemeJSONForGetListByUserId,
@@ -56,8 +56,10 @@ export const SharedProjects = React.memo(
         _.orderBy(
           sharedSchemeList.filter(
             (item) =>
-              (item.scheme.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.scheme.carMake.name
+              (decodeHtml(item.scheme.name)
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+                decodeHtml(item.scheme.carMake.name)
                   .toLowerCase()
                   .includes(search.toLowerCase())) &&
               (!selectedVehicle ||

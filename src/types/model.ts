@@ -164,6 +164,18 @@ export type FavoriteScheme = {
   user_id: number;
 };
 
+export type FavoriteLogo = {
+  id: number;
+  logo_id: number;
+  user_id: number;
+};
+
+export type FavoriteOverlay = {
+  id: number;
+  overlay_id: number;
+  user_id: number;
+};
+
 export type Car = {
   id: number;
   user_id: number;

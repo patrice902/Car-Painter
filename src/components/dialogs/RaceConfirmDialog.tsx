@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { decodeHtml } from "src/helper";
 import { RootState } from "src/redux";
 
 type RaceConfirmDialogProps = {
@@ -68,8 +69,8 @@ export const RaceConfirmDialog = React.memo((props: RaceConfirmDialogProps) => {
       <DialogTitle id="confirm-title">Race Confirm</DialogTitle>
       <DialogContent dividers>
         <Typography variant="body1">
-          Race the latest version of {currentScheme?.name} as your{" "}
-          {currentCarMake?.name}{" "}
+          Race the latest version of {decodeHtml(currentScheme?.name)} as your{" "}
+          {decodeHtml(currentCarMake?.name)}{" "}
           {primaryRaceNumber ? "Custom Number" : "Sim-Stamped"} paint?
         </Typography>
         {!isDefault ? (

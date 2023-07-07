@@ -1,19 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { modifyFileName } from "src/helper";
+import FavoriteOverlayService from "src/services/favoriteOverlayService";
 import OverlayService from "src/services/overlayService";
-import { BuilderOverlay } from "src/types/model";
+import { BuilderOverlay, FavoriteOverlay } from "src/types/model";
+import { FavoriteOverlayPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
 import { setMessage } from "./messageReducer";
 
 export type OverlayReducerState = {
   list: BuilderOverlay[];
+  favoriteOverlayList: FavoriteOverlay[];
   current?: BuilderOverlay | null;
   loading: boolean;
 };
 
 const initialState: OverlayReducerState = {
   list: [],
+  favoriteOverlayList: [],
   current: null,
   loading: false,
 };
@@ -60,6 +64,27 @@ export const slice = createSlice({
     setCurrent: (state, action: PayloadAction<BuilderOverlay | null>) => {
       state.current = action.payload;
     },
+    setFavoriteOverlayList: (
+      state,
+      action: PayloadAction<FavoriteOverlay[]>
+    ) => {
+      state.favoriteOverlayList = [...action.payload];
+    },
+    insertToFavoriteOverlayList: (
+      state,
+      action: PayloadAction<FavoriteOverlay>
+    ) => {
+      const favorite = { ...action.payload };
+      state.favoriteOverlayList.push(favorite);
+    },
+    deleteFavoriteOverlayListItem: (state, action: PayloadAction<number>) => {
+      state.favoriteOverlayList = state.favoriteOverlayList.filter(
+        (item) => item.id !== +action.payload
+      );
+    },
+    clearFavoriteOverlayList: (state) => {
+      state.favoriteOverlayList = [];
+    },
   },
 });
 
@@ -71,6 +96,10 @@ export const {
   concatList,
   updateListItem,
   deleteListItem,
+  setFavoriteOverlayList,
+  insertToFavoriteOverlayList,
+  deleteFavoriteOverlayListItem,
+  clearFavoriteOverlayList,
 } = slice.actions;
 
 export default slice.reducer;
@@ -206,4 +235,47 @@ export const deleteOverlay = (id: number, callback?: () => void) => async (
     dispatch(setMessage({ message: (err as Error).message }));
   }
   dispatch(setLoading(false));
+};
+
+export const getFavoriteOverlayList = (
+  userID: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const list = await FavoriteOverlayService.getFavoriteOverlayListByUserID(
+      userID
+    );
+    dispatch(setFavoriteOverlayList(list));
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+  callback?.();
+};
+
+export const createFavoriteOverlay = (
+  payload: FavoriteOverlayPayload,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const favoriteLogo = await FavoriteOverlayService.createFavoriteOverlay(
+      payload
+    );
+    dispatch(insertToFavoriteOverlayList(favoriteLogo));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+};
+
+export const deleteFavoriteOverlayItem = (
+  id: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    await FavoriteOverlayService.deleteFavoriteOverlay(id);
+    dispatch(deleteFavoriteOverlayListItem(id));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
 };

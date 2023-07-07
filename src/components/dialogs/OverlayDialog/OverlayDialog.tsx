@@ -1,16 +1,19 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
+  IconButton,
+  ImageListItemBar,
   Theme,
   useMediaQuery,
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ImageWithLoad,
   Loader,
@@ -19,12 +22,19 @@ import {
 } from "src/components/common";
 import config from "src/config";
 import { RootState } from "src/redux";
+import {
+  createFavoriteOverlay,
+  deleteFavoriteOverlayItem,
+} from "src/redux/reducers/overlayReducer";
 import { BuilderOverlay } from "src/types/model";
 
 import {
+  CategoryText,
   CustomDialogContent,
   CustomImageList,
   CustomImageListItem,
+  faStarOff,
+  faStarOn,
 } from "./OverlayDialog.style";
 
 type OverlayDialogProps = {
@@ -36,6 +46,7 @@ type OverlayDialogProps = {
 
 export const OverlayDialog = React.memo(
   ({ overlays, onCancel, open, onOpenOverlay }: OverlayDialogProps) => {
+    const dispatch = useDispatch();
     const step = 40;
     const [limit, setLimit] = useState(step);
     const [search, setSearch] = useState("");
@@ -47,12 +58,15 @@ export const OverlayDialog = React.memo(
     const guide_data = useSelector(
       (state: RootState) => state.schemeReducer.current?.guide_data
     );
+    const user = useSelector((state: RootState) => state.authReducer.user);
+    const favoriteOverlayList = useSelector(
+      (state: RootState) => state.overlayReducer.favoriteOverlayList
+    );
 
-    const increaseData = useCallback(() => {
-      setLimit(limit + step);
-    }, [limit, step, setLimit]);
-
-    const handleSearchChange = useCallback((value) => setSearch(value), []);
+    const favoriteOverlayIDs = useMemo(
+      () => favoriteOverlayList.map((overlay) => overlay.overlay_id),
+      [favoriteOverlayList]
+    );
 
     const filteredOverlays = useMemo(
       () =>
@@ -63,6 +77,112 @@ export const OverlayDialog = React.memo(
               item.description.toLowerCase().includes(search.toLowerCase()))
         ),
       [overlays, search]
+    );
+
+    const favoriteFilteredOverlays = useMemo(
+      () =>
+        filteredOverlays.filter((overlay) =>
+          favoriteOverlayIDs.includes(overlay.id)
+        ),
+      [favoriteOverlayIDs, filteredOverlays]
+    );
+    const unfavoriteFilteredOverlays = useMemo(
+      () =>
+        filteredOverlays.filter(
+          (overlay) => !favoriteOverlayIDs.includes(overlay.id)
+        ),
+      [favoriteOverlayIDs, filteredOverlays]
+    );
+
+    const increaseData = useCallback(() => {
+      setLimit(limit + step);
+    }, [limit, step, setLimit]);
+
+    const handleSearchChange = useCallback((value) => setSearch(value), []);
+
+    const handleClickAddFavorite = useCallback(
+      (event, overlay: BuilderOverlay) => {
+        event.stopPropagation();
+        event.nativeEvent.stopImmediatePropagation();
+
+        if (!user) return;
+
+        dispatch(
+          createFavoriteOverlay({ overlay_id: overlay.id, user_id: user.id })
+        );
+      },
+      [dispatch, user]
+    );
+
+    const handleClickRemoveFavorite = useCallback(
+      (event, overlay: BuilderOverlay) => {
+        event.stopPropagation();
+        event.nativeEvent.stopImmediatePropagation();
+
+        const favoriteLogoItem = favoriteOverlayList.find(
+          (item) => item.overlay_id === overlay.id
+        );
+
+        if (!favoriteLogoItem) return;
+
+        dispatch(deleteFavoriteOverlayItem(favoriteLogoItem.id));
+      },
+      [dispatch, favoriteOverlayList]
+    );
+
+    const renderOvelayList = (
+      overlayList: BuilderOverlay[],
+      isFavorite: boolean
+    ) => (
+      <CustomImageList rowHeight="auto" cols={isAboveMobile ? 3 : 1} gap={10}>
+        {overlayList.map((shape) => (
+          <CustomImageListItem
+            key={shape.id}
+            cols={1}
+            onClick={() => onOpenOverlay(shape)}
+          >
+            {shape.overlay_thumb.includes(".svg") ? (
+              <SVGImageWithLoad
+                src={`${config.assetsURL}/${shape.overlay_thumb}`}
+                alt={shape.name}
+                options={{
+                  color: guide_data?.default_shape_color,
+                  opacity: guide_data?.default_shape_opacity || 1,
+                  stroke: guide_data?.default_shape_scolor,
+                  strokeWidth:
+                    (guide_data?.default_shape_stroke ?? 1) *
+                    shape.stroke_scale,
+                }}
+              />
+            ) : (
+              <ImageWithLoad
+                src={`${config.assetsURL}/${shape.overlay_thumb}`}
+                alt={shape.name}
+                height="100%"
+                maxHeight="250px"
+              />
+            )}
+            <ImageListItemBar
+              position="top"
+              actionIcon={
+                <IconButton
+                  color="secondary"
+                  onClick={(event) =>
+                    isFavorite
+                      ? handleClickRemoveFavorite(event, shape)
+                      : handleClickAddFavorite(event, shape)
+                  }
+                >
+                  <FontAwesomeIcon
+                    icon={isFavorite ? faStarOn : faStarOff}
+                    size="sm"
+                  />
+                </IconButton>
+              }
+            />
+          </CustomImageListItem>
+        ))}
+      </CustomImageList>
     );
 
     return (
@@ -84,41 +204,30 @@ export const OverlayDialog = React.memo(
               loader={<Loader />}
               scrollableTarget="shape-dialog-content"
             >
-              <CustomImageList
-                rowHeight="auto"
-                cols={isAboveMobile ? 3 : 1}
-                gap={10}
-              >
-                {filteredOverlays.slice(0, limit).map((shape) => (
-                  <CustomImageListItem
-                    key={shape.id}
-                    cols={1}
-                    onClick={() => onOpenOverlay(shape)}
-                  >
-                    {shape.overlay_thumb.includes(".svg") ? (
-                      <SVGImageWithLoad
-                        src={`${config.assetsURL}/${shape.overlay_thumb}`}
-                        alt={shape.name}
-                        options={{
-                          color: guide_data?.default_shape_color,
-                          opacity: guide_data?.default_shape_opacity || 1,
-                          stroke: guide_data?.default_shape_scolor,
-                          strokeWidth:
-                            (guide_data?.default_shape_stroke ?? 1) *
-                            shape.stroke_scale,
-                        }}
-                      />
-                    ) : (
-                      <ImageWithLoad
-                        src={`${config.assetsURL}/${shape.overlay_thumb}`}
-                        alt={shape.name}
-                        height="100%"
-                        maxHeight="250px"
-                      />
-                    )}
-                  </CustomImageListItem>
-                ))}
-              </CustomImageList>
+              {favoriteFilteredOverlays.length ? (
+                <>
+                  <CategoryText color="secondary">
+                    Favorite Graphics
+                  </CategoryText>
+                  {renderOvelayList(favoriteFilteredOverlays, true)}
+                  {unfavoriteFilteredOverlays.length ? (
+                    <CategoryText color="secondary">
+                      Normal Graphics
+                    </CategoryText>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ) : (
+                <></>
+              )}
+              {renderOvelayList(
+                unfavoriteFilteredOverlays.slice(
+                  0,
+                  Math.max(limit - favoriteFilteredOverlays.length, 4)
+                ),
+                false
+              )}
             </InfiniteScroll>
           </Box>
         </CustomDialogContent>

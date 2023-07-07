@@ -16,6 +16,7 @@ import {
   SliderInput,
 } from "src/components/common";
 import config from "src/config";
+import { decodeHtml } from "src/helper";
 import { RootState } from "src/redux";
 import { insertToLoadedList as insertToLoadedFontList } from "src/redux/reducers/fontReducer";
 import { BuilderFont } from "src/types/model";
@@ -139,7 +140,7 @@ export const InnerForm = React.memo(
           label="Text"
           placeholder="Input Text here"
           variant="outlined"
-          value={values.text}
+          value={decodeHtml(values.text)}
           error={Boolean(touched.text && errors.text)}
           helperText={touched.text && errors.text}
           onBlur={handleBlur}
@@ -237,7 +238,7 @@ export const InnerForm = React.memo(
             id="text-preview"
             ref={previewBoxRef}
           >
-            {values.text}
+            {decodeHtml(values.text)}
           </TextPreview>
         </TextPreviewWrapper>
       </>

@@ -7,7 +7,7 @@ import {
 } from "@material-ui/icons";
 import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
-import { focusBoardQuickly } from "src/helper";
+import { decodeHtml, focusBoardQuickly } from "src/helper";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { CustomTypography, SmallIconButton, Wrapper } from "./PartItem.style";
@@ -100,7 +100,7 @@ export const PartItem = React.memo(
             active={layer_visible ? "true" : "false"}
             noWrap
           >
-            {text}
+            {decodeHtml(text)}
           </CustomTypography>
           {selected || hovered || layer_locked || !layer_visible ? (
             <Box display="flex" justifyContent="flex-end" alignItems="center">

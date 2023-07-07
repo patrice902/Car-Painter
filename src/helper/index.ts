@@ -1,5 +1,6 @@
 import { Node } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
+import _ from "lodash";
 import { MutableRefObject, RefObject } from "react";
 import config from "src/config";
 import { AllowedLayerProps } from "src/constant";
@@ -751,8 +752,8 @@ export const getAllowedLayerTypes = (
           .type as keyof typeof AllowedLayerProps[LayerTypes.SHAPE]
       ];
 
-export const decodeHtml = (html: string) => {
-  const txt = document.createElement("textarea");
-  txt.innerHTML = html;
-  return txt.value;
+export const decodeHtml = (str?: string) => {
+  const txt = new DOMParser().parseFromString(str ?? "", "text/html");
+
+  return txt.documentElement.textContent ?? "";
 };

@@ -20,6 +20,7 @@ import {
   SliderInput,
 } from "src/components/common";
 import config from "src/config";
+import { decodeHtml } from "src/helper";
 import { uploadAndUpdateOverlay } from "src/redux/reducers/overlayReducer";
 import { BuilderOverlay } from "src/types/model";
 import * as Yup from "yup";
@@ -47,7 +48,7 @@ export const UpdateOverlayDialog = React.memo(
 
     const initialValues: UpdateOverlayFormValues = useMemo(
       () => ({
-        name: data?.name ?? "",
+        name: decodeHtml(data?.name ?? ""),
         overlay_file: undefined,
         overlay_thumb: undefined,
         color: data?.color ?? "000000",
@@ -229,7 +230,7 @@ const UpdateOverlayForm = React.memo(
                 label="Name"
                 variant="outlined"
                 color="primary"
-                value={formProps.values.name}
+                value={decodeHtml(formProps.values.name)}
                 error={Boolean(formProps.touched.name && formProps.errors.name)}
                 fullWidth
                 helperText={formProps.touched.name && formProps.errors.name}

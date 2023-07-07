@@ -12,7 +12,7 @@ import {
 import { Form, FormikProps } from "formik";
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { getUserName } from "src/helper";
+import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import UserService from "src/services/userService";
 import { User } from "src/types/model";
@@ -152,7 +152,7 @@ export const InnerForm = React.memo(
                     <>
                       <Box mt="-7px">
                         <Typography>
-                          {getUserName(values.newUser.user)}
+                          {decodeHtml(getUserName(values.newUser.user))}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
                           ID #{values.newUser.user.id}
@@ -192,7 +192,7 @@ export const InnerForm = React.memo(
           <Box maxHeight="50vh" pr={5} overflow="auto">
             <Box display="flex" justifyContent="space-between" mb={4}>
               <Typography color="textSecondary">
-                {getUserName(owner) + (isOwner ? " (you)" : "")}
+                {decodeHtml(getUserName(owner)) + (isOwner ? " (you)" : "")}
               </Typography>
               <Typography color="textSecondary">Owner</Typography>
             </Box>
@@ -211,7 +211,7 @@ export const InnerForm = React.memo(
                 >
                   <Box mt="-7px">
                     <Typography color="textSecondary">
-                      {getUserName(sharedUser.user) +
+                      {decodeHtml(getUserName(sharedUser.user)) +
                         (currentUserID === sharedUser.user.id ? " (you)" : "")}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
