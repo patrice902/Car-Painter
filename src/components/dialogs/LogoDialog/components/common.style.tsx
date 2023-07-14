@@ -48,7 +48,6 @@ export const CategoryText = styled(Typography)`
   padding: 8px;
   margin: 0;
   color: white;
-  font-style: italic;
 `;
 
 export { faStarOn, faStarOff };

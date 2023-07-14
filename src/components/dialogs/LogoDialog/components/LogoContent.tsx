@@ -65,10 +65,6 @@ export const LogoContent = React.memo(
       () => filteredLogos.filter((logo) => favoriteLogoIDs.includes(logo.id)),
       [favoriteLogoIDs, filteredLogos]
     );
-    const unfavoriteFilteredLogos = useMemo(
-      () => filteredLogos.filter((logo) => !favoriteLogoIDs.includes(logo.id)),
-      [favoriteLogoIDs, filteredLogos]
-    );
 
     const increaseLogoData = useCallback(() => {
       setLogoLimit(logoLimit + step);
@@ -102,41 +98,45 @@ export const LogoContent = React.memo(
       [dispatch, favoriteLogoList]
     );
 
-    const renderLogoList = (logoList: BuilderLogo[], isFavorite: boolean) => (
+    const renderLogoList = (logoList: BuilderLogo[]) => (
       <CustomImageList rowHeight="auto" cols={isAboveMobile ? 3 : 1} gap={10}>
-        {logoList.map((logo) => (
-          <CustomImageListItem
-            key={logo.id}
-            cols={1}
-            onClick={() => onOpen(logo)}
-          >
-            <ImageWithLoad
-              src={`${config.assetsURL}/${logo.preview_file}`}
-              alt={logo.name}
-              alignItems="center"
-              height="100%"
-              maxHeight="250px"
-            />
-            <ImageListItemBar
-              position="top"
-              actionIcon={
-                <IconButton
-                  color="secondary"
-                  onClick={(event) =>
-                    isFavorite
-                      ? handleClickRemoveFavorite(event, logo)
-                      : handleClickAddFavorite(event, logo)
-                  }
-                >
-                  <FontAwesomeIcon
-                    icon={isFavorite ? faStarOn : faStarOff}
-                    size="sm"
-                  />
-                </IconButton>
-              }
-            />
-          </CustomImageListItem>
-        ))}
+        {logoList.map((logo) => {
+          const isFavorite = favoriteLogoIDs.includes(logo.id);
+
+          return (
+            <CustomImageListItem
+              key={logo.id}
+              cols={1}
+              onClick={() => onOpen(logo)}
+            >
+              <ImageWithLoad
+                src={`${config.assetsURL}/${logo.preview_file}`}
+                alt={logo.name}
+                alignItems="center"
+                height="100%"
+                maxHeight="250px"
+              />
+              <ImageListItemBar
+                position="top"
+                actionIcon={
+                  <IconButton
+                    color="secondary"
+                    onClick={(event) =>
+                      isFavorite
+                        ? handleClickRemoveFavorite(event, logo)
+                        : handleClickAddFavorite(event, logo)
+                    }
+                  >
+                    <FontAwesomeIcon
+                      icon={isFavorite ? faStarOn : faStarOff}
+                      size="sm"
+                    />
+                  </IconButton>
+                }
+              />
+            </CustomImageListItem>
+          );
+        })}
       </CustomImageList>
     );
 
@@ -155,23 +155,18 @@ export const LogoContent = React.memo(
         >
           {favoriteFilteredLogos.length ? (
             <>
-              <CategoryText color="secondary">Favorite Logos</CategoryText>
-              {renderLogoList(favoriteFilteredLogos, true)}
-              {unfavoriteFilteredLogos.length ? (
-                <CategoryText color="secondary">Normal Logos</CategoryText>
-              ) : (
-                <></>
-              )}
+              <CategoryText color="secondary">Favorite</CategoryText>
+              {renderLogoList(favoriteFilteredLogos)}
+              <CategoryText color="secondary">All</CategoryText>
             </>
           ) : (
             <></>
           )}
           {renderLogoList(
-            unfavoriteFilteredLogos.slice(
+            filteredLogos.slice(
               0,
               Math.max(logoLimit - favoriteFilteredLogos.length, 4)
-            ),
-            false
+            )
           )}
         </InfiniteScroll>
       </Box>

@@ -86,13 +86,6 @@ export const OverlayDialog = React.memo(
         ),
       [favoriteOverlayIDs, filteredOverlays]
     );
-    const unfavoriteFilteredOverlays = useMemo(
-      () =>
-        filteredOverlays.filter(
-          (overlay) => !favoriteOverlayIDs.includes(overlay.id)
-        ),
-      [favoriteOverlayIDs, filteredOverlays]
-    );
 
     const increaseData = useCallback(() => {
       setLimit(limit + step);
@@ -130,58 +123,59 @@ export const OverlayDialog = React.memo(
       [dispatch, favoriteOverlayList]
     );
 
-    const renderOvelayList = (
-      overlayList: BuilderOverlay[],
-      isFavorite: boolean
-    ) => (
+    const renderOvelayList = (overlayList: BuilderOverlay[]) => (
       <CustomImageList rowHeight="auto" cols={isAboveMobile ? 3 : 1} gap={10}>
-        {overlayList.map((shape) => (
-          <CustomImageListItem
-            key={shape.id}
-            cols={1}
-            onClick={() => onOpenOverlay(shape)}
-          >
-            {shape.overlay_thumb.includes(".svg") ? (
-              <SVGImageWithLoad
-                src={`${config.assetsURL}/${shape.overlay_thumb}`}
-                alt={shape.name}
-                options={{
-                  color: guide_data?.default_shape_color,
-                  opacity: guide_data?.default_shape_opacity || 1,
-                  stroke: guide_data?.default_shape_scolor,
-                  strokeWidth:
-                    (guide_data?.default_shape_stroke ?? 1) *
-                    shape.stroke_scale,
-                }}
+        {overlayList.map((shape) => {
+          const isFavorite = favoriteOverlayIDs.includes(shape.id);
+
+          return (
+            <CustomImageListItem
+              key={shape.id}
+              cols={1}
+              onClick={() => onOpenOverlay(shape)}
+            >
+              {shape.overlay_thumb.includes(".svg") ? (
+                <SVGImageWithLoad
+                  src={`${config.assetsURL}/${shape.overlay_thumb}`}
+                  alt={shape.name}
+                  options={{
+                    color: guide_data?.default_shape_color,
+                    opacity: guide_data?.default_shape_opacity || 1,
+                    stroke: guide_data?.default_shape_scolor,
+                    strokeWidth:
+                      (guide_data?.default_shape_stroke ?? 1) *
+                      shape.stroke_scale,
+                  }}
+                />
+              ) : (
+                <ImageWithLoad
+                  src={`${config.assetsURL}/${shape.overlay_thumb}`}
+                  alt={shape.name}
+                  height="100%"
+                  maxHeight="250px"
+                />
+              )}
+              <ImageListItemBar
+                position="top"
+                actionIcon={
+                  <IconButton
+                    color="secondary"
+                    onClick={(event) =>
+                      isFavorite
+                        ? handleClickRemoveFavorite(event, shape)
+                        : handleClickAddFavorite(event, shape)
+                    }
+                  >
+                    <FontAwesomeIcon
+                      icon={isFavorite ? faStarOn : faStarOff}
+                      size="sm"
+                    />
+                  </IconButton>
+                }
               />
-            ) : (
-              <ImageWithLoad
-                src={`${config.assetsURL}/${shape.overlay_thumb}`}
-                alt={shape.name}
-                height="100%"
-                maxHeight="250px"
-              />
-            )}
-            <ImageListItemBar
-              position="top"
-              actionIcon={
-                <IconButton
-                  color="secondary"
-                  onClick={(event) =>
-                    isFavorite
-                      ? handleClickRemoveFavorite(event, shape)
-                      : handleClickAddFavorite(event, shape)
-                  }
-                >
-                  <FontAwesomeIcon
-                    icon={isFavorite ? faStarOn : faStarOff}
-                    size="sm"
-                  />
-                </IconButton>
-              }
-            />
-          </CustomImageListItem>
-        ))}
+            </CustomImageListItem>
+          );
+        })}
       </CustomImageList>
     );
 
@@ -206,27 +200,18 @@ export const OverlayDialog = React.memo(
             >
               {favoriteFilteredOverlays.length ? (
                 <>
-                  <CategoryText color="secondary">
-                    Favorite Graphics
-                  </CategoryText>
-                  {renderOvelayList(favoriteFilteredOverlays, true)}
-                  {unfavoriteFilteredOverlays.length ? (
-                    <CategoryText color="secondary">
-                      Normal Graphics
-                    </CategoryText>
-                  ) : (
-                    <></>
-                  )}
+                  <CategoryText color="secondary">Favorite</CategoryText>
+                  {renderOvelayList(favoriteFilteredOverlays)}
+                  <CategoryText color="secondary">All</CategoryText>
                 </>
               ) : (
                 <></>
               )}
               {renderOvelayList(
-                unfavoriteFilteredOverlays.slice(
+                filteredOverlays.slice(
                   0,
                   Math.max(limit - favoriteFilteredOverlays.length, 4)
-                ),
-                false
+                )
               )}
             </InfiniteScroll>
           </Box>

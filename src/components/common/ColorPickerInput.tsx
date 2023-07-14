@@ -1,11 +1,16 @@
-import { Box, TextField, Typography } from "@material-ui/core";
+import { Box, IconButton, TextField, Typography } from "@material-ui/core";
+import ColorizeIcon from "@material-ui/icons/Colorize";
 import { ColorPicker } from "material-ui-color";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import useInterval from "react-useinterval";
 import { focusBoard, focusBoardQuickly } from "src/helper";
+import { useEyeDrop } from "src/hooks/useEyeDrop";
 import { Palette } from "src/types/enum";
 import styled from "styled-components";
 import { useDebouncedCallback } from "use-debounce";
+
+import LightTooltip from "./LightTooltip";
 
 const CustomColorPicker = styled(ColorPicker)`
   &.ColorPicker-MuiButton-contained {
@@ -44,6 +49,13 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
     fullWidth = true,
   } = props;
   const [innerValue, setInnerValue] = useState(value);
+  const [showPickerColorBox, setShowPickerColorBox] = useState(false);
+  const [showEyeDropper, setShowEyeDropper] = useState(false);
+  const eyeDropperRef = useRef<HTMLButtonElement>(null);
+
+  const colorBoxControl = document.getElementsByClassName(
+    "muicc-colorbox-controls"
+  )[0];
 
   const onChangeDebounced = useDebouncedCallback(
     (newValue) => onChange(newValue),
@@ -70,6 +82,14 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
     },
     [onInputChangeDebounced]
   );
+
+  const { pickColor } = useEyeDrop({
+    once: true,
+    onChange: (hexColor) => {
+      handleChange(hexColor);
+      focusBoardQuickly();
+    },
+  });
 
   const handleInputKeyDown = useCallback(
     (event) => {
@@ -99,6 +119,16 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
     [handleChange]
   );
 
+  const handleColorPickerOpen = useCallback((open?: boolean) => {
+    if (open) {
+      setShowPickerColorBox(true);
+    } else {
+      setShowPickerColorBox(false);
+      setShowEyeDropper(false);
+      focusBoardQuickly();
+    }
+  }, []);
+
   useInterval(() => {
     const hexInput = document.getElementById("hex");
     if (hexInput && !hexInput.onkeydown)
@@ -108,6 +138,35 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
   useEffect(() => {
     setInnerValue(value);
   }, [value]);
+
+  const EyeDropButton = () => (
+    <LightTooltip title="Color Eye Dropper" arrow>
+      <IconButton ref={eyeDropperRef} onClick={() => setTimeout(pickColor, 10)}>
+        <ColorizeIcon />
+      </IconButton>
+    </LightTooltip>
+  );
+
+  useEffect(() => {
+    // Create a new MutationObserver instance
+    const observer = new MutationObserver(() => {
+      // Check each mutation in the list
+      if (
+        document.getElementsByClassName("muicc-colorbox-controls")[0] &&
+        showPickerColorBox
+      ) {
+        setShowEyeDropper(true);
+      }
+    });
+
+    // Start observing the document body for mutations
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Clean up the observer when the component unmounts
+    return () => {
+      observer.disconnect();
+    };
+  }, [showPickerColorBox]);
 
   return (
     <Box
@@ -135,7 +194,7 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
           <CustomColorPicker
             value={separateValues ? valuePicker : innerValue || "#"}
             onChange={handleColorChange}
-            onOpen={focusBoardQuickly}
+            onOpen={handleColorPickerOpen}
             palette={Palette}
             deferred
             hideTextfield
@@ -158,6 +217,9 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
       ) : (
         <></>
       )}
+      {showEyeDropper && colorBoxControl
+        ? createPortal(<EyeDropButton />, colorBoxControl)
+        : null}
     </Box>
   );
 });
