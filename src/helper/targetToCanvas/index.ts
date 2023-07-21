@@ -16,5 +16,5 @@ export const targetToCanvas = (
   if (targetBackgroundImage && targetBackgroundImage !== "none") {
     return elementToCanvas(target);
   }
-  return html2canvas(target, { logging: false });
+  return html2canvas(target, { logging: false, scale: 1 });
 };

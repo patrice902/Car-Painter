@@ -5,7 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { GroupedURLImage, TextNode } from "src/components/konva";
 import config from "src/config";
 import { FinishOptions } from "src/constant";
-import { decodeHtml, getRelativeShadowOffset } from "src/helper";
+import {
+  decodeHtml,
+  enhanceFontFamily,
+  getRelativeShadowOffset,
+} from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { insertToLoadedList as insertToLoadedFontList } from "src/redux/reducers/fontReducer";
@@ -238,7 +242,7 @@ export const LogosAndTexts = React.memo(
               frameSize={frameSize}
               name={layer.id.toString()}
               text={decodeHtml(textLayerData.text)}
-              fontFamily={font?.font_name}
+              fontFamily={enhanceFontFamily(font?.font_name)}
               fontFile={
                 font?.font_file
                   ? `url(${config.assetsURL}/${font.font_file})`

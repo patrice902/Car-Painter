@@ -8,16 +8,13 @@ export const getColor = (
   e: MouseEvent,
   pickRadius?: number
 ) => {
-  const { offsetX, offsetY } = e;
+  const { offsetX, offsetY, pageX, pageY } = e;
+  const x = offsetX || pageX;
+  const y = offsetY || pageY;
   if (pickRadius === undefined || pickRadius === 0) {
-    return getCanvasPixelColor(targetCanvas, offsetX, offsetY);
+    return getCanvasPixelColor(targetCanvas, x, y);
   } else {
-    const colorBlock = extractColors(
-      targetCanvas,
-      pickRadius,
-      offsetX,
-      offsetY
-    );
+    const colorBlock = extractColors(targetCanvas, pickRadius, x, y);
     return calcAverageColor(colorBlock);
   }
 };

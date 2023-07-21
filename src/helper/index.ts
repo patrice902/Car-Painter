@@ -726,6 +726,13 @@ export const detectBrowser = () => {
   return browserName;
 };
 
+export const enhanceFontFamily = (fontName?: string) =>
+  !fontName
+    ? undefined
+    : detectBrowser() !== Browser.FIREFOX
+    ? fontName
+    : `"${fontName}"`;
+
 export const modifyFileName = (file: File, userID?: number) => {
   let newName = file.name;
   const firstDotPosition = file.name.indexOf(".");

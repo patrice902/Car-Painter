@@ -124,6 +124,15 @@ export const useCapture = (
     const originShowProperties = showPropertiesRef.current;
     dispatch(setShowProperties(false));
 
+    const sponsorGuide = stageRef.current.findOne("#guide-sponsorblocks");
+    const numberGuide = stageRef.current.findOne("#guide-numberblocks");
+    const topGuide = stageRef.current.findOne(".layer-guide-top");
+
+    // Hide Guides
+    sponsorGuide?.hide();
+    numberGuide?.hide();
+    topGuide?.hide();
+
     // Getting Original Screenshot
     stageRef.current.setAttrs({
       x: 0,
@@ -173,6 +182,9 @@ export const useCapture = (
 
     // Backup it's original States
     carMaskLayerRef.current?.show();
+    sponsorGuide?.show();
+    numberGuide?.show();
+    topGuide?.show();
     stageRef.current.setAttrs(_.omit(stageAttrs, ["container"]));
     stageRef.current.draw();
     setTimeout(() => {

@@ -1,10 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { URLImage } from "src/components/konva";
 import { carMakeAssetURL, legacyCarMakeAssetURL } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
-import { PaintingGuides } from "src/types/enum";
+import { PaintingGuides, ViewModes } from "src/types/enum";
 
 export const PaintingGuideSponsor = React.memo(() => {
   const { legacyMode, guideData } = useScheme();
@@ -16,6 +16,10 @@ export const PaintingGuideSponsor = React.memo(() => {
   const paintingGuides = useSelector(
     (state: RootState) => state.boardReducer.paintingGuides
   );
+  const viewMode = useSelector(
+    (state: RootState) => state.boardReducer.viewMode
+  );
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const getCarMakeImage = useCallback(
     (image: string) =>
@@ -38,7 +42,7 @@ export const PaintingGuideSponsor = React.memo(() => {
       opacity={guideData?.sponsor_opacity}
       listening={false}
       visible={
-        paintingGuides.includes(PaintingGuides.SPONSORBLOCKS) ? true : false
+        !specMode && paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)
       }
       onLoadLayer={onLoadLayer}
     />
