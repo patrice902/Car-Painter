@@ -2,9 +2,8 @@ import _ from "lodash";
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { URLImage } from "src/components/konva";
-import config from "src/config";
 import { FinishOptions } from "src/constant";
-import { carMakeAssetURL, legacyCarMakeAssetURL } from "src/helper";
+import { generateCarMakeImageURL } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { CarObjLayerData, MovableObjLayerData } from "src/types/common";
@@ -39,14 +38,8 @@ export const CarParts = React.memo(() => {
     [layerList]
   );
   const getCarMakeImage = useCallback(
-    (layer_data) =>
-      layer_data.legacy
-        ? `${
-            config.legacyAssetURL
-          }/templates/${carMake?.folder_directory.replaceAll(" ", "_")}/`
-        : (legacyMode
-            ? legacyCarMakeAssetURL(carMake)
-            : carMakeAssetURL(carMake)) + layer_data.img,
+    (layer_data: CarObjLayerData) =>
+      generateCarMakeImageURL(layer_data, carMake, legacyMode),
     [legacyMode, carMake]
   );
 

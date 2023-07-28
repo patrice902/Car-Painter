@@ -7,10 +7,13 @@ import { AllowedLayerProps } from "src/constant";
 import {
   BoundBox,
   BuilderLayerJSONParitalAll,
+  CarObjLayerData,
   FrameSize,
+  LogoObjLayerData,
   Position,
   ScrollPosition,
   ShapeObjLayerData,
+  UploadObjLayerData,
 } from "src/types/common";
 import { Browser, LayerTypes, MouseModes } from "src/types/enum";
 import {
@@ -324,6 +327,35 @@ export const carMakeAssetURL = (carMake?: CarMake | null) =>
     " ",
     "_"
   )}/`;
+
+export const generateCarMakeImageURL = (
+  layer_data: CarObjLayerData,
+  carMake?: CarMake | null,
+  legacyMode?: boolean | null
+) =>
+  layer_data.legacy
+    ? `${
+        config.legacyAssetURL
+      }/templates/${carMake?.folder_directory.replaceAll(" ", "_")}/`
+    : (legacyMode ? legacyCarMakeAssetURL(carMake) : carMakeAssetURL(carMake)) +
+      layer_data.img;
+
+export const generateLogoImageURL = (
+  layer: BuilderLayerJSON<LogoObjLayerData>,
+  carMake?: CarMake | null,
+  legacyMode?: boolean | null
+) =>
+  layer.layer_data.fromCarParts
+    ? generateCarMakeImageURL(
+        layer.layer_data as CarObjLayerData,
+        carMake,
+        legacyMode
+      )
+    : layer.layer_data.legacy
+    ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
+    : (layer.layer_data as UploadObjLayerData).fromOldSource
+    ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
+    : `${config.assetsURL}/${layer.layer_data.source_file}`;
 
 export const uploadAssetURL = (uploadItem: BuilderUpload) =>
   uploadItem.legacy_mode

@@ -1,8 +1,10 @@
-import { Box, Grid } from "@material-ui/core";
+import { Box, Button, Grid } from "@material-ui/core";
 import { Form, FormikProps } from "formik";
-import React, { useCallback } from "react";
+import _ from "lodash";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LightTooltip } from "src/components/common";
+import { CloneCarPartsDialog } from "src/components/dialogs/CloneCarPartsDialog";
 import {
   FormCheckbox,
   FormSliderInput,
@@ -31,6 +33,10 @@ export const InnerForm = React.memo(
     );
     const paintingGuides = useSelector(
       (state: RootState) => state.boardReducer.paintingGuides
+    );
+
+    const [openCloneCarPartsDialog, setOpenCloneCarPartsDialog] = useState(
+      false
     );
 
     const setMultiFieldValue = useCallback(
@@ -345,31 +351,46 @@ export const InnerForm = React.memo(
             onSchemeUpdate={handleSchemeUpdate}
             {...formProps}
             extraChildren={
-              <Grid item xs={12} sm={12}>
-                <LightTooltip
-                  title="If checked, it will appear on top of all the layers"
-                  arrow
-                >
-                  <CustomFormControlLabel
-                    control={
-                      <FormCheckbox
-                        color="primary"
-                        name="show_carparts_on_top"
-                        fieldKey="show_carparts_on_top"
-                        checked={formProps.values.show_carparts_on_top}
-                        disabled={!editable}
-                        onUpdateField={handleSchemeUpdateOnly}
-                        onUpdateDB={handleSchemeUpdate}
-                      />
-                    }
-                    label="Display above layers"
-                    labelPlacement="start"
-                  />
-                </LightTooltip>
-              </Grid>
+              <>
+                <Grid item xs={12} sm={12}>
+                  <LightTooltip
+                    title="If checked, it will appear on top of all the layers"
+                    arrow
+                  >
+                    <CustomFormControlLabel
+                      control={
+                        <FormCheckbox
+                          color="primary"
+                          name="show_carparts_on_top"
+                          fieldKey="show_carparts_on_top"
+                          checked={formProps.values.show_carparts_on_top}
+                          disabled={!editable}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
+                        />
+                      }
+                      label="Display above layers"
+                      labelPlacement="start"
+                    />
+                  </LightTooltip>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => setOpenCloneCarPartsDialog(true)}
+                  >
+                    Clone as new layers
+                  </Button>
+                </Grid>
+              </>
             }
           />
         </Box>
+        <CloneCarPartsDialog
+          open={openCloneCarPartsDialog}
+          onCancel={() => setOpenCloneCarPartsDialog(false)}
+        />
       </Form>
     );
   }

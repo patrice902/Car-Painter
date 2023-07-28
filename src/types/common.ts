@@ -99,7 +99,9 @@ export interface LogoObjLayerData extends MovableObjLayerData {
   source_file: string;
   preview_file: string;
   sizeLocked: boolean;
-  legacy: boolean;
+  legacy?: boolean;
+  img?: string;
+  fromCarParts?: boolean;
 }
 
 export interface UploadObjLayerData extends LogoObjLayerData {
@@ -220,7 +222,9 @@ export interface BaseObjLayerData extends DefaultLayerData {
 }
 
 export interface CarObjLayerData extends DefaultLayerData {
-  color: string;
+  color?: string;
+  img: string;
+  legacy?: boolean;
 }
 
 export type PartialAllLayerData = Partial<

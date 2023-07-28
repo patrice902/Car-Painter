@@ -81,13 +81,17 @@ class LayerService {
       promises.push(
         // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve) => {
-          const layer = await this.getById(item.id);
-          const layerInfo = layer.toJSON();
+          try {
+            const layer = await this.getById(item.id);
+            const layerInfo = layer.toJSON();
 
-          await layer.save(getLayerUpdatingInfo(layerInfo, item), {
-            patch: true,
-          });
-          list.push(layer);
+            await layer.save(getLayerUpdatingInfo(layerInfo, item), {
+              patch: true,
+            });
+            list.push(layer);
+          } catch (error) {
+            console.log(error);
+          }
 
           resolve();
         })

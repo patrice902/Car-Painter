@@ -29,7 +29,7 @@ import {
   setSaving,
 } from "src/redux/reducers/schemeReducer";
 import SchemeService from "src/services/schemeService";
-import { LayerTypes, ViewModes } from "src/types/enum";
+import { LayerTypes, PaintingGuides, ViewModes } from "src/types/enum";
 
 export const useCapture = (
   stageRef: RefObject<Stage>,
@@ -62,6 +62,9 @@ export const useCapture = (
   );
   const downloadSpecTGA = useSelector(
     (state: RootState) => state.boardReducer.downloadSpecTGA
+  );
+  const paintingGuides = useSelector(
+    (state: RootState) => state.boardReducer.paintingGuides
   );
   const [, currentLayerRef] = useReducerRef(
     useSelector((state: RootState) => state.layerReducer.current)
@@ -129,8 +132,12 @@ export const useCapture = (
     const topGuide = stageRef.current.findOne(".layer-guide-top");
 
     // Hide Guides
-    sponsorGuide?.hide();
-    numberGuide?.hide();
+    if (paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)) {
+      sponsorGuide?.hide();
+    }
+    if (paintingGuides.includes(PaintingGuides.NUMBERBLOCKS)) {
+      numberGuide?.hide();
+    }
     topGuide?.hide();
 
     // Getting Original Screenshot
@@ -182,8 +189,12 @@ export const useCapture = (
 
     // Backup it's original States
     carMaskLayerRef.current?.show();
-    sponsorGuide?.show();
-    numberGuide?.show();
+    if (paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)) {
+      sponsorGuide?.show();
+    }
+    if (paintingGuides.includes(PaintingGuides.NUMBERBLOCKS)) {
+      numberGuide?.show();
+    }
     topGuide?.show();
     stageRef.current.setAttrs(_.omit(stageAttrs, ["container"]));
     stageRef.current.draw();
@@ -226,15 +237,16 @@ export const useCapture = (
       tgaCtx,
     };
   }, [
-    currentLayerRef,
-    carMakeSize,
-    frameSizeRef,
     stageRef,
-    showPropertiesRef,
-    dispatch,
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    currentLayerRef,
+    carMakeSize,
+    frameSizeRef,
+    showPropertiesRef,
+    dispatch,
+    paintingGuides,
     unsetDeleteLayerState,
   ]);
 

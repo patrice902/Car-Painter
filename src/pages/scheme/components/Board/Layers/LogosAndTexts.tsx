@@ -8,6 +8,7 @@ import { FinishOptions } from "src/constant";
 import {
   decodeHtml,
   enhanceFontFamily,
+  generateLogoImageURL,
   getRelativeShadowOffset,
 } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
@@ -58,7 +59,7 @@ export const LogosAndTexts = React.memo(
       onDblClickLayer: onDblClick,
     } = useLayer();
 
-    const { guideData } = useScheme();
+    const { guideData, legacyMode } = useScheme();
 
     const frameSize = useSelector(
       (state: RootState) => state.boardReducer.frameSize
@@ -79,6 +80,9 @@ export const LogosAndTexts = React.memo(
       (state: RootState) => state.fontReducer.loadedList
     );
     const fonts = useSelector((state: RootState) => state.fontReducer.list);
+    const carMake = useSelector(
+      (state: RootState) => state.carMakeReducer.current
+    );
 
     const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
       viewMode,
@@ -127,13 +131,8 @@ export const LogosAndTexts = React.memo(
     );
 
     const getLayerImage = useCallback(
-      (layer) =>
-        layer.layer_data.legacy
-          ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
-          : layer.layer_data.fromOldSource
-          ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
-          : `${config.assetsURL}/${layer.layer_data.source_file}`,
-      []
+      (layer) => generateLogoImageURL(layer, carMake, legacyMode),
+      [carMake, legacyMode]
     );
 
     const onFontLoad = useCallback(
