@@ -385,7 +385,7 @@ export const createLayer = (
 export const createLayerList = (
   layersInfo: BuilderLayerPayload[],
   pushingToHistory = true,
-  callback?: () => void
+  callback?: (layers?: BuilderLayer[]) => void
 ) => async (dispatch: AppDispatch, getState: GetState) => {
   const currentUser = getState().authReducer.user;
   const layerList = getState().layerReducer.list;
@@ -451,7 +451,7 @@ export const createLayerList = (
     );
   }
 
-  callback?.();
+  callback?.(layers);
 };
 
 export const createLayersFromBasePaint = (
@@ -755,7 +755,7 @@ export const cloneLayer = (
 export const cloneCarPartsLayer = (
   layersToClone: BuilderLayerJSON<CarObjLayerData>[],
   legacyMode?: boolean | null,
-  callback?: () => void
+  callback?: (layers?: BuilderLayer[]) => void
 ) => async (dispatch: AppDispatch) => {
   if (layersToClone.length) {
     dispatch(setLoading(true));

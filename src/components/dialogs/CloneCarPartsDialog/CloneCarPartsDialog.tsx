@@ -10,15 +10,21 @@ import {
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import { Info } from "@material-ui/icons";
 import _ from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ImageWithLoad, SVGImageWithLoad } from "src/components/common";
+import {
+  ImageWithLoad,
+  SearchBox,
+  SVGImageWithLoad,
+} from "src/components/common";
 import { generateCarMakeImageURL } from "src/helper";
 import { useScheme } from "src/hooks";
 import { RootState } from "src/redux";
-import { cloneCarPartsLayer } from "src/redux/reducers/layerReducer";
+import {
+  cloneCarPartsLayer,
+  setCurrent as setCurrentLayer,
+} from "src/redux/reducers/layerReducer";
 import { CarObjLayerData } from "src/types/common";
 import { LayerTypes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
@@ -54,6 +60,7 @@ export const CloneCarPartsDialog = React.memo(
     const [selectedCarParts, setSelectedCarParts] = useState<
       BuilderLayerJSON<CarObjLayerData>[]
     >([]);
+    const [search, setSearch] = useState("");
 
     const carPartLayers = useMemo(
       () =>
@@ -63,6 +70,26 @@ export const CloneCarPartsDialog = React.memo(
           ["desc"]
         ) as BuilderLayerJSON<CarObjLayerData>[],
       [layerList]
+    );
+
+    const filteredCarPartLayers = useMemo(
+      () =>
+        search?.length
+          ? carPartLayers.filter((item) =>
+              item.layer_data.name.toLowerCase().includes(search.toLowerCase())
+            )
+          : carPartLayers,
+      [carPartLayers, search]
+    );
+
+    const cloneBtnText = useMemo(
+      () =>
+        selectedCarParts.length
+          ? `Clone ${selectedCarParts.length} layer${
+              selectedCarParts.length > 1 ? "s" : ""
+            }`
+          : "Clone",
+      [selectedCarParts]
     );
 
     const getCarMakeImage = useCallback(
@@ -91,12 +118,17 @@ export const CloneCarPartsDialog = React.memo(
     const handleApply = useCallback(() => {
       setCloningCarParts(true);
       dispatch(
-        cloneCarPartsLayer(selectedCarParts, legacyMode, () => {
+        cloneCarPartsLayer(selectedCarParts, legacyMode, (clonedLayers) => {
+          if (clonedLayers) {
+            dispatch(setCurrentLayer(clonedLayers[0]));
+          }
           setCloningCarParts(false);
           handleClose();
         })
       );
     }, [dispatch, selectedCarParts, legacyMode, handleClose]);
+
+    const handleSearchChange = useCallback((value) => setSearch(value), []);
 
     return (
       <Dialog
@@ -104,18 +136,22 @@ export const CloneCarPartsDialog = React.memo(
         open={open}
         onClose={handleClose}
       >
-        <DialogTitle id="clone-carparts-title">
-          Clone car parts layers
-        </DialogTitle>
+        <DialogTitle id="clone-carparts-title">Clone Car Parts</DialogTitle>
         <CustomDialogContent dividers>
-          <Box display="flex" alignItems="center" mb={2}>
-            <Info
-              style={{
-                marginRight: "4px",
-                fontSize: "20px",
-              }}
-            />
-            <Typography>Select car part layers below to clone.</Typography>
+          <Box
+            bgcolor="#666"
+            p="10px 16px"
+            borderRadius={10}
+            border="2px solid navajowhite"
+            position="relative"
+            mb="10px"
+          >
+            <Typography>
+              Select Car Parts layers to duplicate as editable layers.
+            </Typography>
+          </Box>
+          <Box mb={2}>
+            <SearchBox value={search} onChange={handleSearchChange} />
           </Box>
           <Box
             id="clone-carparts-dialog-content"
@@ -127,7 +163,7 @@ export const CloneCarPartsDialog = React.memo(
               cols={isAboveMobile ? 3 : 1}
               gap={10}
             >
-              {carPartLayers.map((carPart) => (
+              {filteredCarPartLayers.map((carPart) => (
                 <CustomImageListItem
                   key={carPart.id}
                   cols={1}
@@ -166,7 +202,7 @@ export const CloneCarPartsDialog = React.memo(
             disabled={!selectedCarParts.length}
             style={{ marginLeft: "10px" }}
           >
-            {cloningCarParts ? <CircularProgress size={20} /> : "Clone"}
+            {cloningCarParts ? <CircularProgress size={20} /> : cloneBtnText}
           </Button>
         </DialogActions>
       </Dialog>
