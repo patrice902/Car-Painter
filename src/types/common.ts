@@ -30,6 +30,7 @@ export type BoundBox = {
 export interface DefaultLayerData {
   name: string;
   finish: string;
+  finishBase: string;
 }
 
 export interface GuideData {

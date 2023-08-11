@@ -5,12 +5,14 @@ import {
   Box,
   Grid,
   MenuItem,
+  Select,
   Typography,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { FormikProps } from "formik";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { SliderInput } from "src/components/common";
 import { FinishOptions } from "src/constant";
 import { focusBoardQuickly, getAllowedLayerTypes } from "src/helper";
 import { RootState } from "src/redux";
@@ -19,6 +21,8 @@ import {
   PartialAllLayerData,
 } from "src/types/common";
 import { LayerTypes } from "src/types/enum";
+import styled from "styled-components";
+import { useDebouncedCallback } from "use-debounce";
 
 import { FormColorPickerInput, FormSelect } from "../../../components";
 import { LabelTypography } from "../../../PropertyBar.style";
@@ -28,6 +32,15 @@ type ColorPropertyProps = {
   onLayerDataUpdateOnly: (valueMap: PartialAllLayerData) => void;
   onLayerDataUpdate: (valueMap: PartialAllLayerData) => void;
 } & FormikProps<BuilderLayerJSONParitalAll>;
+
+const ExtendedFinishOptions = [
+  ...FinishOptions,
+  {
+    label: "Custom",
+    value: "#101010",
+    base: "custom",
+  },
+];
 
 export const ColorProperty = React.memo(
   ({
@@ -80,6 +93,68 @@ export const ColorProperty = React.memo(
           AllowedLayerTypes.includes("layer_data.finish") &&
           currentCarMake?.car_type !== "Misc"),
       [AllowedLayerTypes, currentScheme?.hide_spec, currentCarMake?.car_type]
+    );
+
+    const metallicValue = useMemo(
+      () => parseInt(values.layer_data.finish?.slice(1, 3) ?? "10", 16),
+      [values.layer_data.finish]
+    );
+
+    const roughnessValue = useMemo(
+      () => parseInt(values.layer_data.finish?.slice(3, 5) ?? "10", 16),
+      [values.layer_data.finish]
+    );
+
+    const clearcoatValue = useMemo(
+      () => parseInt(values.layer_data.finish?.slice(5) ?? "10", 16),
+      [values.layer_data.finish]
+    );
+
+    const handleUpdateFinishBaseDebounced = useDebouncedCallback(
+      (valueMap) => onLayerDataUpdate(valueMap),
+      300
+    );
+
+    const handleUpdateFinish = useCallback(
+      (value: number, position: number) => {
+        const originalFinish = values.layer_data.finish ?? "#101010";
+        const hexValue = value.toString(16);
+        const updatedFinish =
+          originalFinish.slice(0, position) +
+          hexValue +
+          originalFinish.slice(position + 2);
+
+        onLayerDataUpdateOnly({
+          finish: updatedFinish,
+        });
+        handleUpdateFinishBaseDebounced({
+          finish: updatedFinish,
+        });
+      },
+      [
+        handleUpdateFinishBaseDebounced,
+        onLayerDataUpdateOnly,
+        values.layer_data.finish,
+      ]
+    );
+
+    const handleUpdateFinishBase = useCallback(
+      (e) => {
+        const value = e.target.value;
+        const finishOption = ExtendedFinishOptions.find(
+          (item) => item.base === value
+        );
+
+        if (!finishOption) return;
+
+        const valueMap = {
+          finishBase: finishOption.base,
+          finish: finishOption.value,
+        };
+        onLayerDataUpdateOnly(valueMap);
+        handleUpdateFinishBaseDebounced(valueMap);
+      },
+      [handleUpdateFinishBaseDebounced, onLayerDataUpdateOnly]
     );
 
     if (!showColor && !showBlendType && !showFinish) return <></>;
@@ -169,36 +244,75 @@ export const ColorProperty = React.memo(
               <></>
             )}
             {showFinish ? (
-              <Box display="flex" alignItems="center" height="40px">
-                <Grid container spacing={2} component={Box}>
-                  <Grid item xs={6}>
-                    <Box height="100%" display="flex" alignItems="center">
-                      <LabelTypography
-                        variant="body1"
-                        color="textSecondary"
-                        style={{ marginRight: "8px" }}
+              <Box>
+                <Box display="flex" alignItems="center" height="40px">
+                  <Grid container spacing={2} component={Box}>
+                    <Grid item xs={6}>
+                      <Box height="100%" display="flex" alignItems="center">
+                        <LabelTypography
+                          variant="body1"
+                          color="textSecondary"
+                          style={{ marginRight: "8px" }}
+                        >
+                          Finish
+                        </LabelTypography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <CustomSelect
+                        name="layer_data.finishBase"
+                        variant="outlined"
+                        value={values.layer_data.finishBase}
+                        disabled={!editable}
+                        onChange={handleUpdateFinishBase}
                       >
-                        Finish
-                      </LabelTypography>
-                    </Box>
+                        {ExtendedFinishOptions.map((finishItem, index) => (
+                          <MenuItem value={finishItem.base} key={index}>
+                            {finishItem.label}
+                          </MenuItem>
+                        ))}
+                      </CustomSelect>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    <FormSelect
-                      name="layer_data.finish"
-                      fieldKey="finish"
-                      value={values.layer_data.finish}
-                      disabled={!editable}
-                      onUpdateField={onLayerDataUpdateOnly}
-                      onUpdateDB={onLayerDataUpdate}
-                    >
-                      {FinishOptions.map((finishItem, index) => (
-                        <MenuItem value={finishItem.value} key={index}>
-                          {finishItem.label}
-                        </MenuItem>
-                      ))}
-                    </FormSelect>
-                  </Grid>
-                </Grid>
+                </Box>
+                <Box>
+                  {values.layer_data.finishBase === "custom" ? (
+                    <>
+                      <SliderInput
+                        label="Metallic"
+                        disabled={!editable}
+                        min={16}
+                        max={255}
+                        step={1}
+                        value={metallicValue}
+                        setValue={(value) => handleUpdateFinish(value, 1)}
+                        small
+                      />
+                      <SliderInput
+                        label="Roughness"
+                        disabled={!editable}
+                        min={16}
+                        max={255}
+                        step={1}
+                        value={roughnessValue}
+                        setValue={(value) => handleUpdateFinish(value, 3)}
+                        small
+                      />
+                      <SliderInput
+                        label="Clearcoat"
+                        disabled={!editable}
+                        min={16}
+                        max={255}
+                        step={1}
+                        value={clearcoatValue}
+                        setValue={(value) => handleUpdateFinish(value, 5)}
+                        small
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </Box>
               </Box>
             ) : (
               <></>
@@ -209,3 +323,7 @@ export const ColorProperty = React.memo(
     );
   }
 );
+
+const CustomSelect = styled(Select)`
+  max-width: 100px;
+`;
