@@ -118,7 +118,7 @@ export const ColorProperty = React.memo(
     const handleUpdateFinish = useCallback(
       (value: number, position: number) => {
         const originalFinish = values.layer_data.finish ?? "#101010";
-        const hexValue = value.toString(16);
+        const hexValue = (value < 16 ? "0" : "") + value.toString(16);
         const updatedFinish =
           originalFinish.slice(0, position) +
           hexValue +
@@ -281,7 +281,7 @@ export const ColorProperty = React.memo(
                       <SliderInput
                         label="Metallic"
                         disabled={!editable}
-                        min={16}
+                        min={0}
                         max={255}
                         step={1}
                         value={metallicValue}
@@ -291,7 +291,7 @@ export const ColorProperty = React.memo(
                       <SliderInput
                         label="Roughness"
                         disabled={!editable}
-                        min={16}
+                        min={0}
                         max={255}
                         step={1}
                         value={roughnessValue}
@@ -301,7 +301,7 @@ export const ColorProperty = React.memo(
                       <SliderInput
                         label="Clearcoat"
                         disabled={!editable}
-                        min={16}
+                        min={0}
                         max={255}
                         step={1}
                         value={clearcoatValue}
