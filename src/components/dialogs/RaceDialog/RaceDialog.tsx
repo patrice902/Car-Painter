@@ -28,6 +28,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { NumberModSwitch } from "src/components/common";
 import { HelpLinks } from "src/constant";
+import { decodeHtml } from "src/helper";
 import { RootState } from "src/redux";
 import { CarRaceLeague, CarRaceTeam } from "src/types/query";
 import styled from "styled-components";
@@ -213,7 +214,7 @@ const RaceForm = React.memo(
         <DialogContent dividers id="insert-text-dialog-content">
           <Box display="flex" flexDirection="column">
             <Typography style={{ marginBottom: "12px" }}>
-              Race this paint as your {currentCarMake?.name}?
+              Race this paint as your {decodeHtml(currentCarMake?.name)}?
             </Typography>
             <Box
               mb={4}

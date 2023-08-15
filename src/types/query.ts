@@ -11,6 +11,8 @@ import {
   Car,
   CarMake,
   CarPin,
+  FavoriteLogo,
+  FavoriteOverlay,
   FavoriteScheme,
   League,
   LeagueSeries,
@@ -140,6 +142,10 @@ export type FavoriteSchemeForGetListByUserId = FavoriteScheme & {
     sharedUsers: SharedSchemeWithUser[];
   };
 };
+
+export type FavoriteLogoPayload = Omit<FavoriteLogo, "id">;
+
+export type FavoriteOverlayPayload = Omit<FavoriteOverlay, "id">;
 
 export type CarPayload = Omit<Car, "id">;
 

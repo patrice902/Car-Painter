@@ -12,6 +12,7 @@ import {
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  decodeHtml,
   focusBoardQuickly,
   isCenterBasedShape,
   rotateAroundCenter,
@@ -216,7 +217,7 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
       }}
     >
       <Box display="flex" flexDirection="column" px={4} py={2} width="180px">
-        <NameItem>{currentLayer.layer_data.name}</NameItem>
+        <NameItem>{decodeHtml(currentLayer.layer_data.name)}</NameItem>
         <StyledButton
           startIcon={<MdVisibilityOff />}
           onClick={() => toggleField("layer_visible")}

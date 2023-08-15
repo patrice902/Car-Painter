@@ -5,7 +5,7 @@ import { URLImage } from "src/components/konva";
 import { carMakeAssetURL, legacyCarMakeAssetURL } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
-import { PaintingGuides } from "src/types/enum";
+import { PaintingGuides, ViewModes } from "src/types/enum";
 
 export const PaintingGuideTop = React.memo(() => {
   const { legacyMode, guideData } = useScheme();
@@ -20,9 +20,13 @@ export const PaintingGuideTop = React.memo(() => {
   const frameSize = useSelector(
     (state: RootState) => state.boardReducer.frameSize
   );
+  const viewMode = useSelector(
+    (state: RootState) => state.boardReducer.viewMode
+  );
 
   const gridPadding = useMemo(() => guideData?.grid_padding ?? 10, [guideData]);
   const gridStroke = useMemo(() => guideData?.grid_stroke ?? 1, [guideData]);
+  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
 
   const getCarMakeImage = useCallback(
     (image: string) =>
@@ -45,9 +49,7 @@ export const PaintingGuideTop = React.memo(() => {
         filterColor={guideData?.wireframe_color}
         opacity={guideData?.wireframe_opacity}
         listening={false}
-        visible={
-          paintingGuides.includes(PaintingGuides.WIREFRAME) ? true : false
-        }
+        visible={!specMode && paintingGuides.includes(PaintingGuides.WIREFRAME)}
         onLoadLayer={onLoadLayer}
       />
 
@@ -64,7 +66,11 @@ export const PaintingGuideTop = React.memo(() => {
           opacity={guideData?.grid_opacity ?? 1}
           strokeWidth={gridStroke}
           listening={false}
-          visible={paintingGuides.includes(PaintingGuides.GRID) ? true : false}
+          visible={
+            !specMode && paintingGuides.includes(PaintingGuides.GRID)
+              ? true
+              : false
+          }
         />
       ))}
       {Array.from(Array(Math.round(frameSize.height / gridPadding)), (e, i) => (
@@ -80,7 +86,11 @@ export const PaintingGuideTop = React.memo(() => {
           opacity={guideData?.grid_opacity ?? 1}
           strokeWidth={gridStroke}
           listening={false}
-          visible={paintingGuides.includes(PaintingGuides.GRID) ? true : false}
+          visible={
+            !specMode && paintingGuides.includes(PaintingGuides.GRID)
+              ? true
+              : false
+          }
         />
       ))}
     </>

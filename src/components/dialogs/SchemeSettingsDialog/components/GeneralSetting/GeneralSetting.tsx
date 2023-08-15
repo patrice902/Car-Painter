@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { LightTooltip } from "src/components/common";
 import { ConfirmDialog } from "src/components/dialogs";
-import { getUserName } from "src/helper";
+import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
 import { CarMake } from "src/types/model";
@@ -214,14 +214,14 @@ export const GeneralSetting = React.memo(
           </Box>
 
           <Box pl={2}>
-            <Typography>Owner: {getUserName(owner)}</Typography>
+            <Typography>Owner: {decodeHtml(getUserName(owner))}</Typography>
             <Typography>
               Created: {new Date(scheme.date_created * 1000).toDateString()}
             </Typography>
             <Typography>
               Last Modified:{" "}
               {new Date(scheme.date_modified * 1000).toDateString()} By{" "}
-              {getUserName(modifier)}
+              {decodeHtml(getUserName(modifier))}
             </Typography>
           </Box>
 
@@ -262,7 +262,7 @@ export const GeneralSetting = React.memo(
                 }
               >
                 {isAboveMobile
-                  ? `Reset ${currentCarMake.name} template layers`
+                  ? `Reset ${decodeHtml(currentCarMake.name)} template layers`
                   : `Reset Template Layers`}
               </CustomButton>
             ) : (
@@ -274,13 +274,14 @@ export const GeneralSetting = React.memo(
                 onClick={() =>
                   setDeleteMessage(
                     <>
-                      Are you sure you want to delete &quot;{scheme.name}&quot;?
+                      Are you sure you want to delete &quot;
+                      {decodeHtml(scheme.name)}&quot;?
                       {hasPrimaryRace && (
                         <>
                           <br />
                           This project is associated with an active paint for
                           your&nbsp;
-                          {currentCarMake.name}. <br />
+                          {decodeHtml(currentCarMake.name)}. <br />
                           If you delete this project, you won&quot;t be able to
                           make changes.
                         </>

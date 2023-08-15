@@ -5,7 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { GroupedURLImage, TextNode } from "src/components/konva";
 import config from "src/config";
 import { FinishOptions } from "src/constant";
-import { getRelativeShadowOffset } from "src/helper";
+import {
+  decodeHtml,
+  enhanceFontFamily,
+  generateLogoImageURL,
+  getRelativeShadowOffset,
+} from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { insertToLoadedList as insertToLoadedFontList } from "src/redux/reducers/fontReducer";
@@ -54,7 +59,7 @@ export const LogosAndTexts = React.memo(
       onDblClickLayer: onDblClick,
     } = useLayer();
 
-    const { guideData } = useScheme();
+    const { guideData, legacyMode } = useScheme();
 
     const frameSize = useSelector(
       (state: RootState) => state.boardReducer.frameSize
@@ -75,6 +80,9 @@ export const LogosAndTexts = React.memo(
       (state: RootState) => state.fontReducer.loadedList
     );
     const fonts = useSelector((state: RootState) => state.fontReducer.list);
+    const carMake = useSelector(
+      (state: RootState) => state.carMakeReducer.current
+    );
 
     const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
       viewMode,
@@ -123,13 +131,8 @@ export const LogosAndTexts = React.memo(
     );
 
     const getLayerImage = useCallback(
-      (layer) =>
-        layer.layer_data.legacy
-          ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
-          : layer.layer_data.fromOldSource
-          ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
-          : `${config.assetsURL}/${layer.layer_data.source_file}`,
-      []
+      (layer) => generateLogoImageURL(layer, carMake, legacyMode),
+      [carMake, legacyMode]
     );
 
     const onFontLoad = useCallback(
@@ -237,8 +240,8 @@ export const LogosAndTexts = React.memo(
               stageRef={stageRef}
               frameSize={frameSize}
               name={layer.id.toString()}
-              text={textLayerData.text}
-              fontFamily={font?.font_name}
+              text={decodeHtml(textLayerData.text)}
+              fontFamily={enhanceFontFamily(font?.font_name)}
               fontFile={
                 font?.font_file
                   ? `url(${config.assetsURL}/${font.font_file})`

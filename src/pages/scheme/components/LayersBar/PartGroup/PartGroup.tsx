@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactSortable } from "react-sortablejs";
 import { LightTooltip } from "src/components/common";
-import { focusBoardQuickly } from "src/helper";
+import { decodeHtml, focusBoardQuickly } from "src/helper";
 import { RootState } from "src/redux";
 import { setMouseMode } from "src/redux/reducers/boardReducer";
 import {
@@ -170,7 +170,9 @@ export const PartGroup = ({
             >
               {sortedList.map((item) => (
                 <PartItem
-                  text={layerName(item.layer_data.name, item.layer_type)}
+                  text={decodeHtml(
+                    layerName(item.layer_data.name, item.layer_type)
+                  )}
                   layer_visible={item.layer_visible}
                   layer_locked={item.layer_locked}
                   key={item.id}

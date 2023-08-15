@@ -19,6 +19,7 @@ import { ImageWithLoad, LightTooltip } from "src/components/common";
 import { ConfirmDialog } from "src/components/dialogs";
 import config from "src/config";
 import {
+  decodeHtml,
   getDifferenceFromToday,
   getUserName,
   reduceString,
@@ -143,7 +144,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
       <>
         Are you sure you want to{" "}
         {!shared ? "delete" : !accepted ? "reject" : "remove"} &quot;
-        {scheme.name}&quot;?
+        {decodeHtml(scheme.name)}&quot;?
         <LinearProgress color="secondary" style={{ margin: "10px 0" }} />
       </>
     );
@@ -164,12 +165,12 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
       <>
         Are you sure you want to{" "}
         {!shared ? "delete" : !accepted ? "reject" : "remove"} &quot;
-        {scheme.name}&quot;?
+        {decodeHtml(scheme.name)}&quot;?
         {hasPrimaryRace && (
           <>
             <br />
             This project is associated with an active paint for your{" "}
-            {scheme.carMake.name}. <br />
+            {decodeHtml(scheme.carMake.name)}. <br />
             If you delete this project, you won’t be able to make changes.
           </>
         )}
@@ -254,18 +255,18 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
               href={`/project/${scheme.id}`}
               onClick={handleOpenScheme}
             >
-              {reduceString(scheme.name, 50)}
+              {reduceString(decodeHtml(scheme.name), 50)}
             </Typography>
           </Box>
           {scheme.user && scheme.user.id !== user.id ? (
             <Typography variant="body2" noWrap>
-              Owner: {getUserName(scheme.user)}
+              Owner: {decodeHtml(getUserName(scheme.user))}
             </Typography>
           ) : (
             <></>
           )}
           <Typography variant="body2" noWrap>
-            {scheme.carMake.name}
+            {decodeHtml(scheme.carMake.name)}
           </Typography>
           <Typography variant="body2" noWrap>
             Edited {getDifferenceFromToday(scheme.date_modified)}
@@ -275,7 +276,9 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
               <AvatarGroup max={5}>
                 {scheme.sharedUsers.map((sharedUser, index) => (
                   <LightTooltip
-                    title={"Shared with " + getUserName(sharedUser.user)}
+                    title={
+                      "Shared with " + decodeHtml(getUserName(sharedUser.user))
+                    }
                     arrow
                     key={index}
                   >

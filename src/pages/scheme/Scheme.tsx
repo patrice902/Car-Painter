@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
 import useInterval from "react-useinterval";
 import { ScreenLoader } from "src/components/common";
-import { focusBoardQuickly, isWindows } from "src/helper";
+import { decodeHtml, focusBoardQuickly, isWindows } from "src/helper";
 import { useBoardSocket, useCapture, useZoom, withKeyEvent } from "src/hooks";
 import { ComponentWithKeyEventProps } from "src/hooks/withKeyEvent";
 import { RootState } from "src/redux";
@@ -24,9 +24,15 @@ import { getCarRaces } from "src/redux/reducers/carReducer";
 import { getDownloaderStatus } from "src/redux/reducers/downloaderReducer";
 import { getFontList } from "src/redux/reducers/fontReducer";
 import { setLoadedStatusAll } from "src/redux/reducers/layerReducer";
-import { getLogoList } from "src/redux/reducers/logoReducer";
+import {
+  getFavoriteLogoList,
+  getLogoList,
+} from "src/redux/reducers/logoReducer";
 import { setMessage } from "src/redux/reducers/messageReducer";
-import { getOverlayList } from "src/redux/reducers/overlayReducer";
+import {
+  getFavoriteOverlayList,
+  getOverlayList,
+} from "src/redux/reducers/overlayReducer";
 import {
   getFavoriteList,
   getScheme,
@@ -139,6 +145,12 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   const favoriteSchemeList = useSelector(
     (state: RootState) => state.schemeReducer.favoriteList
   );
+  const favoriteLogoList = useSelector(
+    (state: RootState) => state.logoReducer.favoriteLogoList
+  );
+  const favoriteOverlayList = useSelector(
+    (state: RootState) => state.overlayReducer.favoriteOverlayList
+  );
 
   const schemeLoading = useSelector(
     (state: RootState) => state.schemeReducer.loading
@@ -226,6 +238,10 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
                 if (!sharedUsers.length) dispatch(getSharedUsers(+params.id));
                 if (!favoriteSchemeList.length)
                   dispatch(getFavoriteList(user.id));
+                if (!favoriteLogoList.length)
+                  dispatch(getFavoriteLogoList(user.id));
+                if (!favoriteOverlayList.length)
+                  dispatch(getFavoriteOverlayList(user.id));
                 dispatch(getCarRaces(scheme.id));
                 if (isWindows()) {
                   dispatch(getDownloaderStatus());
@@ -308,7 +324,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   return (
     <>
       <Helmet>
-        {currentScheme ? <title>{currentScheme.name}</title> : null}
+        {currentScheme ? <title>{decodeHtml(currentScheme.name)}</title> : null}
       </Helmet>
       {schemeLoading || carMakeLoading || fontLoading || !currentScheme ? (
         <ScreenLoader />

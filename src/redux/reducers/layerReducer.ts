@@ -4,6 +4,7 @@ import config from "src/config";
 import { AllowedLayerProps, DefaultLayer } from "src/constant";
 import {
   clearScrollPosition,
+  decodeHtml,
   fitPoints,
   getAllowedLayerTypes,
   getNameFromUploadFileName,
@@ -14,6 +15,7 @@ import {
 } from "src/helper";
 import LayerService from "src/services/layerService";
 import {
+  CarObjLayerData,
   DraftShapeLayerJSON,
   LineObjLayerData,
   MovableObjLayerData,
@@ -308,41 +310,38 @@ export const {
 
 export default slice.reducer;
 
-const shiftSimilarLayerOrders = (layer: BuilderLayer) => async (
+const shiftSimilarLayerOrders = (layer_type: LayerTypes, offset = 1) => async (
   dispatch: AppDispatch,
   getState: GetState
 ) => {
   const currentUser = getState().authReducer.user;
   const layerList = getState().layerReducer.list;
   let filter: LayerTypes[] = [];
-  if ([LayerTypes.BASE].includes(layer.layer_type)) {
+  if ([LayerTypes.BASE].includes(layer_type)) {
     filter = [LayerTypes.BASE];
-  } else if ([LayerTypes.SHAPE].includes(layer.layer_type)) {
+  } else if ([LayerTypes.SHAPE].includes(layer_type)) {
     filter = [LayerTypes.SHAPE];
-  } else if ([LayerTypes.OVERLAY].includes(layer.layer_type)) {
+  } else if ([LayerTypes.OVERLAY].includes(layer_type)) {
     filter = [LayerTypes.OVERLAY];
   } else if (
-    [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD].includes(
-      layer.layer_type
-    )
+    [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD].includes(layer_type)
   ) {
     filter = [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD];
   }
-  const filteredLayers = layerList.filter(
-    (layerItem) =>
-      filter.includes(layerItem.layer_type) && layerItem.id !== layer.id
+  const filteredLayers = layerList.filter((layerItem) =>
+    filter.includes(layerItem.layer_type)
   );
   for (const layerItem of filteredLayers) {
     dispatch(
       mergeListItem({
         ...layerItem,
-        layer_order: layerItem.layer_order + 1,
+        layer_order: layerItem.layer_order + offset,
       })
     );
     socketClient.emit("client-update-layer", {
       data: {
         ...layerItem,
-        layer_order: layerItem.layer_order + 1,
+        layer_order: layerItem.layer_order + offset,
       },
       socketID: socketClient.socket?.id,
       userID: currentUser?.id,
@@ -366,7 +365,7 @@ export const createLayer = (
     userID: currentUser?.id,
   });
 
-  dispatch(shiftSimilarLayerOrders(layer));
+  dispatch(shiftSimilarLayerOrders(layer.layer_type));
 
   dispatch(insertToList(layer));
   if (layer.layer_type !== LayerTypes.BASE) {
@@ -386,7 +385,7 @@ export const createLayer = (
 export const createLayerList = (
   layersInfo: BuilderLayerPayload[],
   pushingToHistory = true,
-  callback?: () => void
+  callback?: (layers?: BuilderLayer[]) => void
 ) => async (dispatch: AppDispatch, getState: GetState) => {
   const currentUser = getState().authReducer.user;
   const layerList = getState().layerReducer.list;
@@ -452,7 +451,7 @@ export const createLayerList = (
     );
   }
 
-  callback?.();
+  callback?.(layers);
 };
 
 export const createLayersFromBasePaint = (
@@ -699,7 +698,7 @@ export const createTextLayer = (
             item.includes("layer_data.")
           ).map((item) => item.replaceAll("layer_data.", ""))
         ),
-        name: textObj.text,
+        name: decodeHtml(textObj.text),
         rotation: textObj.rotation - boardRotate,
         left: position.x,
         top: position.y,
@@ -746,6 +745,39 @@ export const cloneLayer = (
         }),
       };
       dispatch(createLayer(layer, pushingToHistory, callback));
+    } catch (err) {
+      dispatch(setMessage({ message: (err as Error).message }));
+    }
+    dispatch(setLoading(false));
+  }
+};
+
+export const cloneCarPartsLayer = (
+  layersToClone: BuilderLayerJSON<CarObjLayerData>[],
+  legacyMode?: boolean | null,
+  callback?: (layers?: BuilderLayer[]) => void
+) => async (dispatch: AppDispatch) => {
+  if (layersToClone.length) {
+    dispatch(setLoading(true));
+    try {
+      const layers = layersToClone.map((layer, index) => ({
+        ..._.omit(layer, ["id"]),
+        layer_type: LayerTypes.LOGO,
+        layer_order: index + 1,
+        layer_locked: 1,
+        layer_data: JSON.stringify({
+          ...layer.layer_data,
+          left: 0,
+          top: 0,
+          width: legacyMode ? 1024 : 2048,
+          height: legacyMode ? 1024 : 2048,
+          fromCarParts: true,
+        }),
+      }));
+
+      dispatch(shiftSimilarLayerOrders(LayerTypes.LOGO, layers.length));
+
+      dispatch(createLayerList(layers, true, callback));
     } catch (err) {
       dispatch(setMessage({ message: (err as Error).message }));
     }

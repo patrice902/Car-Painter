@@ -1,7 +1,7 @@
 import { Box } from "@material-ui/core";
 import { FormikProps } from "formik";
 import React, { useCallback, useMemo } from "react";
-import { getAllowedLayerTypes } from "src/helper";
+import { decodeHtml, getAllowedLayerTypes } from "src/helper";
 import {
   BuilderLayerJSONParitalAll,
   PartialAllLayerData,
@@ -78,7 +78,9 @@ export const NameProperty = React.memo(
             <CustomeTextField
               name="layer_data.name"
               fieldKey="name"
-              value={layerName(values.layer_data.name, values.layer_type)}
+              value={decodeHtml(
+                layerName(values.layer_data.name, values.layer_type)
+              )}
               disabled={!editable || layerType === LayerTypes.CAR}
               error={Boolean(
                 touched.layer_data?.name && errors.layer_data?.name

@@ -32,10 +32,7 @@ export const PaintingGuideCarMask = React.memo(() => {
   const src = useMemo(() => getCarMakeImage("mask.png"), [getCarMakeImage]);
 
   const visible = useMemo(
-    () =>
-      !specMode && paintingGuides.includes(PaintingGuides.CARMASK)
-        ? true
-        : false,
+    () => !specMode && paintingGuides.includes(PaintingGuides.CARMASK),
     [paintingGuides, specMode]
   );
 

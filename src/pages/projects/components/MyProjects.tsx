@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router";
 import { ProjectItem, ScreenLoader } from "src/components/common";
-import { scrollBackOnProjectList } from "src/helper";
+import { decodeHtml, scrollBackOnProjectList } from "src/helper";
 import { CarMake } from "src/types/model";
 import {
   BuilderSchemeJSONForGetListByUserId,
@@ -53,8 +53,10 @@ export const MyProjects = React.memo(
         _.orderBy(
           schemeList.filter(
             (item) =>
-              (item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.carMake.name
+              (decodeHtml(item.name)
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+                decodeHtml(item.carMake.name)
                   .toLowerCase()
                   .includes(search.toLowerCase())) &&
               (!selectedVehicle || selectedVehicle.id === item.carMake.id) &&

@@ -1,15 +1,19 @@
 import { Node } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
+import _ from "lodash";
 import { MutableRefObject, RefObject } from "react";
 import config from "src/config";
 import { AllowedLayerProps } from "src/constant";
 import {
   BoundBox,
   BuilderLayerJSONParitalAll,
+  CarObjLayerData,
   FrameSize,
+  LogoObjLayerData,
   Position,
   ScrollPosition,
   ShapeObjLayerData,
+  UploadObjLayerData,
 } from "src/types/common";
 import { Browser, LayerTypes, MouseModes } from "src/types/enum";
 import {
@@ -323,6 +327,35 @@ export const carMakeAssetURL = (carMake?: CarMake | null) =>
     " ",
     "_"
   )}/`;
+
+export const generateCarMakeImageURL = (
+  layer_data: CarObjLayerData,
+  carMake?: CarMake | null,
+  legacyMode?: boolean | null
+) =>
+  layer_data.legacy
+    ? `${
+        config.legacyAssetURL
+      }/templates/${carMake?.folder_directory.replaceAll(" ", "_")}/`
+    : (legacyMode ? legacyCarMakeAssetURL(carMake) : carMakeAssetURL(carMake)) +
+      layer_data.img;
+
+export const generateLogoImageURL = (
+  layer: BuilderLayerJSON<LogoObjLayerData>,
+  carMake?: CarMake | null,
+  legacyMode?: boolean | null
+) =>
+  layer.layer_data.fromCarParts
+    ? generateCarMakeImageURL(
+        layer.layer_data as CarObjLayerData,
+        carMake,
+        legacyMode
+      )
+    : layer.layer_data.legacy
+    ? `${config.legacyAssetURL}/layers/layer_${layer.id}.png`
+    : (layer.layer_data as UploadObjLayerData).fromOldSource
+    ? `${config.legacyAssetURL}/${layer.layer_data.source_file}`
+    : `${config.assetsURL}/${layer.layer_data.source_file}`;
 
 export const uploadAssetURL = (uploadItem: BuilderUpload) =>
   uploadItem.legacy_mode
@@ -725,6 +758,13 @@ export const detectBrowser = () => {
   return browserName;
 };
 
+export const enhanceFontFamily = (fontName?: string) =>
+  !fontName
+    ? undefined
+    : detectBrowser() !== Browser.FIREFOX
+    ? fontName
+    : `"${fontName}"`;
+
 export const modifyFileName = (file: File, userID?: number) => {
   let newName = file.name;
   const firstDotPosition = file.name.indexOf(".");
@@ -750,3 +790,9 @@ export const getAllowedLayerTypes = (
         (values.layer_data as ShapeObjLayerData)
           .type as keyof typeof AllowedLayerProps[LayerTypes.SHAPE]
       ];
+
+export const decodeHtml = (str?: string) => {
+  const txt = new DOMParser().parseFromString(str ?? "", "text/html");
+
+  return txt.documentElement.textContent ?? "";
+};

@@ -12,6 +12,7 @@ import { usePageVisibility } from "react-page-visibility";
 import { useDispatch, useSelector } from "react-redux";
 import LayerDeleteDialog from "src/components/dialogs/LayerDeleteDialog";
 import {
+  decodeHtml,
   detectBrowser,
   focusBoard,
   getZoomedCenterPosition,
@@ -188,14 +189,16 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
         setDeleteLayerState({
           show: true,
           deleteUpload,
-          message: `Are you sure you want to delete "${layer.layer_data.name}"?`,
+          message: `Are you sure you want to delete "${decodeHtml(
+            layer.layer_data.name
+          )}"?`,
         });
       },
       [dispatch, uploadList]
     );
 
     const handleConfirm = useCallback(
-      (gonnaDeleteAll) => {
+      (gonnaDeleteAll?: boolean) => {
         if (currentLayer) {
           dispatch(setPressedKey(null));
           dispatch(setPressedEventKey(null));

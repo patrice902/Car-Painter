@@ -1,19 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { modifyFileName } from "src/helper";
+import FavoriteLogoService from "src/services/favoriteLogoService";
 import LogoService from "src/services/logoService";
-import { BuilderLogo } from "src/types/model";
+import { BuilderLogo, FavoriteLogo } from "src/types/model";
+import { FavoriteLogoPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
 import { setMessage } from "./messageReducer";
 
 export type LogoReducerState = {
   list: BuilderLogo[];
+  favoriteLogoList: FavoriteLogo[];
   current?: BuilderLogo | null;
   loading: boolean;
 };
 
 const initialState: LogoReducerState = {
   list: [],
+  favoriteLogoList: [],
   current: null,
   loading: false,
 };
@@ -60,6 +64,21 @@ export const slice = createSlice({
     setCurrent: (state, action: PayloadAction<BuilderLogo | null>) => {
       state.current = action.payload;
     },
+    setFavoriteLogoList: (state, action: PayloadAction<FavoriteLogo[]>) => {
+      state.favoriteLogoList = [...action.payload];
+    },
+    insertToFavoriteLogoList: (state, action: PayloadAction<FavoriteLogo>) => {
+      const favorite = { ...action.payload };
+      state.favoriteLogoList.push(favorite);
+    },
+    deleteFavoriteLogoListItem: (state, action: PayloadAction<number>) => {
+      state.favoriteLogoList = state.favoriteLogoList.filter(
+        (item) => item.id !== +action.payload
+      );
+    },
+    clearFavoriteLogoList: (state) => {
+      state.favoriteLogoList = [];
+    },
   },
 });
 
@@ -71,6 +90,10 @@ export const {
   concatList,
   updateListItem,
   deleteListItem,
+  setFavoriteLogoList,
+  insertToFavoriteLogoList,
+  deleteFavoriteLogoListItem,
+  clearFavoriteLogoList,
 } = slice.actions;
 
 export default slice.reducer;
@@ -206,4 +229,43 @@ export const deleteLogo = (id: number, callback?: () => void) => async (
     dispatch(setMessage({ message: (err as Error).message }));
   }
   dispatch(setLoading(false));
+};
+
+export const getFavoriteLogoList = (
+  userID: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const list = await FavoriteLogoService.getFavoriteLogoListByUserID(userID);
+    dispatch(setFavoriteLogoList(list));
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+  callback?.();
+};
+
+export const createFavoriteLogo = (
+  payload: FavoriteLogoPayload,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const favoriteLogo = await FavoriteLogoService.createFavoriteLogo(payload);
+    dispatch(insertToFavoriteLogoList(favoriteLogo));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+};
+
+export const deleteFavoriteLogoItem = (
+  id: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    await FavoriteLogoService.deleteFavoriteLogo(id);
+    dispatch(deleteFavoriteLogoListItem(id));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
 };

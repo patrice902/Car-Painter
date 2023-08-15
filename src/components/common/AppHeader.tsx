@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 import PaintBuilderLogo from "src/assets/paint-builder-logo.svg";
 import TradingPaintsLogo from "src/assets/trading-paints-logo.svg";
 import { HelpLinks } from "src/constant";
-import { getUserName } from "src/helper";
+import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import { signOut } from "src/redux/reducers/authReducer";
 import styled from "styled-components";
@@ -110,7 +110,7 @@ export const AppHeader = React.memo(({ isBoard, children }: AppHeaderProps) => {
               }}
             >
               <Box py={2} display="flex" flexDirection="column">
-                <NameItem>{getUserName(user)}</NameItem>
+                <NameItem>{decodeHtml(getUserName(user))}</NameItem>
                 {isAdmin ? (
                   <StyledLink as={Link} to="/admin">
                     Admin Panel

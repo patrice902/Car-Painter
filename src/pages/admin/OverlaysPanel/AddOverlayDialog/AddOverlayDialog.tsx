@@ -16,6 +16,7 @@ import { DropzoneArea } from "material-ui-dropzone";
 import React, { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { ColorPickerInput, SliderInput } from "src/components/common";
+import { decodeHtml } from "src/helper";
 import { uploadAndCreateOverlay } from "src/redux/reducers/overlayReducer";
 import * as Yup from "yup";
 
@@ -143,7 +144,7 @@ const AddOverlayForm = React.memo(
               label="Name"
               variant="outlined"
               color="primary"
-              value={formProps.values.name}
+              value={decodeHtml(formProps.values.name)}
               error={Boolean(formProps.touched.name && formProps.errors.name)}
               fullWidth
               helperText={formProps.touched.name && formProps.errors.name}

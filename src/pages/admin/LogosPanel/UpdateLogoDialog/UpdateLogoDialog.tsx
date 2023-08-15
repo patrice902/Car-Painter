@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ImageWithLoad } from "src/components/common";
 import config from "src/config";
+import { decodeHtml } from "src/helper";
 import { uploadAndUpdateLogo } from "src/redux/reducers/logoReducer";
 import { BuilderLogo } from "src/types/model";
 import * as Yup from "yup";
@@ -42,7 +43,7 @@ export const UpdateLogoDialog = React.memo(
 
     const initialValues: UpdateLogoFormValues = useMemo(
       () => ({
-        name: data?.name ?? "",
+        name: decodeHtml(data?.name ?? ""),
         source_file: undefined,
         preview_file: undefined,
         type: data?.type ?? "0",
@@ -222,7 +223,7 @@ const UpdateLogoForm = React.memo(
                 label="Name"
                 variant="outlined"
                 color="primary"
-                value={formProps.values.name}
+                value={decodeHtml(formProps.values.name)}
                 error={Boolean(formProps.touched.name && formProps.errors.name)}
                 fullWidth
                 helperText={formProps.touched.name && formProps.errors.name}

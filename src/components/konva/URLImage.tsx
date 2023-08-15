@@ -159,6 +159,7 @@ export const URLImage = React.memo(
     return (
       <Image
         {...props}
+        id={id?.toString()}
         image={image}
         ref={shapeRef}
         draggable={!!onChange && dragEnabled}

@@ -28,9 +28,7 @@ export const Maintenance = React.memo(() => (
         Paint Builder is under maintenance.
       </Typography>
       <Typography component="h2" variant="body1" align="center" gutterBottom>
-        Paint Builder is temporarily closed for system upgrades and will return
-        later this week after iRacing&apos;s new build is released. We apologize
-        for the inconvenience.
+        Paint Builder is temporarily closed for updates and will return soon.
       </Typography>
       <Typography component="h2" variant="body1" align="center" gutterBottom>
         <StyledLink

@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LightTooltip } from "src/components/common";
 import { SchemeSettingsDialog } from "src/components/dialogs";
-import { focusBoardQuickly } from "src/helper";
+import { decodeHtml, focusBoardQuickly } from "src/helper";
 import { RootState } from "src/redux";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
 import { DialogTypes } from "src/types/enum";
@@ -41,7 +41,7 @@ export const TitleBar = React.memo(({ editable, onBack }: TitleBarProps) => {
 
   const handleNameChange = useCallback(
     (event) => {
-      setName(event.target.value);
+      setName(decodeHtml(event.target.value ?? ""));
       handleSaveName();
     },
     [handleSaveName]
@@ -70,7 +70,7 @@ export const TitleBar = React.memo(({ editable, onBack }: TitleBarProps) => {
           </LightTooltip>
         </Box>
         <NameInput
-          value={name}
+          value={decodeHtml(name)}
           onChange={handleNameChange}
           inputProps={{ maxLength: "50" }}
         />
