@@ -1,8 +1,10 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Box,
   Button,
   Checkbox,
   FormControlLabel,
+  IconButton,
   ImageListItemBar,
   Theme,
   useMediaQuery,
@@ -27,6 +29,8 @@ import {
 } from "src/redux/reducers/layerReducer";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import {
+  createFavoriteUpload,
+  deleteFavoriteUploadItem,
   deleteLegacyUploadsByUserID,
   deleteUpload,
   uploadFiles,
@@ -35,9 +39,12 @@ import SchemeService from "src/services/schemeService";
 import { BuilderScheme, BuilderUpload } from "src/types/model";
 
 import {
+  CategoryText,
   CustomImageList,
   CustomImageListItem,
   DeleteButton,
+  faStarOff,
+  faStarOn,
 } from "./UploadDialog.style";
 
 type UploadListContentProps = {
@@ -65,6 +72,9 @@ export const UploadListContent = React.memo(
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
     );
+    const favoriteUploadList = useSelector(
+      (state: RootState) => state.uploadReducer.favoriteUploadList
+    );
 
     const [uploadToDelete, setUploadToDelete] = useState<BuilderUpload | null>(
       null
@@ -81,6 +91,11 @@ export const UploadListContent = React.memo(
 
     const scrollToRef = useRef(null);
 
+    const favoriteUploadIDs = useMemo(
+      () => favoriteUploadList.map((fav) => fav.upload_id),
+      [favoriteUploadList]
+    );
+
     const filteredUploads = useMemo(
       () =>
         _.orderBy(uploads, ["id"], "desc").filter(
@@ -93,6 +108,12 @@ export const UploadListContent = React.memo(
       [uploads, user, search, showLegacy]
     );
 
+    const favoriteFilteredUploads = useMemo(
+      () =>
+        filteredUploads.filter((logo) => favoriteUploadIDs.includes(logo.id)),
+      [favoriteUploadIDs, filteredUploads]
+    );
+
     const hasLegacyUploads = useMemo(
       () => uploads.some((item) => item.legacy_mode),
       [uploads]
@@ -101,6 +122,36 @@ export const UploadListContent = React.memo(
     const increaseData = useCallback(() => {
       setLimit(limit + step);
     }, [limit, step]);
+
+    const handleClickAddFavorite = useCallback(
+      (event, upload: BuilderUpload) => {
+        event.stopPropagation();
+        event.nativeEvent.stopImmediatePropagation();
+
+        if (!user) return;
+
+        dispatch(
+          createFavoriteUpload({ upload_id: upload.id, user_id: user.id })
+        );
+      },
+      [dispatch, user]
+    );
+
+    const handleClickRemoveFavorite = useCallback(
+      (event, upload: BuilderUpload) => {
+        event.stopPropagation();
+        event.nativeEvent.stopImmediatePropagation();
+
+        const favoriteUploadItem = favoriteUploadList.find(
+          (item) => item.upload_id === upload.id
+        );
+
+        if (!favoriteUploadItem) return;
+
+        dispatch(deleteFavoriteUploadItem(favoriteUploadItem.id));
+      },
+      [dispatch, favoriteUploadList]
+    );
 
     const handleDropZoneChange = useCallback(
       (files_up: File[]) => {
@@ -184,6 +235,57 @@ export const UploadListContent = React.memo(
       []
     );
 
+    const renderUploadList = (uploadList: BuilderUpload[]) => (
+      <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 2}>
+        {uploadList.map((uploadItem) => {
+          const isFavorite = favoriteUploadIDs.includes(uploadItem.id);
+
+          return (
+            <CustomImageListItem
+              key={uploadItem.id}
+              cols={1}
+              onClick={() => onOpenUpload(uploadItem)}
+            >
+              <ImageWithLoad
+                src={uploadAssetURL(uploadItem)}
+                alt={getNameFromUploadFileName(uploadItem.file_name, user)}
+                alignItems="center"
+                height="100%"
+                maxHeight="250px"
+              />
+              <ImageListItemBar
+                title={getNameFromUploadFileName(uploadItem.file_name, user)}
+                actionIcon={
+                  <Box display="flex" alignItems="center">
+                    <IconButton
+                      color="secondary"
+                      onClick={(event) =>
+                        isFavorite
+                          ? handleClickRemoveFavorite(event, uploadItem)
+                          : handleClickAddFavorite(event, uploadItem)
+                      }
+                    >
+                      <FontAwesomeIcon
+                        icon={isFavorite ? faStarOn : faStarOff}
+                        size="sm"
+                      />
+                    </IconButton>
+                    <DeleteButton
+                      onClick={(event) =>
+                        handleClickDeleteUpload(event, uploadItem)
+                      }
+                    >
+                      <DeleteIcon />
+                    </DeleteButton>
+                  </Box>
+                }
+              />
+            </CustomImageListItem>
+          );
+        })}
+      </CustomImageList>
+    );
+
     return (
       <>
         {hasLegacyUploads ? (
@@ -237,38 +339,22 @@ export const UploadListContent = React.memo(
             loader={<Loader />}
             scrollableTarget="upload-dialog-content"
           >
-            <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 2}>
-              {filteredUploads.slice(0, limit).map((uploadItem) => (
-                <CustomImageListItem
-                  key={uploadItem.id}
-                  cols={1}
-                  onClick={() => onOpenUpload(uploadItem)}
-                >
-                  <ImageWithLoad
-                    src={uploadAssetURL(uploadItem)}
-                    alt={getNameFromUploadFileName(uploadItem.file_name, user)}
-                    alignItems="center"
-                    height="100%"
-                    maxHeight="250px"
-                  />
-                  <ImageListItemBar
-                    title={getNameFromUploadFileName(
-                      uploadItem.file_name,
-                      user
-                    )}
-                    actionIcon={
-                      <DeleteButton
-                        onClick={(event) =>
-                          handleClickDeleteUpload(event, uploadItem)
-                        }
-                      >
-                        <DeleteIcon />
-                      </DeleteButton>
-                    }
-                  />
-                </CustomImageListItem>
-              ))}
-            </CustomImageList>
+            {favoriteFilteredUploads.length ? (
+              <>
+                <CategoryText color="secondary">Favorite</CategoryText>
+                {renderUploadList(favoriteFilteredUploads)}
+                <CategoryText color="secondary">All</CategoryText>
+              </>
+            ) : (
+              <></>
+            )}
+            {renderUploadList(
+              filteredUploads.slice(
+                0,
+                Math.max(limit - favoriteFilteredUploads.length, 4)
+              )
+            )}
+
             {loading ? (
               <Box
                 position="absolute"

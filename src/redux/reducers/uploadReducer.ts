@@ -1,13 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { modifyFileName } from "src/helper";
+import FavoriteUploadService from "src/services/favoriteUploadService";
 import UploadService from "src/services/uploadService";
-import { BuilderUpload } from "src/types/model";
+import { BuilderUpload, FavoriteUpload } from "src/types/model";
+import { FavoriteUploadPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
 import { setMessage } from "./messageReducer";
 
 export type UploadReducerState = {
   list: BuilderUpload[];
+  favoriteUploadList: FavoriteUpload[];
   current?: BuilderUpload | null;
   loading: boolean;
   initialized: boolean;
@@ -15,6 +18,7 @@ export type UploadReducerState = {
 
 const initialState: UploadReducerState = {
   list: [],
+  favoriteUploadList: [],
   current: null,
   loading: false,
   initialized: false,
@@ -63,6 +67,24 @@ export const slice = createSlice({
     setCurrent: (state, action: PayloadAction<BuilderUpload | null>) => {
       state.current = action.payload;
     },
+    setFavoriteUploadList: (state, action: PayloadAction<FavoriteUpload[]>) => {
+      state.favoriteUploadList = [...action.payload];
+    },
+    insertToFavoriteUploadList: (
+      state,
+      action: PayloadAction<FavoriteUpload>
+    ) => {
+      const favorite = { ...action.payload };
+      state.favoriteUploadList.push(favorite);
+    },
+    deleteFavoriteUploadListItem: (state, action: PayloadAction<number>) => {
+      state.favoriteUploadList = state.favoriteUploadList.filter(
+        (item) => item.id !== +action.payload
+      );
+    },
+    clearFavoriteUploadList: (state) => {
+      state.favoriteUploadList = [];
+    },
   },
 });
 
@@ -75,6 +97,10 @@ export const {
   updateListItem,
   deleteListItem,
   setIntialized,
+  setFavoriteUploadList,
+  insertToFavoriteUploadList,
+  deleteFavoriteUploadListItem,
+  clearFavoriteUploadList,
 } = slice.actions;
 
 export const getUploadListByUserID = (userID: number) => async (
@@ -169,6 +195,49 @@ export const deleteLegacyUploadsByUserID = (
     dispatch(setMessage({ message: (err as Error).message }));
   }
   // dispatch(setLoading(false));
+};
+
+export const getFavoriteUploadList = (
+  userID: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const list = await FavoriteUploadService.getFavoriteUploadListByUserID(
+      userID
+    );
+    dispatch(setFavoriteUploadList(list));
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+  callback?.();
+};
+
+export const createFavoriteUpload = (
+  payload: FavoriteUploadPayload,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const favoriteUpload = await FavoriteUploadService.createFavoriteUpload(
+      payload
+    );
+    dispatch(insertToFavoriteUploadList(favoriteUpload));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+};
+
+export const deleteFavoriteUploadItem = (
+  id: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    await FavoriteUploadService.deleteFavoriteUpload(id);
+    dispatch(deleteFavoriteUploadListItem(id));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
 };
 
 export default slice.reducer;

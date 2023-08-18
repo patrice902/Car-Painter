@@ -14,6 +14,7 @@ import {
   FavoriteLogo,
   FavoriteOverlay,
   FavoriteScheme,
+  FavoriteUpload,
   League,
   LeagueSeries,
   SharedScheme,
@@ -144,6 +145,7 @@ export type FavoriteSchemeForGetListByUserId = FavoriteScheme & {
 };
 
 export type FavoriteLogoPayload = Omit<FavoriteLogo, "id">;
+export type FavoriteUploadPayload = Omit<FavoriteUpload, "id">;
 
 export type FavoriteOverlayPayload = Omit<FavoriteOverlay, "id">;
 

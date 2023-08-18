@@ -39,7 +39,10 @@ import {
   getSharedUsers,
   setLoaded,
 } from "src/redux/reducers/schemeReducer";
-import { getUploadListByUserID } from "src/redux/reducers/uploadReducer";
+import {
+  getFavoriteUploadList,
+  getUploadListByUserID,
+} from "src/redux/reducers/uploadReducer";
 import { MovableObjLayerData } from "src/types/common";
 import { MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
@@ -151,6 +154,9 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   const favoriteOverlayList = useSelector(
     (state: RootState) => state.overlayReducer.favoriteOverlayList
   );
+  const favoriteUploadList = useSelector(
+    (state: RootState) => state.uploadReducer.favoriteUploadList
+  );
 
   const schemeLoading = useSelector(
     (state: RootState) => state.schemeReducer.loading
@@ -240,6 +246,8 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
                   dispatch(getFavoriteList(user.id));
                 if (!favoriteLogoList.length)
                   dispatch(getFavoriteLogoList(user.id));
+                if (!favoriteUploadList.length)
+                  dispatch(getFavoriteUploadList(user.id));
                 if (!favoriteOverlayList.length)
                   dispatch(getFavoriteOverlayList(user.id));
                 dispatch(getCarRaces(scheme.id));
