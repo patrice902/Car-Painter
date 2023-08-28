@@ -176,6 +176,12 @@ export type FavoriteUpload = {
   user_id: number;
 };
 
+export type SharedUpload = {
+  id: number;
+  upload_id: number;
+  user_id: number;
+};
+
 export type FavoriteOverlay = {
   id: number;
   overlay_id: number;

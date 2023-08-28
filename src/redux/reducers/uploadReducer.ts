@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { modifyFileName } from "src/helper";
 import FavoriteUploadService from "src/services/favoriteUploadService";
+import SharedUploadService from "src/services/sharedUploadService";
 import UploadService from "src/services/uploadService";
-import { BuilderUpload, FavoriteUpload } from "src/types/model";
-import { FavoriteUploadPayload } from "src/types/query";
+import { BuilderUpload, FavoriteUpload, SharedUpload } from "src/types/model";
+import { FavoriteUploadPayload, SharedUploadPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
 import { setMessage } from "./messageReducer";
@@ -11,6 +12,7 @@ import { setMessage } from "./messageReducer";
 export type UploadReducerState = {
   list: BuilderUpload[];
   favoriteUploadList: FavoriteUpload[];
+  sharedUploadList: SharedUpload[];
   current?: BuilderUpload | null;
   loading: boolean;
   initialized: boolean;
@@ -19,6 +21,7 @@ export type UploadReducerState = {
 const initialState: UploadReducerState = {
   list: [],
   favoriteUploadList: [],
+  sharedUploadList: [],
   current: null,
   loading: false,
   initialized: false,
@@ -85,6 +88,21 @@ export const slice = createSlice({
     clearFavoriteUploadList: (state) => {
       state.favoriteUploadList = [];
     },
+    setSharedUploadList: (state, action: PayloadAction<SharedUpload[]>) => {
+      state.sharedUploadList = [...action.payload];
+    },
+    insertToSharedUploadList: (state, action: PayloadAction<SharedUpload>) => {
+      const favorite = { ...action.payload };
+      state.sharedUploadList.push(favorite);
+    },
+    deleteSharedUploadListItem: (state, action: PayloadAction<number>) => {
+      state.sharedUploadList = state.sharedUploadList.filter(
+        (item) => item.id !== +action.payload
+      );
+    },
+    clearSharedUploadList: (state) => {
+      state.sharedUploadList = [];
+    },
   },
 });
 
@@ -101,6 +119,10 @@ export const {
   insertToFavoriteUploadList,
   deleteFavoriteUploadListItem,
   clearFavoriteUploadList,
+  setSharedUploadList,
+  insertToSharedUploadList,
+  deleteSharedUploadListItem,
+  clearSharedUploadList,
 } = slice.actions;
 
 export const getUploadListByUserID = (userID: number) => async (
@@ -234,6 +256,45 @@ export const deleteFavoriteUploadItem = (
   try {
     await FavoriteUploadService.deleteFavoriteUpload(id);
     dispatch(deleteFavoriteUploadListItem(id));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+};
+
+export const getSharedUploadList = (
+  userID: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const list = await SharedUploadService.getSharedUploadListByUserID(userID);
+    dispatch(setSharedUploadList(list));
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+  callback?.();
+};
+
+export const createSharedUpload = (
+  payload: SharedUploadPayload,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const sharedUpload = await SharedUploadService.createSharedUpload(payload);
+    dispatch(insertToSharedUploadList(sharedUpload));
+    callback?.();
+  } catch (err) {
+    dispatch(setMessage({ message: (err as Error).message }));
+  }
+};
+
+export const deleteSharedUploadItem = (
+  id: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    await SharedUploadService.deleteSharedUpload(id);
+    dispatch(deleteSharedUploadListItem(id));
     callback?.();
   } catch (err) {
     dispatch(setMessage({ message: (err as Error).message }));

@@ -10,6 +10,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Delete as DeleteIcon } from "@material-ui/icons";
+import CryptoJS from "crypto-js";
 import _ from "lodash";
 import { DropzoneArea } from "material-ui-dropzone";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -17,6 +18,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
 import { ImageWithLoad, Loader, ScreenLoader } from "src/components/common";
 import { ConfirmDialog, YesNoDialog } from "src/components/dialogs";
+import config from "src/config";
 import {
   decodeHtml,
   getNameFromUploadFileName,
@@ -38,11 +40,13 @@ import {
 import SchemeService from "src/services/schemeService";
 import { BuilderScheme, BuilderUpload } from "src/types/model";
 
+import CopyCodeDialog from "./CopyCodeDialog";
 import {
   CategoryText,
   CustomImageList,
   CustomImageListItem,
   DeleteButton,
+  faQrcode,
   faStarOff,
   faStarOn,
 } from "./UploadDialog.style";
@@ -88,6 +92,7 @@ export const UploadListContent = React.memo(
     const [showLegacy, setShowLegacy] = useState(false);
     const [fetchingDeleteList, setFetchingDeleteList] = useState(false);
     const [dropZoneKey, setDropZoneKey] = useState(1);
+    const [sharingCode, setSharingCode] = useState<string>();
 
     const scrollToRef = useRef(null);
 
@@ -235,6 +240,18 @@ export const UploadListContent = React.memo(
       []
     );
 
+    const handleOpenShareCode = useCallback((event, id: number) => {
+      event.stopPropagation();
+      const hash = CryptoJS.Rabbit.encrypt(
+        id.toString(),
+        config.cryptoKey
+      ).toString();
+      setSharingCode(hash);
+      // CryptoJS.Rabbit.decrypt(hash, config.cryptoKey).toString(
+      //   CryptoJS.enc.Utf8
+      // );
+    }, []);
+
     const renderUploadList = (uploadList: BuilderUpload[]) => (
       <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 2}>
         {uploadList.map((uploadItem) => {
@@ -280,6 +297,14 @@ export const UploadListContent = React.memo(
                   </Box>
                 }
               />
+              <Box position="absolute" right={0} top={0}>
+                <IconButton
+                  color="secondary"
+                  onClick={(event) => handleOpenShareCode(event, uploadItem.id)}
+                >
+                  <FontAwesomeIcon icon={faQrcode} size="sm" />
+                </IconButton>
+              </Box>
             </CustomImageListItem>
           );
         })}
@@ -415,6 +440,11 @@ export const UploadListContent = React.memo(
           open={!!associatedSchemes.length}
           onYes={() => handleDeleteUploadFinally(true)}
           onNo={handleCancelForDeleteUploadFinally}
+        />
+        <CopyCodeDialog
+          open={Boolean(sharingCode)}
+          code={sharingCode}
+          onCancel={() => setSharingCode(undefined)}
         />
       </>
     );
