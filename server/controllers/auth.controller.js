@@ -2,10 +2,24 @@ const _ = require("lodash");
 const UserService = require("../services/userService");
 const logger = require("../config/winston");
 const md5 = require("md5");
+const configCatClient = require("../utils/configcat");
+const { ConfigCatFlags } = require("../constants");
 
 class AuthController {
   static async login(req, res) {
     try {
+      const disableAppLogin = await configCatClient.getValueAsync(
+        ConfigCatFlags.DISABLE_APP_LOGIN,
+        false
+      );
+
+      if (disableAppLogin) {
+        res.status(400).json({
+          message: "Login is disabled",
+        });
+        return;
+      }
+
       const { usr, password } = req.body;
       if (usr && password) {
         let user;
@@ -41,6 +55,18 @@ class AuthController {
 
   static async signup(req, res) {
     try {
+      const disableAppLogin = await configCatClient.getValueAsync(
+        ConfigCatFlags.DISABLE_APP_LOGIN,
+        false
+      );
+
+      if (disableAppLogin) {
+        res.status(400).json({
+          message: "Signup is disabled",
+        });
+        return;
+      }
+
       const { id, email, password } = req.body;
       if (id && email && password) {
         let user = await UserService.create({
