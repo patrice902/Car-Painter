@@ -13,31 +13,17 @@ const getQueryVariable = (variable: string) => {
 
 export default class CookieService {
   static getSiteLogin = () =>
-    getQueryVariable(
-      Cookies.get(
-        "site_login_v2"
-        // {
-        //   domain: "tradingpaints.com",
-        // }
-      ) ?? ""
-    );
+    getQueryVariable(Cookies.get("site_login_v2") ?? "");
 
   static setSiteLogin = (token: string) => {
-    Cookies.set(
-      "site_login_v2",
-      token
-      // {
-      //   domain: "tradingpaints.com",
-      // }
-    );
+    Cookies.set("site_login_v2", token, {
+      domain: "tradingpaints.com",
+    });
   };
 
   static clearSiteLogin = () => {
-    Cookies.remove(
-      "site_login_v2"
-      // {
-      //   domain: "tradingpaints.com",
-      // }
-    );
+    Cookies.remove("site_login_v2", {
+      domain: "tradingpaints.com",
+    });
   };
 }
