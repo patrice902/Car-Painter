@@ -106,4 +106,5 @@ export enum HistoryActions {
 export enum ConfigCatFlags {
   EMERGENCY_SHUT_DOWN = "emergencyShutDown",
   DISABLE_APP_LOGIN = "disableAppLogin",
+  Initializer = "initializer",
 }

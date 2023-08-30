@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { ScreenLoader } from "src/components/common";
 import config from "src/config";
 import { RootState } from "src/redux";
 import { signIn } from "src/redux/reducers/authReducer";
@@ -28,6 +29,11 @@ export const SignIn = React.memo(() => {
 
   const { value: disableAppLogin } = useFeatureFlag(
     ConfigCatFlags.DISABLE_APP_LOGIN,
+    false
+  );
+
+  const { value: intialized } = useFeatureFlag(
+    ConfigCatFlags.Initializer,
     false
   );
 
@@ -73,6 +79,10 @@ export const SignIn = React.memo(() => {
       window.location.href = config.parentAppURL + "/login";
     }
   }, [disableAppLogin]);
+
+  if (!intialized) {
+    return <ScreenLoader />;
+  }
 
   if (disableAppLogin) {
     return <></>;
