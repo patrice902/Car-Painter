@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import config from "src/config";
 
 const getQueryVariable = (variable: string) => {
   const query = decodeURIComponent(variable);
@@ -16,14 +17,25 @@ export default class CookieService {
     getQueryVariable(Cookies.get("site_login_v2") ?? "");
 
   static setSiteLogin = (token: string) => {
-    Cookies.set("site_login_v2", token, {
-      domain: "tradingpaints.com",
-    });
+    Cookies.set(
+      "site_login_v2",
+      token,
+      config.localEnv
+        ? {}
+        : {
+            domain: "tradingpaints.com",
+          }
+    );
   };
 
   static clearSiteLogin = () => {
-    Cookies.remove("site_login_v2", {
-      domain: "tradingpaints.com",
-    });
+    Cookies.remove(
+      "site_login_v2",
+      config.localEnv
+        ? {}
+        : {
+            domain: "tradingpaints.com",
+          }
+    );
   };
 }

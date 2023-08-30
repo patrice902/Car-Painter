@@ -4,6 +4,7 @@ const logger = require("../config/winston");
 const md5 = require("md5");
 const configCatClient = require("../utils/configcat");
 const { ConfigCatFlags } = require("../constants");
+const config = require("../config");
 
 class AuthController {
   static async login(req, res) {
@@ -26,7 +27,7 @@ class AuthController {
         if (usr.includes("@")) user = await UserService.getByEmail(usr);
         else user = await UserService.getById(parseInt(usr));
         user = user.toJSON();
-        if (user.password === md5(password)) {
+        if (user.password === md5(md5(password) + config.md5Salt)) {
           res.json({
             user: _.omit(user, ["password"]),
             token: encodeURIComponent(`usr=${user.id}&hash=${user.password}`),
