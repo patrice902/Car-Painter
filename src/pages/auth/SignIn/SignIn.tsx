@@ -80,12 +80,8 @@ export const SignIn = React.memo(() => {
     }
   }, [disableAppLogin]);
 
-  if (!intialized) {
+  if (!intialized || disableAppLogin) {
     return <ScreenLoader />;
-  }
-
-  if (disableAppLogin) {
-    return <></>;
   }
 
   return (
