@@ -14,7 +14,13 @@ const LayerTypes = {
   SHAPE: 7,
 };
 
+const ConfigCatFlags = {
+  EMERGENCY_SHUT_DOWN: "emergencyShutDown",
+  DISABLE_APP_LOGIN: "disableAppLogin",
+};
+
 module.exports = {
   StorageType,
   LayerTypes,
+  ConfigCatFlags,
 };

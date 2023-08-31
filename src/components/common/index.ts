@@ -1,5 +1,4 @@
 export { default as async } from "./Async";
-export { AuthGuard } from "./AuthGuard";
 export { ImageWithLoad } from "./ImageWithLoad";
 export { SVGImageWithLoad } from "./SVGImageWithLoad";
 export { ColorPickerInput } from "./ColorPickerInput";

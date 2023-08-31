@@ -6,6 +6,8 @@ dotenv.config();
 module.exports = {
   baseURL: process.env.BASE_URL,
   port: process.env.PORT || 3000,
+  configCatKey: process.env.REACT_APP_CONFIGCAT_KEY,
+  md5Salt: process.env.MD5_SALT,
   database: {
     client: process.env.DB_CLIENT === "mysql" ? process.env.DB_CLIENT : mdb,
     connection: {
