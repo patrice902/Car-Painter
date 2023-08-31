@@ -37,21 +37,5 @@ export default class CookieService {
             domain: "tradingpaints.com",
           }
     );
-    Cookies.remove(
-      "PHPSESSID",
-      config.localEnv
-        ? {}
-        : {
-            domain: "tradingpaints.com",
-          }
-    );
-    Cookies.remove(
-      "PHPSESSID",
-      config.localEnv
-        ? {}
-        : {
-            domain: config.parentAppURL?.replaceAll("https://", ""),
-          }
-    );
   };
 }
