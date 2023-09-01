@@ -4330,6 +4330,22 @@ configcat-common@^8.0.1:
   dependencies:
     tslib "^2.4.1"
 
+configcat-common@^8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/configcat-common/-/configcat-common-8.1.1.tgz#57ccd8783d358565665ee9b0de48d94512f148c2"
+  integrity sha512-2bHaW389wxO9A59GX7q0/bVZHVGabviSpT7zBMMrZqBA9bwMbRjmAyKYqM8Nk2V0E8vSliOxyZLrxNv5o6I6FA==
+  dependencies:
+    tslib "^2.4.1"
+
+configcat-node@^10.1.1:
+  version "10.1.1"
+  resolved "https://registry.yarnpkg.com/configcat-node/-/configcat-node-10.1.1.tgz#4e2ded683778c6b63e97914a1b0879fe37c34dd2"
+  integrity sha512-Fh0ghfl2M+zgi7NQO9tkNlIp50ba1lD4F3O6mzCmrUs8uffsYOL5WoXcdZIaCEEFOXGjX84Rj5aV1vzFVIxc7Q==
+  dependencies:
+    configcat-common "^8.1.1"
+    tslib "^2.4.1"
+    tunnel "0.0.6"
+
 configcat-react@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/configcat-react/-/configcat-react-3.0.1.tgz#66196cbaf43aa0e5d3b7387617ae7b52684d01df"
@@ -13464,6 +13480,11 @@ tty-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/tty-browserify/-/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"
   integrity sha1-oVe6QC2iTpv5V/mqadUk7tQpAaY=
+
+tunnel@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.6.tgz#72f1314b34a5b192db012324df2cc587ca47f92c"
+  integrity sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

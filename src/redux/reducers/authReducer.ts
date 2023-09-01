@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
+import config from "src/config";
 import AuthService from "src/services/authService";
 import BlockedUserService from "src/services/blockedUserService";
 import CookieService from "src/services/cookieService";
@@ -110,6 +111,7 @@ export const signOut = () => async (dispatch: AppDispatch) => {
   dispatch(clearFavoriteList());
   dispatch(setUser(undefined));
   dispatch(setIntialized(false));
+  window.location.href = config.parentAppURL + "/logout";
 };
 
 export const getBlockedUsers = (userID: number) => async (

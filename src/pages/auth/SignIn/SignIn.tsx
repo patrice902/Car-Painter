@@ -1,12 +1,15 @@
 import { Box, Link, Typography } from "@material-ui/core";
+import { useFeatureFlag } from "configcat-react";
 import { Formik, FormikHelpers } from "formik";
-import React from "react";
+import React, { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { ScreenLoader } from "src/components/common";
 import config from "src/config";
 import { RootState } from "src/redux";
 import { signIn } from "src/redux/reducers/authReducer";
+import { ConfigCatFlags } from "src/types/enum";
 import * as Yup from "yup";
 
 import { InnerForm } from "./InnerForm";
@@ -22,6 +25,16 @@ export const SignIn = React.memo(() => {
   const history = useHistory();
   const previousPath = useSelector(
     (state: RootState) => state.authReducer.previousPath
+  );
+
+  const { value: disableAppLogin } = useFeatureFlag(
+    ConfigCatFlags.DISABLE_APP_LOGIN,
+    false
+  );
+
+  const { value: intialized } = useFeatureFlag(
+    ConfigCatFlags.Initializer,
+    false
   );
 
   const initialValues: SignInFormValues = {
@@ -60,6 +73,16 @@ export const SignIn = React.memo(() => {
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (disableAppLogin) {
+      window.location.href = config.parentAppURL + "/login";
+    }
+  }, [disableAppLogin]);
+
+  if (!intialized || disableAppLogin) {
+    return <ScreenLoader />;
+  }
 
   return (
     <>

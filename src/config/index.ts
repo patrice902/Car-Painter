@@ -1,5 +1,6 @@
 const config = {
   env: process.env.NODE_ENV,
+  localEnv: Boolean(process.env.REACT_APP_LOCAL_ENV),
   configCatKey: process.env.REACT_APP_CONFIGCAT_KEY,
   assetsURL:
     process.env.REACT_APP_ASSET_URL ||
