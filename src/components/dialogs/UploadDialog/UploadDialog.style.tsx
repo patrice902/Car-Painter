@@ -4,6 +4,7 @@ import {
   faStar as faStarOn,
 } from "@fortawesome/free-solid-svg-icons";
 import {
+  DialogActions,
   DialogContent,
   IconButton,
   ImageList,
@@ -66,6 +67,13 @@ export const CopyIcon = styled(FileCopyIcon)`
 
 export const DeleteButton = styled(IconButton)`
   color: #ccc;
+`;
+
+export const CustomDialogActions = styled(DialogActions)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
 `;
 
 export { faStarOn, faStarOff, faQrcode };

@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Dialog,
-  DialogActions,
   DialogTitle,
   Theme,
   Typography,
@@ -14,9 +13,11 @@ import { SearchBox } from "src/components/common";
 import { BuilderLogo, BuilderUpload } from "src/types/model";
 import { UserWithoutPassword } from "src/types/query";
 
+import EnterCodeBtn from "../UploadDialog/EnterCodeBtn";
 import { FlagContent, LogoContent, UploadContent } from "./components";
 import {
   a11yProps,
+  CustomDialogActions,
   CustomDialogContent,
   StyledTab,
   StyledTabs,
@@ -74,6 +75,8 @@ export const LogoDialog = React.memo(
 
     const handleSearchChange = useCallback((value) => setSearch(value), []);
 
+    console.log("tabValue: ", tabValue);
+
     return (
       <Dialog aria-labelledby="logo-title" open={open} onClose={onCancel}>
         <DialogTitle id="logo-title" style={{ padding: "0px 24px" }}>
@@ -92,7 +95,7 @@ export const LogoDialog = React.memo(
             >
               <StyledTab label="Logos" {...a11yProps(0)} />
               <StyledTab label="Flags" {...a11yProps(1)} />
-              <StyledTab label="My Uploads" {...a11yProps(1)} />
+              <StyledTab label="My Uploads" {...a11yProps(2)} />
             </StyledTabs>
           </Box>
         </DialogTitle>
@@ -126,11 +129,14 @@ export const LogoDialog = React.memo(
             />
           </TabPanel>
         </CustomDialogContent>
-        <DialogActions>
+        <CustomDialogActions
+          justifyContent={tabValue === 2 ? "space-between" : "flex-end"}
+        >
+          {tabValue === 2 && <EnterCodeBtn />}
           <Button onClick={onCancel} color="secondary">
             Cancel
           </Button>
-        </DialogActions>
+        </CustomDialogActions>
       </Dialog>
     );
   }

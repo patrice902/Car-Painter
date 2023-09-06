@@ -3,7 +3,7 @@ import LeagueSeriesService from "src/services/leagueSeriesService";
 import { LeagueSeries } from "src/types/model";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage } from "./messageReducer";
 
 export type LeagueSeriesReducerState = {
   list: LeagueSeries[];
@@ -40,7 +40,7 @@ export const getLeagueSeriesListByUserID = (userID: number) => async (
     );
     dispatch(setList(leagueSeries));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };

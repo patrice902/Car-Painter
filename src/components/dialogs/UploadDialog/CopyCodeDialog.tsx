@@ -5,7 +5,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import copy from "copy-to-clipboard";
-import _ from "lodash";
 import React, { useState } from "react";
 
 import { CopiedText, CopyableText, CopyIcon } from "./UploadDialog.style";

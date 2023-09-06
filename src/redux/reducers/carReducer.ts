@@ -84,7 +84,7 @@ export const setCarRace = (
     }
   } catch (err) {
     console.log("Error: ", err);
-    // dispatch(setMessage({ message: (err as Error).message }));
+    // dispatch(catchErrorMessage(err));
     dispatch(setMessage({ message: "Racing Failed!" }));
     if (onError) {
       onError();

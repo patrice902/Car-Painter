@@ -1,5 +1,8 @@
-const SharedUploadService = require("../services/sharedUploadService");
 const logger = require("../config/winston");
+const CryptoJS = require("crypto-js");
+const config = require("../config");
+const UploadService = require("../services/uploadService");
+const SharedUploadService = require("../services/sharedUploadService");
 
 class SharedUploadController {
   static async getList(req, res) {
@@ -59,6 +62,64 @@ class SharedUploadController {
       res.status(500).json({
         message: err.message,
       });
+    }
+  }
+
+  static async createByCode(req, res) {
+    try {
+      const { code, userID } = req.body;
+      const uploadId = Number(
+        CryptoJS.Rabbit.decrypt(code, config.cryptoKey).toString(
+          CryptoJS.enc.Utf8
+        )
+      );
+      let upload = (await UploadService.getById(uploadId)).toJSON();
+
+      if (upload.user_id === userID) {
+        res.status(400).json({
+          message: "You already have that upload item",
+        });
+        return;
+      }
+
+      try {
+        let existingSharedUpload = await SharedUploadService.getByInfo({
+          upload_id: uploadId,
+          user_id: userID,
+        });
+
+        if (existingSharedUpload) {
+          res.status(400).json({
+            message: "You already have that upload item",
+          });
+          return;
+        }
+      } catch (err) {
+        if (err.message !== "EmptyResponse") {
+          logger.log("error", err.stack);
+          res.status(500).json({
+            message: err.message,
+          });
+          return;
+        }
+      }
+
+      let Shared = await SharedUploadService.create({
+        upload_id: uploadId,
+        user_id: userID,
+      });
+      res.json(Shared);
+    } catch (err) {
+      if (err.message === "EmptyResponse") {
+        res.status(400).json({
+          message: "Invalid Code!",
+        });
+      } else {
+        logger.log("error", err.stack);
+        res.status(500).json({
+          message: err.message,
+        });
+      }
     }
   }
 

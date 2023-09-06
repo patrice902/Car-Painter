@@ -3,14 +3,14 @@ const SharedUpload = require("../models/sharedUpload.model");
 class SharedUploadService {
   static async getList() {
     const list = await SharedUpload.forge().fetchAll({
-      withRelated: ["upload"],
+      withRelated: ["upload", "upload.user", "user"],
     });
     return list;
   }
 
   static async getListByUserId(user_id) {
     const list = await SharedUpload.where({ user_id }).fetchAll({
-      withRelated: ["upload"],
+      withRelated: ["upload", "upload.user", "user"],
     });
     return list;
   }
@@ -22,7 +22,14 @@ class SharedUploadService {
 
   static async getByID(id) {
     const favorite = await SharedUpload.where({ id }).fetch({
-      withRelated: ["upload"],
+      withRelated: ["upload", "upload.user", "user"],
+    });
+    return favorite;
+  }
+
+  static async getByInfo(payload) {
+    const favorite = await SharedUpload.where(payload).fetch({
+      withRelated: ["upload", "upload.user", "user"],
     });
     return favorite;
   }
@@ -45,6 +52,11 @@ class SharedUploadService {
     await SharedUpload.where({ id }).destroy({
       require: false,
     });
+    return true;
+  }
+
+  static async deleteByMultiId(ids) {
+    await SharedUpload.where("id", "IN", ids).destroy({ require: false });
     return true;
   }
 }

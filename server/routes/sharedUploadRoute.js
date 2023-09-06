@@ -23,4 +23,8 @@ router
   .route("/byUpload/:id")
   .get(isAuthenticated, SharedUploadController.getListByUploadID);
 
+router
+  .route("/byCode")
+  .post(isAuthenticated, SharedUploadController.createByCode);
+
 module.exports = router;

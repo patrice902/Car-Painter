@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { AppDispatch } from "..";
+
 type MessageType = "error" | "success" | "warning";
 
 export type MessageReducerState = {
@@ -34,5 +36,19 @@ export const slice = createSlice({
 });
 
 export const { setMessage } = slice.actions;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const catchErrorMessage = (error: any) => async (
+  dispatch: AppDispatch
+) => {
+  let message;
+  if (error.response?.data?.message) {
+    message = error.response.data.message;
+  } else {
+    message = (error as Error).message;
+  }
+
+  dispatch(setMessage({ message }));
+};
 
 export default slice.reducer;

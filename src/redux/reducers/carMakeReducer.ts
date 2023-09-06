@@ -4,7 +4,7 @@ import { CarMake } from "src/types/model";
 import { CarMakePayload } from "src/types/query";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage } from "./messageReducer";
 
 export type CarMakeReducerState = {
   list: CarMake[];
@@ -56,7 +56,7 @@ export const getCarMakeList = () => async (dispatch: AppDispatch) => {
     const carMakes = await CarMakeService.getCarMakeList();
     dispatch(setList(carMakes));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -70,7 +70,7 @@ export const createCarMake = (payload: CarMakePayload) => async (
     dispatch(insertToList(carMake));
     dispatch(setCurrent(carMake));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -83,7 +83,7 @@ export const updateCarMake = (id: number, payload: CarMakePayload) => async (
     const carMake = await CarMakeService.updateCarMake(id, payload);
     dispatch(updateListItem(carMake));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };

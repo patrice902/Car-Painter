@@ -30,7 +30,7 @@ router.use("/favorite-scheme", favoriteSchemeRoute);
 router.use("/favorite-logo", favoriteLogoRoute);
 router.use("/favorite-overlay", favoriteOverlayRoute);
 router.use("/favorite-upload", favoriteUploadRoute);
-router.use("/shared-upload", favoriteUploadRoute);
+router.use("/shared-upload", sharedUploadRoute);
 router.use("/team", teamRoute);
 router.use("/carPin", carPinRoute);
 router.use("/leagueSeries", leagueSeriesRoute);
