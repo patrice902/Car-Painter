@@ -7,7 +7,7 @@ import CookieService from "src/services/cookieService";
 import { AuthPayload, UserWithoutPassword } from "src/types/query";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage } from "./messageReducer";
 import {
   clearCurrent as clearCurrentScheme,
   clearFavoriteList,
@@ -98,7 +98,7 @@ export const signIn = (
     dispatch(setUser(response.user));
     callback?.(response.user);
   } catch (error) {
-    console.log("error: ", error);
+    dispatch(catchErrorMessage(error));
   }
   dispatch(setLoading(false));
 };
@@ -124,7 +124,7 @@ export const getBlockedUsers = (userID: number) => async (
     );
     dispatch(setBlockedUsers(blockedUserList.map((item) => item.userid)));
   } catch (err: unknown) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -139,7 +139,7 @@ export const getBlockedBy = (userID: number) => async (
     );
     dispatch(setBlockedBy(blockedUserList.map((item) => item.blocker_id)));
   } catch (err: unknown) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };

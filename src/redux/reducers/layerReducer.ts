@@ -43,7 +43,7 @@ import socketClient from "src/utils/socketClient";
 
 import { AppDispatch, GetState } from "..";
 import { pushToActionHistory } from "./boardReducer";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type LayerReducerState = {
   list: BuilderLayerJSON[];
@@ -499,7 +499,7 @@ export const createLayersFromBasePaint = (
     if (config.env === "development") {
       console.log("Error on [createLayersFromBasePaint]: ", err);
     }
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -545,7 +545,7 @@ export const createLayersFromLegacyBasePaint = (
     if (config.env === "development") {
       console.log("Error on [createLayersFromLegacyBasePaint]: ", err);
     }
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -595,7 +595,7 @@ export const createLayerFromOverlay = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -632,7 +632,7 @@ export const createLayerFromLogo = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -672,7 +672,7 @@ export const createLayerFromUpload = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -706,7 +706,7 @@ export const createTextLayer = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -746,7 +746,7 @@ export const cloneLayer = (
       };
       dispatch(createLayer(layer, pushingToHistory, callback));
     } catch (err) {
-      dispatch(setMessage({ message: (err as Error).message }));
+      dispatch(catchErrorMessage(err));
     }
     dispatch(setLoading(false));
   }
@@ -779,7 +779,7 @@ export const cloneCarPartsLayer = (
 
       dispatch(createLayerList(layers, true, callback));
     } catch (err) {
-      dispatch(setMessage({ message: (err as Error).message }));
+      dispatch(catchErrorMessage(err));
     }
     dispatch(setLoading(false));
   }
@@ -833,7 +833,7 @@ export const createShape = (
       )
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -902,7 +902,7 @@ export const updateLayer = (
     }
     clearScrollPosition();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };
@@ -948,7 +948,7 @@ export const bulkUpdateLayer = (
       );
     }
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -991,7 +991,7 @@ export const deleteLayer = (
       setMessage({ message: "Deleted Layer successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };
@@ -1023,7 +1023,7 @@ export const deleteLayerList = (
       setMessage({ message: "Deleted Layer successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };

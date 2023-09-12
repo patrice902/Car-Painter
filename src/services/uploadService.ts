@@ -1,28 +1,29 @@
-import { BuilderUpload } from "src/types/model";
+import { BuilderUploadWithUser } from "src/types/model";
 import { BuilderUploadPayload } from "src/types/query";
 
 import BaseAPIService from "./baseAPIService";
 
 export default class UploadService extends BaseAPIService {
-  static getUploadList = async (): Promise<BuilderUpload[]> =>
+  static getUploadList = async (): Promise<BuilderUploadWithUser[]> =>
     this.requestWithAuth(`/upload`, "GET");
 
   static getUploadListByUserID = async (
     userID: number
-  ): Promise<BuilderUpload[]> =>
+  ): Promise<BuilderUploadWithUser[]> =>
     this.requestWithAuth(`/upload/byUserID/${userID}`, "GET");
 
-  static getUploadByID = async (id: number): Promise<BuilderUpload> =>
+  static getUploadByID = async (id: number): Promise<BuilderUploadWithUser> =>
     this.requestWithAuth(`/upload/${id}`, "GET");
 
   static createUpload = async (
     payload: BuilderUploadPayload
-  ): Promise<BuilderUpload> => this.requestWithAuth(`/upload`, "POST", payload);
+  ): Promise<BuilderUploadWithUser> =>
+    this.requestWithAuth(`/upload`, "POST", payload);
 
   static updateUpload = async (
     id: number,
     payload: BuilderUploadPayload
-  ): Promise<BuilderUpload> =>
+  ): Promise<BuilderUploadWithUser> =>
     this.requestWithAuth(`/upload/${id}`, "PUT", payload);
 
   static deleteUpload = async (id: number, deleteFromAll: boolean) =>
@@ -38,7 +39,9 @@ export default class UploadService extends BaseAPIService {
       deleteFromAll,
     });
 
-  static uploadFiles = async (formData: FormData): Promise<BuilderUpload[]> =>
+  static uploadFiles = async (
+    formData: FormData
+  ): Promise<BuilderUploadWithUser[]> =>
     this.requestWithAuth(
       `/upload/uploadFiles`,
       "POST",

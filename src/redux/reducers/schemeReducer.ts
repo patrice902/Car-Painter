@@ -27,7 +27,7 @@ import { setList as setBasePaintList } from "./basePaintReducer";
 import { pushToActionHistory } from "./boardReducer";
 import { setCurrent as setCurrentCarMake } from "./carMakeReducer";
 import { setList as setLayerList, setLoadedStatusAll } from "./layerReducer";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type SchemeReducerState = {
   list: BuilderSchemeJSONForGetListByUserId[];
@@ -270,7 +270,7 @@ export const getSchemeList = (userID: number) => async (
     const schemes = await SchemeService.getSchemeListByUserID(userID);
     dispatch(setList(schemes.filter((scheme) => !scheme.carMake.deleted)));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -293,7 +293,7 @@ export const createScheme = (
     dispatch(insertToList(scheme));
     if (onOpen) onOpen(scheme.id);
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -306,7 +306,7 @@ export const deleteAndCreateNewCarMakeLayers = (schemeID: number) => async (
     const scheme = await SchemeService.renewCarMakeLayers(schemeID);
     dispatch(setLayerList(scheme.layers));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -411,7 +411,7 @@ export const updateScheme = (
       );
     clearScrollPosition();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -429,7 +429,7 @@ export const deleteScheme = (schemeID: number, callback?: () => void) => async (
       setMessage({ message: "Deleted Project successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -446,7 +446,7 @@ export const cloneScheme = (schemeID: number) => async (
       setMessage({ message: "Cloned Project successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -461,7 +461,7 @@ export const getSharedUsers = (schemeID: number) => async (
     );
     dispatch(setSharedUsers(sharedUsers));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -476,7 +476,7 @@ export const updateSharedUserItem = (
     dispatch(updateSharedUser(shared));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -489,7 +489,7 @@ export const deleteSharedUserItem = (
     dispatch(deleteSharedUser(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -500,7 +500,7 @@ export const getSharedList = (userID: number, callback?: () => void) => async (
     const list = await SharedSchemeService.getSharedSchemeListByUserID(userID);
     dispatch(setSharedList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -517,7 +517,7 @@ export const updateSharedItem = (
     dispatch(updateSharedListItem(shared));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
     fallback?.();
   }
   dispatch(setLoading(false));
@@ -531,7 +531,7 @@ export const deleteSharedItem = (id: number) => async (
     await SharedSchemeService.deleteSharedScheme(id);
     dispatch(deleteSharedListItem(id));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -546,7 +546,7 @@ export const getFavoriteList = (
     );
     dispatch(setFavoriteList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -562,7 +562,7 @@ export const createFavoriteScheme = (
     dispatch(insertToFavoriteList(favoriteScheme));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -574,7 +574,7 @@ export const deleteFavoriteItem = (id: number, callback?: () => void) => async (
     dispatch(deleteFavoriteListItem(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -587,7 +587,7 @@ export const createSharedUser = (
     dispatch(insertToSharedUsers(sharedUser));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 

@@ -3,6 +3,7 @@ const FileService = require("../services/fileService");
 const LayerService = require("../services/layerService");
 const logger = require("../config/winston");
 const config = require("../config");
+const SharedUploadService = require("../services/sharedUploadService");
 
 class UploadController {
   static async getList(req, res) {
@@ -44,6 +45,7 @@ class UploadController {
   static async create(req, res) {
     try {
       let upload = await UploadService.create(req.body);
+      upload = await UploadService.getById(upload.id);
       res.json(upload);
     } catch (err) {
       logger.log("error", err.stack);
@@ -95,6 +97,7 @@ class UploadController {
   static async update(req, res) {
     try {
       let upload = await UploadService.updateById(req.params.id, req.body);
+      upload = await UploadService.getById(upload.id);
       res.json(upload);
     } catch (err) {
       logger.log("error", err.stack);
@@ -135,6 +138,16 @@ class UploadController {
         await LayerService.deleteByMultiUploadIDs(upload_ids);
       }
       await UploadService.deleteByMultiId(upload_ids);
+
+      let sharedUploads = await SharedUploadService.getListByUserId(
+        req.params.id
+      );
+      sharedUploads = sharedUploads.toJSON();
+      const legacySharedsUploadIds = sharedUploads
+        .filter((item) => item.upload.legacy_mode)
+        .map((item) => item.id);
+      await SharedUploadService.deleteByMultiId(legacySharedsUploadIds);
+
       res.json({});
     } catch (err) {
       logger.log("error", err.stack);

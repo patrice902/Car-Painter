@@ -15,6 +15,7 @@ const config = {
     process.env.NODE_ENV !== "development"
       ? "/api"
       : "http://localhost:3000/api",
+  cryptoKey: process.env.REACT_APP_CRYPTO_HASHING_KEY || "SECRET_KEY",
 };
 
 export default config;

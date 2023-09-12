@@ -6,7 +6,7 @@ import { BuilderLogo, FavoriteLogo } from "src/types/model";
 import { FavoriteLogoPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type LogoReducerState = {
   list: BuilderLogo[];
@@ -104,7 +104,7 @@ export const getLogoList = () => async (dispatch: AppDispatch) => {
     const overlays = await LogoService.getLogoList();
     dispatch(setList(overlays));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -154,7 +154,7 @@ export const uploadAndCreateLogo = (
 
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -205,7 +205,7 @@ export const uploadAndUpdateLogo = (
 
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -226,7 +226,7 @@ export const deleteLogo = (id: number, callback?: () => void) => async (
 
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -239,7 +239,7 @@ export const getFavoriteLogoList = (
     const list = await FavoriteLogoService.getFavoriteLogoListByUserID(userID);
     dispatch(setFavoriteLogoList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -253,7 +253,7 @@ export const createFavoriteLogo = (
     dispatch(insertToFavoriteLogoList(favoriteLogo));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -266,6 +266,6 @@ export const deleteFavoriteLogoItem = (
     dispatch(deleteFavoriteLogoListItem(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };

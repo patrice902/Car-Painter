@@ -18,6 +18,7 @@ import {
   League,
   LeagueSeries,
   SharedScheme,
+  SharedUpload,
   Team,
   User,
 } from "./model";
@@ -146,6 +147,8 @@ export type FavoriteSchemeForGetListByUserId = FavoriteScheme & {
 
 export type FavoriteLogoPayload = Omit<FavoriteLogo, "id">;
 export type FavoriteUploadPayload = Omit<FavoriteUpload, "id">;
+export type SharedUploadPayload = Omit<SharedUpload, "id">;
+export type SharedUploadByCodePayload = { code: string; userID: number };
 
 export type FavoriteOverlayPayload = Omit<FavoriteOverlay, "id">;
 

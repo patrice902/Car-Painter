@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import DownloaderService from "src/services/downloaderService";
 
 import { AppDispatch, GetState } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type DownloaderReducerState = {
   iracing: boolean | null;
@@ -96,7 +96,7 @@ export const submitSimPreview = (
       dispatch(setMessage({ message: "Downloader is not running!" }));
     } else {
       console.log("Error: ", err);
-      dispatch(setMessage({ message: (err as Error).message }));
+      dispatch(catchErrorMessage(err));
     }
   }
   dispatch(setSimPreviewing(false));

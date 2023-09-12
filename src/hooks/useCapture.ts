@@ -23,7 +23,7 @@ import {
   setLoadedStatus,
   updateLayer,
 } from "src/redux/reducers/layerReducer";
-import { setMessage } from "src/redux/reducers/messageReducer";
+import { catchErrorMessage } from "src/redux/reducers/messageReducer";
 import {
   setCurrent as setCurrentScheme,
   setSaving,
@@ -275,7 +275,7 @@ export const useCapture = (
           await SchemeService.uploadThumbnail(formData);
         }
       } catch (err) {
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
       }
     },
     [dispatch, capturing, currentSchemeRef]
@@ -302,7 +302,7 @@ export const useCapture = (
           if (!uploadLater) dispatch(setSaving(false));
         } catch (err) {
           console.log(err);
-          dispatch(setMessage({ message: (err as Error).message }));
+          dispatch(catchErrorMessage(err));
         }
       }
     },
@@ -327,7 +327,7 @@ export const useCapture = (
         return dataURL;
       } catch (err) {
         console.log(err);
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
         return null;
       }
     }
@@ -344,7 +344,7 @@ export const useCapture = (
         return dataURL;
       } catch (err) {
         console.log(err);
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
         return null;
       }
     }
@@ -371,7 +371,7 @@ export const useCapture = (
           return fileOfBlob;
         } catch (err) {
           console.log(err);
-          dispatch(setMessage({ message: (err as Error).message }));
+          dispatch(catchErrorMessage(err));
         }
       }
     },
@@ -411,7 +411,7 @@ export const useCapture = (
             await uploadThumbnail(dataURL);
         } catch (err) {
           console.log(err);
-          dispatch(setMessage({ message: (err as Error).message }));
+          dispatch(catchErrorMessage(err));
         }
       }
     },
@@ -475,7 +475,7 @@ export const useCapture = (
         }
       } catch (err) {
         console.log(err);
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
       }
     }
   }, [

@@ -2,14 +2,18 @@ const Upload = require("../models/upload.model");
 
 class UploadService {
   static async getList() {
-    const uploads = await Upload.forge().fetchAll();
+    const uploads = await Upload.forge().fetchAll({
+      withRelated: ["user"],
+    });
     return uploads;
   }
 
   static async getListByUserID(user_id) {
     const uploads = await Upload.where({
       user_id,
-    }).fetchAll();
+    }).fetchAll({
+      withRelated: ["user"],
+    });
     return uploads;
   }
 
@@ -17,12 +21,16 @@ class UploadService {
     const uploads = await Upload.where({
       user_id,
       legacy_mode: 1,
-    }).fetchAll();
+    }).fetchAll({
+      withRelated: ["user"],
+    });
     return uploads;
   }
 
   static async getById(id) {
-    const upload = await Upload.where({ id }).fetch();
+    const upload = await Upload.where({ id }).fetch({
+      withRelated: ["user"],
+    });
     return upload;
   }
 
