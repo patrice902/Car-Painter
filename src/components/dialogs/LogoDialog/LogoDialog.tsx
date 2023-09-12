@@ -10,7 +10,7 @@ import {
 import _ from "lodash";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { SearchBox } from "src/components/common";
-import { BuilderLogo, BuilderUpload } from "src/types/model";
+import { BuilderLogo, BuilderUploadWithUser } from "src/types/model";
 import { UserWithoutPassword } from "src/types/query";
 
 import EnterCodeBtn from "../UploadDialog/EnterCodeBtn";
@@ -26,11 +26,11 @@ import {
 
 type LogoDialogProps = {
   logos: BuilderLogo[];
-  uploads: BuilderUpload[];
+  uploads: BuilderUploadWithUser[];
   user: UserWithoutPassword;
   open: boolean;
   onOpenLogo: (logo: BuilderLogo) => void;
-  onOpenUpload: (upload: BuilderUpload) => void;
+  onOpenUpload: (upload: BuilderUploadWithUser) => void;
   onCancel: () => void;
 };
 
@@ -74,8 +74,6 @@ export const LogoDialog = React.memo(
     );
 
     const handleSearchChange = useCallback((value) => setSearch(value), []);
-
-    console.log("tabValue: ", tabValue);
 
     return (
       <Dialog aria-labelledby="logo-title" open={open} onClose={onCancel}>
