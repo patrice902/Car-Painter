@@ -66,44 +66,64 @@ class SharedUploadController {
   }
 
   static async createByCode(req, res) {
+    const { code, userID } = req.body;
+    let uploadId;
+
     try {
-      const { code, userID } = req.body;
-      const uploadId = Number(
+      uploadId = Number(
         CryptoJS.Rabbit.decrypt(code, config.cryptoKey).toString(
           CryptoJS.enc.Utf8
         )
       );
-      let upload = (await UploadService.getById(uploadId)).toJSON();
+    } catch (err) {
+      return res.status(400).json({
+        message: "Invalid Code!",
+      });
+    }
 
-      if (upload.user_id === userID) {
-        res.status(400).json({
+    let upload;
+    try {
+      upload = (await UploadService.getById(uploadId)).toJSON();
+    } catch (err) {
+      if (err.message === "EmptyResponse") {
+        return res.status(400).json({
+          message: "Invalid Code!",
+        });
+      } else {
+        logger.log("error", err.stack);
+        return res.status(500).json({
+          message: err.message,
+        });
+      }
+    }
+
+    if (upload && upload.user_id === userID) {
+      return res.status(400).json({
+        message: "You already have that upload item",
+      });
+    }
+
+    try {
+      let existingSharedUpload = await SharedUploadService.getByInfo({
+        upload_id: uploadId,
+        user_id: userID,
+      });
+
+      if (existingSharedUpload) {
+        return res.status(400).json({
           message: "You already have that upload item",
         });
-        return;
       }
-
-      try {
-        let existingSharedUpload = await SharedUploadService.getByInfo({
-          upload_id: uploadId,
-          user_id: userID,
+    } catch (err) {
+      if (err.message !== "EmptyResponse") {
+        logger.log("error", err.stack);
+        return res.status(500).json({
+          message: "Something went wrong!",
         });
-
-        if (existingSharedUpload) {
-          res.status(400).json({
-            message: "You already have that upload item",
-          });
-          return;
-        }
-      } catch (err) {
-        if (err.message !== "EmptyResponse") {
-          logger.log("error", err.stack);
-          res.status(500).json({
-            message: err.message,
-          });
-          return;
-        }
       }
+    }
 
+    try {
       let Shared = await SharedUploadService.create({
         upload_id: uploadId,
         user_id: userID,
@@ -117,7 +137,7 @@ class SharedUploadController {
       } else {
         logger.log("error", err.stack);
         res.status(500).json({
-          message: err.message,
+          message: "Error creating shared upload!",
         });
       }
     }

@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -53,9 +54,23 @@ export const EnterCodeBtn = React.memo(() => {
           <Typography variant="h5">Enter Code</Typography>
         </DialogTitle>
         <DialogContent dividers style={{ width: "400px" }}>
+          <Box
+            bgcolor="#666"
+            p="10px 16px"
+            borderRadius={10}
+            border="2px solid navajowhite"
+            position="relative"
+            mb="10px"
+          >
+            <Typography>
+              If someone has shared a code for a logo or layer with you, enter
+              it below to gain access.
+            </Typography>
+          </Box>
           <TextField
             variant="outlined"
             fullWidth
+            autoFocus
             value={code}
             onChange={(e) => setCode(e.target.value)}
           />

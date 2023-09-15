@@ -1,4 +1,5 @@
 import {
+  Box,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -31,6 +32,21 @@ export const CopyCodeDialog = React.memo(
           <Typography variant="h5">Copy Sharing Code</Typography>
         </DialogTitle>
         <DialogContent dividers style={{ width: "500px" }}>
+          <Box
+            bgcolor="#666"
+            p="10px 16px"
+            borderRadius={10}
+            border="2px solid navajowhite"
+            position="relative"
+            mb="10px"
+          >
+            <Typography>
+              Copy the code below to share this item with another Paint Builder
+              user. When someone enters this code by choosing Enter Code on
+              their My Uploads screen, they&#39;ll be able to use this item in
+              their Paint Builder projects.
+            </Typography>
+          </Box>
           <CopyableText onClick={handleCopy}>
             {code}
             {copied ? <CopiedText>Copied!</CopiedText> : <CopyIcon />}
