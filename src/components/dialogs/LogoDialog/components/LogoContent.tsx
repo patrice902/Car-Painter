@@ -11,6 +11,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
 import { ImageWithLoad, Loader } from "src/components/common";
 import config from "src/config";
+import { stopPropagation } from "src/helper";
 import { RootState } from "src/redux";
 import {
   createFavoriteLogo,
@@ -72,8 +73,7 @@ export const LogoContent = React.memo(
 
     const handleClickAddFavorite = useCallback(
       (event, logo: BuilderLogo) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         if (!user) return;
 
@@ -84,8 +84,7 @@ export const LogoContent = React.memo(
 
     const handleClickRemoveFavorite = useCallback(
       (event, logo: BuilderLogo) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         const favoriteLogoItem = favoriteLogoList.find(
           (item) => item.logo_id === logo.id

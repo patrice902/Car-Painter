@@ -26,9 +26,14 @@ export default class UploadService extends BaseAPIService {
   ): Promise<BuilderUploadWithUser> =>
     this.requestWithAuth(`/upload/${id}`, "PUT", payload);
 
-  static deleteUpload = async (id: number, deleteFromAll: boolean) =>
+  static deleteUpload = async (
+    id: number,
+    deleteFromAll: boolean,
+    userID?: number
+  ) =>
     this.requestWithAuth(`/upload/${id}`, "DELETE", {
       deleteFromAll,
+      userID,
     });
 
   static deleteLegacyByUserID = async (

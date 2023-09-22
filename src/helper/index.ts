@@ -796,3 +796,9 @@ export const decodeHtml = (str?: string) => {
 
   return txt.documentElement.textContent ?? "";
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const stopPropagation = (event: any) => {
+  event?.stopPropagation();
+  event?.nativeEvent?.stopImmediatePropagation();
+};

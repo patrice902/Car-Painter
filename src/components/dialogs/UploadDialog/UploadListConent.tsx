@@ -6,11 +6,11 @@ import {
   FormControlLabel,
   IconButton,
   ImageListItemBar,
-  Theme,
+  Menu,
+  MenuItem,
   Typography,
-  useMediaQuery,
 } from "@material-ui/core";
-import { Delete as DeleteIcon } from "@material-ui/icons";
+import { MoreVert } from "@material-ui/icons";
 import CryptoJS from "crypto-js";
 import _ from "lodash";
 import { DropzoneArea } from "material-ui-dropzone";
@@ -28,6 +28,7 @@ import config from "src/config";
 import {
   decodeHtml,
   getNameFromUploadFileName,
+  stopPropagation,
   uploadAssetURL,
 } from "src/helper";
 import { RootState } from "src/redux";
@@ -56,8 +57,6 @@ import {
   CategoryText,
   CustomImageList,
   CustomImageListItem,
-  DeleteButton,
-  faQrcode,
   faStarOff,
   faStarOn,
 } from "./UploadDialog.style";
@@ -79,9 +78,6 @@ export const UploadListContent = React.memo(
     onOpenUpload,
   }: UploadListContentProps) => {
     const dispatch = useDispatch();
-    const isAboveMobile = useMediaQuery((theme: Theme) =>
-      theme.breakpoints.up("sm")
-    );
 
     const user = useSelector((state: RootState) => state.authReducer.user);
     const currentScheme = useSelector(
@@ -107,6 +103,9 @@ export const UploadListContent = React.memo(
     const [fetchingDeleteList, setFetchingDeleteList] = useState(false);
     const [dropZoneKey, setDropZoneKey] = useState(1);
     const [sharingCode, setSharingCode] = useState<string>();
+    const [actionMenuEl, setActionMenuEl] = useState<HTMLButtonElement | null>(
+      null
+    );
 
     const scrollToRef = useRef(null);
 
@@ -120,16 +119,43 @@ export const UploadListContent = React.memo(
       [sharedUploadList, uploads]
     );
 
+    const ownAssociatedSchemes = useMemo(
+      () => associatedSchemes.filter((item) => item.user_id === user?.id),
+      [associatedSchemes, user]
+    );
+
+    const checkFileNameIncludesSearch = useCallback(
+      (item: BuilderUploadWithUser, search: string) =>
+        !search?.length ||
+        getNameFromUploadFileName(item.file_name, item.user)
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      []
+    );
+
+    const checkRelatedUserNameIncludesSearch = useCallback(
+      (item: BuilderUploadWithUser, search: string) =>
+        !search?.length ||
+        (item.user_id !== user?.id &&
+          item.user.drivername.toLowerCase().includes(search.toLowerCase())),
+      [user]
+    );
+
     const filteredUploads = useMemo(
       () =>
         _.orderBy(combinedUploads, ["id"], "desc").filter(
           (item) =>
-            getNameFromUploadFileName(item.file_name, user)
-              .toLowerCase()
-              .includes(search.toLowerCase()) &&
+            (checkFileNameIncludesSearch(item, search) ||
+              checkRelatedUserNameIncludesSearch(item, search)) &&
             (showLegacy || !item.legacy_mode)
         ),
-      [combinedUploads, user, search, showLegacy]
+      [
+        combinedUploads,
+        checkFileNameIncludesSearch,
+        search,
+        checkRelatedUserNameIncludesSearch,
+        showLegacy,
+      ]
     );
 
     const favoriteFilteredUploads = useMemo(
@@ -149,8 +175,7 @@ export const UploadListContent = React.memo(
 
     const handleClickAddFavorite = useCallback(
       (event, upload: BuilderUpload) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         if (!user) return;
 
@@ -163,8 +188,7 @@ export const UploadListContent = React.memo(
 
     const handleClickRemoveFavorite = useCallback(
       (event, upload: BuilderUpload) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         const favoriteUploadItem = favoriteUploadList.find(
           (item) => item.upload_id === upload.id
@@ -194,12 +218,20 @@ export const UploadListContent = React.memo(
       },
       [dispatch, user, currentScheme, setSearch, dropZoneKey]
     );
+
+    const handleOpenActionMenu = useCallback((event) => {
+      stopPropagation(event);
+
+      setActionMenuEl(event.currentTarget);
+    }, []);
+
     const handleClickDeleteUpload = useCallback(
       (event, uploadItem: BuilderUploadWithUser) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         setUploadToDelete(uploadItem);
+
+        setActionMenuEl(null);
       },
       []
     );
@@ -227,11 +259,14 @@ export const UploadListContent = React.memo(
         const schemes = await SchemeService.getSchemeListByUploadID(
           uploadToDelete.id
         );
+        const validSchemes = schemes.filter(
+          (item) => item.user_id === user?.id
+        );
         setFetchingDeleteList(false);
-        if (schemes.length) {
+        if (validSchemes.length) {
           setAssociatedSchemes(schemes);
         } else {
-          dispatch(deleteUpload(uploadToDelete, true));
+          dispatch(deleteUpload(uploadToDelete, false));
           setUploadToDelete(null);
         }
       } catch (err) {
@@ -257,11 +292,25 @@ export const UploadListContent = React.memo(
           dispatch(setCurrentLayer(null));
         }
 
-        dispatch(deleteUpload(uploadToDelete, deleteFromAll));
+        dispatch(
+          deleteUpload(
+            uploadToDelete,
+            deleteFromAll,
+            associatedSchemes.length !== ownAssociatedSchemes.length
+              ? user?.id
+              : undefined
+          )
+        );
         setUploadToDelete(null);
         setAssociatedSchemes([]);
       },
-      [dispatch, uploadToDelete, setUploadToDelete, setAssociatedSchemes]
+      [
+        uploadToDelete,
+        dispatch,
+        associatedSchemes.length,
+        ownAssociatedSchemes.length,
+        user,
+      ]
     );
 
     const handleCancelForDeleteUploadFinally = useCallback(
@@ -277,16 +326,25 @@ export const UploadListContent = React.memo(
     );
 
     const handleOpenShareCode = useCallback((event, id: number) => {
-      event.stopPropagation();
+      stopPropagation(event);
+
       const hash = CryptoJS.Rabbit.encrypt(
         id.toString(),
         config.cryptoKey
       ).toString();
       setSharingCode(hash);
+
+      setActionMenuEl(null);
+    }, []);
+
+    const handleCloseMenu = useCallback((event) => {
+      stopPropagation(event);
+
+      setActionMenuEl(null);
     }, []);
 
     const renderUploadList = (uploadList: BuilderUploadWithUser[]) => (
-      <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 2}>
+      <CustomImageList rowHeight={178} cols={2}>
         {uploadList.map((uploadItem) => {
           const isFavorite = favoriteUploadIDs.includes(uploadItem.id);
 
@@ -314,7 +372,10 @@ export const UploadListContent = React.memo(
                       arrow
                     >
                       <Typography>
-                        {getNameFromUploadFileName(uploadItem.file_name, user)}
+                        {getNameFromUploadFileName(
+                          uploadItem.file_name,
+                          uploadItem.user
+                        )}
                       </Typography>
                     </LightTooltip>
                     {uploadItem.user_id !== user?.id && (
@@ -339,24 +400,43 @@ export const UploadListContent = React.memo(
                         size="sm"
                       />
                     </IconButton>
-                    <DeleteButton
-                      onClick={(event) =>
-                        handleClickDeleteUpload(event, uploadItem)
-                      }
+                    <IconButton
+                      aria-haspopup="true"
+                      onClick={handleOpenActionMenu}
                     >
-                      <DeleteIcon />
-                    </DeleteButton>
+                      <MoreVert />
+                    </IconButton>
+                    <Menu
+                      anchorEl={actionMenuEl}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      transformOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                      }}
+                      open={Boolean(actionMenuEl)}
+                      onClose={handleCloseMenu}
+                    >
+                      <MenuItem
+                        onClick={(event) =>
+                          handleOpenShareCode(event, uploadItem.id)
+                        }
+                      >
+                        Share Code
+                      </MenuItem>
+                      <MenuItem
+                        onClick={(event) =>
+                          handleClickDeleteUpload(event, uploadItem)
+                        }
+                      >
+                        Delete
+                      </MenuItem>
+                    </Menu>
                   </Box>
                 }
               />
-              <Box position="absolute" right={0} top={0}>
-                <IconButton
-                  color="secondary"
-                  onClick={(event) => handleOpenShareCode(event, uploadItem.id)}
-                >
-                  <FontAwesomeIcon icon={faQrcode} size="sm" />
-                </IconButton>
-              </Box>
             </CustomImageListItem>
           );
         })}
@@ -473,11 +553,11 @@ export const UploadListContent = React.memo(
         />
         <YesNoDialog
           text={
-            associatedSchemes.length ? (
+            ownAssociatedSchemes.length ? (
               <>
                 This logo is being used on the following projects:
                 <ul>
-                  {associatedSchemes.map((item, index) => (
+                  {ownAssociatedSchemes.map((item, index) => (
                     <li key={index}>{decodeHtml(item.name)}</li>
                   ))}
                 </ul>
@@ -489,7 +569,7 @@ export const UploadListContent = React.memo(
           }
           yesText="Delete"
           noText="Keep"
-          open={!!associatedSchemes.length}
+          open={!!ownAssociatedSchemes.length}
           onYes={() => handleDeleteUploadFinally(true)}
           onNo={handleCancelForDeleteUploadFinally}
         />

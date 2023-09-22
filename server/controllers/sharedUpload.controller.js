@@ -81,6 +81,12 @@ class SharedUploadController {
       });
     }
 
+    if (!uploadId) {
+      return res.status(400).json({
+        message: "Invalid Code!",
+      });
+    }
+
     let upload;
     try {
       upload = (await UploadService.getById(uploadId)).toJSON();

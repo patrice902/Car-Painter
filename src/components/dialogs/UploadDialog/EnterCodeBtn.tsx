@@ -72,6 +72,12 @@ export const EnterCodeBtn = React.memo(() => {
             fullWidth
             autoFocus
             value={code}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleApply();
+              }
+            }}
             onChange={(e) => setCode(e.target.value)}
           />
         </DialogContent>
