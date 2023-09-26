@@ -1,36 +1,14 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  ImageListItemBar,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
-import { MoreVert } from "@material-ui/icons";
+import { Box, Button, Checkbox, FormControlLabel } from "@material-ui/core";
 import CryptoJS from "crypto-js";
 import _ from "lodash";
 import { DropzoneArea } from "material-ui-dropzone";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  ImageWithLoad,
-  LightTooltip,
-  Loader,
-  ScreenLoader,
-} from "src/components/common";
+import { Loader, ScreenLoader } from "src/components/common";
 import { ConfirmDialog, YesNoDialog } from "src/components/dialogs";
 import config from "src/config";
-import {
-  decodeHtml,
-  getNameFromUploadFileName,
-  stopPropagation,
-  uploadAssetURL,
-} from "src/helper";
+import { decodeHtml, getNameFromUploadFileName } from "src/helper";
 import { RootState } from "src/redux";
 import {
   deleteItemsByUploadID as deleteLayerItemsByUploadID,
@@ -38,8 +16,6 @@ import {
 } from "src/redux/reducers/layerReducer";
 import { catchErrorMessage } from "src/redux/reducers/messageReducer";
 import {
-  createFavoriteUpload,
-  deleteFavoriteUploadItem,
   deleteLegacyUploadsByUserID,
   deleteSharedUploadItem,
   deleteUpload,
@@ -57,9 +33,8 @@ import {
   CategoryText,
   CustomImageList,
   CustomImageListItem,
-  faStarOff,
-  faStarOn,
 } from "./UploadDialog.style";
+import { UploadItemContent } from "./UploadItemContent";
 
 type UploadListContentProps = {
   step?: number;
@@ -103,9 +78,6 @@ export const UploadListContent = React.memo(
     const [fetchingDeleteList, setFetchingDeleteList] = useState(false);
     const [dropZoneKey, setDropZoneKey] = useState(1);
     const [sharingCode, setSharingCode] = useState<string>();
-    const [actionMenuEl, setActionMenuEl] = useState<HTMLButtonElement | null>(
-      null
-    );
 
     const scrollToRef = useRef(null);
 
@@ -173,34 +145,6 @@ export const UploadListContent = React.memo(
       setLimit(limit + step);
     }, [limit, step]);
 
-    const handleClickAddFavorite = useCallback(
-      (event, upload: BuilderUpload) => {
-        stopPropagation(event);
-
-        if (!user) return;
-
-        dispatch(
-          createFavoriteUpload({ upload_id: upload.id, user_id: user.id })
-        );
-      },
-      [dispatch, user]
-    );
-
-    const handleClickRemoveFavorite = useCallback(
-      (event, upload: BuilderUpload) => {
-        stopPropagation(event);
-
-        const favoriteUploadItem = favoriteUploadList.find(
-          (item) => item.upload_id === upload.id
-        );
-
-        if (!favoriteUploadItem) return;
-
-        dispatch(deleteFavoriteUploadItem(favoriteUploadItem.id));
-      },
-      [dispatch, favoriteUploadList]
-    );
-
     const handleDropZoneChange = useCallback(
       (files_up: File[]) => {
         if (!user || !currentScheme) return;
@@ -219,22 +163,6 @@ export const UploadListContent = React.memo(
       [dispatch, user, currentScheme, setSearch, dropZoneKey]
     );
 
-    const handleOpenActionMenu = useCallback((event) => {
-      stopPropagation(event);
-
-      setActionMenuEl(event.currentTarget);
-    }, []);
-
-    const handleClickDeleteUpload = useCallback(
-      (event, uploadItem: BuilderUploadWithUser) => {
-        stopPropagation(event);
-
-        setUploadToDelete(uploadItem);
-
-        setActionMenuEl(null);
-      },
-      []
-    );
     const handleDeleteUploadConfirm = useCallback(async () => {
       try {
         if (!uploadToDelete) return;
@@ -325,121 +253,28 @@ export const UploadListContent = React.memo(
       []
     );
 
-    const handleOpenShareCode = useCallback((event, id: number) => {
-      stopPropagation(event);
-
+    const handleOpenShareCode = useCallback((id: number) => {
       const hash = CryptoJS.Rabbit.encrypt(
         id.toString(),
         config.cryptoKey
       ).toString();
       setSharingCode(hash);
-
-      setActionMenuEl(null);
-    }, []);
-
-    const handleCloseMenu = useCallback((event) => {
-      stopPropagation(event);
-
-      setActionMenuEl(null);
     }, []);
 
     const renderUploadList = (uploadList: BuilderUploadWithUser[]) => (
       <CustomImageList rowHeight={178} cols={2}>
-        {uploadList.map((uploadItem) => {
-          const isFavorite = favoriteUploadIDs.includes(uploadItem.id);
-
-          return (
-            <CustomImageListItem
-              key={uploadItem.id}
-              cols={1}
-              onClick={() => onOpenUpload(uploadItem)}
-            >
-              <ImageWithLoad
-                src={uploadAssetURL(uploadItem)}
-                alt={getNameFromUploadFileName(uploadItem.file_name, user)}
-                alignItems="center"
-                height="100%"
-                maxHeight="250px"
-              />
-              <ImageListItemBar
-                title={
-                  <>
-                    <LightTooltip
-                      title={getNameFromUploadFileName(
-                        uploadItem.file_name,
-                        user
-                      )}
-                      arrow
-                    >
-                      <Typography>
-                        {getNameFromUploadFileName(
-                          uploadItem.file_name,
-                          uploadItem.user
-                        )}
-                      </Typography>
-                    </LightTooltip>
-                    {uploadItem.user_id !== user?.id && (
-                      <Typography variant="body2">
-                        From {uploadItem.user?.drivername ?? ""}
-                      </Typography>
-                    )}
-                  </>
-                }
-                actionIcon={
-                  <Box display="flex" alignItems="center">
-                    <IconButton
-                      color="secondary"
-                      onClick={(event) =>
-                        isFavorite
-                          ? handleClickRemoveFavorite(event, uploadItem)
-                          : handleClickAddFavorite(event, uploadItem)
-                      }
-                    >
-                      <FontAwesomeIcon
-                        icon={isFavorite ? faStarOn : faStarOff}
-                        size="sm"
-                      />
-                    </IconButton>
-                    <IconButton
-                      aria-haspopup="true"
-                      onClick={handleOpenActionMenu}
-                    >
-                      <MoreVert />
-                    </IconButton>
-                    <Menu
-                      anchorEl={actionMenuEl}
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      transformOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right",
-                      }}
-                      open={Boolean(actionMenuEl)}
-                      onClose={handleCloseMenu}
-                    >
-                      <MenuItem
-                        onClick={(event) =>
-                          handleOpenShareCode(event, uploadItem.id)
-                        }
-                      >
-                        Share Code
-                      </MenuItem>
-                      <MenuItem
-                        onClick={(event) =>
-                          handleClickDeleteUpload(event, uploadItem)
-                        }
-                      >
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </Box>
-                }
-              />
-            </CustomImageListItem>
-          );
-        })}
+        {uploadList.map((uploadItem) => (
+          <CustomImageListItem
+            key={uploadItem.id}
+            onClick={() => onOpenUpload(uploadItem)}
+          >
+            <UploadItemContent
+              uploadItem={uploadItem}
+              onShareCode={handleOpenShareCode}
+              onDelete={setUploadToDelete}
+            />
+          </CustomImageListItem>
+        ))}
       </CustomImageList>
     );
 
