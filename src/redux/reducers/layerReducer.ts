@@ -646,7 +646,6 @@ export const createLayerFromUpload = (
 
   try {
     const boardRotate = getState().boardReducer.boardRotate;
-    const currentUser = getState().authReducer.user;
     const AllowedLayerTypes = AllowedLayerProps[LayerTypes.UPLOAD];
     const layer = {
       ...DefaultLayer,
@@ -661,7 +660,7 @@ export const createLayerFromUpload = (
           ).map((item) => item.replaceAll("layer_data.", ""))
         ),
         id: upload.id,
-        name: getNameFromUploadFileName(upload.file_name, currentUser),
+        name: getNameFromUploadFileName(upload.file_name, upload.user_id),
         rotation: -boardRotate,
         left: position.x,
         top: position.y,

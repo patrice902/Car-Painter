@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Loader, ScreenLoader } from "src/components/common";
 import { ConfirmDialog, YesNoDialog } from "src/components/dialogs";
 import config from "src/config";
-import { decodeHtml, getNameFromUploadFileName } from "src/helper";
+import { decodeHtml, getNameFromUploadFileName, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import {
   deleteItemsByUploadID as deleteLayerItemsByUploadID,
@@ -22,11 +22,7 @@ import {
   uploadFiles,
 } from "src/redux/reducers/uploadReducer";
 import SchemeService from "src/services/schemeService";
-import {
-  BuilderScheme,
-  BuilderUpload,
-  BuilderUploadWithUser,
-} from "src/types/model";
+import { BuilderScheme, BuilderUploadWithUser } from "src/types/model";
 
 import CopyCodeDialog from "./CopyCodeDialog";
 import {
@@ -65,9 +61,10 @@ export const UploadListContent = React.memo(
       (state: RootState) => state.uploadReducer.sharedUploadList
     );
 
-    const [uploadToDelete, setUploadToDelete] = useState<BuilderUpload | null>(
-      null
-    );
+    const [
+      uploadToDelete,
+      setUploadToDelete,
+    ] = useState<BuilderUploadWithUser | null>(null);
     const [showLegacyDelete, setShowLegacyDelete] = useState(false);
     const [associatedSchemes, setAssociatedSchemes] = useState<BuilderScheme[]>(
       []
@@ -99,7 +96,7 @@ export const UploadListContent = React.memo(
     const checkFileNameIncludesSearch = useCallback(
       (item: BuilderUploadWithUser, search: string) =>
         !search?.length ||
-        getNameFromUploadFileName(item.file_name, item.user)
+        getNameFromUploadFileName(item.file_name, item.user_id)
           .toLowerCase()
           .includes(search.toLowerCase()),
       []
@@ -109,7 +106,7 @@ export const UploadListContent = React.memo(
       (item: BuilderUploadWithUser, search: string) =>
         !search?.length ||
         (item.user_id !== user?.id &&
-          item.user.drivername.toLowerCase().includes(search.toLowerCase())),
+          getUserName(item.user).toLowerCase().includes(search.toLowerCase())),
       [user]
     );
 
@@ -371,7 +368,7 @@ export const UploadListContent = React.memo(
             uploadToDelete
               ? `Are you sure you want to delete "${getNameFromUploadFileName(
                   uploadToDelete.file_name,
-                  user
+                  uploadToDelete.user_id
                 )}"?`
               : ""
           }

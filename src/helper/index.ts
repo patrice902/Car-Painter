@@ -460,14 +460,15 @@ export const reduceString = (text: string, limit: number) => {
 
 export const getNameFromUploadFileName = (
   file_name: string,
-  user?: UserWithoutPassword
+  userID?: number
 ) => {
   const temp = file_name.substring(
     file_name.lastIndexOf("uploads/") + "uploads/".length,
     file_name.indexOf(".")
   );
-  if (user && temp.indexOf(user.id.toString()) === 0)
-    return temp.slice(user.id.toString().length + 1);
+
+  if (userID && temp.indexOf(userID.toString()) === 0)
+    return temp.slice(userID.toString().length + 1);
   return temp;
 };
 
@@ -767,14 +768,14 @@ export const enhanceFontFamily = (fontName?: string) =>
 
 export const modifyFileName = (file: File, userID?: number) => {
   let newName = file.name;
-  const firstDotPosition = file.name.indexOf(".");
+  const lastDotPosition = file.name.lastIndexOf(".");
   const prefix = userID ? userID + "_" : "";
   newName =
     prefix +
-    file.name.slice(0, firstDotPosition) +
+    file.name.slice(0, lastDotPosition) +
     "." +
     uuidv4() +
-    file.name.slice(firstDotPosition);
+    file.name.slice(lastDotPosition);
 
   return newName;
 };

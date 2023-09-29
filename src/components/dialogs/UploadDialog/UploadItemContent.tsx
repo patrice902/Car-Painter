@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ImageWithLoad, LightTooltip } from "src/components/common";
 import {
   getNameFromUploadFileName,
+  getUserName,
   stopPropagation,
   uploadAssetURL,
 } from "src/helper";
@@ -112,7 +113,10 @@ export const UploadItemContent = React.memo(
       <>
         <ImageWithLoad
           src={uploadAssetURL(uploadItem)}
-          alt={getNameFromUploadFileName(uploadItem.file_name, user)}
+          alt={getNameFromUploadFileName(
+            uploadItem.file_name,
+            uploadItem.user_id
+          )}
           alignItems="center"
           height="100%"
           maxHeight="250px"
@@ -121,19 +125,22 @@ export const UploadItemContent = React.memo(
           title={
             <>
               <LightTooltip
-                title={getNameFromUploadFileName(uploadItem.file_name, user)}
+                title={getNameFromUploadFileName(
+                  uploadItem.file_name,
+                  uploadItem.user_id
+                )}
                 arrow
               >
                 <Typography>
                   {getNameFromUploadFileName(
                     uploadItem.file_name,
-                    uploadItem.user
+                    uploadItem.user_id
                   )}
                 </Typography>
               </LightTooltip>
               {uploadItem.user_id !== user?.id && (
                 <Typography variant="body2">
-                  From {uploadItem.user?.drivername ?? ""}
+                  From {getUserName(uploadItem.user) ?? ""}
                 </Typography>
               )}
             </>
