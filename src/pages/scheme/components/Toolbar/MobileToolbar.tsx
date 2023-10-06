@@ -33,9 +33,10 @@ import {
   setAskingSimPreviewByLatest,
   submitSimPreview,
 } from "src/redux/reducers/downloaderReducer";
-import { updateLayer } from "src/redux/reducers/layerReducer";
-import { updateScheme } from "src/redux/reducers/schemeReducer";
-import { DefaultLayerData } from "src/types/common";
+import {
+  submitDefaultSetting,
+  updateScheme,
+} from "src/redux/reducers/schemeReducer";
 import { DialogTypes } from "src/types/enum";
 
 import { Wrapper } from "./Toolbar.style";
@@ -226,36 +227,14 @@ export const MobileToolbar = React.memo(
 
     const handleApplySettings = useCallback(
       (guide_data) => {
-        if (!currentScheme) return;
-
-        if (currentLayer) {
-          dispatch(
-            updateLayer({
-              id: currentLayer.id,
-              layer_data: {
-                ...currentLayer.layer_data,
-                color: guide_data.default_shape_color,
-                opacity: guide_data.default_shape_opacity,
-                scolor: guide_data.default_shape_scolor,
-                stroke: guide_data.default_shape_stroke,
-              } as DefaultLayerData,
-            })
-          );
-        } else {
-          dispatch(
-            updateScheme({
-              ...currentScheme,
-              guide_data: {
-                ...currentScheme.guide_data,
-                ...guide_data,
-              },
-            })
-          );
-        }
-        setDialog(null);
-        focusBoardQuickly();
+        dispatch(
+          submitDefaultSetting(guide_data, () => {
+            setDialog(null);
+            focusBoardQuickly();
+          })
+        );
       },
-      [dispatch, currentScheme, currentLayer, setDialog]
+      [dispatch, setDialog]
     );
 
     useEffect(() => {

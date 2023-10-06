@@ -200,3 +200,5 @@ export type DownloaderStatusResponse = {
   cmd: string;
   iracing: string;
 };
+
+export type UserPayload = Omit<UserWithoutPassword, "id">;

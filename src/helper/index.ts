@@ -803,3 +803,13 @@ export const stopPropagation = (event: any) => {
   event?.stopPropagation();
   event?.nativeEvent?.stopImmediatePropagation();
 };
+
+export const positiveNumGuard = (num?: string | number | typeof NaN) =>
+  Number.isNaN(Number(num)) || num === undefined || num === null
+    ? 0
+    : Math.abs(Number(num));
+
+export const numberGuard = (num?: string | number | typeof NaN) =>
+  Number.isNaN(Number(num)) || num === undefined || num === null
+    ? 0
+    : Number(num);

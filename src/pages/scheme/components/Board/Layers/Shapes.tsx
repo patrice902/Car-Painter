@@ -6,6 +6,8 @@ import { Shape } from "src/components/konva";
 import { FinishOptions } from "src/constant";
 import {
   getRelativeShadowOffset,
+  numberGuard,
+  positiveNumGuard,
   removeDuplicatedPointFromEnd,
 } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
@@ -179,11 +181,11 @@ export const Shapes = React.memo(
               editable={editable}
               frameSize={frameSize}
               type={layer.layer_data.type}
-              x={layer.layer_data.left + offsetsFromStroke.x || 0}
-              y={layer.layer_data.top + offsetsFromStroke.y || 0}
-              width={Math.abs(newWidth)}
-              height={Math.abs(newHeight)}
-              radius={Math.abs(
+              x={numberGuard(layer.layer_data.left + offsetsFromStroke.x || 0)}
+              y={numberGuard(layer.layer_data.top + offsetsFromStroke.y || 0)}
+              width={positiveNumGuard(newWidth)}
+              height={positiveNumGuard(newHeight)}
+              radius={positiveNumGuard(
                 (layer.layer_data as CircleObjLayerData).radius +
                   offsetsFromStroke.radius
               )}
@@ -196,33 +198,43 @@ export const Shapes = React.memo(
                   : []
               }
               loadedStatus={loadedStatuses[layer.id]}
-              pointerLength={Math.abs(
+              pointerLength={positiveNumGuard(
                 (layer.layer_data as ArrowObjLayerData).pointerLength +
                   offsetsFromStroke.pointerLength
               )}
-              pointerWidth={Math.abs(
+              pointerWidth={positiveNumGuard(
                 (layer.layer_data as ArrowObjLayerData).pointerWidth +
                   offsetsFromStroke.pointerWidth
               )}
               lineCap={(layer.layer_data as LineObjLayerData).lineCap}
               lineJoin={(layer.layer_data as LineObjLayerData).lineJoin}
-              innerRadius={Math.abs(
+              innerRadius={positiveNumGuard(
                 (layer.layer_data as StarObjLayerData).innerRadius +
                   offsetsFromStroke.innerRadius
               )}
-              outerRadius={Math.abs(
+              outerRadius={positiveNumGuard(
                 (layer.layer_data as StarObjLayerData).outerRadius +
                   offsetsFromStroke.outerRadius
               )}
-              numPoints={(layer.layer_data as StarObjLayerData).numPoints}
+              numPoints={positiveNumGuard(
+                (layer.layer_data as StarObjLayerData).numPoints
+              )}
               cornerRadius={[
-                (layer.layer_data as RectObjLayerData).cornerTopLeft,
-                (layer.layer_data as RectObjLayerData).cornerTopRight,
-                (layer.layer_data as RectObjLayerData).cornerBottomLeft,
-                (layer.layer_data as RectObjLayerData).cornerBottomRight,
+                positiveNumGuard(
+                  (layer.layer_data as RectObjLayerData).cornerTopLeft
+                ),
+                positiveNumGuard(
+                  (layer.layer_data as RectObjLayerData).cornerTopRight
+                ),
+                positiveNumGuard(
+                  (layer.layer_data as RectObjLayerData).cornerBottomRight
+                ),
+                positiveNumGuard(
+                  (layer.layer_data as RectObjLayerData).cornerBottomLeft
+                ),
               ]}
-              rotation={layer.layer_data.rotation}
-              angle={(layer.layer_data as WedgeObjLayerData).angle}
+              rotation={numberGuard(layer.layer_data.rotation)}
+              angle={numberGuard((layer.layer_data as WedgeObjLayerData).angle)}
               opacity={layer.layer_data.opacity}
               scaleX={layer.layer_data.flop === 1 ? -1 : 1}
               scaleY={layer.layer_data.flip === 1 ? -1 : 1}
@@ -231,10 +243,10 @@ export const Shapes = React.memo(
                   ? layer.layer_data.finish || FinishOptions[0].value
                   : layer.layer_data.shadowColor
               }
-              shadowBlur={layer.layer_data.shadowBlur}
+              shadowBlur={numberGuard(layer.layer_data.shadowBlur)}
               shadowOpacity={layer.layer_data.shadowOpacity}
-              shadowOffsetX={shadowOffset.x}
-              shadowOffsetY={shadowOffset.y}
+              shadowOffsetX={numberGuard(shadowOffset.x)}
+              shadowOffsetY={numberGuard(shadowOffset.y)}
               skewX={
                 Math.abs(layer.layer_data.skewX) >= 1
                   ? layer.layer_data.skewX / 10
@@ -250,7 +262,7 @@ export const Shapes = React.memo(
                   ? layer.layer_data.finish || FinishOptions[0].value
                   : (layer.layer_data as RectObjLayerData).color
               }
-              strokeWidth={layer.layer_data.stroke}
+              strokeWidth={positiveNumGuard(layer.layer_data.stroke)}
               stroke={
                 specMode
                   ? layer.layer_data.finish || FinishOptions[0].value
@@ -289,14 +301,16 @@ export const Shapes = React.memo(
               cloningLayer as BuilderLayerJSON<ShapeBaseObjLayerData>
             }
             type={drawingLayer.layer_data.type}
-            x={+drawingLayer.layer_data.left ?? 0}
-            y={+drawingLayer.layer_data.top ?? 0}
-            width={drawingLayer.layer_data.width ?? 0}
-            height={drawingLayer.layer_data.height ?? 0}
-            radius={Math.abs(
+            x={numberGuard(drawingLayer.layer_data.left)}
+            y={numberGuard(drawingLayer.layer_data.top)}
+            width={positiveNumGuard(drawingLayer.layer_data.width)}
+            height={positiveNumGuard(drawingLayer.layer_data.height)}
+            radius={positiveNumGuard(
               (drawingLayer.layer_data as CircleObjLayerData).radius
             )}
-            angle={(drawingLayer.layer_data as WedgeObjLayerData).angle}
+            angle={numberGuard(
+              (drawingLayer.layer_data as WedgeObjLayerData).angle
+            )}
             points={
               (drawingLayer.layer_data as LineObjLayerData).points
                 ? removeDuplicatedPointFromEnd(
@@ -304,27 +318,29 @@ export const Shapes = React.memo(
                   )
                 : []
             }
-            pointerLength={
+            pointerLength={positiveNumGuard(
               (drawingLayer.layer_data as ArrowObjLayerData).pointerLength
-            }
-            pointerWidth={
+            )}
+            pointerWidth={positiveNumGuard(
               (drawingLayer.layer_data as ArrowObjLayerData).pointerWidth
-            }
+            )}
             lineCap={(drawingLayer.layer_data as ArrowObjLayerData).lineCap}
             lineJoin={(drawingLayer.layer_data as ArrowObjLayerData).lineJoin}
-            innerRadius={Math.abs(
+            innerRadius={positiveNumGuard(
               (drawingLayer.layer_data as StarObjLayerData).innerRadius
             )}
-            outerRadius={Math.abs(
+            outerRadius={positiveNumGuard(
               (drawingLayer.layer_data as StarObjLayerData).outerRadius
             )}
-            numPoints={(drawingLayer.layer_data as StarObjLayerData).numPoints}
+            numPoints={positiveNumGuard(
+              (drawingLayer.layer_data as StarObjLayerData).numPoints
+            )}
             fill={
               specMode
                 ? drawingLayer.layer_data.finish || FinishOptions[0].value
                 : (drawingLayer.layer_data as RectObjLayerData).color
             }
-            strokeWidth={drawingLayer.layer_data.stroke}
+            strokeWidth={numberGuard(drawingLayer.layer_data.stroke)}
             stroke={
               specMode
                 ? drawingLayer.layer_data.finish || FinishOptions[0].value

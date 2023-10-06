@@ -10,6 +10,8 @@ import {
   enhanceFontFamily,
   generateLogoImageURL,
   getRelativeShadowOffset,
+  numberGuard,
+  positiveNumGuard,
 } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
@@ -163,14 +165,14 @@ export const LogosAndTexts = React.memo(
                 editable={editable}
                 src={getLayerImage(layer)}
                 loadedStatus={loadedStatuses[layer.id]}
-                x={+(logoLayerData.left ?? 0)}
-                y={+(logoLayerData.top ?? 0)}
+                x={numberGuard(logoLayerData.left)}
+                y={numberGuard(logoLayerData.top)}
                 allowFit={true}
-                width={logoLayerData.width}
-                height={logoLayerData.height}
+                width={positiveNumGuard(logoLayerData.width)}
+                height={positiveNumGuard(logoLayerData.height)}
                 frameSize={frameSize}
-                rotation={logoLayerData.rotation}
-                boardRotate={boardRotate}
+                rotation={numberGuard(logoLayerData.rotation)}
+                boardRotate={numberGuard(boardRotate)}
                 scaleX={logoLayerData.flop === 1 ? -1 : 1}
                 scaleY={logoLayerData.flip === 1 ? -1 : 1}
                 filterColor={
@@ -192,10 +194,10 @@ export const LogosAndTexts = React.memo(
                 }
                 paddingX={logoLayerData.paddingX}
                 paddingY={logoLayerData.paddingY}
-                shadowBlur={logoLayerData.shadowBlur}
+                shadowBlur={numberGuard(logoLayerData.shadowBlur)}
                 shadowOpacity={logoLayerData.shadowOpacity}
-                shadowOffsetX={shadowOffset.x}
-                shadowOffsetY={shadowOffset.y}
+                shadowOffsetX={numberGuard(shadowOffset.x)}
+                shadowOffsetY={numberGuard(shadowOffset.y)}
                 skewX={
                   Math.abs(logoLayerData.skewX) >= 1
                     ? logoLayerData.skewX / 10
@@ -250,21 +252,21 @@ export const LogosAndTexts = React.memo(
               loadedFontList={loadedFontList}
               loadedStatus={loadedStatuses[layer.id]}
               onFontLoad={onFontLoad}
-              fontSize={textLayerData.size}
+              fontSize={positiveNumGuard(textLayerData.size)}
               fill={
                 specMode
                   ? textLayerData.finish || FinishOptions[0].value
                   : textLayerData.color
               }
-              strokeWidth={textLayerData.stroke}
+              strokeWidth={positiveNumGuard(textLayerData.stroke)}
               stroke={
                 specMode
                   ? textLayerData.finish || FinishOptions[0].value
                   : textLayerData.scolor
               }
               strokeEnabled={true}
-              x={+(textLayerData.left ?? 0)}
-              y={+(textLayerData.top ?? 0)}
+              x={numberGuard(textLayerData.left)}
+              y={numberGuard(textLayerData.top)}
               skewX={
                 Math.abs(textLayerData.skewX) >= 1
                   ? textLayerData.skewX / 10
@@ -280,7 +282,7 @@ export const LogosAndTexts = React.memo(
               // width={textLayerData.width}
               // height={textLayerData.height}
               opacity={textLayerData.opacity}
-              rotation={textLayerData.rotation}
+              rotation={numberGuard(textLayerData.rotation)}
               scaleX={
                 (textLayerData.scaleX || 1) *
                 (textLayerData.flop === 1 ? -1 : 1)
@@ -294,10 +296,10 @@ export const LogosAndTexts = React.memo(
                   ? textLayerData.finish || FinishOptions[0].value
                   : textLayerData.shadowColor
               }
-              shadowBlur={textLayerData.shadowBlur}
+              shadowBlur={numberGuard(textLayerData.shadowBlur)}
               shadowOpacity={textLayerData.shadowOpacity}
-              shadowOffsetX={shadowOffset.x}
-              shadowOffsetY={shadowOffset.y}
+              shadowOffsetX={numberGuard(shadowOffset.x)}
+              shadowOffsetY={numberGuard(shadowOffset.y)}
               visible={layer.layer_visible ? true : false}
               paintingGuides={paintingGuides}
               guideData={guideData}

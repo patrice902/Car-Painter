@@ -22,6 +22,20 @@ export const SubForm = (props: SubFormProps) => {
     [setFieldValue]
   );
 
+  const handleDefaultShapeSColorChange = useCallback(
+    (color) => {
+      setFieldValue("default_shape_scolor", color);
+    },
+    [setFieldValue]
+  );
+
+  const handleDefaultShapeStrokeChange = useCallback(
+    (value) => {
+      setFieldValue("default_shape_stroke", value);
+    },
+    [setFieldValue]
+  );
+
   return (
     <Box display="flex" flexDirection="column" width="100%" mb={1}>
       <Grid container spacing={4}>
@@ -57,8 +71,41 @@ export const SubForm = (props: SubFormProps) => {
             setValue={handleOpacityChange}
           />
         </Grid>
-        {extraChildren}
+        <Grid item xs={12} sm={6}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={6}>
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                style={{ marginRight: "8px" }}
+              >
+                Stroke Color
+              </Typography>
+            </Grid>
+
+            <Grid item xs={6}>
+              <ColorPickerInput
+                value={values["default_shape_scolor"]}
+                onChange={handleDefaultShapeSColorChange}
+                onInputChange={handleDefaultShapeSColorChange}
+                error={Boolean(errors["default_shape_scolor"])}
+                helperText={errors["default_shape_scolor"]}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <SliderInput
+            label="Stroke Width"
+            min={0}
+            max={10}
+            step={1}
+            value={values["default_shape_stroke"]}
+            setValue={handleDefaultShapeStrokeChange}
+          />
+        </Grid>
       </Grid>
+      {extraChildren}
     </Box>
   );
 };

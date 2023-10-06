@@ -41,10 +41,8 @@ import {
   createTextLayer,
   setCurrent as setCurrentLayer,
   setDrawingStatus,
-  updateLayer,
 } from "src/redux/reducers/layerReducer";
-import { updateScheme } from "src/redux/reducers/schemeReducer";
-import { DefaultLayerData } from "src/types/common";
+import { submitDefaultSetting } from "src/redux/reducers/schemeReducer";
 import { DialogTypes, DrawingStatus, MouseModes } from "src/types/enum";
 
 import { drawModes } from "../../MobileDrawerBar/MobileDrawerBar";
@@ -77,9 +75,6 @@ export const DrawerBar = React.memo(
     );
     const currentCarMake = useSelector(
       (state: RootState) => state.carMakeReducer.current
-    );
-    const currentLayer = useSelector(
-      (state: RootState) => state.layerReducer.current
     );
     const overlayList = useSelector(
       (state: RootState) => state.overlayReducer.list
@@ -300,36 +295,14 @@ export const DrawerBar = React.memo(
 
     const handleApplySettings = useCallback(
       (guide_data) => {
-        if (!currentScheme) return;
-
-        if (currentLayer) {
-          dispatch(
-            updateLayer({
-              id: currentLayer.id,
-              layer_data: {
-                ...currentLayer.layer_data,
-                color: guide_data.default_shape_color,
-                opacity: guide_data.default_shape_opacity,
-                scolor: guide_data.default_shape_scolor,
-                stroke: guide_data.default_shape_stroke,
-              } as DefaultLayerData,
-            })
-          );
-        } else {
-          dispatch(
-            updateScheme({
-              ...currentScheme,
-              guide_data: {
-                ...currentScheme.guide_data,
-                ...guide_data,
-              },
-            })
-          );
-        }
-        setDialog(undefined);
-        focusBoardQuickly();
+        dispatch(
+          submitDefaultSetting(guide_data, () => {
+            setDialog(undefined);
+            focusBoardQuickly();
+          })
+        );
       },
-      [dispatch, currentScheme, currentLayer, setDialog]
+      [dispatch, setDialog]
     );
 
     const handleToggleDrawShapes = useCallback(() => {

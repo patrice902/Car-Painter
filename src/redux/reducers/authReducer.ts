@@ -4,6 +4,7 @@ import config from "src/config";
 import AuthService from "src/services/authService";
 import BlockedUserService from "src/services/blockedUserService";
 import CookieService from "src/services/cookieService";
+import UserService from "src/services/userService";
 import { AuthPayload, UserWithoutPassword } from "src/types/query";
 
 import { AppDispatch } from "..";
@@ -142,6 +143,13 @@ export const getBlockedBy = (userID: number) => async (
     dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
+};
+
+export const updateUser = (user: UserWithoutPassword) => async (
+  dispatch: AppDispatch
+) => {
+  dispatch(setUser(user));
+  await UserService.updateUser(user.id, user);
 };
 
 export default slice.reducer;

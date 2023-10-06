@@ -347,4 +347,5 @@ export type User = {
   site_ban: boolean;
   follow_award: number;
   fav_award: number;
+  saved_colors: string;
 };

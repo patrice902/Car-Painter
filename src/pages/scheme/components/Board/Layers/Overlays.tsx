@@ -5,7 +5,11 @@ import { useSelector } from "react-redux";
 import { GroupedURLImage } from "src/components/konva";
 import config from "src/config";
 import { FinishOptions } from "src/constant";
-import { getRelativeShadowOffset } from "src/helper";
+import {
+  getRelativeShadowOffset,
+  numberGuard,
+  positiveNumGuard,
+} from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { MovableObjLayerData, OverlayObjLayerData } from "src/types/common";
@@ -123,18 +127,18 @@ export const Overlays = React.memo(
               editable={editable}
               name={layer.id.toString()}
               src={getLayerImage(layer)}
-              x={+(layer.layer_data.left || 0)}
-              y={+(layer.layer_data.top || 0)}
+              x={numberGuard(layer.layer_data.left)}
+              y={numberGuard(layer.layer_data.top)}
               allowFit={true}
               filterColor={
                 specMode
                   ? layer.layer_data.finish || FinishOptions[0].value
                   : layer.layer_data.color
               }
-              width={layer.layer_data.width}
-              height={layer.layer_data.height}
-              rotation={layer.layer_data.rotation}
-              boardRotate={boardRotate}
+              width={positiveNumGuard(layer.layer_data.width)}
+              height={positiveNumGuard(layer.layer_data.height)}
+              rotation={numberGuard(layer.layer_data.rotation)}
+              boardRotate={numberGuard(boardRotate)}
               loadedStatus={loadedStatuses[layer.id]}
               opacity={layer.layer_data.opacity}
               scaleX={layer.layer_data.flop === 1 ? -1 : 1}
@@ -157,17 +161,17 @@ export const Overlays = React.memo(
                   ? layer.layer_data.finish || FinishOptions[0].value
                   : layer.layer_data.shadowColor
               }
-              shadowBlur={layer.layer_data.shadowBlur}
+              shadowBlur={numberGuard(layer.layer_data.shadowBlur)}
               shadowOpacity={layer.layer_data.shadowOpacity}
-              shadowOffsetX={shadowOffset.x}
-              shadowOffsetY={shadowOffset.y}
-              strokeWidth={layer.layer_data.stroke}
+              shadowOffsetX={numberGuard(shadowOffset.x)}
+              shadowOffsetY={numberGuard(shadowOffset.y)}
+              strokeWidth={positiveNumGuard(layer.layer_data.stroke)}
               stroke={
                 specMode
                   ? layer.layer_data.finish || FinishOptions[0].value
                   : layer.layer_data.scolor
               }
-              strokeScale={layer.layer_data.stroke_scale}
+              strokeScale={positiveNumGuard(layer.layer_data.stroke_scale)}
               onSelect={() => onSelect(layer)}
               onDblClick={onDblClick}
               listening={
