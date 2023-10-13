@@ -84,7 +84,6 @@ export const GuidesSetting = React.memo((props: GuidesSettingProps) => {
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      validate={() => ({})}
       enableReinitialize
       onSubmit={(
         _values: GuideSettingFormValues,
