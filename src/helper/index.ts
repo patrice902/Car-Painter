@@ -31,6 +31,7 @@ import {
 } from "src/types/query";
 import TGA from "src/utils/tga";
 import { v4 as uuidv4 } from "uuid";
+import validateColor from "validate-color";
 
 export const getDifferenceFromToday = (past_date: Date | string | number) => {
   const difference_In_Second =
@@ -108,15 +109,9 @@ export const colorValidatorWithoutAlpha = (
 export const colorValidator = (color: string | null | undefined) => {
   if (!color?.length) return true;
 
-  if (
-    color[0] === "#" &&
-    (color.length === 1 ||
-      color.length === 4 ||
-      color.length === 7 ||
-      color.length === 9)
-  )
-    return true;
-  return false;
+  if (color.length > 100) return false;
+
+  return validateColor(color);
 };
 
 export const getRelativePointerPosition = (node: Node) => {

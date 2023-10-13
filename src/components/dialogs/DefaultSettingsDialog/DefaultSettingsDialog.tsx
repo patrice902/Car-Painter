@@ -39,7 +39,11 @@ const validationSchema = Yup.object().shape({
     .nullable()
     .test("color-validation", "Incorrect Color Format", colorValidator),
   default_shape_stroke: Yup.number(),
-  saved_colors: Yup.array().of(Yup.string()),
+  saved_colors: Yup.array().of(
+    Yup.string()
+      .required("Required")
+      .test("color-validation", "Incorrect Color Format", colorValidator)
+  ),
 });
 
 export const DefaultSettingsDialog = React.memo(
