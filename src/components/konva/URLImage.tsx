@@ -1,10 +1,12 @@
+import Color from "color";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
 import React, { useMemo, useRef } from "react";
 import { Image } from "react-konva";
-import { hexToRgba } from "src/helper";
+import { useDispatch } from "react-redux";
 import { useDrag, useKonvaImageInit, useTransform } from "src/hooks";
+import { setMessage } from "src/redux/reducers/messageReducer";
 import {
   DefaultLayerData,
   FrameSize,
@@ -84,6 +86,7 @@ export const URLImage = React.memo(
     onCloneMove,
     ...props
   }: URLImageProps) => {
+    const dispatch = useDispatch();
     const shapeRef = useRef<Konva.Image>(null);
 
     const isSVG = useMemo(() => src.toLowerCase().includes(".svg"), [src]);
@@ -154,7 +157,14 @@ export const URLImage = React.memo(
       applyCaching,
     });
 
-    const filterColorRGB = hexToRgba(filterColor);
+    const filterColorRGB = useMemo(() => {
+      try {
+        return filterColor ? Color(filterColor) : undefined;
+      } catch (error) {
+        dispatch(setMessage({ message: `Invalid Color: ${filterColor}` }));
+        return null;
+      }
+    }, [dispatch, filterColor]);
 
     return (
       <Image
@@ -167,10 +177,10 @@ export const URLImage = React.memo(
         shadowColor={shadowColor}
         shadowOffsetX={shadowOffsetX || 0}
         shadowOffsetY={shadowOffsetY || 0}
-        red={allowFilter ? filterColorRGB?.r : null}
-        green={allowFilter ? filterColorRGB?.g : null}
-        blue={allowFilter ? filterColorRGB?.b : null}
-        alpha={allowFilter && filterColorRGB?.a ? filterColorRGB.a / 255 : null}
+        red={allowFilter ? filterColorRGB?.red() : null}
+        green={allowFilter ? filterColorRGB?.green() : null}
+        blue={allowFilter ? filterColorRGB?.blue() : null}
+        alpha={allowFilter ? filterColorRGB?.alpha() : null}
         filters={allowFilter ? filters : undefined}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}

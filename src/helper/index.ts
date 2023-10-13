@@ -1,3 +1,4 @@
+import Color from "color";
 import { Node } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
 import _ from "lodash";
@@ -31,7 +32,6 @@ import {
 } from "src/types/query";
 import TGA from "src/utils/tga";
 import { v4 as uuidv4 } from "uuid";
-import validateColor from "validate-color";
 
 export const getDifferenceFromToday = (past_date: Date | string | number) => {
   const difference_In_Second =
@@ -66,28 +66,6 @@ export const getDifferenceFromToday = (past_date: Date | string | number) => {
   return `${returnValue} year${returnValue > 1 ? "s" : ""} ago`;
 };
 
-export const hexToRgba = (hex?: string) => {
-  if (!hex) return null;
-
-  const result =
-    hex.length > 7
-      ? /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-      : /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result)
-    return {
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-    };
-  return {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16),
-    a: hex.length > 7 ? parseInt(result[4], 16) : 255,
-  };
-};
-
 export const mathRound2 = (num: number) =>
   Math.round((num + Number.EPSILON) * 100) / 100;
 
@@ -111,7 +89,11 @@ export const colorValidator = (color: string | null | undefined) => {
 
   if (color.length > 100) return false;
 
-  return validateColor(color);
+  try {
+    return Color(color) ? true : false;
+  } catch (error) {
+    return false;
+  }
 };
 
 export const getRelativePointerPosition = (node: Node) => {

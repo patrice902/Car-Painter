@@ -1,10 +1,12 @@
+import Color from "color";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
 import React, { useMemo, useRef } from "react";
 import { Group, Image, Rect } from "react-konva";
-import { hexToRgba } from "src/helper";
+import { useDispatch } from "react-redux";
 import { useDrag, useKonvaImageInit, useTransform } from "src/hooks";
+import { setMessage } from "src/redux/reducers/messageReducer";
 import {
   DefaultLayerData,
   FrameSize,
@@ -100,6 +102,7 @@ export const GroupedURLImage = React.memo(
     onSetTransformingLayer,
     ...props
   }: GroupedURLImageProps) => {
+    const dispatch = useDispatch();
     const shapeRef = useRef<Konva.Group>(null);
     const imageshapeRef = useRef<Konva.Image>(null);
 
@@ -175,7 +178,14 @@ export const GroupedURLImage = React.memo(
       applyCaching,
     });
 
-    const filterColorRGB = hexToRgba(filterColor);
+    const filterColorRGB = useMemo(() => {
+      try {
+        return filterColor ? Color(filterColor) : undefined;
+      } catch (error) {
+        dispatch(setMessage({ message: `Invalid Color: ${filterColor}` }));
+        return null;
+      }
+    }, [dispatch, filterColor]);
 
     return (
       <Group
@@ -218,12 +228,10 @@ export const GroupedURLImage = React.memo(
           shadowOpacity={shadowOpacity}
           shadowOffsetX={shadowOffsetX || 0}
           shadowOffsetY={shadowOffsetY || 0}
-          red={allowFilter ? filterColorRGB?.r : null}
-          green={allowFilter ? filterColorRGB?.g : null}
-          blue={allowFilter ? filterColorRGB?.b : null}
-          alpha={
-            allowFilter && filterColorRGB?.a ? filterColorRGB.a / 255 : null
-          }
+          red={allowFilter ? filterColorRGB?.red() : null}
+          green={allowFilter ? filterColorRGB?.green() : null}
+          blue={allowFilter ? filterColorRGB?.blue() : null}
+          alpha={allowFilter ? filterColorRGB?.alpha() : null}
           filters={allowFilter ? filters : undefined}
           image={image}
           ref={imageshapeRef}
