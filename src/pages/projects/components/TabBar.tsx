@@ -1,14 +1,17 @@
 import {
   Box,
   Button,
+  Link,
   Theme,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
 import { Add as AddIcon } from "@material-ui/icons";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
+import { ChangelogDialog } from "src/components/dialogs/ChangelogDialog";
+import config from "src/config";
 import { RootState } from "src/redux";
 import styled from "styled-components/macro";
 
@@ -26,6 +29,7 @@ export const TabBar = React.memo(
     const isAboveMobile = useMediaQuery((theme: Theme) =>
       theme.breakpoints.up("sm")
     );
+    const [openChangeLog, setOpenChangeLog] = useState(false);
 
     const sharedSchemeList = useSelector(
       (state: RootState) => state.schemeReducer.sharedList
@@ -63,60 +67,87 @@ export const TabBar = React.memo(
         width={isAboveMobile ? "250px" : "100%"}
         display="flex"
         flexDirection={isAboveMobile ? "column" : "row"}
+        justifyContent={"space-between"}
       >
-        {isAboveMobile ? (
-          <Box display="flex" justifyContent="space-between" p={3}>
-            <GreyButton
-              onClick={onCreateNew}
-              color="primary"
-              variant="contained"
-              startIcon={<AddIcon />}
-              style={{ marginRight: "8px" }}
-            >
-              <Typography variant="subtitle1"> New</Typography>
-            </GreyButton>
-          </Box>
-        ) : null}
-        <Box
-          display="flex"
-          flexDirection={isAboveMobile ? "column" : "row"}
-          width="100%"
-          justifyContent={isAboveMobile ? "start" : "space-between"}
-        >
-          <Tab
-            state={tabValue === 0 ? "active" : null}
-            onClick={() => handleClickTabItem(0)}
-          >
-            <Typography>My Projects</Typography>
-          </Tab>
-          <Tab
+        <Box>
+          {isAboveMobile ? (
+            <Box display="flex" justifyContent="space-between" p={3}>
+              <GreyButton
+                onClick={onCreateNew}
+                color="primary"
+                variant="contained"
+                startIcon={<AddIcon />}
+                style={{ marginRight: "8px" }}
+              >
+                <Typography variant="subtitle1"> New</Typography>
+              </GreyButton>
+            </Box>
+          ) : null}
+          <Box
             display="flex"
-            justifyContent={
-              newInvitationCount || isAboveMobile ? "space-between" : "center"
-            }
-            state={tabValue === 1 ? "active" : null}
-            onClick={() => handleClickTabItem(1)}
+            flexDirection={isAboveMobile ? "column" : "row"}
+            width="100%"
+            justifyContent={isAboveMobile ? "start" : "space-between"}
           >
-            <Typography>Shared with Me</Typography>
-            {newInvitationCount ? (
-              <Box borderRadius="100%" bgcolor="#444" px="10px">
-                <Typography variant="body1">{newInvitationCount}</Typography>
-              </Box>
-            ) : (
-              <></>
-            )}
-          </Tab>
-          <Tab
-            state={tabValue === 2 ? "active" : null}
-            onClick={() => handleClickTabItem(2)}
-          >
-            <Typography>Favorite Projects</Typography>
-          </Tab>
+            <Tab
+              state={tabValue === 0 ? "active" : null}
+              onClick={() => handleClickTabItem(0)}
+            >
+              <Typography>My Projects</Typography>
+            </Tab>
+            <Tab
+              display="flex"
+              justifyContent={
+                newInvitationCount || isAboveMobile ? "space-between" : "center"
+              }
+              state={tabValue === 1 ? "active" : null}
+              onClick={() => handleClickTabItem(1)}
+            >
+              <Typography>Shared with Me</Typography>
+              {newInvitationCount ? (
+                <Box borderRadius="100%" bgcolor="#444" px="10px">
+                  <Typography variant="body1">{newInvitationCount}</Typography>
+                </Box>
+              ) : (
+                <></>
+              )}
+            </Tab>
+            <Tab
+              state={tabValue === 2 ? "active" : null}
+              onClick={() => handleClickTabItem(2)}
+            >
+              <Typography>Favorite Projects</Typography>
+            </Tab>
+          </Box>
         </Box>
+        {isAboveMobile && (
+          <Box padding="12px 12px 24px">
+            <ClickableTypography
+              color="textSecondary"
+              variant="subtitle1"
+              onClick={() => setOpenChangeLog(true)}
+            >
+              Changelog
+            </ClickableTypography>
+            <Typography color="textSecondary" variant="subtitle1">
+              <Link href={config.helpLink.menu} color="inherit" target="_blank">
+                Help
+              </Link>
+            </Typography>
+            <ChangelogDialog
+              open={openChangeLog}
+              onCancel={() => setOpenChangeLog(false)}
+            />
+          </Box>
+        )}
       </Box>
     );
   }
 );
+
+const ClickableTypography = styled(Typography)`
+  cursor: pointer;
+`;
 
 const GreyButton = styled(Button)`
   background-color: #444;

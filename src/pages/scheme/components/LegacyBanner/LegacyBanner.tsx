@@ -8,7 +8,7 @@ import {
 import { HighlightOff as CloseIcon } from "@material-ui/icons";
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { HelpLinks } from "src/constant";
+import config from "src/config";
 
 import { useStyles } from "./LegacyBanner.style";
 
@@ -57,7 +57,7 @@ export const LegacyBanner = React.memo(
             </Typography>
             <Typography>
               <a
-                href={HelpLinks.LegacyProjects}
+                href={config.helpLink.legacyProjects}
                 className={classes.moreLink}
                 target="_blank"
                 rel="noreferrer"

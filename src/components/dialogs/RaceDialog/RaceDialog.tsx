@@ -27,7 +27,7 @@ import { Form, Formik, FormikProps } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { NumberModSwitch } from "src/components/common";
-import { HelpLinks } from "src/constant";
+import config from "src/config";
 import { decodeHtml } from "src/helper";
 import { RootState } from "src/redux";
 import { CarRaceLeague, CarRaceTeam } from "src/types/query";
@@ -283,7 +283,7 @@ const RaceForm = React.memo(
                 </CustomGrid>
               </SelectionWrapper>
               <MoreInfo
-                href={HelpLinks.RacingNumbers}
+                href={config.helpLink.racingNumbers}
                 target="_blank"
                 rel="noreferrer"
               >
