@@ -1,4 +1,11 @@
-import { CircularProgress, Dialog, DialogContent } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import config from "src/config";
@@ -22,9 +29,20 @@ export const ChangelogDialog = React.memo(
 
     return (
       <Dialog open={open} onClose={onCancel} maxWidth="lg">
-        <DialogContent>
+        <DialogTitle>Changelog</DialogTitle>
+        <DialogContent dividers>
           {markdown ? <Markdown>{markdown}</Markdown> : <CircularProgress />}
         </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onCancel}
+            color="secondary"
+            variant="outlined"
+            autoFocus
+          >
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   }
