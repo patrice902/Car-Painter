@@ -34,6 +34,7 @@ import {
 import { setAskingSimPreviewByLatest } from "src/redux/reducers/downloaderReducer";
 import {
   cloneLayer,
+  CloneLayerProps,
   deleteLayer,
   setClipboard as setLayerClipboard,
   setCurrent as setCurrentLayer,
@@ -76,11 +77,7 @@ export interface ComponentWithKeyEventProps extends WithKeyEventProps {
   unsetDeleteLayerState: () => void;
   onKeyEvent: (key: string, event: KeyboardEvent) => void;
   onDeleteLayer: (layer: BuilderLayerJSON) => void;
-  onCloneLayer: (
-    layer: BuilderLayerJSON,
-    samePosition?: boolean,
-    pushingToHistory?: boolean
-  ) => void;
+  onCloneLayer: (props: CloneLayerProps) => void;
   onTogglePaintingGuides: (guide: PaintingGuides) => void;
 }
 
@@ -155,14 +152,17 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
     );
 
     const handleCloneLayer = useCallback(
-      (layer, samePosition = false, pushingToHistory = true) => {
+      (params: CloneLayerProps) => {
         dispatch(
-          cloneLayer(
-            layer,
-            samePosition,
-            pushingToHistory,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
-          )
+          cloneLayer({
+            ...params,
+            centerPosition: getZoomedCenterPosition(
+              stageRef,
+              frameSize,
+              zoom,
+              boardRotate
+            ),
+          })
         );
         focusBoard();
       },
@@ -387,7 +387,9 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             clipboardLayer &&
             editable
           ) {
-            handleCloneLayer(clipboardLayer);
+            handleCloneLayer({
+              layerToClone: clipboardLayer as BuilderLayerJSON<MovableObjLayerData>,
+            });
           } else if (
             event.key === "z" &&
             (event.ctrlKey || event.metaKey) &&
@@ -406,7 +408,9 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             editable
           ) {
             if (currentLayer) {
-              handleCloneLayer(currentLayer);
+              handleCloneLayer({
+                layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
+              });
             }
           } else if (event.key === "=" && (event.ctrlKey || event.metaKey)) {
             const newBrowserZoom = browserZoom * 1.25;

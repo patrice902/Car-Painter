@@ -106,8 +106,13 @@ export const useLayer = () => {
       dispatch(setCloningLayer(null));
       dispatch(insertToCloningQueue({ ...movedLayer, id: newQueueID }));
       dispatch(
-        cloneLayer(movedLayer, true, true, undefined, () => {
-          dispatch(deleteCloningQueueByID(newQueueID));
+        cloneLayer({
+          layerToClone: movedLayer,
+          samePosition: true,
+          pushingToHistory: true,
+          callback: () => {
+            dispatch(deleteCloningQueueByID(newQueueID));
+          },
         })
       );
     },

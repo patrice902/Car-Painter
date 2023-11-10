@@ -11,7 +11,11 @@ import {
   getAllowedLayerTypes,
 } from "src/helper";
 import { RootState } from "src/redux";
-import { BuilderLayerJSONParitalAll } from "src/types/common";
+import { CloneLayerProps } from "src/redux/reducers/layerReducer";
+import {
+  BuilderLayerJSONParitalAll,
+  MovableObjLayerData,
+} from "src/types/common";
 import { BuilderLayerJSON } from "src/types/query";
 import { useDebounce } from "use-debounce";
 import * as Yup from "yup";
@@ -26,11 +30,7 @@ export interface LayerPropertyProps {
   carMaskLayerRef?: RefObject<Group>;
   transformingLayer?: BuilderLayerJSON | null;
   onDelete: (layer: BuilderLayerJSON) => void;
-  onClone: (
-    layer: BuilderLayerJSON,
-    samePosition?: boolean,
-    pushingToHistory?: boolean
-  ) => void;
+  onClone: (props: CloneLayerProps) => void;
 }
 
 export const LayerProperty = React.memo((props: LayerPropertyProps) => {
@@ -89,10 +89,17 @@ export const LayerProperty = React.memo((props: LayerPropertyProps) => {
   );
   const [debouncedValues] = useDebounce(initialValues, 100);
 
-  const handleClone = useCallback(() => {
-    if (currentLayer) onClone(currentLayer);
-    focusBoardQuickly();
-  }, [onClone, currentLayer]);
+  const handleClone = useCallback(
+    (extraRotation?: number) => {
+      if (currentLayer)
+        onClone({
+          layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
+          extraRotation,
+        });
+      focusBoardQuickly();
+    },
+    [onClone, currentLayer]
+  );
   const handleDelete = useCallback(() => {
     if (currentLayer) onDelete(currentLayer);
     focusBoardQuickly();

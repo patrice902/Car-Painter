@@ -4,6 +4,7 @@ import React, { RefObject, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/redux";
 import { setShowProperties } from "src/redux/reducers/boardReducer";
+import { CloneLayerProps } from "src/redux/reducers/layerReducer";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { LayerProperty } from "./LayerProperty";
@@ -38,11 +39,7 @@ export interface PropertyBarProps {
   stageRef: RefObject<Stage>;
   transformingLayer?: BuilderLayerJSON | null;
   onDeleteLayer: (layer: BuilderLayerJSON) => void;
-  onCloneLayer: (
-    layer: BuilderLayerJSON,
-    samePosition?: boolean,
-    pushingToHistory?: boolean
-  ) => void;
+  onCloneLayer: (props: CloneLayerProps) => void;
 }
 
 export const PropertyBar = React.memo((props: PropertyBarProps) => {

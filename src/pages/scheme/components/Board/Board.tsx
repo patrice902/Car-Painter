@@ -9,6 +9,7 @@ import { BoardContextMenu } from "src/components/dialogs";
 import { TransformerComponent } from "src/components/konva";
 import { useDrawHelper, useZoom } from "src/hooks";
 import { RootState } from "src/redux";
+import { CloneLayerProps } from "src/redux/reducers/layerReducer";
 import { MovableObjLayerData } from "src/types/common";
 import { MouseModes, ViewModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
@@ -43,11 +44,7 @@ type BoardProps = {
     layer: BuilderLayerJSON<MovableObjLayerData> | null
   ) => void;
   onDeleteLayer: (layer: BuilderLayerJSON) => void;
-  onCloneLayer: (
-    layer: BuilderLayerJSON,
-    samePosition?: boolean,
-    pushingToHistory?: boolean
-  ) => void;
+  onCloneLayer: (props: CloneLayerProps) => void;
 };
 
 export const Board = React.memo(

@@ -710,13 +710,23 @@ export const createTextLayer = (
   dispatch(setLoading(false));
 };
 
-export const cloneLayer = (
-  layerToClone: BuilderLayerJSON<MovableObjLayerData>,
+export type CloneLayerProps = {
+  layerToClone: BuilderLayerJSON<MovableObjLayerData>;
+  samePosition?: boolean;
+  pushingToHistory?: boolean;
+  centerPosition?: Position;
+  extraRotation?: number;
+  callback?: () => void;
+};
+
+export const cloneLayer = ({
+  layerToClone,
   samePosition = false,
   pushingToHistory = true,
-  centerPosition?: Position,
-  callback?: () => void
-) => async (dispatch: AppDispatch, getState: GetState) => {
+  centerPosition,
+  extraRotation = 0,
+  callback,
+}: CloneLayerProps) => async (dispatch: AppDispatch, getState: GetState) => {
   if (layerToClone) {
     dispatch(setLoading(true));
     try {
@@ -726,7 +736,7 @@ export const cloneLayer = (
         layerToClone.layer_data.height
           ? -layerToClone.layer_data.height / 2
           : 0,
-        boardRotate
+        boardRotate + extraRotation
       );
       const layer = {
         ..._.omit(layerToClone, ["id"]),
@@ -741,6 +751,7 @@ export const cloneLayer = (
           top: samePosition
             ? layerToClone.layer_data.top
             : (centerPosition?.y ?? 0) + offset.y,
+          rotation: (layerToClone.layer_data.rotation ?? 0) + extraRotation,
         }),
       };
       dispatch(createLayer(layer, pushingToHistory, callback));

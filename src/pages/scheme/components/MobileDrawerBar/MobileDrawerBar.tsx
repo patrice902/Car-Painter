@@ -48,6 +48,7 @@ import {
 } from "src/redux/reducers/layerReducer";
 import { submitDefaultSetting } from "src/redux/reducers/schemeReducer";
 import { DialogTypes, MouseModes } from "src/types/enum";
+import { useDebouncedCallback } from "use-debounce";
 
 import {
   CustomFontAwesomeIcon,
@@ -235,105 +236,69 @@ export const MobileDrawerBar = React.memo(
       [dispatch]
     );
 
-    const handleOpenBase = useCallback(
-      (basePaintItemORIndex) => {
-        if (!currentScheme) return;
+    const handleOpenBase = useDebouncedCallback((basePaintItemORIndex) => {
+      if (!currentScheme) return;
 
-        dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(setMouseMode(MouseModes.DEFAULT));
 
-        if (currentScheme.legacy_mode) {
-          dispatch(
-            createLayersFromLegacyBasePaint(
-              currentScheme.id,
-              basePaintItemORIndex
-            )
-          );
-        } else {
-          dispatch(
-            createLayersFromBasePaint(currentScheme.id, basePaintItemORIndex)
-          );
-        }
-
-        setDialog(undefined);
-        focusBoard();
-      },
-      [dispatch, setDialog, currentScheme]
-    );
-    const handleOpenOverlay = useCallback(
-      (shape) => {
-        if (!currentScheme) return;
-
-        dispatch(setMouseMode(MouseModes.DEFAULT));
+      if (currentScheme.legacy_mode) {
         dispatch(
-          createLayerFromOverlay(
+          createLayersFromLegacyBasePaint(
             currentScheme.id,
-            shape,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+            basePaintItemORIndex
           )
         );
-        setDialog(undefined);
-        focusBoard();
-      },
-      [
-        dispatch,
-        currentScheme,
-        stageRef,
-        frameSize,
-        zoom,
-        boardRotate,
-        setDialog,
-      ]
-    );
-    const handleOpenLogo = useCallback(
-      (logo) => {
-        if (!currentScheme) return;
-
-        dispatch(setMouseMode(MouseModes.DEFAULT));
+      } else {
         dispatch(
-          createLayerFromLogo(
-            currentScheme.id,
-            logo,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
-          )
+          createLayersFromBasePaint(currentScheme.id, basePaintItemORIndex)
         );
-        setDialog(undefined);
-        focusBoard();
-      },
-      [
-        dispatch,
-        currentScheme,
-        stageRef,
-        frameSize,
-        zoom,
-        boardRotate,
-        setDialog,
-      ]
-    );
-    const handleOpenUpload = useCallback(
-      (upload) => {
-        if (!currentScheme) return;
+      }
 
-        dispatch(setMouseMode(MouseModes.DEFAULT));
-        dispatch(
-          createLayerFromUpload(
-            currentScheme.id,
-            upload,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
-          )
-        );
-        setDialog(undefined);
-        focusBoard();
-      },
-      [
-        dispatch,
-        setDialog,
-        currentScheme,
-        stageRef,
-        frameSize,
-        zoom,
-        boardRotate,
-      ]
-    );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
+    const handleOpenOverlay = useDebouncedCallback((shape) => {
+      if (!currentScheme) return;
+
+      dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(
+        createLayerFromOverlay(
+          currentScheme.id,
+          shape,
+          getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+        )
+      );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
+    const handleOpenLogo = useDebouncedCallback((logo) => {
+      if (!currentScheme) return;
+
+      dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(
+        createLayerFromLogo(
+          currentScheme.id,
+          logo,
+          getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+        )
+      );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
+    const handleOpenUpload = useDebouncedCallback((upload) => {
+      if (!currentScheme) return;
+
+      dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(
+        createLayerFromUpload(
+          currentScheme.id,
+          upload,
+          getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+        )
+      );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
     const handleCreateText = useCallback(
       (values) => {
         if (!currentScheme) return;
