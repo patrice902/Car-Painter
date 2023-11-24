@@ -90,11 +90,11 @@ export const LayerProperty = React.memo((props: LayerPropertyProps) => {
   const [debouncedValues] = useDebounce(initialValues, 100);
 
   const handleClone = useCallback(
-    (extraRotation?: number) => {
+    (flipRotation?: boolean) => {
       if (currentLayer)
         onClone({
           layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
-          extraRotation,
+          flipRotation,
         });
       focusBoardQuickly();
     },

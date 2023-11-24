@@ -715,7 +715,7 @@ export type CloneLayerProps = {
   samePosition?: boolean;
   pushingToHistory?: boolean;
   centerPosition?: Position;
-  extraRotation?: number;
+  flipRotation?: boolean;
   callback?: () => void;
 };
 
@@ -724,7 +724,7 @@ export const cloneLayer = ({
   samePosition = false,
   pushingToHistory = true,
   centerPosition,
-  extraRotation = 0,
+  flipRotation = false,
   callback,
 }: CloneLayerProps) => async (dispatch: AppDispatch, getState: GetState) => {
   if (layerToClone) {
@@ -736,7 +736,7 @@ export const cloneLayer = ({
         layerToClone.layer_data.height
           ? -layerToClone.layer_data.height / 2
           : 0,
-        boardRotate + extraRotation
+        flipRotation ? 180 - boardRotate : boardRotate
       );
       const layer = {
         ..._.omit(layerToClone, ["id"]),
@@ -751,7 +751,9 @@ export const cloneLayer = ({
           top: samePosition
             ? layerToClone.layer_data.top
             : (centerPosition?.y ?? 0) + offset.y,
-          rotation: (layerToClone.layer_data.rotation ?? 0) + extraRotation,
+          rotation: flipRotation
+            ? 180 - (layerToClone.layer_data.rotation ?? 0)
+            : layerToClone.layer_data.rotation ?? 0,
         }),
       };
       dispatch(createLayer(layer, pushingToHistory, callback));

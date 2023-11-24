@@ -85,7 +85,7 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
     if (currentLayer)
       onCloneLayer({
         layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
-        extraRotation: 180,
+        flipRotation: true,
       });
   }, [currentLayer, onCloneLayer, handleClose]);
 

@@ -11,7 +11,7 @@ import { useDrawHelper, useZoom } from "src/hooks";
 import { RootState } from "src/redux";
 import { CloneLayerProps } from "src/redux/reducers/layerReducer";
 import { MovableObjLayerData } from "src/types/common";
-import { MouseModes, ViewModes } from "src/types/enum";
+import { LayerTypes, MouseModes, ViewModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { BoardWrapper } from "./Board.style";
@@ -22,13 +22,7 @@ import {
   PaintingGuideTop,
   SpecPaintingGuideCarMask,
 } from "./Guides";
-import {
-  BasePaints,
-  CarParts,
-  LogosAndTexts,
-  Overlays,
-  Shapes,
-} from "./Layers";
+import { BasePaints, CarParts, MovableLayersGroup } from "./Layers";
 
 type BoardProps = {
   hoveredLayerJSON: Record<string | number, boolean>;
@@ -219,31 +213,62 @@ export const Board = React.memo(
                           <></>
                         )}
 
-                        <Overlays
-                          stageRef={stageRef}
-                          editable={editable}
-                          onHover={handleHoverLayer}
-                          onLayerDragStart={onLayerDragStart}
-                          onLayerDragEnd={onLayerDragEnd}
-                          onSetTransformingLayer={setTransformingLayer}
-                        />
-                        <Shapes
-                          stageRef={stageRef}
-                          editable={editable}
-                          drawingLayer={drawingLayerRef.current}
-                          onHover={handleHoverLayer}
-                          onLayerDragStart={onLayerDragStart}
-                          onLayerDragEnd={onLayerDragEnd}
-                          onSetTransformingLayer={setTransformingLayer}
-                        />
-                        <LogosAndTexts
-                          stageRef={stageRef}
-                          editable={editable}
-                          onHover={handleHoverLayer}
-                          onLayerDragStart={onLayerDragStart}
-                          onLayerDragEnd={onLayerDragEnd}
-                          onSetTransformingLayer={setTransformingLayer}
-                        />
+                        {currentScheme.merge_layers ? (
+                          <MovableLayersGroup
+                            allowedLayerTypes={[
+                              LayerTypes.OVERLAY,
+                              LayerTypes.LOGO,
+                              LayerTypes.UPLOAD,
+                              LayerTypes.SHAPE,
+                              LayerTypes.TEXT,
+                            ]}
+                            drawingLayer={drawingLayerRef.current}
+                            stageRef={stageRef}
+                            editable={editable}
+                            onHover={handleHoverLayer}
+                            onLayerDragStart={onLayerDragStart}
+                            onLayerDragEnd={onLayerDragEnd}
+                            onSetTransformingLayer={setTransformingLayer}
+                          />
+                        ) : (
+                          <>
+                            <MovableLayersGroup
+                              allowedLayerTypes={[LayerTypes.OVERLAY]}
+                              stageRef={stageRef}
+                              editable={editable}
+                              onHover={handleHoverLayer}
+                              onLayerDragStart={onLayerDragStart}
+                              onLayerDragEnd={onLayerDragEnd}
+                              onSetTransformingLayer={setTransformingLayer}
+                            />
+
+                            <MovableLayersGroup
+                              allowedLayerTypes={[LayerTypes.SHAPE]}
+                              drawingLayer={drawingLayerRef.current}
+                              stageRef={stageRef}
+                              editable={editable}
+                              onHover={handleHoverLayer}
+                              onLayerDragStart={onLayerDragStart}
+                              onLayerDragEnd={onLayerDragEnd}
+                              onSetTransformingLayer={setTransformingLayer}
+                            />
+
+                            <MovableLayersGroup
+                              allowedLayerTypes={[
+                                LayerTypes.LOGO,
+                                LayerTypes.UPLOAD,
+                                LayerTypes.TEXT,
+                              ]}
+                              stageRef={stageRef}
+                              editable={editable}
+                              onHover={handleHoverLayer}
+                              onLayerDragStart={onLayerDragStart}
+                              onLayerDragEnd={onLayerDragEnd}
+                              onSetTransformingLayer={setTransformingLayer}
+                            />
+                          </>
+                        )}
+
                         {currentScheme.guide_data.show_carparts_on_top ? (
                           <CarParts />
                         ) : (

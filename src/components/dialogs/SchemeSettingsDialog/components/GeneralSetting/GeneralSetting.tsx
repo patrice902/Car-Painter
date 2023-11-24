@@ -10,7 +10,6 @@ import {
   IconButton,
   TextField,
   Theme,
-  Typography,
   useMediaQuery,
 } from "@material-ui/core";
 import {
@@ -32,6 +31,7 @@ import {
   CustomButton,
   CustomDialogContent,
   CustomFormControlLabel,
+  CustomTypography,
 } from "./styles";
 
 type GeneralSettingProps = {
@@ -99,6 +99,18 @@ export const GeneralSetting = React.memo(
           updateScheme({
             ...currentScheme,
             hide_spec: flag,
+          })
+        );
+      },
+      [dispatch, currentScheme]
+    );
+
+    const handleUpdateMergeLayers = useCallback(
+      (flag) => {
+        dispatch(
+          updateScheme({
+            ...currentScheme,
+            merge_layers: flag,
           })
         );
       },
@@ -214,31 +226,52 @@ export const GeneralSetting = React.memo(
           </Box>
 
           <Box pl={2}>
-            <Typography>Owner: {decodeHtml(getUserName(owner))}</Typography>
-            <Typography>
+            <CustomTypography>
+              Owner: {decodeHtml(getUserName(owner))}
+            </CustomTypography>
+            <CustomTypography>
               Created: {new Date(scheme.date_created * 1000).toDateString()}
-            </Typography>
-            <Typography>
+            </CustomTypography>
+            <CustomTypography>
               Last Modified:{" "}
               {new Date(scheme.date_modified * 1000).toDateString()} By{" "}
               {decodeHtml(getUserName(modifier))}
-            </Typography>
+            </CustomTypography>
           </Box>
 
-          <CustomFormControlLabel
-            control={
-              <Checkbox
-                color="primary"
-                checked={!currentScheme?.hide_spec}
-                disabled={!editable}
-                onChange={(event) =>
-                  handleUpdateHideSpec(!event.target.checked)
-                }
-              />
-            }
-            label="Show Spec TGA/Finish"
-            labelPlacement="start"
-          />
+          <Box>
+            <CustomFormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={!currentScheme?.hide_spec}
+                  disabled={!editable}
+                  onChange={(event) =>
+                    handleUpdateHideSpec(!event.target.checked)
+                  }
+                />
+              }
+              label="Show Spec TGA/Finish"
+              labelPlacement="start"
+            />
+          </Box>
+
+          <Box>
+            <CustomFormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={currentScheme?.merge_layers}
+                  disabled={!editable}
+                  onChange={(event) =>
+                    handleUpdateMergeLayers(event.target.checked)
+                  }
+                />
+              }
+              label="Merge Layers"
+              labelPlacement="start"
+            />
+          </Box>
 
           <Box
             mt={2}

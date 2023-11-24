@@ -103,6 +103,7 @@ export type BuilderScheme = {
   finish: string;
   race_updated?: number;
   hide_spec?: boolean;
+  merge_layers?: boolean;
   dismiss_race_confirm?: boolean;
   last_font?: number;
   last_number?: number;
