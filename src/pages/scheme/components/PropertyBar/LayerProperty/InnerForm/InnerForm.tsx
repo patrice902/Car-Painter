@@ -36,7 +36,7 @@ type InnerFormProps = {
   fontList: BuilderFont[];
   currentLayer?: BuilderLayerJSON | null;
   pressedKey?: string | null;
-  onClone: (flipRotation?: boolean) => void;
+  onClone: (mirrorRotation?: boolean) => void;
   onDelete: () => void;
 } & FormikProps<BuilderLayerJSONParitalAll>;
 

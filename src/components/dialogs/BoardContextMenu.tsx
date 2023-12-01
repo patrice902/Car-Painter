@@ -1,11 +1,11 @@
 import { Box, Button, Divider, Popover, Typography } from "@material-ui/core";
+import FlipIcon from "@material-ui/icons/Flip";
 import { Stage } from "konva/types/Stage";
 import React, { RefObject, useCallback } from "react";
 import { ImCopy } from "react-icons/im";
 import {
   MdDelete,
   MdLock,
-  MdLoop,
   MdRotateRight,
   MdSwapHoriz,
   MdSwapVert,
@@ -85,7 +85,7 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
     if (currentLayer)
       onCloneLayer({
         layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
-        flipRotation: true,
+        mirrorRotation: true,
       });
   }, [currentLayer, onCloneLayer, handleClose]);
 
@@ -225,7 +225,7 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
         left: contextMenu.x + wrapperPosition.x,
       }}
     >
-      <Box display="flex" flexDirection="column" px={4} py={2} width="210px">
+      <Box display="flex" flexDirection="column" px={4} py={2} width="200px">
         <NameItem>{decodeHtml(currentLayer.layer_data.name)}</NameItem>
         <StyledButton
           startIcon={<MdVisibilityOff />}
@@ -239,8 +239,8 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
         <StyledButton startIcon={<MdRotateRight />} onClick={handleRotate90}>
           Rotate 90°
         </StyledButton>
-        <StyledButton startIcon={<MdLoop />} onClick={handleCloneAndRotate}>
-          Duplicate + Rotate
+        <StyledButton startIcon={<FlipIcon />} onClick={handleCloneAndRotate}>
+          Mirror Clone
         </StyledButton>
         <StyledButton startIcon={<MdSwapHoriz />} onClick={handleToggleFlop}>
           Flop

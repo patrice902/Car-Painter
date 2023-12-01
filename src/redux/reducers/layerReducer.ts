@@ -347,7 +347,35 @@ const shiftSimilarLayerOrders = (layer_type: LayerTypes, offset = 1) => async (
       userID: currentUser?.id,
     });
   }
-  clearScrollPosition();
+};
+
+export const reorderLayersOnCombination = () => async (
+  dispatch: AppDispatch,
+  getState: GetState
+) => {
+  const layerList = getState().layerReducer.list;
+  const filteredLayers = layerList.filter((layerItem) =>
+    [
+      LayerTypes.OVERLAY,
+      LayerTypes.LOGO,
+      LayerTypes.UPLOAD,
+      LayerTypes.SHAPE,
+      LayerTypes.TEXT,
+    ].includes(layerItem.layer_type)
+  );
+  const orderMap = {
+    [LayerTypes.LOGO]: 0,
+    [LayerTypes.UPLOAD]: 0,
+    [LayerTypes.TEXT]: 0,
+    [LayerTypes.SHAPE]: 1,
+    [LayerTypes.OVERLAY]: 2,
+  };
+  const sortedLayers = _.sortBy(filteredLayers, [
+    (o) =>
+      orderMap[o.layer_type as keyof typeof orderMap] * 100 + o.layer_order,
+  ]).map((layer, index) => ({ ...layer, layer_order: index + 1 }));
+
+  dispatch(bulkUpdateLayer(sortedLayers, false));
 };
 
 export const createLayer = (
@@ -366,6 +394,8 @@ export const createLayer = (
   });
 
   dispatch(shiftSimilarLayerOrders(layer.layer_type));
+
+  clearScrollPosition();
 
   dispatch(insertToList(layer));
   if (layer.layer_type !== LayerTypes.BASE) {
@@ -715,7 +745,7 @@ export type CloneLayerProps = {
   samePosition?: boolean;
   pushingToHistory?: boolean;
   centerPosition?: Position;
-  flipRotation?: boolean;
+  mirrorRotation?: boolean;
   callback?: () => void;
 };
 
@@ -724,7 +754,7 @@ export const cloneLayer = ({
   samePosition = false,
   pushingToHistory = true,
   centerPosition,
-  flipRotation = false,
+  mirrorRotation = false,
   callback,
 }: CloneLayerProps) => async (dispatch: AppDispatch, getState: GetState) => {
   if (layerToClone) {
@@ -736,8 +766,18 @@ export const cloneLayer = ({
         layerToClone.layer_data.height
           ? -layerToClone.layer_data.height / 2
           : 0,
-        flipRotation ? 180 - boardRotate : boardRotate
+        mirrorRotation ? 180 - boardRotate : boardRotate
       );
+
+      let newRotation = layerToClone.layer_data.rotation ?? 0;
+      if (mirrorRotation) {
+        if ((newRotation + 90) % 180 === 0) {
+          newRotation = -newRotation;
+        } else {
+          newRotation = 180 - newRotation;
+        }
+      }
+
       const layer = {
         ..._.omit(layerToClone, ["id"]),
         layer_order: 1,
@@ -751,9 +791,7 @@ export const cloneLayer = ({
           top: samePosition
             ? layerToClone.layer_data.top
             : (centerPosition?.y ?? 0) + offset.y,
-          rotation: flipRotation
-            ? 180 - (layerToClone.layer_data.rotation ?? 0)
-            : layerToClone.layer_data.rotation ?? 0,
+          rotation: newRotation,
         }),
       };
       dispatch(createLayer(layer, pushingToHistory, callback));

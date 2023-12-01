@@ -23,6 +23,7 @@ import { LightTooltip } from "src/components/common";
 import { ConfirmDialog } from "src/components/dialogs";
 import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
+import { reorderLayersOnCombination } from "src/redux/reducers/layerReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
 import { CarMake } from "src/types/model";
 import { BuilderSchemeJSON, UserWithoutPassword } from "src/types/query";
@@ -83,6 +84,10 @@ export const GeneralSetting = React.memo(
     const [resetCarMakeMessage, setResetCarMakeMessage] = useState<
       string | JSX.Element | null
     >(null);
+    const [
+      showSplitLayersConfirm,
+      setShowSplitLayersConfirm,
+    ] = useState<boolean>(false);
     const [name, setName] = useState(scheme.name);
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
@@ -107,6 +112,9 @@ export const GeneralSetting = React.memo(
 
     const handleUpdateMergeLayers = useCallback(
       (flag) => {
+        if (flag) {
+          dispatch(reorderLayersOnCombination());
+        }
         dispatch(
           updateScheme({
             ...currentScheme,
@@ -117,11 +125,31 @@ export const GeneralSetting = React.memo(
       [dispatch, currentScheme]
     );
 
+    const handleMergeLayersCheckboxClick = useCallback(
+      (checked) => {
+        if (checked) {
+          handleUpdateMergeLayers(true);
+        } else {
+          setShowSplitLayersConfirm(true);
+        }
+      },
+      [handleUpdateMergeLayers]
+    );
+
     const hideDeleteMessage = useCallback(() => setDeleteMessage(null), []);
     const hideResetCarMakeMessage = useCallback(
       () => setResetCarMakeMessage(null),
       []
     );
+
+    const hideSplitLayerConfirmation = useCallback(
+      () => setShowSplitLayersConfirm(false),
+      []
+    );
+    const handleConfirmLayerSplit = useCallback(() => {
+      setShowSplitLayersConfirm(false);
+      handleUpdateMergeLayers(false);
+    }, [handleUpdateMergeLayers]);
 
     const handleToggleFavorite = useCallback(() => {
       setFavoriteInPrgoress(true);
@@ -264,11 +292,11 @@ export const GeneralSetting = React.memo(
                   checked={currentScheme?.merge_layers}
                   disabled={!editable}
                   onChange={(event) =>
-                    handleUpdateMergeLayers(event.target.checked)
+                    handleMergeLayersCheckboxClick(event.target.checked)
                   }
                 />
               }
-              label="Merge Layers"
+              label="Combine Layer Groups"
               labelPlacement="start"
             />
           </Box>
@@ -342,6 +370,13 @@ export const GeneralSetting = React.memo(
           open={!!deleteMessage}
           onCancel={hideDeleteMessage}
           onConfirm={handleDelete}
+        />
+
+        <ConfirmDialog
+          text="If you turn off Combine Layer Groups, layer order may change. Continue?"
+          open={showSplitLayersConfirm}
+          onCancel={hideSplitLayerConfirmation}
+          onConfirm={handleConfirmLayerSplit}
         />
 
         <ConfirmDialog

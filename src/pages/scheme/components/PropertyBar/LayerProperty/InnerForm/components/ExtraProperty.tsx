@@ -6,7 +6,7 @@ import { BuilderLayerJSONParitalAll } from "src/types/common";
 
 type ExtraPropertyProps = {
   editable: boolean;
-  onClone: (flipRotation?: boolean) => void;
+  onClone: (mirrorRotation?: boolean) => void;
   onDelete: () => void;
 } & FormikProps<BuilderLayerJSONParitalAll>;
 
@@ -34,7 +34,7 @@ export const ExtraProperty = React.memo(
         {editable && AllowedLayerTypes.includes("clone") ? (
           <Box width="100%" mt={2}>
             <Button fullWidth variant="outlined" onClick={() => onClone(true)}>
-              Clone + Rotate
+              Mirror Clone
             </Button>
           </Box>
         ) : (
