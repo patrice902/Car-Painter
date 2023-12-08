@@ -1,4 +1,5 @@
 import { Box, Theme, useMediaQuery } from "@material-ui/core";
+import { useFeatureFlag } from "configcat-react";
 import React, {
   useCallback,
   useEffect,
@@ -45,7 +46,7 @@ import {
   getUploadListByUserID,
 } from "src/redux/reducers/uploadReducer";
 import { MovableObjLayerData } from "src/types/common";
-import { MouseModes } from "src/types/enum";
+import { ConfigCatFlags, MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import {
@@ -85,6 +86,10 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   const { onZoomFit } = useZoom(stageRef);
   const isAboveMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up("sm")
+  );
+  const { value: enableSimPreview } = useFeatureFlag(
+    ConfigCatFlags.SIM_PREVIEW,
+    true
   );
 
   const [hoveredJSON, setHoveredJSON] = useState<
@@ -257,7 +262,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
                 if (!favoriteOverlayList.length)
                   dispatch(getFavoriteOverlayList(user.id));
                 dispatch(getCarRaces(scheme.id));
-                if (isWindows()) {
+                if (isWindows() && enableSimPreview) {
                   dispatch(getDownloaderStatus());
                 }
               }
@@ -300,7 +305,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
 
   useInterval(
     () => {
-      if (isWindows()) {
+      if (isWindows() && enableSimPreview) {
         dispatch(getDownloaderStatus());
       }
     },

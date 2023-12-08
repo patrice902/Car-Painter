@@ -1,4 +1,5 @@
 import { Box, Dialog, DialogTitle } from "@material-ui/core";
+import { useFeatureFlag } from "configcat-react";
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/redux";
@@ -8,6 +9,7 @@ import {
   deleteSharedUserItem,
   updateSharedUserItem,
 } from "src/redux/reducers/schemeReducer";
+import { ConfigCatFlags } from "src/types/enum";
 
 import { SharingTab, ShowroomTab } from "./components";
 import {
@@ -35,6 +37,10 @@ export const SharingDialog = React.memo(
   }: SharingDialogProps) => {
     const dispatch = useDispatch();
     const [tabValue, setTabValue] = useState(tab ?? 0);
+    const { value: enableSubmitToShowroom } = useFeatureFlag(
+      ConfigCatFlags.SUBMIT_TO_SHOWROOM,
+      true
+    );
 
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
@@ -146,7 +152,11 @@ export const SharingDialog = React.memo(
           aria-label="Project Settings Tab"
         >
           <StyledTab label="Sharing" {...a11yProps(0)} />
-          <StyledTab label="Showroom" {...a11yProps(1)} />
+          {enableSubmitToShowroom ? (
+            <StyledTab label="Showroom" {...a11yProps(1)} />
+          ) : (
+            <></>
+          )}
         </StyledTabs>
         <Box>
           <TabPanel value={tabValue} index={0}>
@@ -160,13 +170,17 @@ export const SharingDialog = React.memo(
               onCancel={onCancel}
             />
           </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <ShowroomTab
-              retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
-              schemeID={currentScheme.id}
-              onClose={onCancel}
-            />
-          </TabPanel>
+          {enableSubmitToShowroom ? (
+            <TabPanel value={tabValue} index={1}>
+              <ShowroomTab
+                retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}
+                schemeID={currentScheme.id}
+                onClose={onCancel}
+              />
+            </TabPanel>
+          ) : (
+            <></>
+          )}
         </Box>
       </Dialog>
     );

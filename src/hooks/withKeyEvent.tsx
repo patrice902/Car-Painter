@@ -1,3 +1,4 @@
+import { useFeatureFlag } from "configcat-react";
 import { Group } from "konva/types/Group";
 import { Stage } from "konva/types/Stage";
 import _ from "lodash";
@@ -51,6 +52,7 @@ import {
 } from "src/types/common";
 import {
   Browser,
+  ConfigCatFlags,
   DialogTypes,
   DrawingStatus,
   LayerTypes,
@@ -87,6 +89,10 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
     const isVisible = usePageVisibility();
     const { editable, stageRef } = props;
     const { onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
+    const { value: enableSimPreview } = useFeatureFlag(
+      ConfigCatFlags.SIM_PREVIEW,
+      true
+    );
     const [deleteLayerState, setDeleteLayerState] = useState<{
       show?: boolean;
       deleteUpload?: boolean;
@@ -366,7 +372,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             dispatch(setMouseMode(MouseModes.ARROW));
           } else if (key === "t" && editable) {
             setDialog(DialogTypes.TEXT);
-          } else if (key === "p" && isWindows()) {
+          } else if (enableSimPreview && key === "p" && isWindows()) {
             dispatch(setAskingSimPreviewByLatest(true));
           } else if (key === "s" && editable) {
             setDialog(DialogTypes.SHAPE);
