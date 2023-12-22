@@ -268,10 +268,27 @@ export const stringifySchemeGuideData = (
 export const addImageProcess = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const img = new Image();
+    img.crossOrigin = "Anonymous";
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
+
+export const imageDataFromSource = (
+  image: HTMLImageElement,
+  width: number,
+  height: number
+) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  context!.drawImage(image, 0, 0, width, height);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return context!.getImageData(0, 0, width, height);
+};
 
 export const alphaToHex = (alpha: number) => {
   let s = Math.floor(alpha * 255).toString(16);
@@ -304,6 +321,11 @@ export const carMakeAssetURL = (carMake?: CarMake | null) =>
     " ",
     "_"
   )}/`;
+export const alphaChannelURL = (carMake?: CarMake | null) =>
+  `${config.assetsURL}/templates2048/${carMake?.folder_directory.replaceAll(
+    " ",
+    "_"
+  )}/alpha_full.png`;
 
 export const generateCarMakeImageURL = (
   layer_data: CarObjLayerData,

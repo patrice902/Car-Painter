@@ -74,6 +74,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
     onKeyEvent,
     onDeleteLayer,
     onCloneLayer,
@@ -114,6 +115,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
     unsetDeleteLayerState
   );
 
@@ -401,6 +403,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
                 baseLayerRef={baseLayerRef}
                 mainLayerRef={mainLayerRef}
                 carMaskLayerRef={carMaskLayerRef}
+                carMakeLayerRef={carMakeLayerRef}
                 activeTransformerRef={activeTransformerRef}
                 hoveredTransformerRef={hoveredTransformerRef}
                 setTransformingLayer={setTransformingLayer}

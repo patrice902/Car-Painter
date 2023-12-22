@@ -9,6 +9,7 @@ export const withWrapper = (Component: React.FC<WithKeyEventProps>) => () => {
   const stageRef = useRef<Stage>(null);
   const baseLayerRef = useRef<Group>(null);
   const mainLayerRef = useRef<Group>(null);
+  const carMakeLayerRef = useRef<Group>(null);
   const carMaskLayerRef = useRef<Group>(null);
 
   const user = useSelector((state: RootState) => state.authReducer.user);
@@ -36,6 +37,7 @@ export const withWrapper = (Component: React.FC<WithKeyEventProps>) => () => {
       stageRef={stageRef}
       baseLayerRef={baseLayerRef}
       mainLayerRef={mainLayerRef}
+      carMakeLayerRef={carMakeLayerRef}
       carMaskLayerRef={carMaskLayerRef}
     />
   );

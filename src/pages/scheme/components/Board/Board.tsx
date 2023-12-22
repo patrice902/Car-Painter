@@ -31,6 +31,7 @@ type BoardProps = {
   onChangeHoverJSONItem: (layerId: number, flag: boolean) => void;
   baseLayerRef: RefObject<Konva.Group>;
   mainLayerRef: RefObject<Konva.Group>;
+  carMakeLayerRef: RefObject<Konva.Group>;
   carMaskLayerRef: RefObject<Konva.Group>;
   activeTransformerRef: RefObject<Konva.Transformer>;
   hoveredTransformerRef: RefObject<Konva.Transformer>;
@@ -50,6 +51,7 @@ export const Board = React.memo(
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
     activeTransformerRef,
     hoveredTransformerRef,
     setTransformingLayer,
@@ -208,7 +210,9 @@ export const Board = React.memo(
 
                       <Group ref={mainLayerRef}>
                         {!currentScheme.guide_data.show_carparts_on_top ? (
-                          <CarParts />
+                          <Group ref={carMakeLayerRef}>
+                            <CarParts />
+                          </Group>
                         ) : (
                           <></>
                         )}
@@ -270,7 +274,9 @@ export const Board = React.memo(
                         )}
 
                         {currentScheme.guide_data.show_carparts_on_top ? (
-                          <CarParts />
+                          <Group ref={carMakeLayerRef}>
+                            <CarParts />
+                          </Group>
                         ) : (
                           <></>
                         )}

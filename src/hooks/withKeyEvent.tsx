@@ -70,6 +70,7 @@ export interface WithKeyEventProps {
   stageRef: RefObject<Stage>;
   baseLayerRef: RefObject<Group>;
   mainLayerRef: RefObject<Group>;
+  carMakeLayerRef: RefObject<Group>;
   carMaskLayerRef: RefObject<Group>;
 }
 
@@ -526,6 +527,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
         pressedKey,
         pressedEventKey,
         currentLayer,
+        enableSimPreview,
         clipboardLayer,
         dispatch,
         handleDeleteLayer,
