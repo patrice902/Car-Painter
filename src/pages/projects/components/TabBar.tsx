@@ -127,7 +127,7 @@ export const TabBar = React.memo(
               variant="subtitle1"
               onClick={() => setOpenChangeLog(true)}
             >
-              Changelog
+              What&apos;s New
             </ClickableTypography>
             <Typography color="textSecondary" variant="subtitle1">
               <Link href={config.helpLink.menu} color="inherit" target="_blank">

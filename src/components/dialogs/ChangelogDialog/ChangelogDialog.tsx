@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import config from "src/config";
+import styled from "styled-components";
 
 type ChangelogDialogProps = {
   onCancel: () => void;
@@ -29,10 +30,10 @@ export const ChangelogDialog = React.memo(
 
     return (
       <Dialog open={open} onClose={onCancel} maxWidth="lg">
-        <DialogTitle>Changelog</DialogTitle>
-        <DialogContent dividers>
+        <DialogTitle>What&apos;s New</DialogTitle>
+        <CustomDialogContent dividers>
           {markdown ? <Markdown>{markdown}</Markdown> : <CircularProgress />}
-        </DialogContent>
+        </CustomDialogContent>
         <DialogActions>
           <Button
             onClick={onCancel}
@@ -48,3 +49,7 @@ export const ChangelogDialog = React.memo(
   }
 );
 export default ChangelogDialog;
+
+export const CustomDialogContent = styled(DialogContent)`
+  font-size: 14px;
+`;

@@ -157,7 +157,6 @@ export const useCapture = (
     // Getting Original Screenshot
     stageRef.current.setAttrs(targetAttrs);
     stageRef.current.draw();
-    await sleep(200);
 
     const schemeLayerURL = stageRef.current.toDataURL({
       pixelRatio,
@@ -172,7 +171,6 @@ export const useCapture = (
     carMaskLayerRef.current?.hide();
     stageRef.current.setAttrs(targetAttrs);
     stageRef.current.draw();
-    await sleep(200);
 
     const tgaSchemeLayerURL = stageRef.current.toDataURL({
       pixelRatio,

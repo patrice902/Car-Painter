@@ -311,7 +311,7 @@ export const UploadListContent = React.memo(
           showFileNamesInPreview={false}
           showFileNames={false}
           acceptedFiles={["image/*"]}
-          filesLimit={10}
+          filesLimit={3}
           key={dropZoneKey}
         />
         <Box
