@@ -41,11 +41,10 @@ import {
   createTextLayer,
   setCurrent as setCurrentLayer,
   setDrawingStatus,
-  updateLayer,
 } from "src/redux/reducers/layerReducer";
-import { updateScheme } from "src/redux/reducers/schemeReducer";
-import { DefaultLayerData } from "src/types/common";
+import { submitDefaultSetting } from "src/redux/reducers/schemeReducer";
 import { DialogTypes, DrawingStatus, MouseModes } from "src/types/enum";
+import { useDebouncedCallback } from "use-debounce";
 
 import { drawModes } from "../../MobileDrawerBar/MobileDrawerBar";
 import {
@@ -77,9 +76,6 @@ export const DrawerBar = React.memo(
     );
     const currentCarMake = useSelector(
       (state: RootState) => state.carMakeReducer.current
-    );
-    const currentLayer = useSelector(
-      (state: RootState) => state.layerReducer.current
     );
     const overlayList = useSelector(
       (state: RootState) => state.overlayReducer.list
@@ -173,105 +169,69 @@ export const DrawerBar = React.memo(
       [dispatch]
     );
 
-    const handleOpenBase = useCallback(
-      (basePaintItemORIndex) => {
-        if (!currentScheme) return;
+    const handleOpenBase = useDebouncedCallback((basePaintItemORIndex) => {
+      if (!currentScheme) return;
 
-        dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(setMouseMode(MouseModes.DEFAULT));
 
-        if (currentScheme.legacy_mode) {
-          dispatch(
-            createLayersFromLegacyBasePaint(
-              currentScheme.id,
-              basePaintItemORIndex
-            )
-          );
-        } else {
-          dispatch(
-            createLayersFromBasePaint(currentScheme.id, basePaintItemORIndex)
-          );
-        }
-
-        setDialog(undefined);
-        focusBoard();
-      },
-      [dispatch, setDialog, currentScheme]
-    );
-    const handleOpenOverlay = useCallback(
-      (shape) => {
-        if (!currentScheme) return;
-
-        dispatch(setMouseMode(MouseModes.DEFAULT));
+      if (currentScheme.legacy_mode) {
         dispatch(
-          createLayerFromOverlay(
+          createLayersFromLegacyBasePaint(
             currentScheme.id,
-            shape,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+            basePaintItemORIndex
           )
         );
-        setDialog(undefined);
-        focusBoard();
-      },
-      [
-        dispatch,
-        currentScheme,
-        stageRef,
-        frameSize,
-        zoom,
-        boardRotate,
-        setDialog,
-      ]
-    );
-    const handleOpenLogo = useCallback(
-      (logo) => {
-        if (!currentScheme) return;
-
-        dispatch(setMouseMode(MouseModes.DEFAULT));
+      } else {
         dispatch(
-          createLayerFromLogo(
-            currentScheme.id,
-            logo,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
-          )
+          createLayersFromBasePaint(currentScheme.id, basePaintItemORIndex)
         );
-        setDialog(undefined);
-        focusBoard();
-      },
-      [
-        dispatch,
-        currentScheme,
-        stageRef,
-        frameSize,
-        zoom,
-        boardRotate,
-        setDialog,
-      ]
-    );
-    const handleOpenUpload = useCallback(
-      (upload) => {
-        if (!currentScheme) return;
+      }
 
-        dispatch(setMouseMode(MouseModes.DEFAULT));
-        dispatch(
-          createLayerFromUpload(
-            currentScheme.id,
-            upload,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
-          )
-        );
-        setDialog(undefined);
-        focusBoard();
-      },
-      [
-        dispatch,
-        setDialog,
-        currentScheme,
-        stageRef,
-        frameSize,
-        zoom,
-        boardRotate,
-      ]
-    );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
+    const handleOpenOverlay = useDebouncedCallback((shape) => {
+      if (!currentScheme) return;
+
+      dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(
+        createLayerFromOverlay(
+          currentScheme.id,
+          shape,
+          getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+        )
+      );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
+    const handleOpenLogo = useDebouncedCallback((logo) => {
+      if (!currentScheme) return;
+
+      dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(
+        createLayerFromLogo(
+          currentScheme.id,
+          logo,
+          getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+        )
+      );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
+    const handleOpenUpload = useDebouncedCallback((upload) => {
+      if (!currentScheme) return;
+
+      dispatch(setMouseMode(MouseModes.DEFAULT));
+      dispatch(
+        createLayerFromUpload(
+          currentScheme.id,
+          upload,
+          getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
+        )
+      );
+      setDialog(undefined);
+      focusBoard();
+    }, 300);
     const handleCreateText = useCallback(
       (values) => {
         if (!currentScheme) return;
@@ -300,36 +260,14 @@ export const DrawerBar = React.memo(
 
     const handleApplySettings = useCallback(
       (guide_data) => {
-        if (!currentScheme) return;
-
-        if (currentLayer) {
-          dispatch(
-            updateLayer({
-              id: currentLayer.id,
-              layer_data: {
-                ...currentLayer.layer_data,
-                color: guide_data.default_shape_color,
-                opacity: guide_data.default_shape_opacity,
-                scolor: guide_data.default_shape_scolor,
-                stroke: guide_data.default_shape_stroke,
-              } as DefaultLayerData,
-            })
-          );
-        } else {
-          dispatch(
-            updateScheme({
-              ...currentScheme,
-              guide_data: {
-                ...currentScheme.guide_data,
-                ...guide_data,
-              },
-            })
-          );
-        }
-        setDialog(undefined);
-        focusBoardQuickly();
+        dispatch(
+          submitDefaultSetting(guide_data, () => {
+            setDialog(undefined);
+            focusBoardQuickly();
+          })
+        );
       },
-      [dispatch, currentScheme, currentLayer, setDialog]
+      [dispatch, setDialog]
     );
 
     const handleToggleDrawShapes = useCallback(() => {

@@ -98,15 +98,15 @@ const overrides = {
       fontFamily: "CircularXXWeb-Regular",
     },
   },
-  MuiInputLabel: {
-    outlined: {
-      transform: "translate(14px, 14px) scale(1)",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
-      width: "100%",
-    },
-  },
+  // MuiInputLabel: {
+  //   outlined: {
+  //     transform: "translate(14px, 14px) scale(1)",
+  //     overflow: "hidden",
+  //     textOverflow: "ellipsis",
+  //     whiteSpace: "nowrap",
+  //     width: "100%",
+  //   },
+  // },
   MuiAccordion: {
     rounded: {
       borderRadius: "6px",

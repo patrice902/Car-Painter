@@ -1,3 +1,4 @@
+import { useFeatureFlag } from "configcat-react";
 import { Group } from "konva/types/Group";
 import { Stage } from "konva/types/Stage";
 import _ from "lodash";
@@ -34,6 +35,7 @@ import {
 import { setAskingSimPreviewByLatest } from "src/redux/reducers/downloaderReducer";
 import {
   cloneLayer,
+  CloneLayerProps,
   deleteLayer,
   setClipboard as setLayerClipboard,
   setCurrent as setCurrentLayer,
@@ -50,6 +52,7 @@ import {
 } from "src/types/common";
 import {
   Browser,
+  ConfigCatFlags,
   DialogTypes,
   DrawingStatus,
   LayerTypes,
@@ -67,6 +70,7 @@ export interface WithKeyEventProps {
   stageRef: RefObject<Stage>;
   baseLayerRef: RefObject<Group>;
   mainLayerRef: RefObject<Group>;
+  carMakeLayerRef: RefObject<Group>;
   carMaskLayerRef: RefObject<Group>;
 }
 
@@ -76,11 +80,7 @@ export interface ComponentWithKeyEventProps extends WithKeyEventProps {
   unsetDeleteLayerState: () => void;
   onKeyEvent: (key: string, event: KeyboardEvent) => void;
   onDeleteLayer: (layer: BuilderLayerJSON) => void;
-  onCloneLayer: (
-    layer: BuilderLayerJSON,
-    samePosition?: boolean,
-    pushingToHistory?: boolean
-  ) => void;
+  onCloneLayer: (props: CloneLayerProps) => void;
   onTogglePaintingGuides: (guide: PaintingGuides) => void;
 }
 
@@ -90,6 +90,10 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
     const isVisible = usePageVisibility();
     const { editable, stageRef } = props;
     const { onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
+    const { value: enableSimPreview } = useFeatureFlag(
+      ConfigCatFlags.SIM_PREVIEW,
+      true
+    );
     const [deleteLayerState, setDeleteLayerState] = useState<{
       show?: boolean;
       deleteUpload?: boolean;
@@ -155,14 +159,17 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
     );
 
     const handleCloneLayer = useCallback(
-      (layer, samePosition = false, pushingToHistory = true) => {
+      (params: CloneLayerProps) => {
         dispatch(
-          cloneLayer(
-            layer,
-            samePosition,
-            pushingToHistory,
-            getZoomedCenterPosition(stageRef, frameSize, zoom, boardRotate)
-          )
+          cloneLayer({
+            ...params,
+            centerPosition: getZoomedCenterPosition(
+              stageRef,
+              frameSize,
+              zoom,
+              boardRotate
+            ),
+          })
         );
         focusBoard();
       },
@@ -366,7 +373,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             dispatch(setMouseMode(MouseModes.ARROW));
           } else if (key === "t" && editable) {
             setDialog(DialogTypes.TEXT);
-          } else if (key === "p" && isWindows()) {
+          } else if (enableSimPreview && key === "p" && isWindows()) {
             dispatch(setAskingSimPreviewByLatest(true));
           } else if (key === "s" && editable) {
             setDialog(DialogTypes.SHAPE);
@@ -387,7 +394,9 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             clipboardLayer &&
             editable
           ) {
-            handleCloneLayer(clipboardLayer);
+            handleCloneLayer({
+              layerToClone: clipboardLayer as BuilderLayerJSON<MovableObjLayerData>,
+            });
           } else if (
             event.key === "z" &&
             (event.ctrlKey || event.metaKey) &&
@@ -406,7 +415,9 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             editable
           ) {
             if (currentLayer) {
-              handleCloneLayer(currentLayer);
+              handleCloneLayer({
+                layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
+              });
             }
           } else if (event.key === "=" && (event.ctrlKey || event.metaKey)) {
             const newBrowserZoom = browserZoom * 1.25;
@@ -516,6 +527,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
         pressedKey,
         pressedEventKey,
         currentLayer,
+        enableSimPreview,
         clipboardLayer,
         dispatch,
         handleDeleteLayer,

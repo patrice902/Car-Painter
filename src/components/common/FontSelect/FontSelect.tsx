@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ImageWithLoad } from "src/components/common";
 import config from "src/config";
-import { focusBoardQuickly } from "src/helper";
+import { focusBoardQuickly, stopPropagation } from "src/helper";
 import { RootState } from "src/redux";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
 import { BuilderFont } from "src/types/model";
@@ -32,11 +32,6 @@ export const FontSelect = React.memo((props: FontSelectProps) => {
       ),
     [fontList, search]
   );
-
-  const stopPropagation = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-  };
 
   const hanldeSearchTextChange = useCallback((e) => {
     stopPropagation(e);

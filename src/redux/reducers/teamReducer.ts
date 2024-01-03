@@ -3,7 +3,7 @@ import TeamService from "src/services/teamService";
 import { Team } from "src/types/model";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage } from "./messageReducer";
 
 export type TeamReducerState = {
   list: Team[];
@@ -38,7 +38,7 @@ export const getTeamListByUserID = (userID: number) => async (
     const teams = await TeamService.getTeamListByUserID(userID);
     dispatch(setList(teams));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };

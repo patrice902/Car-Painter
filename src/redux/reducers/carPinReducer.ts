@@ -3,7 +3,7 @@ import CarPinService from "src/services/carPinService";
 import { CarPin } from "src/types/model";
 
 import { AppDispatch, GetState } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage } from "./messageReducer";
 
 export type CarPinReducerState = {
   list: CarPin[];
@@ -62,7 +62,7 @@ export const getCarPinListByUserID = (userID: number) => async (
     const carPinList = await CarPinService.getCarPinListByUserID(userID);
     dispatch(setList(carPinList));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -85,7 +85,7 @@ export const createCarPin = (carMakeID: number) => async (
 
     dispatch(insertToList(newCarPin));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setUpdatingID(-1));
 };
@@ -103,7 +103,7 @@ export const deleteCarPin = (carMakeID: number) => async (
       dispatch(deleteListItem(carPin));
     }
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setUpdatingID(-1));
 };

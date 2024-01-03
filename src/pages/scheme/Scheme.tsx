@@ -1,4 +1,5 @@
 import { Box, Theme, useMediaQuery } from "@material-ui/core";
+import { useFeatureFlag } from "configcat-react";
 import React, {
   useCallback,
   useEffect,
@@ -41,10 +42,11 @@ import {
 } from "src/redux/reducers/schemeReducer";
 import {
   getFavoriteUploadList,
+  getSharedUploadList,
   getUploadListByUserID,
 } from "src/redux/reducers/uploadReducer";
 import { MovableObjLayerData } from "src/types/common";
-import { MouseModes } from "src/types/enum";
+import { ConfigCatFlags, MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import {
@@ -72,6 +74,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
     onKeyEvent,
     onDeleteLayer,
     onCloneLayer,
@@ -84,6 +87,10 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   const { onZoomFit } = useZoom(stageRef);
   const isAboveMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up("sm")
+  );
+  const { value: enableSimPreview } = useFeatureFlag(
+    ConfigCatFlags.SIM_PREVIEW,
+    true
   );
 
   const [hoveredJSON, setHoveredJSON] = useState<
@@ -108,6 +115,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
     unsetDeleteLayerState
   );
 
@@ -156,6 +164,9 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   );
   const favoriteUploadList = useSelector(
     (state: RootState) => state.uploadReducer.favoriteUploadList
+  );
+  const sharedUploadList = useSelector(
+    (state: RootState) => state.uploadReducer.sharedUploadList
   );
 
   const schemeLoading = useSelector(
@@ -248,10 +259,12 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
                   dispatch(getFavoriteLogoList(user.id));
                 if (!favoriteUploadList.length)
                   dispatch(getFavoriteUploadList(user.id));
+                if (!sharedUploadList.length)
+                  dispatch(getSharedUploadList(user.id));
                 if (!favoriteOverlayList.length)
                   dispatch(getFavoriteOverlayList(user.id));
                 dispatch(getCarRaces(scheme.id));
-                if (isWindows()) {
+                if (isWindows() && enableSimPreview) {
                   dispatch(getDownloaderStatus());
                 }
               }
@@ -294,7 +307,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
 
   useInterval(
     () => {
-      if (isWindows()) {
+      if (isWindows() && enableSimPreview) {
         dispatch(getDownloaderStatus());
       }
     },
@@ -390,6 +403,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
                 baseLayerRef={baseLayerRef}
                 mainLayerRef={mainLayerRef}
                 carMaskLayerRef={carMaskLayerRef}
+                carMakeLayerRef={carMakeLayerRef}
                 activeTransformerRef={activeTransformerRef}
                 hoveredTransformerRef={hoveredTransformerRef}
                 setTransformingLayer={setTransformingLayer}

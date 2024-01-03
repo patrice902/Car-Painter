@@ -1,58 +1,43 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  ImageListItemBar,
-  Theme,
-  useMediaQuery,
-} from "@material-ui/core";
-import { Delete as DeleteIcon } from "@material-ui/icons";
+import { Box, Button, Checkbox, FormControlLabel } from "@material-ui/core";
+import CryptoJS from "crypto-js";
 import _ from "lodash";
 import { DropzoneArea } from "material-ui-dropzone";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch, useSelector } from "react-redux";
-import { ImageWithLoad, Loader, ScreenLoader } from "src/components/common";
+import { Loader, ScreenLoader } from "src/components/common";
 import { ConfirmDialog, YesNoDialog } from "src/components/dialogs";
-import {
-  decodeHtml,
-  getNameFromUploadFileName,
-  uploadAssetURL,
-} from "src/helper";
+import config from "src/config";
+import { decodeHtml, getNameFromUploadFileName, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import {
   deleteItemsByUploadID as deleteLayerItemsByUploadID,
   setCurrent as setCurrentLayer,
 } from "src/redux/reducers/layerReducer";
-import { setMessage } from "src/redux/reducers/messageReducer";
+import { catchErrorMessage } from "src/redux/reducers/messageReducer";
 import {
-  createFavoriteUpload,
-  deleteFavoriteUploadItem,
   deleteLegacyUploadsByUserID,
+  deleteSharedUploadItem,
   deleteUpload,
   uploadFiles,
 } from "src/redux/reducers/uploadReducer";
 import SchemeService from "src/services/schemeService";
-import { BuilderScheme, BuilderUpload } from "src/types/model";
+import { BuilderScheme, BuilderUploadWithUser } from "src/types/model";
 
+import CopyCodeDialog from "./CopyCodeDialog";
 import {
   CategoryText,
   CustomImageList,
   CustomImageListItem,
-  DeleteButton,
-  faStarOff,
-  faStarOn,
 } from "./UploadDialog.style";
+import { UploadItemContent } from "./UploadItemContent";
 
 type UploadListContentProps = {
   step?: number;
-  uploads: BuilderUpload[];
+  uploads: BuilderUploadWithUser[];
   search: string;
   setSearch: (value: string) => void;
-  onOpenUpload: (upload: BuilderUpload) => void;
+  onOpenUpload: (upload: BuilderUploadWithUser) => void;
 };
 
 export const UploadListContent = React.memo(
@@ -64,9 +49,6 @@ export const UploadListContent = React.memo(
     onOpenUpload,
   }: UploadListContentProps) => {
     const dispatch = useDispatch();
-    const isAboveMobile = useMediaQuery((theme: Theme) =>
-      theme.breakpoints.up("sm")
-    );
 
     const user = useSelector((state: RootState) => state.authReducer.user);
     const currentScheme = useSelector(
@@ -75,10 +57,14 @@ export const UploadListContent = React.memo(
     const favoriteUploadList = useSelector(
       (state: RootState) => state.uploadReducer.favoriteUploadList
     );
-
-    const [uploadToDelete, setUploadToDelete] = useState<BuilderUpload | null>(
-      null
+    const sharedUploadList = useSelector(
+      (state: RootState) => state.uploadReducer.sharedUploadList
     );
+
+    const [
+      uploadToDelete,
+      setUploadToDelete,
+    ] = useState<BuilderUploadWithUser | null>(null);
     const [showLegacyDelete, setShowLegacyDelete] = useState(false);
     const [associatedSchemes, setAssociatedSchemes] = useState<BuilderScheme[]>(
       []
@@ -88,6 +74,7 @@ export const UploadListContent = React.memo(
     const [showLegacy, setShowLegacy] = useState(false);
     const [fetchingDeleteList, setFetchingDeleteList] = useState(false);
     const [dropZoneKey, setDropZoneKey] = useState(1);
+    const [sharingCode, setSharingCode] = useState<string>();
 
     const scrollToRef = useRef(null);
 
@@ -96,16 +83,48 @@ export const UploadListContent = React.memo(
       [favoriteUploadList]
     );
 
+    const combinedUploads = useMemo(
+      () => [...sharedUploadList.map((item) => item.upload), ...uploads],
+      [sharedUploadList, uploads]
+    );
+
+    const ownAssociatedSchemes = useMemo(
+      () => associatedSchemes.filter((item) => item.user_id === user?.id),
+      [associatedSchemes, user]
+    );
+
+    const checkFileNameIncludesSearch = useCallback(
+      (item: BuilderUploadWithUser, search: string) =>
+        !search?.length ||
+        getNameFromUploadFileName(item.file_name, item.user_id)
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      []
+    );
+
+    const checkRelatedUserNameIncludesSearch = useCallback(
+      (item: BuilderUploadWithUser, search: string) =>
+        !search?.length ||
+        (item.user_id !== user?.id &&
+          getUserName(item.user).toLowerCase().includes(search.toLowerCase())),
+      [user]
+    );
+
     const filteredUploads = useMemo(
       () =>
-        _.orderBy(uploads, ["id"], "desc").filter(
+        _.orderBy(combinedUploads, ["id"], "desc").filter(
           (item) =>
-            getNameFromUploadFileName(item.file_name, user)
-              .toLowerCase()
-              .includes(search.toLowerCase()) &&
+            (checkFileNameIncludesSearch(item, search) ||
+              checkRelatedUserNameIncludesSearch(item, search)) &&
             (showLegacy || !item.legacy_mode)
         ),
-      [uploads, user, search, showLegacy]
+      [
+        combinedUploads,
+        checkFileNameIncludesSearch,
+        search,
+        checkRelatedUserNameIncludesSearch,
+        showLegacy,
+      ]
     );
 
     const favoriteFilteredUploads = useMemo(
@@ -115,43 +134,13 @@ export const UploadListContent = React.memo(
     );
 
     const hasLegacyUploads = useMemo(
-      () => uploads.some((item) => item.legacy_mode),
-      [uploads]
+      () => combinedUploads.some((item) => item.legacy_mode),
+      [combinedUploads]
     );
 
     const increaseData = useCallback(() => {
       setLimit(limit + step);
     }, [limit, step]);
-
-    const handleClickAddFavorite = useCallback(
-      (event, upload: BuilderUpload) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
-
-        if (!user) return;
-
-        dispatch(
-          createFavoriteUpload({ upload_id: upload.id, user_id: user.id })
-        );
-      },
-      [dispatch, user]
-    );
-
-    const handleClickRemoveFavorite = useCallback(
-      (event, upload: BuilderUpload) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
-
-        const favoriteUploadItem = favoriteUploadList.find(
-          (item) => item.upload_id === upload.id
-        );
-
-        if (!favoriteUploadItem) return;
-
-        dispatch(deleteFavoriteUploadItem(favoriteUploadItem.id));
-      },
-      [dispatch, favoriteUploadList]
-    );
 
     const handleDropZoneChange = useCallback(
       (files_up: File[]) => {
@@ -170,34 +159,46 @@ export const UploadListContent = React.memo(
       },
       [dispatch, user, currentScheme, setSearch, dropZoneKey]
     );
-    const handleClickDeleteUpload = useCallback(
-      (event, uploadItem) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
-        setUploadToDelete(uploadItem);
-      },
-      [setUploadToDelete]
-    );
+
     const handleDeleteUploadConfirm = useCallback(async () => {
       try {
         if (!uploadToDelete) return;
+
+        if (uploadToDelete.user_id !== user?.id) {
+          // This is shared upload
+          const foundShared = sharedUploadList.find(
+            (item) => item.upload_id === uploadToDelete.id
+          );
+
+          if (foundShared) {
+            dispatch(
+              deleteSharedUploadItem(foundShared.id, () =>
+                setUploadToDelete(null)
+              )
+            );
+          }
+          return;
+        }
 
         setFetchingDeleteList(true);
         const schemes = await SchemeService.getSchemeListByUploadID(
           uploadToDelete.id
         );
+        const validSchemes = schemes.filter(
+          (item) => item.user_id === user?.id
+        );
         setFetchingDeleteList(false);
-        if (schemes.length) {
+        if (validSchemes.length) {
           setAssociatedSchemes(schemes);
         } else {
-          dispatch(deleteUpload(uploadToDelete, true));
+          dispatch(deleteUpload(uploadToDelete, false));
           setUploadToDelete(null);
         }
       } catch (err) {
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
         setUploadToDelete(null);
       }
-    }, [dispatch, uploadToDelete, setAssociatedSchemes, setUploadToDelete]);
+    }, [uploadToDelete, user?.id, sharedUploadList, dispatch]);
 
     const handleDeleteAllLegacyConfirm = useCallback(async () => {
       setShowLegacyDelete(false);
@@ -216,11 +217,25 @@ export const UploadListContent = React.memo(
           dispatch(setCurrentLayer(null));
         }
 
-        dispatch(deleteUpload(uploadToDelete, deleteFromAll));
+        dispatch(
+          deleteUpload(
+            uploadToDelete,
+            deleteFromAll,
+            associatedSchemes.length !== ownAssociatedSchemes.length
+              ? user?.id
+              : undefined
+          )
+        );
         setUploadToDelete(null);
         setAssociatedSchemes([]);
       },
-      [dispatch, uploadToDelete, setUploadToDelete, setAssociatedSchemes]
+      [
+        uploadToDelete,
+        dispatch,
+        associatedSchemes.length,
+        ownAssociatedSchemes.length,
+        user,
+      ]
     );
 
     const handleCancelForDeleteUploadFinally = useCallback(
@@ -235,54 +250,28 @@ export const UploadListContent = React.memo(
       []
     );
 
-    const renderUploadList = (uploadList: BuilderUpload[]) => (
-      <CustomImageList rowHeight={178} cols={isAboveMobile ? 3 : 2}>
-        {uploadList.map((uploadItem) => {
-          const isFavorite = favoriteUploadIDs.includes(uploadItem.id);
+    const handleOpenShareCode = useCallback((id: number) => {
+      const hash = CryptoJS.Rabbit.encrypt(
+        id.toString(),
+        config.cryptoKey
+      ).toString();
+      setSharingCode(hash);
+    }, []);
 
-          return (
-            <CustomImageListItem
-              key={uploadItem.id}
-              cols={1}
-              onClick={() => onOpenUpload(uploadItem)}
-            >
-              <ImageWithLoad
-                src={uploadAssetURL(uploadItem)}
-                alt={getNameFromUploadFileName(uploadItem.file_name, user)}
-                alignItems="center"
-                height="100%"
-                maxHeight="250px"
-              />
-              <ImageListItemBar
-                title={getNameFromUploadFileName(uploadItem.file_name, user)}
-                actionIcon={
-                  <Box display="flex" alignItems="center">
-                    <IconButton
-                      color="secondary"
-                      onClick={(event) =>
-                        isFavorite
-                          ? handleClickRemoveFavorite(event, uploadItem)
-                          : handleClickAddFavorite(event, uploadItem)
-                      }
-                    >
-                      <FontAwesomeIcon
-                        icon={isFavorite ? faStarOn : faStarOff}
-                        size="sm"
-                      />
-                    </IconButton>
-                    <DeleteButton
-                      onClick={(event) =>
-                        handleClickDeleteUpload(event, uploadItem)
-                      }
-                    >
-                      <DeleteIcon />
-                    </DeleteButton>
-                  </Box>
-                }
-              />
-            </CustomImageListItem>
-          );
-        })}
+    const renderUploadList = (uploadList: BuilderUploadWithUser[]) => (
+      <CustomImageList rowHeight={178} cols={2}>
+        {uploadList.map((uploadItem) => (
+          <CustomImageListItem
+            key={uploadItem.id}
+            onClick={() => onOpenUpload(uploadItem)}
+          >
+            <UploadItemContent
+              uploadItem={uploadItem}
+              onShareCode={handleOpenShareCode}
+              onDelete={setUploadToDelete}
+            />
+          </CustomImageListItem>
+        ))}
       </CustomImageList>
     );
 
@@ -322,7 +311,7 @@ export const UploadListContent = React.memo(
           showFileNamesInPreview={false}
           showFileNames={false}
           acceptedFiles={["image/*"]}
-          filesLimit={10}
+          filesLimit={3}
           key={dropZoneKey}
         />
         <Box
@@ -379,7 +368,7 @@ export const UploadListContent = React.memo(
             uploadToDelete
               ? `Are you sure you want to delete "${getNameFromUploadFileName(
                   uploadToDelete.file_name,
-                  user
+                  uploadToDelete.user_id
                 )}"?`
               : ""
           }
@@ -396,11 +385,11 @@ export const UploadListContent = React.memo(
         />
         <YesNoDialog
           text={
-            associatedSchemes.length ? (
+            ownAssociatedSchemes.length ? (
               <>
                 This logo is being used on the following projects:
                 <ul>
-                  {associatedSchemes.map((item, index) => (
+                  {ownAssociatedSchemes.map((item, index) => (
                     <li key={index}>{decodeHtml(item.name)}</li>
                   ))}
                 </ul>
@@ -412,9 +401,14 @@ export const UploadListContent = React.memo(
           }
           yesText="Delete"
           noText="Keep"
-          open={!!associatedSchemes.length}
+          open={!!ownAssociatedSchemes.length}
           onYes={() => handleDeleteUploadFinally(true)}
           onNo={handleCancelForDeleteUploadFinally}
+        />
+        <CopyCodeDialog
+          open={Boolean(sharingCode)}
+          code={sharingCode}
+          onCancel={() => setSharingCode(undefined)}
         />
       </>
     );

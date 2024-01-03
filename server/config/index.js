@@ -33,4 +33,5 @@ module.exports = {
   awsRegion: process.env.AWS_REGION,
   bucketURL: process.env.BUCKET_URL,
   storageType: process.env.STORAGE_TYPE || "S3",
+  cryptoKey: process.env.REACT_APP_CRYPTO_HASHING_KEY || "SECRET_KEY",
 };

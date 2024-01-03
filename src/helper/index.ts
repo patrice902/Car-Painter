@@ -1,3 +1,4 @@
+import Color from "color";
 import { Node } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
 import _ from "lodash";
@@ -65,28 +66,6 @@ export const getDifferenceFromToday = (past_date: Date | string | number) => {
   return `${returnValue} year${returnValue > 1 ? "s" : ""} ago`;
 };
 
-export const hexToRgba = (hex?: string) => {
-  if (!hex) return null;
-
-  const result =
-    hex.length > 7
-      ? /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-      : /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result)
-    return {
-      r: null,
-      g: null,
-      b: null,
-      a: null,
-    };
-  return {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16),
-    a: hex.length > 7 ? parseInt(result[4], 16) : 255,
-  };
-};
-
 export const mathRound2 = (num: number) =>
   Math.round((num + Number.EPSILON) * 100) / 100;
 
@@ -108,15 +87,13 @@ export const colorValidatorWithoutAlpha = (
 export const colorValidator = (color: string | null | undefined) => {
   if (!color?.length) return true;
 
-  if (
-    color[0] === "#" &&
-    (color.length === 1 ||
-      color.length === 4 ||
-      color.length === 7 ||
-      color.length === 9)
-  )
-    return true;
-  return false;
+  if (color.length > 100) return false;
+
+  try {
+    return Color(color) ? true : false;
+  } catch (error) {
+    return false;
+  }
 };
 
 export const getRelativePointerPosition = (node: Node) => {
@@ -291,10 +268,27 @@ export const stringifySchemeGuideData = (
 export const addImageProcess = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const img = new Image();
+    img.crossOrigin = "Anonymous";
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
+
+export const imageDataFromSource = (
+  image: HTMLImageElement,
+  width: number,
+  height: number
+) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  context!.drawImage(image, 0, 0, width, height);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return context!.getImageData(0, 0, width, height);
+};
 
 export const alphaToHex = (alpha: number) => {
   let s = Math.floor(alpha * 255).toString(16);
@@ -327,6 +321,11 @@ export const carMakeAssetURL = (carMake?: CarMake | null) =>
     " ",
     "_"
   )}/`;
+export const alphaChannelURL = (carMake?: CarMake | null) =>
+  `${config.assetsURL}/templates2048/${carMake?.folder_directory.replaceAll(
+    " ",
+    "_"
+  )}/alpha_full.png`;
 
 export const generateCarMakeImageURL = (
   layer_data: CarObjLayerData,
@@ -460,14 +459,15 @@ export const reduceString = (text: string, limit: number) => {
 
 export const getNameFromUploadFileName = (
   file_name: string,
-  user?: UserWithoutPassword
+  userID?: number
 ) => {
   const temp = file_name.substring(
     file_name.lastIndexOf("uploads/") + "uploads/".length,
     file_name.indexOf(".")
   );
-  if (user && temp.indexOf(user.id.toString()) === 0)
-    return temp.slice(user.id.toString().length + 1);
+
+  if (userID && temp.indexOf(userID.toString()) === 0)
+    return temp.slice(userID.toString().length + 1);
   return temp;
 };
 
@@ -767,14 +767,14 @@ export const enhanceFontFamily = (fontName?: string) =>
 
 export const modifyFileName = (file: File, userID?: number) => {
   let newName = file.name;
-  const firstDotPosition = file.name.indexOf(".");
+  const lastDotPosition = file.name.lastIndexOf(".");
   const prefix = userID ? userID + "_" : "";
   newName =
     prefix +
-    file.name.slice(0, firstDotPosition) +
+    file.name.slice(0, lastDotPosition) +
     "." +
     uuidv4() +
-    file.name.slice(firstDotPosition);
+    file.name.slice(lastDotPosition);
 
   return newName;
 };
@@ -796,3 +796,19 @@ export const decodeHtml = (str?: string) => {
 
   return txt.documentElement.textContent ?? "";
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const stopPropagation = (event: any) => {
+  event?.stopPropagation();
+  event?.nativeEvent?.stopImmediatePropagation();
+};
+
+export const positiveNumGuard = (num?: string | number | typeof NaN) =>
+  Number.isNaN(Number(num)) || num === undefined || num === null
+    ? 0
+    : Math.abs(Number(num));
+
+export const numberGuard = (num?: string | number | typeof NaN) =>
+  Number.isNaN(Number(num)) || num === undefined || num === null
+    ? 0
+    : Number(num);

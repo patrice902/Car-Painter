@@ -13,7 +13,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { NavLink } from "react-router-dom";
 import { ImageWithLoad, Loader } from "src/components/common";
-import { HelpLinks } from "src/constant";
+import config from "src/config";
 import { basePaintAssetURL, legacyBasePaintAssetURL } from "src/helper";
 import { BuilderBase, CarMake } from "src/types/model";
 
@@ -119,7 +119,7 @@ export const BasePaintDialog = React.memo(
 
               <Typography>
                 <a
-                  href={HelpLinks.LegacyProjects}
+                  href={config.helpLink.legacyProjects}
                   className={classes.moreLink}
                   target="_blank"
                   rel="noreferrer"

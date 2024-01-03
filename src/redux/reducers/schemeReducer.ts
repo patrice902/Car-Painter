@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
+import { DefaultSettingsFormValues } from "src/components/dialogs/DefaultSettingsDialog/DefaultSettingsDialog.model";
 import {
   clearScrollPosition,
   mergeTwoScheme,
@@ -9,6 +10,7 @@ import {
 import FavoriteSchemeService from "src/services/favoriteSchemeService";
 import SchemeService from "src/services/schemeService";
 import SharedSchemeService from "src/services/sharedSchemeService";
+import { DefaultLayerData } from "src/types/common";
 import { HistoryActions } from "src/types/enum";
 import { BuilderScheme, CarMake, SharedScheme, User } from "src/types/model";
 import {
@@ -23,11 +25,16 @@ import {
 import socketClient from "src/utils/socketClient";
 
 import { AppDispatch, GetState } from "..";
+import { updateUser } from "./authReducer";
 import { setList as setBasePaintList } from "./basePaintReducer";
 import { pushToActionHistory } from "./boardReducer";
 import { setCurrent as setCurrentCarMake } from "./carMakeReducer";
-import { setList as setLayerList, setLoadedStatusAll } from "./layerReducer";
-import { setMessage } from "./messageReducer";
+import {
+  setList as setLayerList,
+  setLoadedStatusAll,
+  updateLayer,
+} from "./layerReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type SchemeReducerState = {
   list: BuilderSchemeJSONForGetListByUserId[];
@@ -270,7 +277,7 @@ export const getSchemeList = (userID: number) => async (
     const schemes = await SchemeService.getSchemeListByUserID(userID);
     dispatch(setList(schemes.filter((scheme) => !scheme.carMake.deleted)));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -293,7 +300,7 @@ export const createScheme = (
     dispatch(insertToList(scheme));
     if (onOpen) onOpen(scheme.id);
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -306,7 +313,7 @@ export const deleteAndCreateNewCarMakeLayers = (schemeID: number) => async (
     const scheme = await SchemeService.renewCarMakeLayers(schemeID);
     dispatch(setLayerList(scheme.layers));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -411,7 +418,7 @@ export const updateScheme = (
       );
     clearScrollPosition();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -429,7 +436,7 @@ export const deleteScheme = (schemeID: number, callback?: () => void) => async (
       setMessage({ message: "Deleted Project successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -446,7 +453,7 @@ export const cloneScheme = (schemeID: number) => async (
       setMessage({ message: "Cloned Project successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -461,7 +468,7 @@ export const getSharedUsers = (schemeID: number) => async (
     );
     dispatch(setSharedUsers(sharedUsers));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -476,7 +483,7 @@ export const updateSharedUserItem = (
     dispatch(updateSharedUser(shared));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -489,7 +496,7 @@ export const deleteSharedUserItem = (
     dispatch(deleteSharedUser(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -500,7 +507,7 @@ export const getSharedList = (userID: number, callback?: () => void) => async (
     const list = await SharedSchemeService.getSharedSchemeListByUserID(userID);
     dispatch(setSharedList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -517,7 +524,7 @@ export const updateSharedItem = (
     dispatch(updateSharedListItem(shared));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
     fallback?.();
   }
   dispatch(setLoading(false));
@@ -531,7 +538,7 @@ export const deleteSharedItem = (id: number) => async (
     await SharedSchemeService.deleteSharedScheme(id);
     dispatch(deleteSharedListItem(id));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -546,7 +553,7 @@ export const getFavoriteList = (
     );
     dispatch(setFavoriteList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -562,7 +569,7 @@ export const createFavoriteScheme = (
     dispatch(insertToFavoriteList(favoriteScheme));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -574,7 +581,7 @@ export const deleteFavoriteItem = (id: number, callback?: () => void) => async (
     dispatch(deleteFavoriteListItem(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -587,8 +594,56 @@ export const createSharedUser = (
     dispatch(insertToSharedUsers(sharedUser));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
+};
+
+export const submitDefaultSetting = (
+  guide_data: DefaultSettingsFormValues,
+  callback?: () => void
+) => async (dispatch: AppDispatch, getState: GetState) => {
+  const currentScheme = getState().schemeReducer.current;
+  const currentLayer = getState().layerReducer.current;
+  const currentUser = getState().authReducer.user;
+
+  if (!currentScheme) return;
+
+  if (currentLayer) {
+    dispatch(
+      updateLayer({
+        id: currentLayer.id,
+        layer_data: {
+          ...currentLayer.layer_data,
+          color: guide_data.default_shape_color,
+          opacity: guide_data.default_shape_opacity,
+          scolor: guide_data.default_shape_scolor,
+          stroke: guide_data.default_shape_stroke,
+        } as DefaultLayerData,
+      })
+    );
+  } else {
+    dispatch(
+      updateScheme({
+        ...currentScheme,
+        guide_data: {
+          ...currentScheme.guide_data,
+          ...guide_data,
+        },
+      })
+    );
+  }
+
+  const saved_colors = JSON.stringify(guide_data.saved_colors);
+  if (currentUser && currentUser.saved_colors !== saved_colors) {
+    dispatch(
+      updateUser({
+        ...currentUser,
+        saved_colors,
+      })
+    );
+  }
+
+  callback?.();
 };
 
 export default slice.reducer;

@@ -681,11 +681,3 @@ export const AllowedLayerProps = {
     "layer_data.finishBase",
   ],
 };
-
-export const HelpLinks = {
-  Menu: "https://help.tradingpaints.com/kb/en/paint-builder-337264",
-  LegacyProjects:
-    "https://help.tradingpaints.com/kb/guide/en/about-legacy-projects-UNQoD95JTD/Steps/2522705",
-  RacingNumbers:
-    "https://help.tradingpaints.com/kb/guide/en/what-is-a-custom-number-paint-and-how-do-they-work-wideJuBrE5/Steps/2458158",
-};

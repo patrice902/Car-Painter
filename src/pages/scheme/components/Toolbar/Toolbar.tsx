@@ -11,6 +11,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Rotate90DegreesCcw, Search as SearchIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import { Stage } from "konva/types/Stage";
 import React, { RefObject, useCallback, useEffect, useState } from "react";
 import { ChevronsLeft, ChevronsRight } from "react-feather";
@@ -39,7 +40,7 @@ import {
   submitSimPreview,
 } from "src/redux/reducers/downloaderReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
-import { DialogTypes } from "src/types/enum";
+import { ConfigCatFlags, DialogTypes } from "src/types/enum";
 
 import { Wrapper, ZoomButton } from "./Toolbar.style";
 
@@ -60,6 +61,10 @@ export const Toolbar = React.memo(
     const { zoom, onZoomIn, onZoomOut, onZoomFit } = useZoom(stageRef);
     const isAboveTablet = useMediaQuery((theme: Theme) =>
       theme.breakpoints.up("md")
+    );
+    const { value: enableSimPreview } = useFeatureFlag(
+      ConfigCatFlags.SIM_PREVIEW,
+      true
     );
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -317,7 +322,7 @@ export const Toolbar = React.memo(
               </IconButton>
             </LightTooltip>
 
-            {isAboveTablet ? (
+            {enableSimPreview && isAboveTablet ? (
               <Box ml={2} mr={2} height="100%" display="flex">
                 <LightTooltip
                   title={

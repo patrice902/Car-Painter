@@ -1,19 +1,27 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
   Typography,
 } from "@material-ui/core";
-import { Form, Formik, FormikProps } from "formik";
-import React, { useCallback } from "react";
+import {
+  Add as AddIcon,
+  DeleteOutline as DeleteIcon,
+} from "@material-ui/icons";
+import { FieldArray, Form, Formik, FormikProps, getIn } from "formik";
+import { ColorPicker } from "material-ui-color";
+import React from "react";
 import { useSelector } from "react-redux";
-import { ColorPickerInput, SliderInput } from "src/components/common";
+import { ColorPickerInput } from "src/components/common";
 import { colorValidator } from "src/helper";
 import { RootState } from "src/redux";
 import { MovableObjLayerData, RectObjLayerData } from "src/types/common";
+import { Palette } from "src/types/enum";
 import * as Yup from "yup";
 
 import {
@@ -31,6 +39,11 @@ const validationSchema = Yup.object().shape({
     .nullable()
     .test("color-validation", "Incorrect Color Format", colorValidator),
   default_shape_stroke: Yup.number(),
+  saved_colors: Yup.array().of(
+    Yup.string()
+      .required("Required")
+      .test("color-validation", "Incorrect Color Format", colorValidator)
+  ),
 });
 
 export const DefaultSettingsDialog = React.memo(
@@ -40,6 +53,9 @@ export const DefaultSettingsDialog = React.memo(
     );
     const currentLayer = useSelector(
       (state: RootState) => state.layerReducer.current
+    );
+    const currentUser = useSelector(
+      (state: RootState) => state.authReducer.user
     );
 
     const initialValues: DefaultSettingsFormValues = {
@@ -59,6 +75,7 @@ export const DefaultSettingsDialog = React.memo(
         (currentLayer?.layer_data as MovableObjLayerData)?.stroke ??
         guide_data?.default_shape_stroke ??
         1,
+      saved_colors: JSON.parse(currentUser?.saved_colors ?? "[]") as string[],
     };
 
     return (
@@ -93,83 +110,106 @@ type DefaultSettingsFormProps = {
 } & FormikProps<DefaultSettingsFormValues>;
 
 const DefaultSettingsForm = React.memo(
-  ({ onCancel, ...formProps }: DefaultSettingsFormProps) => {
-    const handleDefaultShapeSColorChange = useCallback(
-      (color) => {
-        formProps.setFieldValue("default_shape_scolor", color);
-      },
-      [formProps]
-    );
-
-    const handleDefaultShapeStrokeChange = useCallback(
-      (value) => {
-        formProps.setFieldValue("default_shape_stroke", value);
-      },
-      [formProps]
-    );
-
-    return (
-      <Form onSubmit={formProps.handleSubmit} noValidate>
-        <DialogContent dividers id="insert-text-dialog-content">
-          <SubForm
-            {...formProps}
-            extraChildren={
-              <>
-                <Grid item xs={12} sm={6}>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="body1"
-                        color="textSecondary"
-                        style={{ marginRight: "8px" }}
-                      >
-                        Stroke Color
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                      <ColorPickerInput
-                        value={formProps.values["default_shape_scolor"]}
-                        onChange={handleDefaultShapeSColorChange}
-                        onInputChange={handleDefaultShapeSColorChange}
-                        error={Boolean(
-                          formProps.errors["default_shape_scolor"]
-                        )}
-                        helperText={formProps.errors["default_shape_scolor"]}
-                      />
+  ({ onCancel, ...formProps }: DefaultSettingsFormProps) => (
+    <Form onSubmit={formProps.handleSubmit} noValidate>
+      <DialogContent dividers id="insert-text-dialog-content">
+        <SubForm
+          {...formProps}
+          extraChildren={
+            <Box pt={4}>
+              <Typography variant="subtitle1">Saved Colors</Typography>
+              <FieldArray name="saved_colors">
+                {({ push, remove }) => (
+                  <Grid container spacing={4}>
+                    {formProps.values.saved_colors.map((colorItem, index) => (
+                      <Grid key={index} item xs={6} sm={4}>
+                        <Grid container spacing={2} alignItems="center">
+                          <Grid item xs={10}>
+                            <ColorPickerInput
+                              value={colorItem}
+                              onChange={(color) =>
+                                formProps.setFieldValue(
+                                  `saved_colors[${index}]`,
+                                  color
+                                )
+                              }
+                              onInputChange={(color) =>
+                                formProps.setFieldValue(
+                                  `saved_colors[${index}]`,
+                                  color
+                                )
+                              }
+                              error={Boolean(
+                                getIn(
+                                  formProps.errors,
+                                  `saved_colors[${index}]`
+                                )
+                              )}
+                              helperText={getIn(
+                                formProps.errors,
+                                `saved_colors[${index}]`
+                              )}
+                            />
+                          </Grid>
+                          <Grid item xs={2}>
+                            <IconButton
+                              size="small"
+                              onClick={() => remove(index)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    ))}
+                    <Grid item xs={6} sm={4}>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={4}>
+                          <ColorPicker
+                            value="#"
+                            onChange={(color) => {
+                              if (color.css.backgroundColor) {
+                                push(color.css.backgroundColor);
+                              }
+                            }}
+                            palette={Palette}
+                            deferred
+                            hideTextfield
+                          />
+                        </Grid>
+                        <Grid item xs={8}>
+                          <Button
+                            startIcon={<AddIcon />}
+                            size="small"
+                            onClick={() => push("#000000")}
+                          >
+                            Add New
+                          </Button>
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <SliderInput
-                    label="Stroke Width"
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={formProps.values["default_shape_stroke"]}
-                    setValue={handleDefaultShapeStrokeChange}
-                  />
-                </Grid>
-              </>
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onCancel} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            color="primary"
-            variant="outlined"
-            disabled={formProps.isSubmitting || !formProps.isValid}
-          >
-            Apply
-          </Button>
-        </DialogActions>
-      </Form>
-    );
-  }
+                )}
+              </FieldArray>
+            </Box>
+          }
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel} color="secondary">
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          color="primary"
+          variant="outlined"
+          disabled={formProps.isSubmitting || !formProps.isValid}
+        >
+          Apply
+        </Button>
+      </DialogActions>
+    </Form>
+  )
 );
 
 export default DefaultSettingsDialog;

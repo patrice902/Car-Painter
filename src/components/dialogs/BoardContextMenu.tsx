@@ -1,4 +1,5 @@
 import { Box, Button, Divider, Popover, Typography } from "@material-ui/core";
+import FlipIcon from "@material-ui/icons/Flip";
 import { Stage } from "konva/types/Stage";
 import React, { RefObject, useCallback } from "react";
 import { ImCopy } from "react-icons/im";
@@ -19,7 +20,7 @@ import {
 } from "src/helper";
 import { RootState } from "src/redux";
 import { setContextMenu } from "src/redux/reducers/boardReducer";
-import { updateLayer } from "src/redux/reducers/layerReducer";
+import { CloneLayerProps, updateLayer } from "src/redux/reducers/layerReducer";
 import {
   MovableObjLayerData,
   Position,
@@ -32,11 +33,7 @@ type BoardContextMenuProps = {
   stageRef: RefObject<Stage | undefined>;
   wrapperPosition: Position;
   onDeleteLayer: (layer: BuilderLayerJSON) => void;
-  onCloneLayer: (
-    layer: BuilderLayerJSON,
-    samePosition?: boolean,
-    pushingToHistory?: boolean
-  ) => void;
+  onCloneLayer: (props: CloneLayerProps) => void;
 };
 
 export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
@@ -77,7 +74,19 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
 
   const handleClone = useCallback(() => {
     handleClose();
-    if (currentLayer) onCloneLayer(currentLayer);
+    if (currentLayer)
+      onCloneLayer({
+        layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
+      });
+  }, [currentLayer, onCloneLayer, handleClose]);
+
+  const handleCloneAndRotate = useCallback(() => {
+    handleClose();
+    if (currentLayer)
+      onCloneLayer({
+        layerToClone: currentLayer as BuilderLayerJSON<MovableObjLayerData>,
+        mirrorRotation: true,
+      });
   }, [currentLayer, onCloneLayer, handleClose]);
 
   const handleRotate90 = useCallback(() => {
@@ -216,7 +225,7 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
         left: contextMenu.x + wrapperPosition.x,
       }}
     >
-      <Box display="flex" flexDirection="column" px={4} py={2} width="180px">
+      <Box display="flex" flexDirection="column" px={4} py={2} width="200px">
         <NameItem>{decodeHtml(currentLayer.layer_data.name)}</NameItem>
         <StyledButton
           startIcon={<MdVisibilityOff />}
@@ -229,6 +238,9 @@ export const BoardContextMenu = React.memo((props: BoardContextMenuProps) => {
         </StyledButton>
         <StyledButton startIcon={<MdRotateRight />} onClick={handleRotate90}>
           Rotate 90°
+        </StyledButton>
+        <StyledButton startIcon={<FlipIcon />} onClick={handleCloneAndRotate}>
+          Mirror Clone
         </StyledButton>
         <StyledButton startIcon={<MdSwapHoriz />} onClick={handleToggleFlop}>
           Flop

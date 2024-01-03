@@ -8,6 +8,15 @@ export type BuilderUpload = {
   legacy_mode: boolean;
 };
 
+export type BuilderUploadWithUser = {
+  id: number;
+  user_id: number;
+  scheme_id: string;
+  file_name: string;
+  legacy_mode: boolean;
+  user: User;
+};
+
 export type Team = {
   id: number;
   iracing_id: number;
@@ -94,6 +103,7 @@ export type BuilderScheme = {
   finish: string;
   race_updated?: number;
   hide_spec?: boolean;
+  merge_layers?: boolean;
   dismiss_race_confirm?: boolean;
   last_font?: number;
   last_number?: number;
@@ -174,6 +184,20 @@ export type FavoriteUpload = {
   id: number;
   upload_id: number;
   user_id: number;
+};
+
+export type SharedUpload = {
+  id: number;
+  upload_id: number;
+  user_id: number;
+};
+
+export type SharedUploadWithInfo = {
+  id: number;
+  upload_id: number;
+  user_id: number;
+  upload: BuilderUploadWithUser;
+  user: User;
 };
 
 export type FavoriteOverlay = {
@@ -324,4 +348,5 @@ export type User = {
   site_ban: boolean;
   follow_award: number;
   fav_award: number;
+  saved_colors: string;
 };

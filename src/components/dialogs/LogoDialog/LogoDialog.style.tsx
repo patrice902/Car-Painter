@@ -1,4 +1,5 @@
 import {
+  DialogActions,
   DialogContent,
   Tab,
   TabProps,
@@ -68,3 +69,12 @@ export const a11yProps = (index: string | number) => ({
   id: `logo-tab-${index}`,
   "aria-controls": `logo-tabpanel-${index}`,
 });
+
+export const CustomDialogActions = styled(DialogActions)<{
+  justifyContent?: string;
+}>`
+  display: flex;
+  justify-content: ${(props) => props.justifyContent};
+  align-items: center;
+  padding: 8px 16px;
+`;

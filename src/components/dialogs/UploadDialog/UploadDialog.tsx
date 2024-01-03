@@ -1,22 +1,17 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-} from "@material-ui/core";
+import { Box, Button, Dialog, DialogTitle } from "@material-ui/core";
 import React, { useCallback, useState } from "react";
 import { SearchBox } from "src/components/common";
-import { BuilderUpload } from "src/types/model";
+import { BuilderUploadWithUser } from "src/types/model";
 
-import { CustomDialogContent } from "./UploadDialog.style";
+import EnterCodeBtn from "./EnterCodeBtn";
+import { CustomDialogActions, CustomDialogContent } from "./UploadDialog.style";
 import UploadListContent from "./UploadListConent";
 
 type UploadDialogProps = {
-  uploads: BuilderUpload[];
+  uploads: BuilderUploadWithUser[];
   open: boolean;
   onCancel: () => void;
-  onOpenUpload: (upload: BuilderUpload) => void;
+  onOpenUpload: (upload: BuilderUploadWithUser) => void;
 };
 
 export const UploadDialog = React.memo(
@@ -39,11 +34,12 @@ export const UploadDialog = React.memo(
             onOpenUpload={onOpenUpload}
           />
         </CustomDialogContent>
-        <DialogActions>
+        <CustomDialogActions>
+          <EnterCodeBtn />
           <Button onClick={onCancel} color="secondary">
             Cancel
           </Button>
-        </DialogActions>
+        </CustomDialogActions>
       </Dialog>
     );
   }

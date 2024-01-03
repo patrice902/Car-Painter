@@ -10,6 +10,7 @@ import _ from "lodash";
 import React, { useCallback, useMemo } from "react";
 import { BsPinAngle, BsPinAngleFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
+import { stopPropagation } from "src/helper";
 import { RootState } from "src/redux";
 import { createCarPin, deleteCarPin } from "src/redux/reducers/carPinReducer";
 import { CarMake } from "src/types/model";
@@ -97,7 +98,8 @@ export const CarMakeAutocomplete = React.memo(
                     checkedIcon={<BsPinAngleFill />}
                     checked={carPinIDList.includes(option.id)}
                     onClick={(e) => {
-                      e.stopPropagation();
+                      stopPropagation(e);
+
                       if (carPinIDList.includes(option.id)) {
                         dispatch(deleteCarPin(option.id));
                       } else {

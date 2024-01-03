@@ -4,8 +4,16 @@ import {
   DialogContent,
   Typography,
 } from "@material-ui/core";
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import config from "src/config";
+import { detectBrowser } from "src/helper";
+import { Browser } from "src/types/enum";
 
 type ShowroomTabProps = {
   schemeID: number;
@@ -19,13 +27,34 @@ export const ShowroomTab = React.memo(
     const [showroomFile, setShowroomFile] = useState<string | null | undefined>(
       null
     );
+    const [capturing, setCapturing] = useState(false);
 
-    const handleSubmitToShowroom = useCallback(async () => {
+    const showroomURL = useMemo(
+      () => `${config.parentAppURL}/showroom/upload/${schemeID}`,
+      [schemeID]
+    );
+
+    const setShowroomFileFromScreen = useCallback(async () => {
+      setCapturing(true);
       const dataURL = await retrieveTGAPNGDataUrl();
       setShowroomFile(dataURL);
+      setCapturing(false);
+    }, [retrieveTGAPNGDataUrl]);
+
+    const handleSubmitToShowroom = useCallback(async () => {
+      if (detectBrowser() !== Browser.FIREFOX) {
+        await setShowroomFileFromScreen();
+      }
       showroomFormRef.current?.submit();
       onClose();
-    }, [onClose, retrieveTGAPNGDataUrl]);
+    }, [onClose, setShowroomFileFromScreen]);
+
+    useEffect(() => {
+      if (detectBrowser() === Browser.FIREFOX) {
+        setShowroomFileFromScreen();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
       <>
@@ -37,7 +66,7 @@ export const ShowroomTab = React.memo(
           <form
             ref={showroomFormRef}
             style={{ display: "none" }}
-            action={`${config.parentAppURL}/showroom/upload/${schemeID}`}
+            action={showroomURL}
             method="post"
             target="_blank"
             encType="multipart/form-data"
@@ -52,6 +81,7 @@ export const ShowroomTab = React.memo(
           <Button
             color="primary"
             variant="outlined"
+            disabled={capturing}
             onClick={handleSubmitToShowroom}
           >
             Submit

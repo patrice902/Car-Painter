@@ -107,4 +107,7 @@ export enum ConfigCatFlags {
   EMERGENCY_SHUT_DOWN = "emergencyShutDown",
   DISABLE_APP_LOGIN = "disableAppLogin",
   Initializer = "initializer",
+  SUBMIT_TO_SHOWROOM = "submitToShowroom",
+  SIM_PREVIEW = "simPreview",
+  RACE_FUNCTIONALITY = "raceFunctionality",
 }

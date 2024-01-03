@@ -21,6 +21,7 @@ import {
   SVGImageWithLoad,
 } from "src/components/common";
 import config from "src/config";
+import { stopPropagation } from "src/helper";
 import { RootState } from "src/redux";
 import {
   createFavoriteOverlay,
@@ -95,8 +96,7 @@ export const OverlayDialog = React.memo(
 
     const handleClickAddFavorite = useCallback(
       (event, overlay: BuilderOverlay) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         if (!user) return;
 
@@ -109,8 +109,7 @@ export const OverlayDialog = React.memo(
 
     const handleClickRemoveFavorite = useCallback(
       (event, overlay: BuilderOverlay) => {
-        event.stopPropagation();
-        event.nativeEvent.stopImmediatePropagation();
+        stopPropagation(event);
 
         const favoriteLogoItem = favoriteOverlayList.find(
           (item) => item.overlay_id === overlay.id

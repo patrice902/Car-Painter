@@ -1,17 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { modifyFileName } from "src/helper";
 import FavoriteUploadService from "src/services/favoriteUploadService";
+import SharedUploadService from "src/services/sharedUploadService";
 import UploadService from "src/services/uploadService";
-import { BuilderUpload, FavoriteUpload } from "src/types/model";
-import { FavoriteUploadPayload } from "src/types/query";
+import {
+  BuilderUploadWithUser,
+  FavoriteUpload,
+  SharedUploadWithInfo,
+} from "src/types/model";
+import {
+  FavoriteUploadPayload,
+  SharedUploadByCodePayload,
+} from "src/types/query";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type UploadReducerState = {
-  list: BuilderUpload[];
+  list: BuilderUploadWithUser[];
   favoriteUploadList: FavoriteUpload[];
-  current?: BuilderUpload | null;
+  sharedUploadList: SharedUploadWithInfo[];
+  current?: BuilderUploadWithUser | null;
   loading: boolean;
   initialized: boolean;
 };
@@ -19,6 +28,7 @@ export type UploadReducerState = {
 const initialState: UploadReducerState = {
   list: [],
   favoriteUploadList: [],
+  sharedUploadList: [],
   current: null,
   loading: false,
   initialized: false,
@@ -31,20 +41,20 @@ export const slice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    setList: (state, action: PayloadAction<BuilderUpload[]>) => {
+    setList: (state, action: PayloadAction<BuilderUploadWithUser[]>) => {
       state.list = action.payload;
       state.initialized = true;
     },
     setIntialized: (state, action: PayloadAction<boolean>) => {
       state.initialized = action.payload;
     },
-    insertToList: (state, action: PayloadAction<BuilderUpload>) => {
+    insertToList: (state, action: PayloadAction<BuilderUploadWithUser>) => {
       state.list.push(action.payload);
     },
-    concatList: (state, action: PayloadAction<BuilderUpload[]>) => {
+    concatList: (state, action: PayloadAction<BuilderUploadWithUser[]>) => {
       state.list = state.list.concat(action.payload);
     },
-    updateListItem: (state, action: PayloadAction<BuilderUpload>) => {
+    updateListItem: (state, action: PayloadAction<BuilderUploadWithUser>) => {
       const list = [...state.list];
       const foundIndex = list.findIndex(
         (item) => item.id === action.payload.id
@@ -64,7 +74,10 @@ export const slice = createSlice({
         state.list = list;
       }
     },
-    setCurrent: (state, action: PayloadAction<BuilderUpload | null>) => {
+    setCurrent: (
+      state,
+      action: PayloadAction<BuilderUploadWithUser | null>
+    ) => {
       state.current = action.payload;
     },
     setFavoriteUploadList: (state, action: PayloadAction<FavoriteUpload[]>) => {
@@ -85,6 +98,27 @@ export const slice = createSlice({
     clearFavoriteUploadList: (state) => {
       state.favoriteUploadList = [];
     },
+    setSharedUploadList: (
+      state,
+      action: PayloadAction<SharedUploadWithInfo[]>
+    ) => {
+      state.sharedUploadList = [...action.payload];
+    },
+    insertToSharedUploadList: (
+      state,
+      action: PayloadAction<SharedUploadWithInfo>
+    ) => {
+      const favorite = { ...action.payload };
+      state.sharedUploadList.push(favorite);
+    },
+    deleteSharedUploadListItem: (state, action: PayloadAction<number>) => {
+      state.sharedUploadList = state.sharedUploadList.filter(
+        (item) => item.id !== +action.payload
+      );
+    },
+    clearSharedUploadList: (state) => {
+      state.sharedUploadList = [];
+    },
   },
 });
 
@@ -101,6 +135,10 @@ export const {
   insertToFavoriteUploadList,
   deleteFavoriteUploadListItem,
   clearFavoriteUploadList,
+  setSharedUploadList,
+  insertToSharedUploadList,
+  deleteSharedUploadListItem,
+  clearSharedUploadList,
 } = slice.actions;
 
 export const getUploadListByUserID = (userID: number) => async (
@@ -111,7 +149,7 @@ export const getUploadListByUserID = (userID: number) => async (
     const uploads = await UploadService.getUploadListByUserID(userID);
     dispatch(setList(uploads));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -149,20 +187,21 @@ export const uploadFiles = (
     );
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
 
 export const deleteUpload = (
   upload: { id: number },
-  deleteFromAll: boolean
+  deleteFromAll: boolean,
+  userID?: number
 ) => async (dispatch: AppDispatch) => {
   // dispatch(setLoading(true));
 
   try {
     dispatch(deleteListItem(upload));
-    await UploadService.deleteUpload(upload.id, deleteFromAll);
+    await UploadService.deleteUpload(upload.id, deleteFromAll, userID);
     dispatch(
       setMessage({
         message: "Deleted your uploaded file successfully!",
@@ -170,7 +209,7 @@ export const deleteUpload = (
       })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };
@@ -183,8 +222,14 @@ export const deleteLegacyUploadsByUserID = (
 
   try {
     await UploadService.deleteLegacyByUserID(userID, deleteFromAll);
+
     const uploads = await UploadService.getUploadListByUserID(userID);
     dispatch(setList(uploads));
+    const sharedList = await SharedUploadService.getSharedUploadListByUserID(
+      userID
+    );
+    dispatch(setSharedUploadList(sharedList));
+
     dispatch(
       setMessage({
         message: "Removed your legacy uploads successfully!",
@@ -192,7 +237,7 @@ export const deleteLegacyUploadsByUserID = (
       })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };
@@ -207,7 +252,7 @@ export const getFavoriteUploadList = (
     );
     dispatch(setFavoriteUploadList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -223,7 +268,7 @@ export const createFavoriteUpload = (
     dispatch(insertToFavoriteUploadList(favoriteUpload));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -236,7 +281,50 @@ export const deleteFavoriteUploadItem = (
     dispatch(deleteFavoriteUploadListItem(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
+  }
+};
+
+export const getSharedUploadList = (
+  userID: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const list = await SharedUploadService.getSharedUploadListByUserID(userID);
+    dispatch(setSharedUploadList(list));
+  } catch (err) {
+    dispatch(catchErrorMessage(err));
+  }
+  callback?.();
+};
+
+export const createSharedUploadByCode = (
+  payload: SharedUploadByCodePayload,
+  callback?: () => void,
+  fallback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    const sharedUpload = await SharedUploadService.createSharedUploadByCode(
+      payload
+    );
+    dispatch(insertToSharedUploadList(sharedUpload));
+    callback?.();
+  } catch (err) {
+    fallback?.();
+    dispatch(catchErrorMessage(err));
+  }
+};
+
+export const deleteSharedUploadItem = (
+  id: number,
+  callback?: () => void
+) => async (dispatch: AppDispatch) => {
+  try {
+    await SharedUploadService.deleteSharedUpload(id);
+    dispatch(deleteSharedUploadListItem(id));
+    callback?.();
+  } catch (err) {
+    dispatch(catchErrorMessage(err));
   }
 };
 

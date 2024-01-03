@@ -37,12 +37,9 @@ export const CreateProjectDialog = React.memo(
     const [carMake, setCarMake] = useState<CarMake | undefined | null>(null);
     const [name, setName] = useState("");
 
-    const [placeHolderName, setPlaceHolderName] = useState("");
-
     const handleSubmit = useCallback(() => {
-      const schemeName = name && name.length ? name : placeHolderName;
-      if (carMake) onContinue(carMake, schemeName);
-    }, [carMake, name, placeHolderName, onContinue]);
+      if (carMake && name?.length) onContinue(carMake, name);
+    }, [carMake, name, onContinue]);
 
     const handleKeyDown = useCallback(
       (event) => {
@@ -66,9 +63,7 @@ export const CreateProjectDialog = React.memo(
     useEffect(() => {
       if (open) {
         const rands = getTwoRandomNumbers(funWords.length);
-        setPlaceHolderName(
-          funWords[rands[0]] + " " + funWords[rands[1]] + " Paint"
-        );
+        setName(funWords[rands[0]] + " " + funWords[rands[1]] + " Paint");
       }
     }, [open]);
 
@@ -93,7 +88,7 @@ export const CreateProjectDialog = React.memo(
 
             <NameField
               label="Name"
-              value={name && name.length ? name : placeHolderName}
+              value={name}
               variant="outlined"
               inputProps={{ maxLength: "50" }}
               onChange={(event) => setName(event.target.value)}

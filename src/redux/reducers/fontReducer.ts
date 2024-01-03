@@ -3,7 +3,7 @@ import FontService from "src/services/fontService";
 import { BuilderFont } from "src/types/model";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage } from "./messageReducer";
 
 export type FontReducerState = {
   list: BuilderFont[];
@@ -76,7 +76,7 @@ export const getFontList = () => async (dispatch: AppDispatch) => {
     const fonts = await FontService.getFontList();
     dispatch(setList(fonts));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };

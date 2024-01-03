@@ -43,7 +43,7 @@ import socketClient from "src/utils/socketClient";
 
 import { AppDispatch, GetState } from "..";
 import { pushToActionHistory } from "./boardReducer";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type LayerReducerState = {
   list: BuilderLayerJSON[];
@@ -347,7 +347,35 @@ const shiftSimilarLayerOrders = (layer_type: LayerTypes, offset = 1) => async (
       userID: currentUser?.id,
     });
   }
-  clearScrollPosition();
+};
+
+export const reorderLayersOnCombination = () => async (
+  dispatch: AppDispatch,
+  getState: GetState
+) => {
+  const layerList = getState().layerReducer.list;
+  const filteredLayers = layerList.filter((layerItem) =>
+    [
+      LayerTypes.OVERLAY,
+      LayerTypes.LOGO,
+      LayerTypes.UPLOAD,
+      LayerTypes.SHAPE,
+      LayerTypes.TEXT,
+    ].includes(layerItem.layer_type)
+  );
+  const orderMap = {
+    [LayerTypes.LOGO]: 0,
+    [LayerTypes.UPLOAD]: 0,
+    [LayerTypes.TEXT]: 0,
+    [LayerTypes.SHAPE]: 1,
+    [LayerTypes.OVERLAY]: 2,
+  };
+  const sortedLayers = _.sortBy(filteredLayers, [
+    (o) =>
+      orderMap[o.layer_type as keyof typeof orderMap] * 100 + o.layer_order,
+  ]).map((layer, index) => ({ ...layer, layer_order: index + 1 }));
+
+  dispatch(bulkUpdateLayer(sortedLayers, false));
 };
 
 export const createLayer = (
@@ -366,6 +394,8 @@ export const createLayer = (
   });
 
   dispatch(shiftSimilarLayerOrders(layer.layer_type));
+
+  clearScrollPosition();
 
   dispatch(insertToList(layer));
   if (layer.layer_type !== LayerTypes.BASE) {
@@ -499,7 +529,7 @@ export const createLayersFromBasePaint = (
     if (config.env === "development") {
       console.log("Error on [createLayersFromBasePaint]: ", err);
     }
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -545,7 +575,7 @@ export const createLayersFromLegacyBasePaint = (
     if (config.env === "development") {
       console.log("Error on [createLayersFromLegacyBasePaint]: ", err);
     }
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -595,7 +625,7 @@ export const createLayerFromOverlay = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -632,7 +662,7 @@ export const createLayerFromLogo = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -646,7 +676,6 @@ export const createLayerFromUpload = (
 
   try {
     const boardRotate = getState().boardReducer.boardRotate;
-    const currentUser = getState().authReducer.user;
     const AllowedLayerTypes = AllowedLayerProps[LayerTypes.UPLOAD];
     const layer = {
       ...DefaultLayer,
@@ -661,7 +690,7 @@ export const createLayerFromUpload = (
           ).map((item) => item.replaceAll("layer_data.", ""))
         ),
         id: upload.id,
-        name: getNameFromUploadFileName(upload.file_name, currentUser),
+        name: getNameFromUploadFileName(upload.file_name, upload.user_id),
         rotation: -boardRotate,
         left: position.x,
         top: position.y,
@@ -672,7 +701,7 @@ export const createLayerFromUpload = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -706,18 +735,28 @@ export const createTextLayer = (
     };
     dispatch(createLayer(layer));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
 
-export const cloneLayer = (
-  layerToClone: BuilderLayerJSON<MovableObjLayerData>,
+export type CloneLayerProps = {
+  layerToClone: BuilderLayerJSON<MovableObjLayerData>;
+  samePosition?: boolean;
+  pushingToHistory?: boolean;
+  centerPosition?: Position;
+  mirrorRotation?: boolean;
+  callback?: () => void;
+};
+
+export const cloneLayer = ({
+  layerToClone,
   samePosition = false,
   pushingToHistory = true,
-  centerPosition?: Position,
-  callback?: () => void
-) => async (dispatch: AppDispatch, getState: GetState) => {
+  centerPosition,
+  mirrorRotation = false,
+  callback,
+}: CloneLayerProps) => async (dispatch: AppDispatch, getState: GetState) => {
   if (layerToClone) {
     dispatch(setLoading(true));
     try {
@@ -727,8 +766,18 @@ export const cloneLayer = (
         layerToClone.layer_data.height
           ? -layerToClone.layer_data.height / 2
           : 0,
-        boardRotate
+        mirrorRotation ? 180 - boardRotate : boardRotate
       );
+
+      let newRotation = layerToClone.layer_data.rotation ?? 0;
+      if (mirrorRotation) {
+        if ((newRotation + 90) % 180 === 0) {
+          newRotation = -newRotation;
+        } else {
+          newRotation = 180 - newRotation;
+        }
+      }
+
       const layer = {
         ..._.omit(layerToClone, ["id"]),
         layer_order: 1,
@@ -742,11 +791,12 @@ export const cloneLayer = (
           top: samePosition
             ? layerToClone.layer_data.top
             : (centerPosition?.y ?? 0) + offset.y,
+          rotation: newRotation,
         }),
       };
       dispatch(createLayer(layer, pushingToHistory, callback));
     } catch (err) {
-      dispatch(setMessage({ message: (err as Error).message }));
+      dispatch(catchErrorMessage(err));
     }
     dispatch(setLoading(false));
   }
@@ -779,7 +829,7 @@ export const cloneCarPartsLayer = (
 
       dispatch(createLayerList(layers, true, callback));
     } catch (err) {
-      dispatch(setMessage({ message: (err as Error).message }));
+      dispatch(catchErrorMessage(err));
     }
     dispatch(setLoading(false));
   }
@@ -833,7 +883,7 @@ export const createShape = (
       )
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -902,7 +952,7 @@ export const updateLayer = (
     }
     clearScrollPosition();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };
@@ -948,7 +998,7 @@ export const bulkUpdateLayer = (
       );
     }
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -991,7 +1041,7 @@ export const deleteLayer = (
       setMessage({ message: "Deleted Layer successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };
@@ -1023,7 +1073,7 @@ export const deleteLayerList = (
       setMessage({ message: "Deleted Layer successfully!", type: "success" })
     );
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   // dispatch(setLoading(false));
 };

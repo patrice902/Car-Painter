@@ -193,84 +193,106 @@ export const LayersBar = React.memo(
           onChangeHoverJSONItem={onChangeHoverJSONItem}
           onDoubleClickItem={handleDoubleClickItem}
         />
-        <PartGroup
-          title="Logos & Text"
-          layerList={layerList.filter(
-            (item) =>
-              item.layer_type === LayerTypes.LOGO ||
-              item.layer_type === LayerTypes.TEXT ||
-              item.layer_type === LayerTypes.UPLOAD
-          )}
-          disabled={!editable}
-          hoveredLayerJSON={hoveredLayerJSON}
-          actions={[
-            {
-              icon: <CustomFontAwesomeIcon icon={faFolderOpen} />,
-              title: "Insert My Logo",
-              onClick: showUploadDialog,
-            },
-            {
-              icon: (
-                <img
-                  src={LogoIcon}
-                  alt="logo"
-                  width={30}
-                  style={{ marginLeft: "-3px", marginRight: "8px" }}
-                />
-              ),
-              title: "Insert Logo",
-              onClick: showLogoDialog,
-            },
-            {
-              icon: <CustomFontAwesomeIcon icon={faFont} />,
-              title: "Insert Text",
-              onClick: showTextDialog,
-            },
-          ]}
-          actionProps={{
-            isPopover: true,
-            popoverTooltip: "Insert Logo or Text",
-          }}
-          onChangeHoverJSONItem={onChangeHoverJSONItem}
-          onDoubleClickItem={handleDoubleClickItem}
-        />
-        <PartGroup
-          title="Shapes"
-          layerList={layerList.filter(
-            (item) => item.layer_type === LayerTypes.SHAPE
-          )}
-          disabled={!editable}
-          hoveredLayerJSON={hoveredLayerJSON}
-          onChangeHoverJSONItem={onChangeHoverJSONItem}
-          onDoubleClickItem={handleDoubleClickItem}
-          actions={drawModes.map((drawMode) => ({
-            icon: drawMode.icon,
-            title: drawMode.label,
-            onClick: () => handleModeChange(drawMode.value),
-          }))}
-          actionProps={{
-            isPopover: true,
-            popoverTooltip: "Insert Shape",
-            hideActionLabel: true,
-          }}
-        />
-        <PartGroup
-          title="Graphics"
-          layerList={layerList.filter(
-            (item) => item.layer_type === LayerTypes.OVERLAY
-          )}
-          disabled={!editable}
-          hoveredLayerJSON={hoveredLayerJSON}
-          onChangeHoverJSONItem={onChangeHoverJSONItem}
-          onDoubleClickItem={handleDoubleClickItem}
-          actions={[
-            {
-              icon: faShapes,
-              title: "Insert Graphics",
-              onClick: showShapeDialog,
-            },
-          ]}
-        />
+        {currentScheme?.merge_layers ? (
+          <PartGroup
+            title="Layers"
+            layerList={layerList.filter((item) =>
+              [
+                LayerTypes.OVERLAY,
+                LayerTypes.LOGO,
+                LayerTypes.UPLOAD,
+                LayerTypes.SHAPE,
+                LayerTypes.TEXT,
+              ].includes(item.layer_type)
+            )}
+            disabled={!editable}
+            hoveredLayerJSON={hoveredLayerJSON}
+            onChangeHoverJSONItem={onChangeHoverJSONItem}
+            onDoubleClickItem={handleDoubleClickItem}
+          />
+        ) : (
+          <>
+            <PartGroup
+              title="Logos & Text"
+              layerList={layerList.filter(
+                (item) =>
+                  item.layer_type === LayerTypes.LOGO ||
+                  item.layer_type === LayerTypes.TEXT ||
+                  item.layer_type === LayerTypes.UPLOAD
+              )}
+              disabled={!editable}
+              hoveredLayerJSON={hoveredLayerJSON}
+              actions={[
+                {
+                  icon: <CustomFontAwesomeIcon icon={faFolderOpen} />,
+                  title: "Insert My Logo",
+                  onClick: showUploadDialog,
+                },
+                {
+                  icon: (
+                    <img
+                      src={LogoIcon}
+                      alt="logo"
+                      width={30}
+                      style={{ marginLeft: "-3px", marginRight: "8px" }}
+                    />
+                  ),
+                  title: "Insert Logo",
+                  onClick: showLogoDialog,
+                },
+                {
+                  icon: <CustomFontAwesomeIcon icon={faFont} />,
+                  title: "Insert Text",
+                  onClick: showTextDialog,
+                },
+              ]}
+              actionProps={{
+                isPopover: true,
+                popoverTooltip: "Insert Logo or Text",
+              }}
+              onChangeHoverJSONItem={onChangeHoverJSONItem}
+              onDoubleClickItem={handleDoubleClickItem}
+            />
+            <PartGroup
+              title="Shapes"
+              layerList={layerList.filter(
+                (item) => item.layer_type === LayerTypes.SHAPE
+              )}
+              disabled={!editable}
+              hoveredLayerJSON={hoveredLayerJSON}
+              onChangeHoverJSONItem={onChangeHoverJSONItem}
+              onDoubleClickItem={handleDoubleClickItem}
+              actions={drawModes.map((drawMode) => ({
+                icon: drawMode.icon,
+                title: drawMode.label,
+                onClick: () => handleModeChange(drawMode.value),
+              }))}
+              actionProps={{
+                isPopover: true,
+                popoverTooltip: "Insert Shape",
+                hideActionLabel: true,
+              }}
+            />
+            <PartGroup
+              title="Graphics"
+              layerList={layerList.filter(
+                (item) => item.layer_type === LayerTypes.OVERLAY
+              )}
+              disabled={!editable}
+              hoveredLayerJSON={hoveredLayerJSON}
+              onChangeHoverJSONItem={onChangeHoverJSONItem}
+              onDoubleClickItem={handleDoubleClickItem}
+              actions={[
+                {
+                  icon: faShapes,
+                  title: "Insert Graphics",
+                  onClick: showShapeDialog,
+                },
+              ]}
+            />
+          </>
+        )}
+
         <PartGroup
           title="Base Paint"
           layerList={layerList.filter(

@@ -1,5 +1,5 @@
 import { User } from "src/types/model";
-import { UserWithBlockedList } from "src/types/query";
+import { UserPayload, UserWithBlockedList } from "src/types/query";
 
 import BaseAPIService from "./baseAPIService";
 
@@ -12,4 +12,9 @@ export default class UserService extends BaseAPIService {
 
   static getPremiumUserByID = async (id: number): Promise<User> =>
     this.requestWithAuth(`/user/premium/${id}`, "GET");
+
+  static updateUser = async (
+    userID: number,
+    payload: UserPayload
+  ): Promise<User> => this.requestWithAuth(`/user/${userID}`, "PUT", payload);
 }

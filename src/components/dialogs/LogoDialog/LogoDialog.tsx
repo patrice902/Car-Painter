@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Dialog,
-  DialogActions,
   DialogTitle,
   Theme,
   Typography,
@@ -11,12 +10,14 @@ import {
 import _ from "lodash";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { SearchBox } from "src/components/common";
-import { BuilderLogo, BuilderUpload } from "src/types/model";
+import { BuilderLogo, BuilderUploadWithUser } from "src/types/model";
 import { UserWithoutPassword } from "src/types/query";
 
+import EnterCodeBtn from "../UploadDialog/EnterCodeBtn";
 import { FlagContent, LogoContent, UploadContent } from "./components";
 import {
   a11yProps,
+  CustomDialogActions,
   CustomDialogContent,
   StyledTab,
   StyledTabs,
@@ -25,11 +26,11 @@ import {
 
 type LogoDialogProps = {
   logos: BuilderLogo[];
-  uploads: BuilderUpload[];
+  uploads: BuilderUploadWithUser[];
   user: UserWithoutPassword;
   open: boolean;
   onOpenLogo: (logo: BuilderLogo) => void;
-  onOpenUpload: (upload: BuilderUpload) => void;
+  onOpenUpload: (upload: BuilderUploadWithUser) => void;
   onCancel: () => void;
 };
 
@@ -92,7 +93,7 @@ export const LogoDialog = React.memo(
             >
               <StyledTab label="Logos" {...a11yProps(0)} />
               <StyledTab label="Flags" {...a11yProps(1)} />
-              <StyledTab label="My Uploads" {...a11yProps(1)} />
+              <StyledTab label="My Uploads" {...a11yProps(2)} />
             </StyledTabs>
           </Box>
         </DialogTitle>
@@ -126,11 +127,14 @@ export const LogoDialog = React.memo(
             />
           </TabPanel>
         </CustomDialogContent>
-        <DialogActions>
+        <CustomDialogActions
+          justifyContent={tabValue === 2 ? "space-between" : "flex-end"}
+        >
+          {tabValue === 2 && <EnterCodeBtn />}
           <Button onClick={onCancel} color="secondary">
             Cancel
           </Button>
-        </DialogActions>
+        </CustomDialogActions>
       </Dialog>
     );
   }

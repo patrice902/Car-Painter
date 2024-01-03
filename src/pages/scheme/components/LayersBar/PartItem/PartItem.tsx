@@ -7,7 +7,7 @@ import {
 } from "@material-ui/icons";
 import clsx from "clsx";
 import React, { useCallback, useRef } from "react";
-import { decodeHtml, focusBoardQuickly } from "src/helper";
+import { decodeHtml, focusBoardQuickly, stopPropagation } from "src/helper";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { CustomTypography, SmallIconButton, Wrapper } from "./PartItem.style";
@@ -46,8 +46,7 @@ export const PartItem = React.memo(
 
     const handleToggleVisible = useCallback(
       (e) => {
-        e.stopPropagation();
-        e.nativeEvent.stopImmediatePropagation();
+        stopPropagation(e);
         toggleField(item.id, "layer_visible");
         focusBoardQuickly();
       },
@@ -56,8 +55,7 @@ export const PartItem = React.memo(
 
     const handleToggleLock = useCallback(
       (e) => {
-        e.stopPropagation();
-        e.nativeEvent.stopImmediatePropagation();
+        stopPropagation(e);
         toggleField(item.id, "layer_locked");
         focusBoardQuickly();
       },
@@ -67,7 +65,7 @@ export const PartItem = React.memo(
     const handleClick = useCallback(
       (e) => {
         e.preventDefault();
-        e.stopPropagation();
+        stopPropagation(e);
         onSelect(item);
         focusBoardQuickly();
       },

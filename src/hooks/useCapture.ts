@@ -5,9 +5,11 @@ import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addImageProcess,
+  alphaChannelURL,
   dataURItoBlob,
   downloadTGA,
   getTGABlob,
+  imageDataFromSource,
   sleep,
 } from "src/helper";
 import { useReducerRef, useScheme } from "src/hooks";
@@ -23,7 +25,7 @@ import {
   setLoadedStatus,
   updateLayer,
 } from "src/redux/reducers/layerReducer";
-import { setMessage } from "src/redux/reducers/messageReducer";
+import { catchErrorMessage } from "src/redux/reducers/messageReducer";
 import {
   setCurrent as setCurrentScheme,
   setSaving,
@@ -36,6 +38,7 @@ export const useCapture = (
   baseLayerRef: RefObject<Group>,
   mainLayerRef: RefObject<Group>,
   carMaskLayerRef: RefObject<Group>,
+  carMakeLayerRef: RefObject<Group>,
   unsetDeleteLayerState: () => void
 ) => {
   const dispatch = useDispatch();
@@ -117,6 +120,17 @@ export const useCapture = (
     const height = frameSizeRef.current.height * pixelRatio;
 
     const stageAttrs = { ...stageRef.current.attrs };
+    const targetAttrs = {
+      x: 0,
+      y: 0,
+      offsetX: 0,
+      offsetY: 0,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    };
 
     const boardWrapper = document.getElementById("board-wrapper");
     if (boardWrapper) {
@@ -141,17 +155,7 @@ export const useCapture = (
     topGuide?.hide();
 
     // Getting Original Screenshot
-    stageRef.current.setAttrs({
-      x: 0,
-      y: 0,
-      offsetX: 0,
-      offsetY: 0,
-      scaleX: 1,
-      scaleY: 1,
-      rotation: 0,
-      width: frameSizeRef.current.width,
-      height: frameSizeRef.current.height,
-    });
+    stageRef.current.setAttrs(targetAttrs);
     stageRef.current.draw();
 
     const schemeLayerURL = stageRef.current.toDataURL({
@@ -165,17 +169,7 @@ export const useCapture = (
 
     // Getting TGA Screenshot
     carMaskLayerRef.current?.hide();
-    stageRef.current.setAttrs({
-      x: 0,
-      y: 0,
-      offsetX: 0,
-      offsetY: 0,
-      scaleX: 1,
-      scaleY: 1,
-      rotation: 0,
-      width: frameSizeRef.current.width,
-      height: frameSizeRef.current.height,
-    });
+    stageRef.current.setAttrs(targetAttrs);
     stageRef.current.draw();
 
     const tgaSchemeLayerURL = stageRef.current.toDataURL({
@@ -187,8 +181,36 @@ export const useCapture = (
     });
     const tgaSchemeLayerImg = await addImageProcess(tgaSchemeLayerURL);
 
+    baseLayerRef.current?.hide();
+    carMakeLayerRef.current?.hide();
+    stageRef.current.setAttrs(targetAttrs);
+    stageRef.current.draw();
+    await sleep(200);
+
+    const schemeLayerURLWithoutTemplate = stageRef.current.toDataURL({
+      pixelRatio,
+      x: 0,
+      y: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    });
+    const tgaSchemeLayerImgWithoutTemplate = await addImageProcess(
+      schemeLayerURLWithoutTemplate
+    );
+
+    let alphaChannelImg;
+    try {
+      alphaChannelImg = await addImageProcess(
+        alphaChannelURL(currentCarMakeRef.current)
+      );
+    } catch (err) {
+      console.log("Alpha Channel is not available for this car");
+    }
+
     // Backup it's original States
     carMaskLayerRef.current?.show();
+    baseLayerRef.current?.show();
+    carMakeLayerRef.current?.show();
     if (paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)) {
       sponsorGuide?.show();
     }
@@ -227,7 +249,28 @@ export const useCapture = (
     tgaCanvas.width = width;
     tgaCanvas.height = height;
 
-    tgaCtx?.drawImage(tgaSchemeLayerImg, 0, 0, width, height);
+    if (alphaChannelImg && tgaCtx) {
+      // Applying Alpha Channel Mask and draw on tgaCtx
+      const imageData = imageDataFromSource(tgaSchemeLayerImg, width, height);
+      const maskData = imageDataFromSource(alphaChannelImg, width, height);
+
+      for (let i = 3, len = imageData.data.length; i < len; i = i + 4) {
+        imageData.data[i] = maskData.data[i - 1];
+      }
+
+      tgaCtx?.putImageData(imageData, 0, 0);
+      if (!currentSchemeRef.current?.guide_data.show_carparts_on_top) {
+        tgaCtx?.drawImage(
+          tgaSchemeLayerImgWithoutTemplate,
+          0,
+          0,
+          width,
+          height
+        );
+      }
+    } else {
+      tgaCtx?.drawImage(tgaSchemeLayerImg, 0, 0, width, height);
+    }
 
     setCapturing(false);
     return {
@@ -247,7 +290,10 @@ export const useCapture = (
     showPropertiesRef,
     dispatch,
     paintingGuides,
+    carMakeLayerRef,
     unsetDeleteLayerState,
+    currentCarMakeRef,
+    currentSchemeRef,
   ]);
 
   const uploadThumbnail = useCallback(
@@ -275,7 +321,7 @@ export const useCapture = (
           await SchemeService.uploadThumbnail(formData);
         }
       } catch (err) {
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
       }
     },
     [dispatch, capturing, currentSchemeRef]
@@ -302,7 +348,7 @@ export const useCapture = (
           if (!uploadLater) dispatch(setSaving(false));
         } catch (err) {
           console.log(err);
-          dispatch(setMessage({ message: (err as Error).message }));
+          dispatch(catchErrorMessage(err));
         }
       }
     },
@@ -327,7 +373,7 @@ export const useCapture = (
         return dataURL;
       } catch (err) {
         console.log(err);
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
         return null;
       }
     }
@@ -344,7 +390,7 @@ export const useCapture = (
         return dataURL;
       } catch (err) {
         console.log(err);
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
         return null;
       }
     }
@@ -371,7 +417,7 @@ export const useCapture = (
           return fileOfBlob;
         } catch (err) {
           console.log(err);
-          dispatch(setMessage({ message: (err as Error).message }));
+          dispatch(catchErrorMessage(err));
         }
       }
     },
@@ -411,7 +457,7 @@ export const useCapture = (
             await uploadThumbnail(dataURL);
         } catch (err) {
           console.log(err);
-          dispatch(setMessage({ message: (err as Error).message }));
+          dispatch(catchErrorMessage(err));
         }
       }
     },
@@ -475,7 +521,7 @@ export const useCapture = (
         }
       } catch (err) {
         console.log(err);
-        dispatch(setMessage({ message: (err as Error).message }));
+        dispatch(catchErrorMessage(err));
       }
     }
   }, [

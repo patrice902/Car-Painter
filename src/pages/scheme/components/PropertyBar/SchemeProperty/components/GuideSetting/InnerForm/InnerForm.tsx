@@ -58,8 +58,10 @@ export const InnerForm = React.memo(
             guide_data,
           })
         );
+
+        formProps.validateForm();
       },
-      [dispatch, currentScheme]
+      [dispatch, currentScheme, formProps]
     );
 
     const handleSchemeUpdateOnly = useCallback(
@@ -73,8 +75,10 @@ export const InnerForm = React.memo(
             guide_data,
           })
         );
+
+        formProps.validateForm();
       },
-      [setMultiFieldValue, dispatch, currentScheme]
+      [setMultiFieldValue, dispatch, currentScheme, formProps]
     );
 
     const handleTogglePaintingGuide = useCallback(

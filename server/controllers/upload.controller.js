@@ -3,6 +3,7 @@ const FileService = require("../services/fileService");
 const LayerService = require("../services/layerService");
 const logger = require("../config/winston");
 const config = require("../config");
+const SharedUploadService = require("../services/sharedUploadService");
 
 class UploadController {
   static async getList(req, res) {
@@ -44,6 +45,7 @@ class UploadController {
   static async create(req, res) {
     try {
       let upload = await UploadService.create(req.body);
+      upload = await UploadService.getById(upload.id);
       res.json(upload);
     } catch (err) {
       logger.log("error", err.stack);
@@ -73,13 +75,13 @@ class UploadController {
           newNames = JSON.parse(newNames);
           let uploads = [];
           for (let fileName of fileNames) {
-            uploads.push(
-              await UploadService.create({
-                user_id: parseInt(userID),
-                scheme_id: parseInt(schemeID),
-                file_name: `uploads/${newNames[fileName]}`,
-              })
-            );
+            let uploadItem = await UploadService.create({
+              user_id: parseInt(userID),
+              scheme_id: parseInt(schemeID),
+              file_name: `uploads/${newNames[fileName]}`,
+            });
+            uploadItem = await UploadService.getById(uploadItem.id);
+            uploads.push(uploadItem);
           }
           res.json(uploads);
         }
@@ -95,6 +97,7 @@ class UploadController {
   static async update(req, res) {
     try {
       let upload = await UploadService.updateById(req.params.id, req.body);
+      upload = await UploadService.getById(upload.id);
       res.json(upload);
     } catch (err) {
       logger.log("error", err.stack);
@@ -106,12 +109,29 @@ class UploadController {
 
   static async delete(req, res) {
     try {
-      let { deleteFromAll } = req.body;
+      let { deleteFromAll, userID } = req.body;
       let upload = await UploadService.getById(req.params.id);
       upload = upload.toJSON();
-      if (deleteFromAll) {
+      if (deleteFromAll && !userID) {
         await FileService.deleteFileFromS3(upload.file_name);
         await LayerService.deleteByUploadID(req.params.id);
+      } else if (userID) {
+        let layers = await LayerService.getListByUploadID(req.params.id);
+        layers = layers.toJSON();
+        let schemes = [];
+        for (let layer of layers) {
+          if (
+            !schemes.find((scheme) => scheme.id === layer.scheme.id) &&
+            layer.scheme.user_id === userID
+          ) {
+            schemes.push(layer.scheme);
+          }
+        }
+
+        await LayerService.deleteByUploadIDAndScheme(
+          req.params.id,
+          schemes.map((scheme) => scheme.id)
+        );
       }
       await UploadService.deleteById(upload.id);
       res.json({});
@@ -126,15 +146,50 @@ class UploadController {
   static async deleteLegacyByUserID(req, res) {
     try {
       let { deleteFromAll } = req.body;
-      let uploads = await UploadService.getLegacyListByUserID(req.params.id);
+      const userID = req.params.id;
+
+      let uploads = await UploadService.getLegacyListByUserID(userID);
       uploads = uploads.toJSON();
       const upload_ids = uploads.map((upload) => upload.id);
+
       if (deleteFromAll) {
-        const filePaths = uploads.map((upload) => upload.file_name);
-        FileService.deleteMultiFilesFromS3(filePaths);
-        await LayerService.deleteByMultiUploadIDs(upload_ids);
+        for (let upload of uploads) {
+          let layers = await LayerService.getListByUploadID(upload.id);
+          layers = layers.toJSON();
+
+          let schemes = [];
+          for (let layer of layers) {
+            if (!schemes.find((scheme) => scheme.id === layer.scheme.id)) {
+              schemes.push(layer.scheme);
+            }
+          }
+
+          if (schemes.every((scheme) => scheme.user_id === userID)) {
+            await FileService.deleteFileFromS3(upload.file_name);
+          }
+
+          await LayerService.deleteByUploadIDAndScheme(
+            upload.id,
+            schemes
+              .filter((scheme) => scheme.user_id === userID)
+              .map((scheme) => scheme.id)
+          );
+        }
+        // const filePaths = uploads.map((upload) => upload.file_name);
+        // FileService.deleteMultiFilesFromS3(filePaths);
+        // await LayerService.deleteByMultiUploadIDs(upload_ids);
       }
       await UploadService.deleteByMultiId(upload_ids);
+
+      let sharedUploads = await SharedUploadService.getListByUserId(
+        req.params.id
+      );
+      sharedUploads = sharedUploads.toJSON();
+      const legacySharedsUploadIds = sharedUploads
+        .filter((item) => item.upload.legacy_mode)
+        .map((item) => item.id);
+      await SharedUploadService.deleteByMultiId(legacySharedsUploadIds);
+
       res.json({});
     } catch (err) {
       logger.log("error", err.stack);

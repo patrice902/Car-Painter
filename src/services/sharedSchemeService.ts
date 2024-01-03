@@ -10,34 +10,34 @@ import BaseAPIService from "./baseAPIService";
 
 export default class SharedSchemeService extends BaseAPIService {
   static getSharedSchemeList = async (): Promise<SharedScheme[]> =>
-    this.requestWithAuth(`/shared`, "GET");
+    this.requestWithAuth(`/shared-scheme`, "GET");
 
   static getSharedSchemeListByUserID = async (
     userID: number
   ): Promise<SharedSchemeForGetListByUserId[]> =>
-    this.requestWithAuth(`/shared/byUser/${userID}`, "GET");
+    this.requestWithAuth(`/shared-scheme/byUser/${userID}`, "GET");
 
   static getSharedSchemeListBySchemeID = async (
     schemeID: number
   ): Promise<SharedSchemeWithUser[]> =>
-    this.requestWithAuth(`/shared/byScheme/${schemeID}`, "GET");
+    this.requestWithAuth(`/shared-scheme/byScheme/${schemeID}`, "GET");
 
   static createSharedScheme = async (
     payload: SharedSchemePayload
   ): Promise<SharedSchemeForGetByID> =>
-    this.requestWithAuth(`/shared`, "POST", payload);
+    this.requestWithAuth(`/shared-scheme`, "POST", payload);
 
   static getSharedScheme = async (
     schemeID: number
   ): Promise<SharedSchemeForGetByID> =>
-    this.requestWithAuth(`/shared/${schemeID}`, "GET");
+    this.requestWithAuth(`/shared-scheme/${schemeID}`, "GET");
 
   static updateSharedScheme = async (
     schemeID: number,
     payload: Partial<SharedSchemePayload>
   ): Promise<SharedSchemeForGetByID> =>
-    this.requestWithAuth(`/shared/${schemeID}`, "PUT", payload);
+    this.requestWithAuth(`/shared-scheme/${schemeID}`, "PUT", payload);
 
   static deleteSharedScheme = async (id: number) =>
-    this.requestWithAuth(`/shared/${id}`, "DELETE");
+    this.requestWithAuth(`/shared-scheme/${id}`, "DELETE");
 }

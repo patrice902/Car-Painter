@@ -10,6 +10,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Settings as SettingsIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { FaDownload } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +24,7 @@ import { RootState } from "src/redux";
 import { getCarRaces, setCarRace } from "src/redux/reducers/carReducer";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
-import { DialogTypes } from "src/types/enum";
+import { ConfigCatFlags, DialogTypes } from "src/types/enum";
 
 import {
   CustomButtonGroup,
@@ -59,6 +60,14 @@ export const Header = React.memo(
     const dispatch = useDispatch();
     const isAboveMobile = useMediaQuery((theme: Theme) =>
       theme.breakpoints.up("sm")
+    );
+    const { value: enabledRaceFunctionality } = useFeatureFlag(
+      ConfigCatFlags.RACE_FUNCTIONALITY,
+      true
+    );
+    const { value: enableSubmitToShowroom } = useFeatureFlag(
+      ConfigCatFlags.SUBMIT_TO_SHOWROOM,
+      true
     );
 
     const currentCarMake = useSelector(
@@ -324,8 +333,12 @@ export const Header = React.memo(
                 aria-controls="share-options-menu"
                 aria-haspopup="true"
                 startIcon={<ShareIcon />}
-                endIcon={<DropDownIcon />}
-                onClick={(event) => setShareAnchorEl(event.currentTarget)}
+                endIcon={enableSubmitToShowroom ? <DropDownIcon /> : undefined}
+                onClick={(event) =>
+                  enableSubmitToShowroom
+                    ? setShareAnchorEl(event.currentTarget)
+                    : handleOpenShareDialog()
+                }
               >
                 <Typography variant="subtitle2">Share</Typography>
               </DropDownButton>
@@ -334,7 +347,11 @@ export const Header = React.memo(
                 aria-controls="share-options-menu"
                 aria-haspopup="true"
                 size="small"
-                onClick={(event) => setShareAnchorEl(event.currentTarget)}
+                onClick={(event) =>
+                  enableSubmitToShowroom
+                    ? setShareAnchorEl(event.currentTarget)
+                    : handleOpenShareDialog()
+                }
               >
                 <ShareIcon />
               </IconButton>
@@ -373,64 +390,72 @@ export const Header = React.memo(
             <></>
           )}
 
-          {primaryRaceNumber > -1 ? (
-            <CustomButtonGroup variant="outlined">
-              <Button
-                variant="outlined"
-                color="primary"
-                size="small"
-                disabled={Boolean(currentScheme.race_updated || applyingRace)}
-                startIcon={
-                  <img src={RaceIcon} width={25} height={25} alt="Race" />
-                }
-                onClick={onRaceUpdate}
-              >
-                {applyingRace ? (
-                  <CircularProgress size={20} />
-                ) : (
-                  <Typography variant="subtitle2">Update</Typography>
-                )}
-              </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                aria-controls="race-options-menu"
-                aria-haspopup="true"
-                size="small"
-                onClick={(event) => setRaceAnchorEl(event.currentTarget)}
-              >
-                <DropDownIcon />
-              </Button>
-            </CustomButtonGroup>
-          ) : (
+          {enabledRaceFunctionality ? (
             <>
-              {isAboveMobile ? (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  style={{
-                    marginRight: isAboveMobile ? "16px" : 0,
-                    paddingRight: "16px",
-                  }}
-                  startIcon={
-                    <img src={RaceIcon} width={22} height={22} alt="Race" />
-                  }
-                  onClick={() => setDialog(DialogTypes.RACE)}
-                >
-                  <Typography variant="subtitle2">Race</Typography>
-                </Button>
+              {primaryRaceNumber > -1 ? (
+                <CustomButtonGroup variant="outlined">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    disabled={Boolean(
+                      currentScheme.race_updated || applyingRace
+                    )}
+                    startIcon={
+                      <img src={RaceIcon} width={25} height={25} alt="Race" />
+                    }
+                    onClick={onRaceUpdate}
+                  >
+                    {applyingRace ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <Typography variant="subtitle2">Update</Typography>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    aria-controls="race-options-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={(event) => setRaceAnchorEl(event.currentTarget)}
+                  >
+                    <DropDownIcon />
+                  </Button>
+                </CustomButtonGroup>
               ) : (
-                <IconButton
-                  size="small"
-                  style={{
-                    marginRight: isAboveMobile ? "16px" : 0,
-                  }}
-                  onClick={() => setDialog(DialogTypes.RACE)}
-                >
-                  <img src={RaceIcon} width={28} height={28} alt="Race" />
-                </IconButton>
+                <>
+                  {isAboveMobile ? (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      style={{
+                        marginRight: isAboveMobile ? "16px" : 0,
+                        paddingRight: "16px",
+                      }}
+                      startIcon={
+                        <img src={RaceIcon} width={22} height={22} alt="Race" />
+                      }
+                      onClick={() => setDialog(DialogTypes.RACE)}
+                    >
+                      <Typography variant="subtitle2">Race</Typography>
+                    </Button>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      style={{
+                        marginRight: isAboveMobile ? "16px" : 0,
+                      }}
+                      onClick={() => setDialog(DialogTypes.RACE)}
+                    >
+                      <img src={RaceIcon} width={28} height={28} alt="Race" />
+                    </IconButton>
+                  )}
+                </>
               )}
             </>
+          ) : (
+            <></>
           )}
 
           <Popover

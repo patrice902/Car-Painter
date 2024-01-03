@@ -36,7 +36,7 @@ type InnerFormProps = {
   fontList: BuilderFont[];
   currentLayer?: BuilderLayerJSON | null;
   pressedKey?: string | null;
-  onClone: () => void;
+  onClone: (mirrorRotation?: boolean) => void;
   onDelete: () => void;
 } & FormikProps<BuilderLayerJSONParitalAll>;
 
@@ -80,8 +80,10 @@ export const InnerForm = React.memo(
             currentLayer
           )
         );
+
+        formProps.validateForm();
       },
-      [currentLayer, dispatch]
+      [currentLayer, dispatch, formProps]
     );
 
     const handleLayerUpdateOnly = useCallback(
@@ -95,8 +97,10 @@ export const InnerForm = React.memo(
             id: currentLayer.id,
           } as Partial<BuilderLayerJSON>)
         );
+
+        formProps.validateForm();
       },
-      [currentLayer, dispatch, setMultiFieldValue]
+      [currentLayer, dispatch, setMultiFieldValue, formProps]
     );
 
     const handleLayerDataUpdate = useCallback(
@@ -113,8 +117,10 @@ export const InnerForm = React.memo(
             currentLayer
           )
         );
+
+        formProps.validateForm();
       },
-      [currentLayer, dispatch]
+      [currentLayer, dispatch, formProps]
     );
 
     const handleLayerDataUpdateOnly = useCallback(
@@ -128,8 +134,10 @@ export const InnerForm = React.memo(
             layer_data: valueMap,
           } as Partial<BuilderLayerJSON>)
         );
+
+        formProps.validateForm();
       },
-      [currentLayer, dispatch, setMultiFieldValue]
+      [currentLayer, dispatch, setMultiFieldValue, formProps]
     );
 
     return (

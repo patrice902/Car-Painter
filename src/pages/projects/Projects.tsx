@@ -378,13 +378,17 @@ export const Projects = React.memo(() => {
           </Box>
         </Box>
       </Box>
-      <CreateProjectDialog
-        carMakeList={sortedCarMakesList}
-        predefinedCarMakeID={predefinedCarMakeID}
-        open={dialog === "CreateProjectDialog"}
-        onContinue={createSchemeFromCarMake}
-        onCancel={hideDialog}
-      />
+      {dialog === "CreateProjectDialog" ? (
+        <CreateProjectDialog
+          carMakeList={sortedCarMakesList}
+          predefinedCarMakeID={predefinedCarMakeID}
+          open={dialog === "CreateProjectDialog"}
+          onContinue={createSchemeFromCarMake}
+          onCancel={hideDialog}
+        />
+      ) : (
+        <></>
+      )}
     </Box>
   );
 });

@@ -10,7 +10,6 @@ import {
   IconButton,
   TextField,
   Theme,
-  Typography,
   useMediaQuery,
 } from "@material-ui/core";
 import {
@@ -24,6 +23,7 @@ import { LightTooltip } from "src/components/common";
 import { ConfirmDialog } from "src/components/dialogs";
 import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
+import { reorderLayersOnCombination } from "src/redux/reducers/layerReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
 import { CarMake } from "src/types/model";
 import { BuilderSchemeJSON, UserWithoutPassword } from "src/types/query";
@@ -32,6 +32,7 @@ import {
   CustomButton,
   CustomDialogContent,
   CustomFormControlLabel,
+  CustomTypography,
 } from "./styles";
 
 type GeneralSettingProps = {
@@ -83,6 +84,10 @@ export const GeneralSetting = React.memo(
     const [resetCarMakeMessage, setResetCarMakeMessage] = useState<
       string | JSX.Element | null
     >(null);
+    const [
+      showSplitLayersConfirm,
+      setShowSplitLayersConfirm,
+    ] = useState<boolean>(false);
     const [name, setName] = useState(scheme.name);
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
@@ -105,11 +110,46 @@ export const GeneralSetting = React.memo(
       [dispatch, currentScheme]
     );
 
+    const handleUpdateMergeLayers = useCallback(
+      (flag) => {
+        if (flag) {
+          dispatch(reorderLayersOnCombination());
+        }
+        dispatch(
+          updateScheme({
+            ...currentScheme,
+            merge_layers: flag,
+          })
+        );
+      },
+      [dispatch, currentScheme]
+    );
+
+    const handleMergeLayersCheckboxClick = useCallback(
+      (checked) => {
+        if (checked) {
+          handleUpdateMergeLayers(true);
+        } else {
+          setShowSplitLayersConfirm(true);
+        }
+      },
+      [handleUpdateMergeLayers]
+    );
+
     const hideDeleteMessage = useCallback(() => setDeleteMessage(null), []);
     const hideResetCarMakeMessage = useCallback(
       () => setResetCarMakeMessage(null),
       []
     );
+
+    const hideSplitLayerConfirmation = useCallback(
+      () => setShowSplitLayersConfirm(false),
+      []
+    );
+    const handleConfirmLayerSplit = useCallback(() => {
+      setShowSplitLayersConfirm(false);
+      handleUpdateMergeLayers(false);
+    }, [handleUpdateMergeLayers]);
 
     const handleToggleFavorite = useCallback(() => {
       setFavoriteInPrgoress(true);
@@ -214,31 +254,52 @@ export const GeneralSetting = React.memo(
           </Box>
 
           <Box pl={2}>
-            <Typography>Owner: {decodeHtml(getUserName(owner))}</Typography>
-            <Typography>
+            <CustomTypography>
+              Owner: {decodeHtml(getUserName(owner))}
+            </CustomTypography>
+            <CustomTypography>
               Created: {new Date(scheme.date_created * 1000).toDateString()}
-            </Typography>
-            <Typography>
+            </CustomTypography>
+            <CustomTypography>
               Last Modified:{" "}
               {new Date(scheme.date_modified * 1000).toDateString()} By{" "}
               {decodeHtml(getUserName(modifier))}
-            </Typography>
+            </CustomTypography>
           </Box>
 
-          <CustomFormControlLabel
-            control={
-              <Checkbox
-                color="primary"
-                checked={!currentScheme?.hide_spec}
-                disabled={!editable}
-                onChange={(event) =>
-                  handleUpdateHideSpec(!event.target.checked)
-                }
-              />
-            }
-            label="Show Spec TGA/Finish"
-            labelPlacement="start"
-          />
+          <Box>
+            <CustomFormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={!currentScheme?.hide_spec}
+                  disabled={!editable}
+                  onChange={(event) =>
+                    handleUpdateHideSpec(!event.target.checked)
+                  }
+                />
+              }
+              label="Show Spec TGA/Finish"
+              labelPlacement="start"
+            />
+          </Box>
+
+          <Box>
+            <CustomFormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={currentScheme?.merge_layers}
+                  disabled={!editable}
+                  onChange={(event) =>
+                    handleMergeLayersCheckboxClick(event.target.checked)
+                  }
+                />
+              }
+              label="Combine Layer Groups"
+              labelPlacement="start"
+            />
+          </Box>
 
           <Box
             mt={2}
@@ -309,6 +370,13 @@ export const GeneralSetting = React.memo(
           open={!!deleteMessage}
           onCancel={hideDeleteMessage}
           onConfirm={handleDelete}
+        />
+
+        <ConfirmDialog
+          text="If you turn off Combine Layer Groups, layer order may change. Continue?"
+          open={showSplitLayersConfirm}
+          onCancel={hideSplitLayerConfirmation}
+          onConfirm={handleConfirmLayerSplit}
         />
 
         <ConfirmDialog

@@ -120,6 +120,18 @@ class LayerService {
     return true;
   }
 
+  static async deleteByUploadIDAndScheme(uploadID, schemeIDs) {
+    await Layer.query((qb) =>
+      qb
+        .where({
+          layer_type: LayerTypes.UPLOAD,
+          upload_id: uploadID,
+        })
+        .andWhere("scheme_id", "IN", schemeIDs)
+    ).destroy({ require: false });
+    return true;
+  }
+
   static async deleteByMultiUploadIDs(uploadIDs) {
     await Layer.query((qb) =>
       qb

@@ -1,13 +1,13 @@
 import React from "react";
 import UploadListContent from "src/components/dialogs/UploadDialog/UploadListConent";
-import { BuilderUpload } from "src/types/model";
+import { BuilderUploadWithUser } from "src/types/model";
 
 type UploadContentProps = {
   step?: number;
-  uploads: BuilderUpload[];
+  uploads: BuilderUploadWithUser[];
   search: string;
   setSearch: (value: string) => void;
-  onOpen: (upload: BuilderUpload) => void;
+  onOpen: (upload: BuilderUploadWithUser) => void;
 };
 
 export const UploadContent = React.memo(

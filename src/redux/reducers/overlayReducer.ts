@@ -6,7 +6,7 @@ import { BuilderOverlay, FavoriteOverlay } from "src/types/model";
 import { FavoriteOverlayPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
-import { setMessage } from "./messageReducer";
+import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type OverlayReducerState = {
   list: BuilderOverlay[];
@@ -110,7 +110,7 @@ export const getOverlayList = () => async (dispatch: AppDispatch) => {
     const overlays = await OverlayService.getOverlayList();
     dispatch(setList(overlays));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -160,7 +160,7 @@ export const uploadAndCreateOverlay = (
 
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -211,7 +211,7 @@ export const uploadAndUpdateOverlay = (
 
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -232,7 +232,7 @@ export const deleteOverlay = (id: number, callback?: () => void) => async (
 
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   dispatch(setLoading(false));
 };
@@ -247,7 +247,7 @@ export const getFavoriteOverlayList = (
     );
     dispatch(setFavoriteOverlayList(list));
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
   callback?.();
 };
@@ -263,7 +263,7 @@ export const createFavoriteOverlay = (
     dispatch(insertToFavoriteOverlayList(favoriteLogo));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };
 
@@ -276,6 +276,6 @@ export const deleteFavoriteOverlayItem = (
     dispatch(deleteFavoriteOverlayListItem(id));
     callback?.();
   } catch (err) {
-    dispatch(setMessage({ message: (err as Error).message }));
+    dispatch(catchErrorMessage(err));
   }
 };

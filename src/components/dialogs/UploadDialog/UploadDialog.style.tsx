@@ -1,12 +1,17 @@
 import { faStar as faStarOff } from "@fortawesome/free-regular-svg-icons";
-import { faStar as faStarOn } from "@fortawesome/free-solid-svg-icons";
 import {
+  faQrcode,
+  faStar as faStarOn,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  DialogActions,
   DialogContent,
   IconButton,
   ImageList,
   ImageListItem,
   Typography,
 } from "@material-ui/core";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import styled from "styled-components/macro";
 
 export const CustomImageList = styled(ImageList)`
@@ -38,8 +43,37 @@ export const CategoryText = styled(Typography)`
   color: white;
 `;
 
+export const CopyableText = styled(Typography)`
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  margin: 0;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+`;
+
+export const CopiedText = styled.span`
+  color: lightgreen;
+  position: absolute;
+  right: 8px;
+  font-weight: bold;
+`;
+
+export const CopyIcon = styled(FileCopyIcon)`
+  position: absolute;
+  right: 8px;
+`;
+
 export const DeleteButton = styled(IconButton)`
   color: #ccc;
 `;
 
-export { faStarOn, faStarOff };
+export const CustomDialogActions = styled(DialogActions)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+`;
+
+export { faStarOn, faStarOff, faQrcode };
