@@ -62,7 +62,7 @@ import {
 import { BuilderLayerJSON } from "src/types/query";
 import { useDebouncedCallback } from "use-debounce";
 
-const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
+export const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
 const BracketKeys = ["[", "]"];
 
 export interface WithKeyEventProps {

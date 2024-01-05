@@ -11,6 +11,7 @@ export type GuideSettingFormValues = {
   grid_opacity: number;
   grid_padding: number;
   grid_stroke: number;
+  blend_wireframe: boolean;
   show_wireframe: boolean;
   show_sponsor: boolean;
   show_numberBlocks: boolean;

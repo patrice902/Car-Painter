@@ -51,6 +51,9 @@ export const PaintingGuideTop = React.memo(() => {
         listening={false}
         visible={!specMode && paintingGuides.includes(PaintingGuides.WIREFRAME)}
         onLoadLayer={onLoadLayer}
+        globalCompositeOperation={
+          guideData?.blend_wireframe ? "difference" : null
+        }
       />
 
       {Array.from(Array(Math.round(frameSize.width / gridPadding)), (e, i) => (

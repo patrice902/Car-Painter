@@ -38,9 +38,14 @@ import {
 } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
+import { ArrowKeys } from "./withKeyEvent";
+
 export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
   const [prevPosition, setPrevPosition] = useState<Position>();
   const [previousGuide, setPreviousGuide] = useState<PaintingGuides[]>([]);
+  const [previousPressedEventKey, setPreviousPressedEventKey] = useState<
+    string | null
+  >();
   const [tick, setTick] = useState(0);
 
   const drawingLayerRef = useRef<BuilderLayerJSON<ShapeObjLayerData>>();
@@ -54,6 +59,9 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
   );
   const pressedKey = useSelector(
     (state: RootState) => state.boardReducer.pressedKey
+  );
+  const pressedEventKey = useSelector(
+    (state: RootState) => state.boardReducer.pressedEventKey
   );
   const currentScheme = useSelector(
     (state: RootState) => state.schemeReducer.current
@@ -364,6 +372,27 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
       showGuideForRepositioning(false);
     dispatch(setDrawingStatus(null));
   }, [dispatch, showGuideForRepositioning, currentScheme]);
+
+  useEffect(() => {
+    if (
+      currentLayer &&
+      ![LayerTypes.CAR, LayerTypes.BASE].includes(currentLayer.layer_type)
+    ) {
+      if (pressedEventKey && ArrowKeys.includes(pressedEventKey)) {
+        showGuideForRepositioning(true);
+      }
+
+      if (
+        !pressedEventKey &&
+        previousPressedEventKey &&
+        ArrowKeys.includes(previousPressedEventKey)
+      ) {
+        showGuideForRepositioning(false);
+      }
+    }
+    setPreviousPressedEventKey(pressedEventKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pressedEventKey]);
 
   const onDragEnd = undefined;
 

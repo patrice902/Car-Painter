@@ -40,6 +40,7 @@ export interface GuideData {
   default_shape_stroke?: number;
   default_shape_opacity?: number;
   show_wireframe?: boolean;
+  blend_wireframe?: boolean;
   show_numberBlocks?: boolean;
   show_sponsor?: boolean;
   show_grid?: boolean;
@@ -97,6 +98,10 @@ export interface LogoObjLayerData extends MovableObjLayerData {
   paddingX: number;
   paddingY: number;
   bgColor: string;
+  bgCornerTopLeft: number;
+  bgCornerTopRight: number;
+  bgCornerBottomLeft: number;
+  bgCornerBottomRight: number;
   source_file: string;
   preview_file: string;
   sizeLocked: boolean;

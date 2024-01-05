@@ -259,15 +259,7 @@ export const useCapture = (
       }
 
       tgaCtx?.putImageData(imageData, 0, 0);
-      if (!currentSchemeRef.current?.guide_data.show_carparts_on_top) {
-        tgaCtx?.drawImage(
-          tgaSchemeLayerImgWithoutTemplate,
-          0,
-          0,
-          width,
-          height
-        );
-      }
+      tgaCtx?.drawImage(tgaSchemeLayerImgWithoutTemplate, 0, 0, width, height);
     } else {
       tgaCtx?.drawImage(tgaSchemeLayerImg, 0, 0, width, height);
     }
@@ -293,7 +285,6 @@ export const useCapture = (
     carMakeLayerRef,
     unsetDeleteLayerState,
     currentCarMakeRef,
-    currentSchemeRef,
   ]);
 
   const uploadThumbnail = useCallback(
