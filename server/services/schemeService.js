@@ -60,6 +60,7 @@ class SchemeService {
     const defaultGuideData = {
       wireframe_opacity: 0.1,
       show_wireframe: true,
+      blend_wireframe: true,
       sponsor_opacity: 0.3,
       show_sponsor: true,
       numberblock_opacity: 0.2,

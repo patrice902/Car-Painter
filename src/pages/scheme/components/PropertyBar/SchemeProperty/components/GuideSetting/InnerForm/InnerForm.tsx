@@ -190,7 +190,7 @@ export const InnerForm = React.memo(
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   <LightTooltip
-                    title="Apply difference blend mode so that you can easily see the wireframe over the board"
+                    title="Apply invert colors so that you can easily see the wireframe over the board"
                     arrow
                   >
                     <CustomFormControlLabel
@@ -205,7 +205,7 @@ export const InnerForm = React.memo(
                           onUpdateDB={handleBlendWireFrameUpdateForDB}
                         />
                       }
-                      label="Difference blend mode"
+                      label="Invert colors"
                       labelPlacement="start"
                     />
                   </LightTooltip>

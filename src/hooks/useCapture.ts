@@ -96,7 +96,8 @@ export const useCapture = (
       !stageRef?.current ||
       !baseLayerRef?.current ||
       !mainLayerRef?.current ||
-      !carMaskLayerRef?.current
+      !carMaskLayerRef?.current ||
+      !carMakeLayerRef?.current
     ) {
       return {};
     }
@@ -181,6 +182,15 @@ export const useCapture = (
     });
     const tgaSchemeLayerImg = await addImageProcess(tgaSchemeLayerURL);
 
+    const carMakeLayersDataURL = carMakeLayerRef.current.toDataURL({
+      pixelRatio,
+      x: 0,
+      y: 0,
+      width: frameSizeRef.current.width,
+      height: frameSizeRef.current.height,
+    });
+    const carMakeLayersImg = await addImageProcess(carMakeLayersDataURL);
+
     baseLayerRef.current?.hide();
     carMakeLayerRef.current?.hide();
     stageRef.current.setAttrs(targetAttrs);
@@ -251,15 +261,55 @@ export const useCapture = (
 
     if (alphaChannelImg && tgaCtx) {
       // Applying Alpha Channel Mask and draw on tgaCtx
-      const imageData = imageDataFromSource(tgaSchemeLayerImg, width, height);
+      const userLayersImgData = imageDataFromSource(
+        tgaSchemeLayerImgWithoutTemplate,
+        width,
+        height
+      );
+      const carMakeImgData = imageDataFromSource(
+        carMakeLayersImg,
+        width,
+        height
+      );
       const maskData = imageDataFromSource(alphaChannelImg, width, height);
+
+      // Exculde some parts from Alpha.
+      for (let i = 3, len = maskData.data.length; i < len; i = i + 4) {
+        if (!currentSchemeRef.current?.guide_data.show_carparts_on_top) {
+          // If CarParts on Top setting is on, and if it's car parts point ignore it.
+          if (
+            currentSchemeRef.current?.guide_data.show_carparts_on_top &&
+            (carMakeImgData.data[i - 1] ||
+              carMakeImgData.data[i - 2] ||
+              carMakeImgData.data[i - 3] ||
+              carMakeImgData.data[i])
+          ) {
+            continue;
+          }
+
+          // Exculde Logos/uploads/texts from Alpha.
+          if (
+            userLayersImgData.data[i - 1] ||
+            userLayersImgData.data[i - 2] ||
+            userLayersImgData.data[i - 3] ||
+            userLayersImgData.data[i]
+          ) {
+            maskData.data[i - 3] = 255;
+            maskData.data[i - 2] = 255;
+            maskData.data[i - 1] = 255;
+            maskData.data[i] = 255;
+          }
+        }
+      }
+
+      // Applying Alpha Channel Mask and draw on tgaCtx
+      const imageData = imageDataFromSource(tgaSchemeLayerImg, width, height);
 
       for (let i = 3, len = imageData.data.length; i < len; i = i + 4) {
         imageData.data[i] = maskData.data[i - 1];
       }
 
       tgaCtx?.putImageData(imageData, 0, 0);
-      tgaCtx?.drawImage(tgaSchemeLayerImgWithoutTemplate, 0, 0, width, height);
     } else {
       tgaCtx?.drawImage(tgaSchemeLayerImg, 0, 0, width, height);
     }
@@ -285,6 +335,7 @@ export const useCapture = (
     carMakeLayerRef,
     unsetDeleteLayerState,
     currentCarMakeRef,
+    currentSchemeRef,
   ]);
 
   const uploadThumbnail = useCallback(
