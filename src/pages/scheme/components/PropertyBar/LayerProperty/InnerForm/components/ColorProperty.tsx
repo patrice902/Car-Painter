@@ -71,14 +71,20 @@ export const ColorProperty = React.memo(
           : null,
       [logoList, values.layer_data.source_file, values.layer_type]
     );
+    const isColorDisabledLayer = useMemo(
+      () =>
+        values.layer_type === LayerTypes.TEXT ||
+        (values.layer_type === LayerTypes.LOGO &&
+          !foundLogo?.enable_color &&
+          !values.layer_data.fromCarParts),
+      [foundLogo, values.layer_data.fromCarParts, values.layer_type]
+    );
     const showColor = useMemo(
       () =>
         !AllowedLayerTypes ||
         (AllowedLayerTypes.includes("layer_data.color") &&
-          values.layer_type !== LayerTypes.TEXT &&
-          (values.layer_type !== LayerTypes.LOGO ||
-            (foundLogo && foundLogo.enable_color))),
-      [AllowedLayerTypes, foundLogo, values.layer_type]
+          !isColorDisabledLayer),
+      [AllowedLayerTypes, isColorDisabledLayer]
     );
     const showBlendType = useMemo(
       () =>

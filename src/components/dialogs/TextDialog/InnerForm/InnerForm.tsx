@@ -159,6 +159,7 @@ export const InnerForm = React.memo(
             value={values.font}
             onChange={handleChangeFont}
             fontList={fontList}
+            fullWidth
           />
         </FormControl>
         <Grid container spacing={4}>

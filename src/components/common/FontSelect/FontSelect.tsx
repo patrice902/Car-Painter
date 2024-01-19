@@ -14,11 +14,12 @@ export type FontSelectProps = {
   fontList: BuilderFont[];
   value?: number;
   disabled?: boolean;
+  fullWidth?: boolean;
   onChange: (value: number) => void;
 };
 
 export const FontSelect = React.memo((props: FontSelectProps) => {
-  const { fontList, value, disabled, onChange } = props;
+  const { fontList, value, disabled, fullWidth, onChange } = props;
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -92,6 +93,12 @@ export const FontSelect = React.memo((props: FontSelectProps) => {
             alt={font.font_name}
             minHeight="20px"
             justifyContent="flex-start"
+            overflow="hidden"
+            imageProps={{
+              style: {
+                width: fullWidth ? "100%" : "auto",
+              },
+            }}
           />
         );
       }}
@@ -129,6 +136,12 @@ export const FontSelect = React.memo((props: FontSelectProps) => {
                   alt={font.font_name}
                   minHeight="20px"
                   justifyContent="flex-start"
+                  overflow="hidden"
+                  imageProps={{
+                    style: {
+                      width: fullWidth ? "100%" : "auto",
+                    },
+                  }}
                 />
               </MenuItem>
             ))}

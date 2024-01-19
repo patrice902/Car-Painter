@@ -275,30 +275,28 @@ export const useCapture = (
 
       // Exculde some parts from Alpha.
       for (let i = 3, len = maskData.data.length; i < len; i = i + 4) {
-        if (!currentSchemeRef.current?.guide_data.show_carparts_on_top) {
-          // If CarParts on Top setting is on, and if it's car parts point ignore it.
-          if (
-            currentSchemeRef.current?.guide_data.show_carparts_on_top &&
-            (carMakeImgData.data[i - 1] ||
-              carMakeImgData.data[i - 2] ||
-              carMakeImgData.data[i - 3] ||
-              carMakeImgData.data[i])
-          ) {
-            continue;
-          }
+        // If CarParts on Top setting is on, and if it's car parts point ignore it.
+        if (
+          currentSchemeRef.current?.guide_data.show_carparts_on_top &&
+          (carMakeImgData.data[i - 1] ||
+            carMakeImgData.data[i - 2] ||
+            carMakeImgData.data[i - 3] ||
+            carMakeImgData.data[i])
+        ) {
+          continue;
+        }
 
-          // Exculde Logos/uploads/texts from Alpha.
-          if (
-            userLayersImgData.data[i - 1] ||
-            userLayersImgData.data[i - 2] ||
-            userLayersImgData.data[i - 3] ||
-            userLayersImgData.data[i]
-          ) {
-            maskData.data[i - 3] = 255;
-            maskData.data[i - 2] = 255;
-            maskData.data[i - 1] = 255;
-            maskData.data[i] = 255;
-          }
+        // Exculde Logos/uploads/texts from Alpha.
+        if (
+          userLayersImgData.data[i - 1] ||
+          userLayersImgData.data[i - 2] ||
+          userLayersImgData.data[i - 3] ||
+          userLayersImgData.data[i]
+        ) {
+          maskData.data[i - 3] = 255;
+          maskData.data[i - 2] = 255;
+          maskData.data[i - 1] = 255;
+          maskData.data[i] = 255;
         }
       }
 

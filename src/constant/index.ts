@@ -653,6 +653,7 @@ export const AllowedLayerProps = {
     "layer_data.flop",
     "layer_data.flip",
     "layer_data.opacity",
+    "layer_data.color",
     "layer_data.shadowColor",
     "layer_data.shadowBlur",
     "layer_data.shadowOpacity",

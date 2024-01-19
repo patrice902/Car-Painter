@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   detectBrowser,
   getPixelRatio,
@@ -25,6 +25,7 @@ import {
   urlToString,
 } from "src/helper/svg";
 import { RootState } from "src/redux";
+import { setMessage } from "src/redux/reducers/messageReducer";
 import { FrameSize, PartialAllLayerData } from "src/types/common";
 import { Browser } from "src/types/enum";
 
@@ -92,6 +93,7 @@ export const useKonvaImageInit = ({
   tellSize,
   onLoadLayer,
 }: UseKonvaImageInit) => {
+  const dispatch = useDispatch();
   const [image, setImage] = useState<CanvasImageSource>();
   const imageRef = useRef<HTMLImageElement>();
   const svgDocRef = useRef<Document>();
@@ -125,7 +127,7 @@ export const useKonvaImageInit = ({
 
   useEffect(() => {
     if (loadedStatus !== false && loadedStatus !== true && onLoadLayer && id)
-      onLoadLayer(id, false);
+      onLoadLayer?.(id, false);
     if (isSVG) {
       setImgFromSVG(src);
     } else {
@@ -266,7 +268,7 @@ export const useKonvaImageInit = ({
       height: targetSize.height ?? 0,
     });
 
-    if (onLoadLayer && id) onLoadLayer(id, true);
+    if (id) onLoadLayer?.(id, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     imageRef,
@@ -284,11 +286,11 @@ export const useKonvaImageInit = ({
   ]);
 
   const handleError = useCallback(
-    (error) => {
-      console.log("Failed to fetch image: ", error);
-      if (onLoadLayer && id) onLoadLayer(id, true);
+    (_error) => {
+      dispatch(setMessage({ message: `Failed to load image: ${id}` }));
+      if (id) onLoadLayer?.(id, true);
     },
-    [onLoadLayer, id]
+    [onLoadLayer, id, dispatch]
   );
 
   const setImgFromSVG = useCallback(

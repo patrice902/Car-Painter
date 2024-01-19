@@ -137,6 +137,10 @@ export const GeneralProperty = React.memo(
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  inputProps={{
+                    min: 0,
+                    max: 99999,
+                  }}
                   onBlur={handleBlur}
                   onUpdateField={onLayerDataUpdateOnly}
                   onUpdateDB={onLayerDataUpdate}

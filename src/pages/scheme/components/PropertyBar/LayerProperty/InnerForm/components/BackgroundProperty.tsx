@@ -122,6 +122,10 @@ export const BackgroundProperty = React.memo(
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
@@ -155,6 +159,10 @@ export const BackgroundProperty = React.memo(
                     }}
                     InputLabelProps={{
                       shrink: true,
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
                     }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
@@ -194,6 +202,10 @@ export const BackgroundProperty = React.memo(
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
                         onBlur={handleBlur}
                         onUpdateField={onLayerDataUpdateOnly}
                         onUpdateDB={onLayerDataUpdate}
@@ -230,6 +242,10 @@ export const BackgroundProperty = React.memo(
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
                         onBlur={handleBlur}
                         onUpdateField={onLayerDataUpdateOnly}
                         onUpdateDB={onLayerDataUpdate}
@@ -260,6 +276,15 @@ export const BackgroundProperty = React.memo(
                           touched.layer_data?.bgCornerBottomLeft &&
                           errors.layer_data?.bgCornerBottomLeft
                         }
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
                         onBlur={handleBlur}
                         onUpdateField={onLayerDataUpdateOnly}
                         onUpdateDB={onLayerDataUpdate}
@@ -290,6 +315,15 @@ export const BackgroundProperty = React.memo(
                           touched.layer_data?.bgCornerBottomRight &&
                           errors.layer_data?.bgCornerBottomRight
                         }
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
                         onBlur={handleBlur}
                         onUpdateField={onLayerDataUpdateOnly}
                         onUpdateDB={onLayerDataUpdate}
