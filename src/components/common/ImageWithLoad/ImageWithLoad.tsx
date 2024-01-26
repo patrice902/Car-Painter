@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CustomImg, CustomSkeleton } from "./ImageWithLoad.style";
 
 type ImageWithLoadProps = {
+  id?: string;
   src: string;
   altSrc?: string;
   fallbackSrc?: string;
@@ -25,6 +26,7 @@ type ImageWithLoadProps = {
 
 export const ImageWithLoad = React.memo(
   ({
+    id,
     src,
     altSrc,
     fallbackSrc,
@@ -47,6 +49,7 @@ export const ImageWithLoad = React.memo(
 
     return (
       <Box
+        id={id}
         position="relative"
         minHeight={minHeight}
         minWidth={minWidth}

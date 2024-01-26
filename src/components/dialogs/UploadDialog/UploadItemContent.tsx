@@ -32,6 +32,9 @@ type UploadItemContentProps = {
   onDelete: (upload: BuilderUploadWithUser) => void;
 };
 
+export const getUploadItemId = (uploadItem: BuilderUpload) =>
+  `upload-${uploadItem.id}`;
+
 export const UploadItemContent = React.memo(
   ({ uploadItem, onShareCode, onDelete }: UploadItemContentProps) => {
     const dispatch = useDispatch();
@@ -112,6 +115,7 @@ export const UploadItemContent = React.memo(
     return (
       <>
         <ImageWithLoad
+          id={getUploadItemId(uploadItem)}
           src={uploadAssetURL(uploadItem)}
           alt={getNameFromUploadFileName(
             uploadItem.file_name,
