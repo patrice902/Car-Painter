@@ -32,13 +32,13 @@ type TextNodeProps = {
   shadowOffsetY: number;
   paintingGuides: PaintingGuides[];
   guideData?: GuideData | null;
-  onSelect: () => void;
-  onDblClick: (evt: KonvaEventObject<MouseEvent>) => void;
-  onChange: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
-  onHover: (hovered: boolean) => void;
-  onDragStart: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
-  onDragEnd: () => void;
-  onCloneMove: (
+  onSelect?: () => void;
+  onDblClick?: (evt: KonvaEventObject<MouseEvent>) => void;
+  onChange?: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
+  onHover?: (hovered: boolean) => void;
+  onDragStart?: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
+  onDragEnd?: () => void;
+  onCloneMove?: (
     layer: BuilderLayerJSON<DefaultLayerData & PartialAllLayerData>
   ) => void;
 } & Omit<Konva.NodeConfig, "id">;

@@ -14,7 +14,7 @@ import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { insertToLoadedList as insertToLoadedFontList } from "src/redux/reducers/fontReducer";
 import { TextObjLayerData } from "src/types/common";
-import { MouseModes, ViewModes } from "src/types/enum";
+import { MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { MovableLayerProps } from "./types";
@@ -23,6 +23,8 @@ export const TextLayer = React.memo(
   ({
     stageRef,
     editable,
+    virtual,
+    specMode,
     layer,
     onSetTransformingLayer,
     onHover,
@@ -39,6 +41,7 @@ export const TextLayer = React.memo(
       onCloneMoveLayer: onCloneMove,
       onDblClickLayer: onDblClick,
     } = useLayer();
+    const id = `${virtual ? "virtual-" : ""}${layer.id.toString()}`;
 
     const { guideData } = useScheme();
 
@@ -47,9 +50,6 @@ export const TextLayer = React.memo(
     );
     const mouseMode = useSelector(
       (state: RootState) => state.boardReducer.mouseMode
-    );
-    const viewMode = useSelector(
-      (state: RootState) => state.boardReducer.viewMode
     );
     const boardRotate = useSelector(
       (state: RootState) => state.boardReducer.boardRotate
@@ -61,10 +61,6 @@ export const TextLayer = React.memo(
       (state: RootState) => state.fontReducer.loadedList
     );
     const fonts = useSelector((state: RootState) => state.fontReducer.list);
-
-    const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
-      viewMode,
-    ]);
 
     const shadowOffset = useMemo(
       () =>
@@ -92,14 +88,15 @@ export const TextLayer = React.memo(
 
     return (
       <TextNode
-        key={layer.id}
-        id={layer.id}
+        key={id}
+        id={id}
+        name={id}
+        loadedStatus={loadedStatuses[id]}
         layer={layer as BuilderLayerJSON<TextObjLayerData>}
         cloningLayer={cloningLayer as BuilderLayerJSON<TextObjLayerData>}
         editable={editable}
         stageRef={stageRef}
         frameSize={frameSize}
-        name={layer.id.toString()}
         text={decodeHtml(textLayerData.text)}
         fontFamily={enhanceFontFamily(font?.font_name)}
         fontFile={
@@ -108,7 +105,6 @@ export const TextLayer = React.memo(
             : undefined
         }
         loadedFontList={loadedFontList}
-        loadedStatus={loadedStatuses[layer.id]}
         onFontLoad={onFontLoad}
         fontSize={positiveNumGuard(textLayerData.size)}
         fill={
@@ -165,7 +161,7 @@ export const TextLayer = React.memo(
         onChange={(value, pushingToHistory) =>
           onChange(layer, value, pushingToHistory)
         }
-        onHover={(flag) => onHover(layer, flag)}
+        onHover={(flag) => onHover?.(layer, flag)}
         onLoadLayer={onLoadLayer}
         onDragStart={onLayerDragStart}
         onDragEnd={onLayerDragEnd}

@@ -10,36 +10,26 @@ import {
   downloadTGA,
   getTGABlob,
   imageDataFromSource,
-  sleep,
 } from "src/helper";
 import { useReducerRef, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import {
   setDownloadSpecTGA,
-  setShowProperties,
   setSpecTGADataURL,
   setViewMode,
 } from "src/redux/reducers/boardReducer";
-import {
-  setCurrent as setCurrentLayer,
-  setLoadedStatus,
-  updateLayer,
-} from "src/redux/reducers/layerReducer";
+import { setLoadedStatus } from "src/redux/reducers/layerReducer";
 import { catchErrorMessage } from "src/redux/reducers/messageReducer";
-import {
-  setCurrent as setCurrentScheme,
-  setSaving,
-} from "src/redux/reducers/schemeReducer";
+import { setCurrent as setCurrentScheme } from "src/redux/reducers/schemeReducer";
 import SchemeService from "src/services/schemeService";
-import { LayerTypes, PaintingGuides, ViewModes } from "src/types/enum";
+import { ViewModes } from "src/types/enum";
 
 export const useCapture = (
   stageRef: RefObject<Stage>,
   baseLayerRef: RefObject<Group>,
   mainLayerRef: RefObject<Group>,
   carMaskLayerRef: RefObject<Group>,
-  carMakeLayerRef: RefObject<Group>,
-  unsetDeleteLayerState: () => void
+  carMakeLayerRef: RefObject<Group>
 ) => {
   const dispatch = useDispatch();
   const { schemeFinishBase } = useScheme();
@@ -54,9 +44,6 @@ export const useCapture = (
   const [, currentCarMakeRef] = useReducerRef(
     useSelector((state: RootState) => state.carMakeReducer.current)
   );
-  const schemeSaving = useSelector(
-    (state: RootState) => state.schemeReducer.saving
-  );
   const loadedStatuses = useSelector(
     (state: RootState) => state.layerReducer.loadedStatuses
   );
@@ -66,17 +53,9 @@ export const useCapture = (
   const downloadSpecTGA = useSelector(
     (state: RootState) => state.boardReducer.downloadSpecTGA
   );
-  const paintingGuides = useSelector(
-    (state: RootState) => state.boardReducer.paintingGuides
-  );
-  const [, currentLayerRef] = useReducerRef(
-    useSelector((state: RootState) => state.layerReducer.current)
-  );
+
   const [drawingStatus, drawingStatusRef] = useReducerRef(
     useSelector((state: RootState) => state.layerReducer.drawingStatus)
-  );
-  const [, showPropertiesRef] = useReducerRef(
-    useSelector((state: RootState) => state.boardReducer.showProperties)
   );
 
   const [, frameSizeRef] = useReducerRef(
@@ -103,61 +82,11 @@ export const useCapture = (
     }
 
     setCapturing(true);
-    await sleep(500);
 
-    if (
-      currentLayerRef.current &&
-      ![LayerTypes.BASE, LayerTypes.CAR].includes(
-        currentLayerRef.current.layer_type
-      )
-    ) {
-      dispatch(updateLayer(currentLayerRef.current));
-      dispatch(setCurrentLayer(null));
-      unsetDeleteLayerState();
-    }
     const pixelRatio = carMakeSize / frameSizeRef.current.width;
 
     const width = frameSizeRef.current.width * pixelRatio;
     const height = frameSizeRef.current.height * pixelRatio;
-
-    const stageAttrs = { ...stageRef.current.attrs };
-    const targetAttrs = {
-      x: 0,
-      y: 0,
-      offsetX: 0,
-      offsetY: 0,
-      scaleX: 1,
-      scaleY: 1,
-      rotation: 0,
-      width: frameSizeRef.current.width,
-      height: frameSizeRef.current.height,
-    };
-
-    const boardWrapper = document.getElementById("board-wrapper");
-    if (boardWrapper) {
-      boardWrapper.style.width = `${frameSizeRef.current.width}px`;
-      boardWrapper.style.height = `${frameSizeRef.current.height}px`;
-    }
-
-    const originShowProperties = showPropertiesRef.current;
-    dispatch(setShowProperties(false));
-
-    const sponsorGuide = stageRef.current.findOne("#guide-sponsorblocks");
-    const numberGuide = stageRef.current.findOne("#guide-numberblocks");
-    const topGuide = stageRef.current.findOne(".layer-guide-top");
-
-    // Hide Guides
-    if (paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)) {
-      sponsorGuide?.hide();
-    }
-    if (paintingGuides.includes(PaintingGuides.NUMBERBLOCKS)) {
-      numberGuide?.hide();
-    }
-    topGuide?.hide();
-
-    // Getting Original Screenshot
-    stageRef.current.setAttrs(targetAttrs);
-    stageRef.current.draw();
 
     const schemeLayerURL = stageRef.current.toDataURL({
       pixelRatio,
@@ -170,7 +99,6 @@ export const useCapture = (
 
     // Getting TGA Screenshot
     carMaskLayerRef.current?.hide();
-    stageRef.current.setAttrs(targetAttrs);
     stageRef.current.draw();
 
     const tgaSchemeLayerURL = stageRef.current.toDataURL({
@@ -193,9 +121,7 @@ export const useCapture = (
 
     baseLayerRef.current?.hide();
     carMakeLayerRef.current?.hide();
-    stageRef.current.setAttrs(targetAttrs);
     stageRef.current.draw();
-    await sleep(200);
 
     const schemeLayerURLWithoutTemplate = stageRef.current.toDataURL({
       pixelRatio,
@@ -221,26 +147,8 @@ export const useCapture = (
     carMaskLayerRef.current?.show();
     baseLayerRef.current?.show();
     carMakeLayerRef.current?.show();
-    if (paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)) {
-      sponsorGuide?.show();
-    }
-    if (paintingGuides.includes(PaintingGuides.NUMBERBLOCKS)) {
-      numberGuide?.show();
-    }
-    topGuide?.show();
-    stageRef.current.setAttrs(_.omit(stageAttrs, ["container"]));
-    stageRef.current.draw();
-    setTimeout(() => {
-      stageRef.current?.x(stageAttrs.x);
-      stageRef.current?.y(stageAttrs.y);
-      stageRef.current?.draw();
-    }, 100);
 
-    if (boardWrapper) {
-      boardWrapper.style.width = `100%`;
-      boardWrapper.style.height = `100%`;
-    }
-    dispatch(setShowProperties(originShowProperties));
+    stageRef.current.draw();
 
     // Draw Screenshot Image on Canvas
     const canvas = document.createElement("canvas");
@@ -324,14 +232,9 @@ export const useCapture = (
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
-    currentLayerRef,
     carMakeSize,
     frameSizeRef,
-    showPropertiesRef,
-    dispatch,
-    paintingGuides,
     carMakeLayerRef,
-    unsetDeleteLayerState,
     currentCarMakeRef,
     currentSchemeRef,
   ]);
@@ -380,12 +283,14 @@ export const useCapture = (
           return;
         }
         try {
-          dispatch(setSaving(true));
           const { canvas } = await takeScreenshot();
           const dataURL = canvas?.toDataURL("image/jpeg", 0.5);
-          if (uploadLater) dispatch(setSaving(false));
-          await uploadThumbnail(dataURL);
-          if (!uploadLater) dispatch(setSaving(false));
+
+          if (uploadLater) {
+            uploadThumbnail(dataURL);
+          } else {
+            await uploadThumbnail(dataURL);
+          }
         } catch (err) {
           console.log(err);
           dispatch(catchErrorMessage(err));
@@ -406,10 +311,8 @@ export const useCapture = (
   const retrievePNGDataUrl = useCallback(async () => {
     if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
-        dispatch(setSaving(true));
         const { canvas } = await takeScreenshot();
         const dataURL = canvas?.toDataURL("image/png", 0.5);
-        dispatch(setSaving(false));
         return dataURL;
       } catch (err) {
         console.log(err);
@@ -422,11 +325,9 @@ export const useCapture = (
   const retrieveTGAPNGDataUrl = useCallback(async () => {
     if (stageRef.current && currentSchemeRef.current && !capturing) {
       try {
-        dispatch(setSaving(true));
         const { tgaCanvas } = await takeScreenshot();
 
         const dataURL = tgaCanvas?.toDataURL("image/png", 1);
-        dispatch(setSaving(false));
         return dataURL;
       } catch (err) {
         console.log(err);
@@ -440,10 +341,7 @@ export const useCapture = (
     async (isCustomNumber) => {
       if (stageRef.current && currentSchemeRef.current && !capturing) {
         try {
-          dispatch(setSaving(true));
           const { tgaCtx } = await takeScreenshot();
-
-          dispatch(setSaving(false));
 
           if (!tgaCtx) return null;
 
@@ -476,10 +374,7 @@ export const useCapture = (
     async (isCustomNumberTGA = false) => {
       if (stageRef.current && currentSchemeRef.current && !capturing) {
         try {
-          dispatch(setSaving(true));
           const { canvas, tgaCtx } = await takeScreenshot();
-
-          dispatch(setSaving(false));
 
           if (!tgaCtx) return;
 
@@ -515,14 +410,12 @@ export const useCapture = (
 
   const requestSpecTGAPNGDataUrl = useCallback(async () => {
     if (stageRef.current && currentSchemeRef.current && !capturing) {
-      dispatch(setSaving(true));
       dispatch(setViewMode(ViewModes.SPEC_VIEW));
     }
   }, [dispatch, currentSchemeRef, stageRef, capturing]);
 
   const handleDownloadSpecTGA = useCallback(() => {
     if (stageRef.current && currentSchemeRef.current && !capturing) {
-      dispatch(setSaving(true));
       dispatch(setDownloadSpecTGA(true));
       dispatch(setViewMode(ViewModes.SPEC_VIEW));
     }
@@ -530,9 +423,8 @@ export const useCapture = (
 
   const handleDownloadSpecPNG = useCallback(async () => {
     if (
-      schemeSaving &&
       viewMode === ViewModes.SPEC_VIEW &&
-      loadedStatuses[`guide-mask-${schemeFinishBase}`]
+      loadedStatuses[`virtual-guide-mask-${schemeFinishBase}`]
     ) {
       try {
         const { tgaCtx, canvas } = await takeScreenshot();
@@ -540,11 +432,10 @@ export const useCapture = (
         dispatch(setViewMode(ViewModes.NORMAL_VIEW));
         dispatch(
           setLoadedStatus({
-            key: `guide-mask-${schemeFinishBase}`,
+            key: `virtual-guide-mask-${schemeFinishBase}`,
             value: false,
           })
         );
-        setTimeout(() => dispatch(setSaving(false)), 1000);
 
         if (!tgaCtx) return;
 
@@ -566,7 +457,6 @@ export const useCapture = (
     }
   }, [
     dispatch,
-    schemeSaving,
     viewMode,
     schemeFinishBase,
     loadedStatuses,

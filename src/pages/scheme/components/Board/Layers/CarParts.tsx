@@ -7,10 +7,15 @@ import { generateCarMakeImageURL } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { CarObjLayerData, MovableObjLayerData } from "src/types/common";
-import { LayerTypes, ViewModes } from "src/types/enum";
+import { LayerTypes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
-export const CarParts = React.memo(() => {
+type CarPartsProps = {
+  virtual?: boolean;
+  specMode?: boolean;
+};
+
+export const CarParts = React.memo(({ virtual, specMode }: CarPartsProps) => {
   const { legacyMode } = useScheme();
   const {
     layerList,
@@ -22,12 +27,6 @@ export const CarParts = React.memo(() => {
   const carMake = useSelector(
     (state: RootState) => state.carMakeReducer.current
   );
-  const viewMode = useSelector(
-    (state: RootState) => state.boardReducer.viewMode
-  );
-
-  const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [viewMode]);
-
   const filteredLayers = useMemo(
     () =>
       _.orderBy(
@@ -45,29 +44,33 @@ export const CarParts = React.memo(() => {
 
   return (
     <>
-      {filteredLayers.map((layer) => (
-        <URLImage
-          key={layer.id}
-          id={layer.id}
-          name={layer.id.toString()}
-          layer={(layer as unknown) as BuilderLayerJSON<MovableObjLayerData>}
-          x={0}
-          y={0}
-          width={legacyMode ? 1024 : 2048}
-          height={legacyMode ? 1024 : 2048}
-          src={getCarMakeImage(layer.layer_data)}
-          filterColor={
-            specMode
-              ? layer.layer_data.finish || FinishOptions[0].value
-              : layer.layer_data.color
-          }
-          listening={false}
-          visible={layer.layer_visible ? true : false}
-          loadedStatus={loadedStatuses[layer.id]}
-          onLoadLayer={onLoadLayer}
-          tellSize={onExpandFrameFromImage}
-        />
-      ))}
+      {filteredLayers.map((layer) => {
+        const id = `${virtual ? "virtual-" : ""}${layer.id.toString()}`;
+
+        return (
+          <URLImage
+            key={id}
+            id={id}
+            name={id}
+            loadedStatus={loadedStatuses[id]}
+            layer={(layer as unknown) as BuilderLayerJSON<MovableObjLayerData>}
+            x={0}
+            y={0}
+            width={legacyMode ? 1024 : 2048}
+            height={legacyMode ? 1024 : 2048}
+            src={getCarMakeImage(layer.layer_data)}
+            filterColor={
+              specMode
+                ? layer.layer_data.finish || FinishOptions[0].value
+                : layer.layer_data.color
+            }
+            listening={false}
+            visible={layer.layer_visible ? true : false}
+            onLoadLayer={onLoadLayer}
+            tellSize={onExpandFrameFromImage}
+          />
+        );
+      })}
     </>
   );
 });

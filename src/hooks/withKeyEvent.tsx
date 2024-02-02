@@ -72,6 +72,11 @@ export interface WithKeyEventProps {
   mainLayerRef: RefObject<Group>;
   carMakeLayerRef: RefObject<Group>;
   carMaskLayerRef: RefObject<Group>;
+  virtualStageRef: RefObject<Stage>;
+  virtualBaseLayerRef: RefObject<Group>;
+  virtualMainLayerRef: RefObject<Group>;
+  virtualCarMakeLayerRef: RefObject<Group>;
+  virtualCarMaskLayerRef: RefObject<Group>;
 }
 
 export interface ComponentWithKeyEventProps extends WithKeyEventProps {

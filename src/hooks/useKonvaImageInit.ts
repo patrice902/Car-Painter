@@ -65,7 +65,7 @@ interface UseKonvaImageInit {
   y: number;
   onChange?: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
   tellSize?: (size: FrameSize) => void;
-  onLoadLayer: (id: string | number, flag: boolean) => void;
+  onLoadLayer?: (id: string | number, flag: boolean) => void;
 }
 
 export const useKonvaImageInit = ({

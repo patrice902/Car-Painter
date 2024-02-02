@@ -39,7 +39,7 @@ type GroupedURLImageProps = Omit<Konva.NodeConfig, "id"> & {
   layer: BuilderLayerJSON<LogoObjLayerData | OverlayObjLayerData>;
   cloningLayer: BuilderLayerJSON<LogoObjLayerData | OverlayObjLayerData>;
   loadedStatus: boolean;
-  onLoadLayer: (id: string | number, flag: boolean) => void;
+  onLoadLayer?: (id: string | number, flag: boolean) => void;
   tellSize?: (size: FrameSize) => void;
   stroke?: string;
   strokeWidth?: number;
@@ -51,13 +51,13 @@ type GroupedURLImageProps = Omit<Konva.NodeConfig, "id"> & {
   shadowOpacity: number;
   paintingGuides: PaintingGuides[];
   guideData?: GuideData | null;
-  onSelect: () => void;
-  onDblClick: (evt: KonvaEventObject<MouseEvent>) => void;
-  onChange: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
-  onHover: (hovered: boolean) => void;
-  onDragStart: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
-  onDragEnd: () => void;
-  onCloneMove: (
+  onSelect?: () => void;
+  onDblClick?: (evt: KonvaEventObject<MouseEvent>) => void;
+  onChange?: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
+  onHover?: (hovered: boolean) => void;
+  onDragStart?: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
+  onDragEnd?: () => void;
+  onCloneMove?: (
     layer: BuilderLayerJSON<DefaultLayerData & PartialAllLayerData>
   ) => void;
   onSetTransformingLayer?: (

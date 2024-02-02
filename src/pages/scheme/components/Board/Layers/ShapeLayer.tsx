@@ -19,7 +19,7 @@ import {
   StarObjLayerData,
   WedgeObjLayerData,
 } from "src/types/common";
-import { MouseModes, ViewModes } from "src/types/enum";
+import { MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { MovableLayerProps } from "./types";
@@ -28,6 +28,8 @@ export const ShapeLayer = React.memo(
   ({
     stageRef,
     editable,
+    virtual,
+    specMode,
     layer,
     onSetTransformingLayer,
     onHover,
@@ -43,6 +45,7 @@ export const ShapeLayer = React.memo(
       onCloneMoveLayer: onCloneMove,
       onDblClickLayer: onDblClick,
     } = useLayer();
+    const id = `${virtual ? "virtual-" : ""}${layer.id.toString()}`;
 
     const { guideData } = useScheme();
 
@@ -52,19 +55,12 @@ export const ShapeLayer = React.memo(
     const mouseMode = useSelector(
       (state: RootState) => state.boardReducer.mouseMode
     );
-    const viewMode = useSelector(
-      (state: RootState) => state.boardReducer.viewMode
-    );
     const boardRotate = useSelector(
       (state: RootState) => state.boardReducer.boardRotate
     );
     const paintingGuides = useSelector(
       (state: RootState) => state.boardReducer.paintingGuides
     );
-
-    const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
-      viewMode,
-    ]);
 
     const offsetsFromStroke = useMemo(() => {
       if ((layer.layer_data as RectObjLayerData).strokeType === "inside")
@@ -133,9 +129,10 @@ export const ShapeLayer = React.memo(
 
     return (
       <Shape
-        key={layer.id}
-        id={layer.id}
-        name={layer.id ? layer.id.toString() : null}
+        key={id}
+        id={id}
+        name={id}
+        loadedStatus={loadedStatuses[id]}
         layer={layer}
         cloningLayer={cloningLayer as BuilderLayerJSON<ShapeBaseObjLayerData>}
         stageRef={stageRef}
@@ -158,7 +155,6 @@ export const ShapeLayer = React.memo(
               )
             : []
         }
-        loadedStatus={loadedStatuses[layer.id]}
         pointerLength={positiveNumGuard(
           (layer.layer_data as ArrowObjLayerData).pointerLength +
             offsetsFromStroke.pointerLength
@@ -244,7 +240,7 @@ export const ShapeLayer = React.memo(
         onDblClick={onDblClick}
         listening={!layer.layer_locked && mouseMode === MouseModes.DEFAULT}
         onChange={(values) => onChange(layer, values)}
-        onHover={(flag) => onHover(layer, flag)}
+        onHover={(flag) => onHover?.(layer, flag)}
         onLoadLayer={onLoadLayer}
         onDragStart={onLayerDragStart}
         onDragEnd={onLayerDragEnd}

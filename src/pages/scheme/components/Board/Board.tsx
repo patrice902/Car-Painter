@@ -11,7 +11,7 @@ import { useDrawHelper, useZoom } from "src/hooks";
 import { RootState } from "src/redux";
 import { CloneLayerProps } from "src/redux/reducers/layerReducer";
 import { MovableObjLayerData } from "src/types/common";
-import { LayerTypes, MouseModes, ViewModes } from "src/types/enum";
+import { LayerTypes, MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { BoardWrapper } from "./Board.style";
@@ -20,7 +20,6 @@ import {
   PaintingGuideNumber,
   PaintingGuideSponsor,
   PaintingGuideTop,
-  SpecPaintingGuideCarMask,
 } from "./Guides";
 import { BasePaints, CarParts, MovableLayersGroup } from "./Layers";
 
@@ -87,17 +86,11 @@ export const Board = React.memo(
     const mouseMode = useSelector(
       (state: RootState) => state.boardReducer.mouseMode
     );
-    const viewMode = useSelector(
-      (state: RootState) => state.boardReducer.viewMode
-    );
     const isDraggable = useSelector(
       (state: RootState) => state.boardReducer.isDraggable
     );
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
-    );
-    const schemeSaving = useSelector(
-      (state: RootState) => state.schemeReducer.saving
     );
     const schemeLoaded = useSelector(
       (state: RootState) => state.schemeReducer.loaded
@@ -183,9 +176,6 @@ export const Board = React.memo(
                           }
                           listening={false}
                         />
-                        {viewMode === ViewModes.SPEC_VIEW && (
-                          <SpecPaintingGuideCarMask />
-                        )}
                         <BasePaints />
                       </Group>
                       {!currentScheme.guide_data.show_sponsor_block_on_top ||
@@ -377,7 +367,7 @@ export const Board = React.memo(
             onCloneLayer={onCloneLayer}
           />
         </BoardWrapper>
-        {schemeSaving || !schemeLoaded ? (
+        {!schemeLoaded ? (
           <Box
             width="100%"
             height="100%"
