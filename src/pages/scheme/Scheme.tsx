@@ -212,7 +212,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   const handleGoBack = useCallback(async () => {
     dispatch(setLoadedStatusAll({}));
     if (isAboveMobile) {
-      await handleUploadThumbnail(true);
+      await handleUploadThumbnail({ uploadLater: false, doSave: true });
     }
     history.push(previousPath || "/");
   }, [history, dispatch, handleUploadThumbnail, previousPath, isAboveMobile]);

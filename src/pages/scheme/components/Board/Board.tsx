@@ -95,6 +95,9 @@ export const Board = React.memo(
     const schemeLoaded = useSelector(
       (state: RootState) => state.schemeReducer.loaded
     );
+    const schemeSaving = useSelector(
+      (state: RootState) => state.schemeReducer.saving
+    );
     const layerList = useSelector(
       (state: RootState) => state.layerReducer.list
     );
@@ -367,7 +370,7 @@ export const Board = React.memo(
             onCloneLayer={onCloneLayer}
           />
         </BoardWrapper>
-        {!schemeLoaded ? (
+        {schemeSaving || !schemeLoaded ? (
           <Box
             width="100%"
             height="100%"

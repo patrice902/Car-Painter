@@ -330,6 +330,7 @@ export const UploadListContent = React.memo(
           id="upload-dialog-content"
           overflow="auto"
           height="min(700px, calc(100vh - 500px))"
+          minHeight="300px"
           mt={1}
           position="relative"
         >

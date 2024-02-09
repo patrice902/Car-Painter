@@ -10,6 +10,7 @@ import {
   downloadTGA,
   getTGABlob,
   imageDataFromSource,
+  sleep,
 } from "src/helper";
 import { useReducerRef, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
@@ -20,7 +21,10 @@ import {
 } from "src/redux/reducers/boardReducer";
 import { setLoadedStatus } from "src/redux/reducers/layerReducer";
 import { catchErrorMessage } from "src/redux/reducers/messageReducer";
-import { setCurrent as setCurrentScheme } from "src/redux/reducers/schemeReducer";
+import {
+  setCurrent as setCurrentScheme,
+  setSaving,
+} from "src/redux/reducers/schemeReducer";
 import SchemeService from "src/services/schemeService";
 import { ViewModes } from "src/types/enum";
 
@@ -271,7 +275,12 @@ export const useCapture = (
   );
 
   const handleUploadThumbnail = useCallback(
-    async (uploadLater = true) => {
+    async (
+      { uploadLater, doSave }: { uploadLater?: boolean; doSave?: boolean } = {
+        uploadLater: true,
+        doSave: false,
+      }
+    ) => {
       if (
         stageRef.current &&
         currentSchemeRef.current &&
@@ -283,6 +292,10 @@ export const useCapture = (
           return;
         }
         try {
+          if (doSave) {
+            dispatch(setSaving(true));
+          }
+
           const { canvas } = await takeScreenshot();
           const dataURL = canvas?.toDataURL("image/jpeg", 0.5);
 
@@ -290,6 +303,10 @@ export const useCapture = (
             uploadThumbnail(dataURL);
           } else {
             await uploadThumbnail(dataURL);
+          }
+
+          if (doSave) {
+            dispatch(setSaving(false));
           }
         } catch (err) {
           console.log(err);
@@ -427,6 +444,7 @@ export const useCapture = (
       loadedStatuses[`virtual-guide-mask-${schemeFinishBase}`]
     ) {
       try {
+        await sleep(200);
         const { tgaCtx, canvas } = await takeScreenshot();
 
         dispatch(setViewMode(ViewModes.NORMAL_VIEW));
