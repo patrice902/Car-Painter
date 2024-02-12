@@ -166,6 +166,10 @@ export const ShadowProperty = React.memo(
                 InputLabelProps={{
                   shrink: true,
                 }}
+                inputProps={{
+                  min: 0,
+                  max: 99999,
+                }}
               />
             ) : (
               <></>

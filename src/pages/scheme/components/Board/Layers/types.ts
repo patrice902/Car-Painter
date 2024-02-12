@@ -5,15 +5,17 @@ import { BuilderLayerJSON } from "src/types/query";
 
 export type MovableLayerProps<T extends MovableObjLayerData> = {
   stageRef: RefObject<Stage>;
-  editable: boolean;
+  editable?: boolean;
+  virtual?: boolean;
+  specMode?: boolean;
   layer: BuilderLayerJSON<T>;
-  onSetTransformingLayer: (
+  onSetTransformingLayer?: (
     layer: BuilderLayerJSON<MovableObjLayerData> | null
   ) => void;
-  onHover: (
+  onHover?: (
     layer: BuilderLayerJSON<MovableObjLayerData>,
     flag: boolean
   ) => void;
-  onLayerDragStart: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
-  onLayerDragEnd: () => void;
+  onLayerDragStart?: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
+  onLayerDragEnd?: () => void;
 };

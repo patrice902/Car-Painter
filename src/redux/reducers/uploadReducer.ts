@@ -158,7 +158,7 @@ export const uploadFiles = (
   userID: number,
   schemeID: number,
   files: File[],
-  callback?: () => void
+  callback?: (uploads?: BuilderUploadWithUser[]) => void
 ) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
@@ -185,7 +185,7 @@ export const uploadFiles = (
         type: "success",
       })
     );
-    callback?.();
+    callback?.(uploads);
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }

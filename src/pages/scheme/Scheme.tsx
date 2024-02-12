@@ -61,6 +61,7 @@ import {
   PropertyBar as DesktopPropertyBar,
   Toolbar as DesktopToolbar,
 } from "./components";
+import { VirtualBoard } from "./components/Board";
 import { LegacyBanner } from "./components/LegacyBanner";
 import { ReconnectionBanner } from "./components/ReconnectionBanner";
 import { withWrapper } from "./withWrapper";
@@ -75,10 +76,14 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     mainLayerRef,
     carMaskLayerRef,
     carMakeLayerRef,
+    virtualStageRef,
+    virtualBaseLayerRef,
+    virtualMainLayerRef,
+    virtualCarMakeLayerRef,
+    virtualCarMaskLayerRef,
     onKeyEvent,
     onDeleteLayer,
     onCloneLayer,
-    unsetDeleteLayerState,
   } = props;
   useBoardSocket();
   const dispatch = useDispatch();
@@ -111,12 +116,11 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     retrieveTGAPNGDataUrl,
     requestSpecTGAPNGDataUrl,
   } = useCapture(
-    stageRef,
-    baseLayerRef,
-    mainLayerRef,
-    carMaskLayerRef,
-    carMakeLayerRef,
-    unsetDeleteLayerState
+    virtualStageRef,
+    virtualBaseLayerRef,
+    virtualMainLayerRef,
+    virtualCarMaskLayerRef,
+    virtualCarMakeLayerRef
   );
 
   const user = useSelector((state: RootState) => state.authReducer.user);
@@ -208,7 +212,7 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
   const handleGoBack = useCallback(async () => {
     dispatch(setLoadedStatusAll({}));
     if (isAboveMobile) {
-      await handleUploadThumbnail(false);
+      await handleUploadThumbnail({ uploadLater: false, doSave: true });
     }
     history.push(previousPath || "/");
   }, [history, dispatch, handleUploadThumbnail, previousPath, isAboveMobile]);
@@ -395,6 +399,13 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
               ) : (
                 <></>
               )}
+              <VirtualBoard
+                stageRef={virtualStageRef}
+                baseLayerRef={virtualBaseLayerRef}
+                mainLayerRef={virtualMainLayerRef}
+                carMaskLayerRef={virtualCarMaskLayerRef}
+                carMakeLayerRef={virtualCarMakeLayerRef}
+              />
               <Board
                 hoveredLayerJSON={hoveredJSON}
                 editable={editable}

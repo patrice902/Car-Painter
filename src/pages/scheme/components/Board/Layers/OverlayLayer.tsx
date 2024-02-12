@@ -11,7 +11,7 @@ import {
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { OverlayObjLayerData } from "src/types/common";
-import { MouseModes, ViewModes } from "src/types/enum";
+import { MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { MovableLayerProps } from "./types";
@@ -20,6 +20,8 @@ export const OverlayLayer = React.memo(
   ({
     stageRef,
     editable,
+    virtual,
+    specMode,
     layer,
     onSetTransformingLayer,
     onHover,
@@ -35,6 +37,7 @@ export const OverlayLayer = React.memo(
       onCloneMoveLayer: onCloneMove,
       onDblClickLayer: onDblClick,
     } = useLayer();
+    const id = `${virtual ? "virtual-" : ""}${layer.id.toString()}`;
 
     const { guideData } = useScheme();
 
@@ -44,19 +47,12 @@ export const OverlayLayer = React.memo(
     const mouseMode = useSelector(
       (state: RootState) => state.boardReducer.mouseMode
     );
-    const viewMode = useSelector(
-      (state: RootState) => state.boardReducer.viewMode
-    );
     const boardRotate = useSelector(
       (state: RootState) => state.boardReducer.boardRotate
     );
     const paintingGuides = useSelector(
       (state: RootState) => state.boardReducer.paintingGuides
     );
-
-    const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
-      viewMode,
-    ]);
 
     const getLayerImage = useCallback(
       (layer) =>
@@ -77,13 +73,14 @@ export const OverlayLayer = React.memo(
 
     return (
       <GroupedURLImage
-        key={layer.id}
-        id={layer.id}
+        key={id}
+        id={id}
+        name={id}
+        loadedStatus={loadedStatuses[id]}
         layer={layer}
         cloningLayer={cloningLayer as BuilderLayerJSON<OverlayObjLayerData>}
         stageRef={stageRef}
-        editable={editable}
-        name={layer.id.toString()}
+        editable={Boolean(editable)}
         src={getLayerImage(layer)}
         x={numberGuard(layer.layer_data.left)}
         y={numberGuard(layer.layer_data.top)}
@@ -97,7 +94,6 @@ export const OverlayLayer = React.memo(
         height={positiveNumGuard(layer.layer_data.height)}
         rotation={numberGuard(layer.layer_data.rotation)}
         boardRotate={numberGuard(boardRotate)}
-        loadedStatus={loadedStatuses[layer.id]}
         opacity={layer.layer_data.opacity}
         scaleX={layer.layer_data.flop === 1 ? -1 : 1}
         scaleY={layer.layer_data.flip === 1 ? -1 : 1}
@@ -137,7 +133,7 @@ export const OverlayLayer = React.memo(
         onChange={(values, pushingToHistory) =>
           onChange(layer, values, pushingToHistory)
         }
-        onHover={(flag) => onHover(layer, flag)}
+        onHover={(flag) => onHover?.(layer, flag)}
         visible={layer.layer_visible ? true : false}
         paintingGuides={paintingGuides}
         guideData={guideData}

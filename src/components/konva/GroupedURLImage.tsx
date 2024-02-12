@@ -5,6 +5,7 @@ import { Stage } from "konva/types/Stage";
 import React, { useMemo, useRef } from "react";
 import { Group, Image, Rect } from "react-konva";
 import { useDispatch } from "react-redux";
+import { positiveNumGuard } from "src/helper";
 import { useDrag, useKonvaImageInit, useTransform } from "src/hooks";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import {
@@ -38,7 +39,7 @@ type GroupedURLImageProps = Omit<Konva.NodeConfig, "id"> & {
   layer: BuilderLayerJSON<LogoObjLayerData | OverlayObjLayerData>;
   cloningLayer: BuilderLayerJSON<LogoObjLayerData | OverlayObjLayerData>;
   loadedStatus: boolean;
-  onLoadLayer: (id: string | number, flag: boolean) => void;
+  onLoadLayer?: (id: string | number, flag: boolean) => void;
   tellSize?: (size: FrameSize) => void;
   stroke?: string;
   strokeWidth?: number;
@@ -50,13 +51,13 @@ type GroupedURLImageProps = Omit<Konva.NodeConfig, "id"> & {
   shadowOpacity: number;
   paintingGuides: PaintingGuides[];
   guideData?: GuideData | null;
-  onSelect: () => void;
-  onDblClick: (evt: KonvaEventObject<MouseEvent>) => void;
-  onChange: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
-  onHover: (hovered: boolean) => void;
-  onDragStart: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
-  onDragEnd: () => void;
-  onCloneMove: (
+  onSelect?: () => void;
+  onDblClick?: (evt: KonvaEventObject<MouseEvent>) => void;
+  onChange?: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
+  onHover?: (hovered: boolean) => void;
+  onDragStart?: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
+  onDragEnd?: () => void;
+  onCloneMove?: (
     layer: BuilderLayerJSON<DefaultLayerData & PartialAllLayerData>
   ) => void;
   onSetTransformingLayer?: (
@@ -213,6 +214,20 @@ export const GroupedURLImage = React.memo(
             width={props.width + 2 * (paddingX || 0)}
             height={props.height + 2 * (paddingY || 0)}
             fill={bgColor}
+            cornerRadius={[
+              positiveNumGuard(
+                (layer.layer_data as LogoObjLayerData).bgCornerTopLeft ?? 0
+              ),
+              positiveNumGuard(
+                (layer.layer_data as LogoObjLayerData).bgCornerTopRight ?? 0
+              ),
+              positiveNumGuard(
+                (layer.layer_data as LogoObjLayerData).bgCornerBottomRight ?? 0
+              ),
+              positiveNumGuard(
+                (layer.layer_data as LogoObjLayerData).bgCornerBottomLeft ?? 0
+              ),
+            ]}
           />
         ) : (
           <></>

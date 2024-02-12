@@ -15,6 +15,7 @@ import {
   setCurrent as setCurrentScheme,
   updateScheme,
 } from "src/redux/reducers/schemeReducer";
+import { GuideData } from "src/types/common";
 
 import { GuideSettingFormValues } from "./model";
 import { CustomFormControlLabel } from "./styles";
@@ -81,6 +82,51 @@ export const InnerForm = React.memo(
       [setMultiFieldValue, dispatch, currentScheme, formProps]
     );
 
+    const handleBlendWireFrameUpdateForDB = useCallback(
+      (guide_data: GuideData) => {
+        if (!currentScheme) return;
+
+        const updatedGuideData = { ...guide_data };
+
+        if (guide_data.blend_wireframe) {
+          updatedGuideData.wireframe_color = "#FFFFFF";
+        }
+
+        dispatch(
+          updateScheme({
+            id: currentScheme.id,
+            guide_data: updatedGuideData,
+          })
+        );
+
+        formProps.validateForm();
+      },
+      [dispatch, currentScheme, formProps]
+    );
+
+    const handleBlendWireFrameUpdateOnly = useCallback(
+      (guide_data) => {
+        if (!currentScheme) return;
+
+        const updatedGuideData = { ...guide_data };
+
+        if (guide_data.blend_wireframe) {
+          updatedGuideData.wireframe_color = "#FFFFFF";
+        }
+
+        setMultiFieldValue(updatedGuideData);
+        dispatch(
+          setCurrentScheme({
+            id: currentScheme.id,
+            guide_data: updatedGuideData,
+          })
+        );
+
+        formProps.validateForm();
+      },
+      [setMultiFieldValue, dispatch, currentScheme, formProps]
+    );
+
     const handleTogglePaintingGuide = useCallback(
       (guideItem) => {
         const index = paintingGuides.indexOf(guideItem);
@@ -119,28 +165,52 @@ export const InnerForm = React.memo(
             onToggleGuideVisible={handleTogglePaintingGuide}
             {...formProps}
             extraChildren={
-              <Grid item xs={12} sm={12}>
-                <LightTooltip
-                  title="Automatically display the wireframe guide when actively moving, resizing, or rotating a layer"
-                  arrow
-                >
-                  <CustomFormControlLabel
-                    control={
-                      <FormCheckbox
-                        color="primary"
-                        name="show_wireframe"
-                        fieldKey="show_wireframe"
-                        checked={formProps.values.show_wireframe}
-                        disabled={!editable}
-                        onUpdateField={handleSchemeUpdateOnly}
-                        onUpdateDB={handleSchemeUpdate}
-                      />
-                    }
-                    label="Show when editing"
-                    labelPlacement="start"
-                  />
-                </LightTooltip>
-              </Grid>
+              <>
+                <Grid item xs={12} sm={12}>
+                  <LightTooltip
+                    title="Automatically display the wireframe guide when actively moving, resizing, or rotating a layer"
+                    arrow
+                  >
+                    <CustomFormControlLabel
+                      control={
+                        <FormCheckbox
+                          color="primary"
+                          name="show_wireframe"
+                          fieldKey="show_wireframe"
+                          checked={formProps.values.show_wireframe}
+                          disabled={!editable}
+                          onUpdateField={handleSchemeUpdateOnly}
+                          onUpdateDB={handleSchemeUpdate}
+                        />
+                      }
+                      label="Show when editing"
+                      labelPlacement="start"
+                    />
+                  </LightTooltip>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <LightTooltip
+                    title="Apply invert colors so that you can easily see the wireframe over the board"
+                    arrow
+                  >
+                    <CustomFormControlLabel
+                      control={
+                        <FormCheckbox
+                          color="primary"
+                          name="blend_wireframe"
+                          fieldKey="blend_wireframe"
+                          checked={formProps.values.blend_wireframe}
+                          disabled={!editable}
+                          onUpdateField={handleBlendWireFrameUpdateOnly}
+                          onUpdateDB={handleBlendWireFrameUpdateForDB}
+                        />
+                      }
+                      label="Invert colors"
+                      labelPlacement="start"
+                    />
+                  </LightTooltip>
+                </Grid>
+              </>
             }
           />
           <SubForm

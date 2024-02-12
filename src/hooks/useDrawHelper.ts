@@ -38,10 +38,19 @@ import {
 } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
+import { ArrowKeys } from "./withKeyEvent";
+
 export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
   const [prevPosition, setPrevPosition] = useState<Position>();
   const [previousGuide, setPreviousGuide] = useState<PaintingGuides[]>([]);
+  const [previousPressedEventKey, setPreviousPressedEventKey] = useState<
+    string | null
+  >();
   const [tick, setTick] = useState(0);
+  const [showGuideForRepositioning, setShowGuideForRepositioning] = useState(
+    false
+  );
+  const timerForGuideRepositioning = useRef<ReturnType<typeof setTimeout>>();
 
   const drawingLayerRef = useRef<BuilderLayerJSON<ShapeObjLayerData>>();
   const prevTick = useRef(0);
@@ -54,6 +63,9 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
   );
   const pressedKey = useSelector(
     (state: RootState) => state.boardReducer.pressedKey
+  );
+  const pressedEventKey = useSelector(
+    (state: RootState) => state.boardReducer.pressedEventKey
   );
   const currentScheme = useSelector(
     (state: RootState) => state.schemeReducer.current
@@ -300,8 +312,9 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
     }
   }, [stageRef, mouseMode, prevPosition, dispatch]);
 
-  const showGuideForRepositioning = useCallback(
+  const handleShowGuideForRepositioning = useCallback(
     (show = true) => {
+      setShowGuideForRepositioning(show);
       if (!show) {
         dispatch(setPaintingGuides([...previousGuide]));
         setPreviousGuide([]);
@@ -345,14 +358,14 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
         currentScheme?.guide_data.show_sponsor ||
         currentScheme?.guide_data.show_grid
       ) {
-        showGuideForRepositioning(true);
+        handleShowGuideForRepositioning(true);
       }
       dispatch(setDrawingStatus(DrawingStatus.TRANSFORMING_SHAPE));
       if (layer && pressedKey === "alt") {
         dispatch(setCloningLayer({ ...layer, id: "cloning-layer" }));
       }
     },
-    [dispatch, showGuideForRepositioning, currentScheme, pressedKey]
+    [dispatch, handleShowGuideForRepositioning, currentScheme, pressedKey]
   );
   const onLayerDragEnd = useCallback(() => {
     if (
@@ -361,9 +374,54 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
       currentScheme?.guide_data.show_sponsor ||
       currentScheme?.guide_data.show_grid
     )
-      showGuideForRepositioning(false);
+      handleShowGuideForRepositioning(false);
     dispatch(setDrawingStatus(null));
-  }, [dispatch, showGuideForRepositioning, currentScheme]);
+  }, [dispatch, handleShowGuideForRepositioning, currentScheme]);
+
+  useEffect(() => {
+    // Show/hide Guide on pressing arrow keys
+    if (
+      currentLayer &&
+      ![LayerTypes.CAR, LayerTypes.BASE].includes(currentLayer.layer_type)
+    ) {
+      if (
+        pressedEventKey &&
+        ArrowKeys.includes(pressedEventKey) &&
+        !showGuideForRepositioning
+      ) {
+        if (timerForGuideRepositioning.current) {
+          clearTimeout(timerForGuideRepositioning.current);
+        }
+
+        handleShowGuideForRepositioning(true);
+      }
+
+      if (
+        !pressedEventKey &&
+        previousPressedEventKey &&
+        ArrowKeys.includes(previousPressedEventKey) &&
+        showGuideForRepositioning
+      ) {
+        if (timerForGuideRepositioning.current) {
+          clearTimeout(timerForGuideRepositioning.current);
+        }
+
+        timerForGuideRepositioning.current = setTimeout(() => {
+          if (showGuideForRepositioning) {
+            handleShowGuideForRepositioning(false);
+          }
+        }, 500);
+      }
+    }
+    setPreviousPressedEventKey(pressedEventKey);
+
+    return () => {
+      if (timerForGuideRepositioning.current) {
+        clearTimeout(timerForGuideRepositioning.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pressedEventKey]);
 
   const onDragEnd = undefined;
 

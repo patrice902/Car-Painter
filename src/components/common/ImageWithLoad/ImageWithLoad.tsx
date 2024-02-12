@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import { CustomImg, CustomSkeleton } from "./ImageWithLoad.style";
 
 type ImageWithLoadProps = {
+  id?: string;
   src: string;
   altSrc?: string;
   fallbackSrc?: string;
+  alt?: string;
   onClick?: () => void;
   ImageComponent?: React.ElementType;
   minHeight?: string | number;
@@ -14,16 +16,21 @@ type ImageWithLoadProps = {
   maxHeight?: string | number;
   maxWidth?: string | number;
   height?: string | number;
+  width?: string | number;
   justifyContent?: string;
+  overflow?: string;
   alignItems?: string;
   cursorPointer?: boolean;
-} & React.ImgHTMLAttributes<HTMLImageElement>;
+  imageProps?: React.ImgHTMLAttributes<HTMLImageElement>;
+};
 
 export const ImageWithLoad = React.memo(
   ({
+    id,
     src,
     altSrc,
     fallbackSrc,
+    alt,
     onClick,
     ImageComponent,
     minHeight,
@@ -31,36 +38,43 @@ export const ImageWithLoad = React.memo(
     maxHeight,
     maxWidth,
     height,
+    width,
     justifyContent = "center",
     alignItems = "start",
     cursorPointer = false,
-    ...props
+    overflow,
+    imageProps,
   }: ImageWithLoadProps) => {
     const [loaded, setLoaded] = useState(false);
 
     return (
       <Box
+        id={id}
         position="relative"
         minHeight={minHeight}
         minWidth={minWidth}
         maxHeight={maxHeight}
         maxWidth={maxWidth}
         height={height}
+        width={width}
         display="flex"
         justifyContent={justifyContent}
         alignItems={alignItems}
+        overflow={overflow}
       >
         {ImageComponent ? (
           <ImageComponent
             src={src}
-            {...props}
+            alt={alt}
+            {...imageProps}
             onClick={onClick}
             onLoad={() => setLoaded(true)}
           />
         ) : (
           <CustomImg
             src={src}
-            {...props}
+            alt={alt}
+            {...imageProps}
             cursorPointer={cursorPointer}
             onClick={onClick}
             onLoad={() => setLoaded(true)}

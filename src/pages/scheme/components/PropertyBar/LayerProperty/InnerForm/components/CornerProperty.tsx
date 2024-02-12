@@ -93,6 +93,10 @@ export const CornerProperty = React.memo(
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
@@ -125,6 +129,10 @@ export const CornerProperty = React.memo(
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
@@ -151,6 +159,15 @@ export const CornerProperty = React.memo(
                       touched.layer_data?.cornerBottomLeft &&
                       errors.layer_data?.cornerBottomLeft
                     }
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
@@ -177,6 +194,15 @@ export const CornerProperty = React.memo(
                       touched.layer_data?.cornerBottomRight &&
                       errors.layer_data?.cornerBottomRight
                     }
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}

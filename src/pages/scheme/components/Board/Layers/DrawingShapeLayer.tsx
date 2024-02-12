@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { Shape } from "src/components/konva";
 import { FinishOptions } from "src/constant";
@@ -18,25 +18,22 @@ import {
   StarObjLayerData,
   WedgeObjLayerData,
 } from "src/types/common";
-import { ViewModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 export const DrawingShapeLayer = React.memo(
-  ({ layer }: { layer: BuilderLayerJSON<ShapeBaseObjLayerData> }) => {
+  ({
+    layer,
+    specMode,
+  }: {
+    layer: BuilderLayerJSON<ShapeBaseObjLayerData>;
+    specMode?: boolean;
+  }) => {
     const { cloningLayer } = useLayer();
 
     const { guideData } = useScheme();
-
-    const viewMode = useSelector(
-      (state: RootState) => state.boardReducer.viewMode
-    );
     const paintingGuides = useSelector(
       (state: RootState) => state.boardReducer.paintingGuides
     );
-
-    const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
-      viewMode,
-    ]);
 
     return (
       <Shape

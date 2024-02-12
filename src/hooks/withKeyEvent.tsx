@@ -62,7 +62,7 @@ import {
 import { BuilderLayerJSON } from "src/types/query";
 import { useDebouncedCallback } from "use-debounce";
 
-const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
+export const ArrowKeys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
 const BracketKeys = ["[", "]"];
 
 export interface WithKeyEventProps {
@@ -72,6 +72,11 @@ export interface WithKeyEventProps {
   mainLayerRef: RefObject<Group>;
   carMakeLayerRef: RefObject<Group>;
   carMaskLayerRef: RefObject<Group>;
+  virtualStageRef: RefObject<Stage>;
+  virtualBaseLayerRef: RefObject<Group>;
+  virtualMainLayerRef: RefObject<Group>;
+  virtualCarMakeLayerRef: RefObject<Group>;
+  virtualCarMaskLayerRef: RefObject<Group>;
 }
 
 export interface ComponentWithKeyEventProps extends WithKeyEventProps {

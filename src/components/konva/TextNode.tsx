@@ -3,7 +3,9 @@ import { KonvaEventObject } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Text } from "react-konva";
+import { useDispatch } from "react-redux";
 import { useDrag, useTransform } from "src/hooks";
+import { setMessage } from "src/redux/reducers/messageReducer";
 import {
   DefaultLayerData,
   FrameSize,
@@ -30,13 +32,13 @@ type TextNodeProps = {
   shadowOffsetY: number;
   paintingGuides: PaintingGuides[];
   guideData?: GuideData | null;
-  onSelect: () => void;
-  onDblClick: (evt: KonvaEventObject<MouseEvent>) => void;
-  onChange: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
-  onHover: (hovered: boolean) => void;
-  onDragStart: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
-  onDragEnd: () => void;
-  onCloneMove: (
+  onSelect?: () => void;
+  onDblClick?: (evt: KonvaEventObject<MouseEvent>) => void;
+  onChange?: (data: PartialAllLayerData, pushingToHistory?: boolean) => void;
+  onHover?: (hovered: boolean) => void;
+  onDragStart?: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
+  onDragEnd?: () => void;
+  onCloneMove?: (
     layer: BuilderLayerJSON<DefaultLayerData & PartialAllLayerData>
   ) => void;
 } & Omit<Konva.NodeConfig, "id">;
@@ -70,6 +72,7 @@ export const TextNode = React.memo(
     onSetTransformingLayer,
     ...props
   }: TextNodeProps) => {
+    const dispatch = useDispatch();
     const [loadedFontFamily, setLoadedFontFamily] = useState<string>();
     const shapeRef = useRef<Konva.Text>(null);
     const {
@@ -118,16 +121,19 @@ export const TextNode = React.memo(
           document.fonts.add(loaded_face);
           onFontLoad(fontFamily);
           setLoadedFontFamily(fontFamily);
-          if (onLoadLayer && id) onLoadLayer(id, true);
+
+          if (id) onLoadLayer?.(id, true);
         })
-        .catch(function (error) {
-          // error occurred
-          console.warn(error, fontFamily);
+        .catch(function (_error) {
+          dispatch(setMessage({ message: `Cannot load font: ${fontFamily}` }));
+
+          if (id) onLoadLayer?.(id, true);
         });
     }, [
       id,
       fontFamily,
       fontFile,
+      dispatch,
       onFontLoad,
       onLoadLayer,
       setLoadedFontFamily,
@@ -139,7 +145,7 @@ export const TextNode = React.memo(
           loadFont();
         } else {
           setLoadedFontFamily(fontFamily);
-          if (onLoadLayer && id) onLoadLayer(id, true);
+          if (id) onLoadLayer?.(id, true);
         }
       }
     }, [fontFamily, fontFile, id, loadFont, loadedFontList, onLoadLayer]);

@@ -30,7 +30,7 @@ import {
   CustomImageList,
   CustomImageListItem,
 } from "./UploadDialog.style";
-import { UploadItemContent } from "./UploadItemContent";
+import { getUploadItemId, UploadItemContent } from "./UploadItemContent";
 
 type UploadListContentProps = {
   step?: number;
@@ -149,9 +149,21 @@ export const UploadListContent = React.memo(
         if (files_up.length) {
           setLoading(true);
           dispatch(
-            uploadFiles(user.id, currentScheme.id, files_up, () => {
-              setLoading(false);
-            })
+            uploadFiles(
+              user.id,
+              currentScheme.id,
+              files_up,
+              (newUploads?: BuilderUploadWithUser[]) => {
+                setLoading(false);
+
+                // Scroll into the new uploaded items
+                if (newUploads?.length) {
+                  document
+                    .getElementById(getUploadItemId(newUploads[0]))
+                    ?.scrollIntoView();
+                }
+              }
+            )
           );
           setSearch("");
           setDropZoneKey(dropZoneKey + 1);
@@ -318,6 +330,7 @@ export const UploadListContent = React.memo(
           id="upload-dialog-content"
           overflow="auto"
           height="min(700px, calc(100vh - 500px))"
+          minHeight="300px"
           mt={1}
           position="relative"
         >

@@ -38,7 +38,15 @@ export const BackgroundProperty = React.memo(
     onLayerDataUpdateOnly,
     onLayerDataUpdate,
   }: BackgroundPropertyProps) => {
-    const layerDataProperties = ["bgColor", "paddingX", "paddingY"];
+    const layerDataProperties = [
+      "bgColor",
+      "paddingX",
+      "paddingY",
+      "bgCornerTopLeft",
+      "bgCornerTopRight",
+      "bgCornerBottomLeft",
+      "bgCornerBottomRight",
+    ];
     const [expanded, setExpanded] = useState(true);
     const AllowedLayerTypes = useMemo(() => getAllowedLayerTypes(values), [
       values,
@@ -114,6 +122,10 @@ export const BackgroundProperty = React.memo(
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
@@ -148,6 +160,10 @@ export const BackgroundProperty = React.memo(
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    inputProps={{
+                      min: 0,
+                      max: 99999,
+                    }}
                     onBlur={handleBlur}
                     onUpdateField={onLayerDataUpdateOnly}
                     onUpdateDB={onLayerDataUpdate}
@@ -156,6 +172,170 @@ export const BackgroundProperty = React.memo(
                   <></>
                 )}
               </Grid>
+              {values.layer_data.bgColor ? (
+                <>
+                  <Grid item xs={6}>
+                    {AllowedLayerTypes.includes(
+                      "layer_data.bgCornerTopLeft"
+                    ) ? (
+                      <FormTextField
+                        name="layer_data.bgCornerTopLeft"
+                        fieldKey="bgCornerTopLeft"
+                        label="Top Left"
+                        variant="outlined"
+                        type="number"
+                        value={mathRound2(
+                          values.layer_data.bgCornerTopLeft ?? 0
+                        )}
+                        disabled={!editable}
+                        error={Boolean(
+                          touched.layer_data?.bgCornerTopLeft &&
+                            errors.layer_data?.bgCornerTopLeft
+                        )}
+                        helperText={
+                          touched.layer_data?.bgCornerTopLeft &&
+                          errors.layer_data?.bgCornerTopLeft
+                        }
+                        fullWidth
+                        margin="normal"
+                        style={{ marginBottom: "16px" }}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
+                        onBlur={handleBlur}
+                        onUpdateField={onLayerDataUpdateOnly}
+                        onUpdateDB={onLayerDataUpdate}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Grid>
+                  <Grid item xs={6}>
+                    {AllowedLayerTypes.includes(
+                      "layer_data.bgCornerTopRight"
+                    ) ? (
+                      <FormTextField
+                        name="layer_data.bgCornerTopRight"
+                        fieldKey="bgCornerTopRight"
+                        label="Top Right"
+                        variant="outlined"
+                        type="number"
+                        value={mathRound2(
+                          values.layer_data.bgCornerTopRight ?? 0
+                        )}
+                        disabled={!editable}
+                        error={Boolean(
+                          touched.layer_data?.bgCornerTopRight &&
+                            errors.layer_data?.bgCornerTopRight
+                        )}
+                        helperText={
+                          touched.layer_data?.bgCornerTopRight &&
+                          errors.layer_data?.bgCornerTopRight
+                        }
+                        fullWidth
+                        margin="normal"
+                        style={{ marginBottom: "16px" }}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
+                        onBlur={handleBlur}
+                        onUpdateField={onLayerDataUpdateOnly}
+                        onUpdateDB={onLayerDataUpdate}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Grid>
+                  <Grid item xs={6}>
+                    {AllowedLayerTypes.includes(
+                      "layer_data.bgCornerBottomLeft"
+                    ) ? (
+                      <FormTextField
+                        name="layer_data.bgCornerBottomLeft"
+                        fieldKey="bgCornerBottomLeft"
+                        label="Bottom Left"
+                        variant="outlined"
+                        type="number"
+                        value={mathRound2(
+                          values.layer_data.bgCornerBottomLeft ?? 0
+                        )}
+                        disabled={!editable}
+                        error={Boolean(
+                          touched.layer_data?.bgCornerBottomLeft &&
+                            errors.layer_data?.bgCornerBottomLeft
+                        )}
+                        helperText={
+                          touched.layer_data?.bgCornerBottomLeft &&
+                          errors.layer_data?.bgCornerBottomLeft
+                        }
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
+                        onBlur={handleBlur}
+                        onUpdateField={onLayerDataUpdateOnly}
+                        onUpdateDB={onLayerDataUpdate}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Grid>
+                  <Grid item xs={6}>
+                    {AllowedLayerTypes.includes(
+                      "layer_data.bgCornerBottomRight"
+                    ) ? (
+                      <FormTextField
+                        name="layer_data.bgCornerBottomRight"
+                        fieldKey="bgCornerBottomRight"
+                        label="Bottom Right"
+                        variant="outlined"
+                        type="number"
+                        value={mathRound2(
+                          values.layer_data.bgCornerBottomRight ?? 0
+                        )}
+                        disabled={!editable}
+                        error={Boolean(
+                          touched.layer_data?.bgCornerBottomRight &&
+                            errors.layer_data?.bgCornerBottomRight
+                        )}
+                        helperText={
+                          touched.layer_data?.bgCornerBottomRight &&
+                          errors.layer_data?.bgCornerBottomRight
+                        }
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          min: 0,
+                          max: 99999,
+                        }}
+                        onBlur={handleBlur}
+                        onUpdateField={onLayerDataUpdateOnly}
+                        onUpdateDB={onLayerDataUpdate}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </Grid>
+                </>
+              ) : (
+                <></>
+              )}
             </Grid>
           </Box>
         </AccordionDetails>

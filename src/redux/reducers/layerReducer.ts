@@ -316,18 +316,43 @@ const shiftSimilarLayerOrders = (layer_type: LayerTypes, offset = 1) => async (
 ) => {
   const currentUser = getState().authReducer.user;
   const layerList = getState().layerReducer.list;
+  const currentScheme = getState().schemeReducer.current;
   let filter: LayerTypes[] = [];
-  if ([LayerTypes.BASE].includes(layer_type)) {
-    filter = [LayerTypes.BASE];
-  } else if ([LayerTypes.SHAPE].includes(layer_type)) {
-    filter = [LayerTypes.SHAPE];
-  } else if ([LayerTypes.OVERLAY].includes(layer_type)) {
-    filter = [LayerTypes.OVERLAY];
-  } else if (
-    [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD].includes(layer_type)
-  ) {
-    filter = [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD];
+
+  if (currentScheme?.merge_layers) {
+    if ([LayerTypes.BASE].includes(layer_type)) {
+      filter = [LayerTypes.BASE];
+    } else if (
+      [
+        LayerTypes.SHAPE,
+        LayerTypes.OVERLAY,
+        LayerTypes.LOGO,
+        LayerTypes.TEXT,
+        LayerTypes.UPLOAD,
+      ].includes(layer_type)
+    ) {
+      filter = [
+        LayerTypes.SHAPE,
+        LayerTypes.OVERLAY,
+        LayerTypes.LOGO,
+        LayerTypes.TEXT,
+        LayerTypes.UPLOAD,
+      ];
+    }
+  } else {
+    if ([LayerTypes.BASE].includes(layer_type)) {
+      filter = [LayerTypes.BASE];
+    } else if ([LayerTypes.SHAPE].includes(layer_type)) {
+      filter = [LayerTypes.SHAPE];
+    } else if ([LayerTypes.OVERLAY].includes(layer_type)) {
+      filter = [LayerTypes.OVERLAY];
+    } else if (
+      [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD].includes(layer_type)
+    ) {
+      filter = [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD];
+    }
   }
+
   const filteredLayers = layerList.filter((layerItem) =>
     filter.includes(layerItem.layer_type)
   );
@@ -418,7 +443,6 @@ export const createLayerList = (
   callback?: (layers?: BuilderLayer[]) => void
 ) => async (dispatch: AppDispatch, getState: GetState) => {
   const currentUser = getState().authReducer.user;
-  const layerList = getState().layerReducer.list;
   const layers: BuilderLayer[] = [];
   for (const layerInfoItem of layersInfo) {
     layers.push(
@@ -434,42 +458,9 @@ export const createLayerList = (
     userID: currentUser?.id,
   });
 
-  let filter: LayerTypes[] = [];
-  if ([LayerTypes.BASE].includes(layers[0].layer_type)) {
-    filter = [LayerTypes.BASE];
-  } else if ([LayerTypes.SHAPE].includes(layers[0].layer_type)) {
-    filter = [LayerTypes.SHAPE];
-  } else if ([LayerTypes.OVERLAY].includes(layers[0].layer_type)) {
-    filter = [LayerTypes.OVERLAY];
-  } else if (
-    [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD].includes(
-      layers[0].layer_type
-    )
-  ) {
-    filter = [LayerTypes.LOGO, LayerTypes.TEXT, LayerTypes.UPLOAD];
-  }
-  const filteredLayers = layerList.filter(
-    (layerItem) =>
-      filter.includes(layerItem.layer_type) &&
-      layers.every((item) => item.id !== layerItem.id)
-  );
-  for (const layerItem of filteredLayers) {
-    dispatch(
-      mergeListItem({
-        ...layerItem,
-        layer_order: layerItem.layer_order + layers.length,
-      })
-    );
-    socketClient.emit("client-update-layer", {
-      data: {
-        ...layerItem,
-        layer_order: layerItem.layer_order + layers.length,
-      },
-      socketID: socketClient.socket?.id,
-      userID: currentUser?.id,
-    });
-    clearScrollPosition();
-  }
+  dispatch(shiftSimilarLayerOrders(layers[0].layer_type, layers.length));
+
+  clearScrollPosition();
 
   dispatch(concatList(layers));
   if (pushingToHistory) {

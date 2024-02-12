@@ -140,7 +140,7 @@ export const Shape = React.memo(
     });
 
     useEffect(() => {
-      if (onLoadLayer && id) onLoadLayer(id, true);
+      if (id) onLoadLayer?.(id, true);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

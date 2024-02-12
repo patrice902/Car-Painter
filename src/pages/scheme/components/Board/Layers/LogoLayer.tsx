@@ -11,7 +11,7 @@ import {
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
 import { LogoObjLayerData, OverlayObjLayerData } from "src/types/common";
-import { MouseModes, ViewModes } from "src/types/enum";
+import { MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
 import { MovableLayerProps } from "./types";
@@ -20,6 +20,8 @@ export const LogoLayer = React.memo(
   ({
     stageRef,
     editable,
+    virtual,
+    specMode,
     layer,
     onSetTransformingLayer,
     onHover,
@@ -37,15 +39,13 @@ export const LogoLayer = React.memo(
     } = useLayer();
 
     const { guideData, legacyMode } = useScheme();
+    const id = `${virtual ? "virtual-" : ""}${layer.id.toString()}`;
 
     const frameSize = useSelector(
       (state: RootState) => state.boardReducer.frameSize
     );
     const mouseMode = useSelector(
       (state: RootState) => state.boardReducer.mouseMode
-    );
-    const viewMode = useSelector(
-      (state: RootState) => state.boardReducer.viewMode
     );
     const boardRotate = useSelector(
       (state: RootState) => state.boardReducer.boardRotate
@@ -56,10 +56,6 @@ export const LogoLayer = React.memo(
     const carMake = useSelector(
       (state: RootState) => state.carMakeReducer.current
     );
-
-    const specMode = useMemo(() => viewMode === ViewModes.SPEC_VIEW, [
-      viewMode,
-    ]);
 
     const layerImage = useMemo(
       () => generateLogoImageURL(layer, carMake, legacyMode),
@@ -78,15 +74,15 @@ export const LogoLayer = React.memo(
 
     return (
       <GroupedURLImage
-        key={layer.id}
-        id={layer.id}
+        key={id}
+        id={id}
+        name={id}
         layer={layer}
         cloningLayer={cloningLayer as BuilderLayerJSON<LogoObjLayerData>}
         stageRef={stageRef}
-        name={layer.id.toString()}
-        editable={editable}
+        editable={Boolean(editable)}
         src={layerImage}
-        loadedStatus={loadedStatuses[layer.id]}
+        loadedStatus={loadedStatuses[id]}
         x={numberGuard(logoLayerData.left)}
         y={numberGuard(logoLayerData.top)}
         allowFit={true}
@@ -139,7 +135,7 @@ export const LogoLayer = React.memo(
         onChange={(values, pushingToHistory) =>
           onChange(layer, values, pushingToHistory)
         }
-        onHover={(flag) => onHover(layer, flag)}
+        onHover={(flag) => onHover?.(layer, flag)}
         visible={layer.layer_visible ? true : false}
         onLoadLayer={onLoadLayer}
         onDragStart={onLayerDragStart}

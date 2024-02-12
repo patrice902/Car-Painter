@@ -28,13 +28,31 @@ export const FormTextField = React.memo(
 
     const handleChange = useCallback(
       (e) => {
-        const value =
+        const min = props.inputProps?.min;
+        const max = props.inputProps?.max;
+        let value =
           type === "number" ? Number(e.target.value) || 0 : e.target.value;
+
+        if (type === "number" && min !== null && min !== undefined) {
+          value = Math.max(value, min);
+        }
+
+        if (type === "number" && max !== null && max !== undefined) {
+          value = Math.min(value, max);
+        }
+
         const valueMap = fieldFunc ? fieldFunc(value) : { [fieldKey]: value };
         onUpdateField(valueMap);
         handleChangeDebounced(valueMap);
       },
-      [fieldKey, fieldFunc, handleChangeDebounced, type, onUpdateField]
+      [
+        fieldKey,
+        fieldFunc,
+        handleChangeDebounced,
+        type,
+        onUpdateField,
+        props.inputProps,
+      ]
     );
 
     return <SmallTextField onChange={handleChange} type={type} {...props} />;

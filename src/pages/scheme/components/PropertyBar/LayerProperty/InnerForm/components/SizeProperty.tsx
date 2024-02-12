@@ -219,6 +219,10 @@ export const SizeProperty = React.memo(
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  inputProps={{
+                    min: 0,
+                    max: 99999,
+                  }}
                 />
               ) : (
                 <></>
@@ -269,6 +273,10 @@ export const SizeProperty = React.memo(
                   }}
                   InputLabelProps={{
                     shrink: true,
+                  }}
+                  inputProps={{
+                    min: 0,
+                    max: 99999,
                   }}
                 />
               ) : (
@@ -401,6 +409,10 @@ export const SizeProperty = React.memo(
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  inputProps={{
+                    min: 0,
+                    max: 99999,
+                  }}
                 />
               ) : (
                 <></>
@@ -450,6 +462,10 @@ export const SizeProperty = React.memo(
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  inputProps={{
+                    min: 0,
+                    max: 99999,
+                  }}
                 />
               ) : (
                 <></>
@@ -480,6 +496,10 @@ export const SizeProperty = React.memo(
                 }}
                 InputLabelProps={{
                   shrink: true,
+                }}
+                inputProps={{
+                  min: 0,
+                  max: 99999,
                 }}
               />
             ) : (
@@ -513,6 +533,10 @@ export const SizeProperty = React.memo(
                 InputLabelProps={{
                   shrink: true,
                 }}
+                inputProps={{
+                  min: 0,
+                  max: 99999,
+                }}
               />
             ) : (
               <></>
@@ -544,6 +568,10 @@ export const SizeProperty = React.memo(
                 }}
                 InputLabelProps={{
                   shrink: true,
+                }}
+                inputProps={{
+                  min: 0,
+                  max: 99999,
                 }}
               />
             ) : (

@@ -158,6 +158,13 @@ export const LayerProperty = React.memo((props: LayerPropertyProps) => {
                     "Incorrect Color Format",
                     colorValidator
                   ),
+                bgColor: Yup.string()
+                  .nullable()
+                  .test(
+                    "color-validation",
+                    "Incorrect Color Format",
+                    colorValidator
+                  ),
                 size: Yup.number(),
                 scolor: Yup.string()
                   .nullable()
@@ -186,6 +193,10 @@ export const LayerProperty = React.memo((props: LayerPropertyProps) => {
                 cornerTopRight: Yup.number(),
                 cornerBottomLeft: Yup.number(),
                 cornerBottomRight: Yup.number(),
+                bgCornerTopLeft: Yup.number().nullable(),
+                bgCornerTopRight: Yup.number().nullable(),
+                bgCornerBottomLeft: Yup.number().nullable(),
+                bgCornerBottomRight: Yup.number().nullable(),
                 radius: Yup.number().moreThan(0, "Must be greater than 0"),
                 innerRadius: Yup.number().moreThan(0, "Must be greater than 0"),
                 outerRadius: Yup.number().moreThan(0, "Must be greater than 0"),

@@ -110,4 +110,5 @@ export enum ConfigCatFlags {
   SUBMIT_TO_SHOWROOM = "submitToShowroom",
   SIM_PREVIEW = "simPreview",
   RACE_FUNCTIONALITY = "raceFunctionality",
+  ENABLE_RECAPTCHA = "enableRecaptcha",
 }

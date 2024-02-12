@@ -2,6 +2,10 @@ const config = {
   env: process.env.NODE_ENV,
   localEnv: Boolean(process.env.REACT_APP_LOCAL_ENV),
   configCatKey: process.env.REACT_APP_CONFIGCAT_KEY,
+  recaptchaSiteKey: process.env.REACT_APP_RECAPTCHA_SITE_KEY,
+  recaptchaSecretKey: process.env.REACT_APP_LOCAL_ENV
+    ? process.env.REACT_APP_RECAPTCHA_SECRET_KEY
+    : "",
   assetsURL:
     process.env.REACT_APP_ASSET_URL ||
     (process.env.NODE_ENV !== "development"

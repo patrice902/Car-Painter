@@ -12,6 +12,12 @@ export const withWrapper = (Component: React.FC<WithKeyEventProps>) => () => {
   const carMakeLayerRef = useRef<Group>(null);
   const carMaskLayerRef = useRef<Group>(null);
 
+  const virtualStageRef = useRef<Stage>(null);
+  const virtualBaseLayerRef = useRef<Group>(null);
+  const virtualMainLayerRef = useRef<Group>(null);
+  const virtualCarMakeLayerRef = useRef<Group>(null);
+  const virtualCarMaskLayerRef = useRef<Group>(null);
+
   const user = useSelector((state: RootState) => state.authReducer.user);
   const currentScheme = useSelector(
     (state: RootState) => state.schemeReducer.current
@@ -39,6 +45,11 @@ export const withWrapper = (Component: React.FC<WithKeyEventProps>) => () => {
       mainLayerRef={mainLayerRef}
       carMakeLayerRef={carMakeLayerRef}
       carMaskLayerRef={carMaskLayerRef}
+      virtualStageRef={virtualStageRef}
+      virtualBaseLayerRef={virtualBaseLayerRef}
+      virtualMainLayerRef={virtualMainLayerRef}
+      virtualCarMakeLayerRef={virtualCarMakeLayerRef}
+      virtualCarMaskLayerRef={virtualCarMaskLayerRef}
     />
   );
 };

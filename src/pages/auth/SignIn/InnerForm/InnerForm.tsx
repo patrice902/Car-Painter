@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   FormControl,
   FormHelperText,
@@ -10,11 +11,19 @@ import {
   TextField,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import { useFeatureFlag } from "configcat-react";
 import { FormikProps } from "formik";
 import React, { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import config from "src/config";
+import { ConfigCatFlags } from "src/types/enum";
 
-import { FullForm, VisibilityIcon, VisibilityOffIcon } from "./InnerForm.style";
+import {
+  FullForm,
+  useStyles,
+  VisibilityIcon,
+  VisibilityOffIcon,
+} from "./InnerForm.style";
 
 export type SignInFormValues = {
   usr: string;
@@ -32,10 +41,24 @@ export const InnerForm = React.memo(
     handleChange,
     handleSubmit,
   }: FormikProps<SignInFormValues>) => {
+    const classNames = useStyles();
     const [showPassword, setShowPassword] = useState(false);
+    const [captchaVerified, setCaptchaVerified] = useState(false);
+    const { value: enableRecaptcha } = useFeatureFlag(
+      ConfigCatFlags.ENABLE_RECAPTCHA,
+      false
+    );
 
     const handleClickShowPassword = () => {
       setShowPassword(!showPassword);
+    };
+
+    const handleRecaptchaChange = (token: string | null) => {
+      if (token?.length) {
+        setCaptchaVerified(true);
+      } else {
+        setCaptchaVerified(false);
+      }
     };
 
     return (
@@ -100,13 +123,32 @@ export const InnerForm = React.memo(
         <Link href={`${config.parentAppURL}/lostpasswd`} color="primary">
           Forgot password?
         </Link>
+        {enableRecaptcha ? (
+          <Box mt="20px" width="100%">
+            <ReCAPTCHA
+              sitekey={config.recaptchaSiteKey ?? ""}
+              stoken={
+                config.recaptchaSecretKey?.length
+                  ? config.recaptchaSecretKey
+                  : undefined
+              }
+              theme="dark"
+              className={classNames.gRecaptcha}
+              onChange={handleRecaptchaChange}
+              onExpired={() => setCaptchaVerified(false)}
+              onErrored={() => setCaptchaVerified(false)}
+            />
+          </Box>
+        ) : (
+          <></>
+        )}
         <Button
           type="submit"
           fullWidth
           variant="contained"
           color="primary"
           size="large"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (enableRecaptcha && !captchaVerified)}
           style={{
             marginTop: "20px",
             marginBottom: "20px",

@@ -20,18 +20,20 @@ import { TextLayer } from "./TextLayer";
 
 type MovableLayersGroupProps = {
   stageRef: RefObject<Stage>;
-  editable: boolean;
-  drawingLayer?: BuilderLayerJSON<ShapeBaseObjLayerData> | null;
   allowedLayerTypes: LayerTypes[];
-  onSetTransformingLayer: (
+  editable?: boolean;
+  virtual?: boolean;
+  specMode?: boolean;
+  drawingLayer?: BuilderLayerJSON<ShapeBaseObjLayerData> | null;
+  onSetTransformingLayer?: (
     layer: BuilderLayerJSON<MovableObjLayerData> | null
   ) => void;
-  onHover: (
+  onHover?: (
     layer: BuilderLayerJSON<MovableObjLayerData>,
     flag: boolean
   ) => void;
-  onLayerDragStart: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
-  onLayerDragEnd: () => void;
+  onLayerDragStart?: (layer?: BuilderLayerJSON<MovableObjLayerData>) => void;
+  onLayerDragEnd?: () => void;
 };
 
 export const MovableLayersGroup = React.memo(
