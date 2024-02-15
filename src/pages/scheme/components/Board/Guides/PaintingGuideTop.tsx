@@ -58,7 +58,7 @@ export const PaintingGuideTop = React.memo(
           visible={
             !specMode && paintingGuides.includes(PaintingGuides.WIREFRAME)
           }
-          onLoadLayer={onLoadLayer}
+          onLoadLayer={!virtual ? onLoadLayer : undefined}
           globalCompositeOperation={
             guideData?.blend_wireframe ? "difference" : null
           }

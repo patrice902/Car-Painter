@@ -78,7 +78,7 @@ export const BasePaints = React.memo(
               listening={false}
               visible={layer.layer_visible ? true : false}
               tellSize={onExpandFrameFromImage}
-              onLoadLayer={onLoadLayer}
+              onLoadLayer={!virtual ? onLoadLayer : undefined}
             />
           );
         })}

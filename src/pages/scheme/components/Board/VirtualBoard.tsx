@@ -61,6 +61,7 @@ export const VirtualBoard = React.memo(
                 height={wrapperHeight}
                 ref={stageRef}
                 listening={false}
+                draggable={false}
               >
                 <Provider store={store}>
                   <Layer>

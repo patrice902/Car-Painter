@@ -66,7 +66,7 @@ export const CarParts = React.memo(({ virtual, specMode }: CarPartsProps) => {
             }
             listening={false}
             visible={layer.layer_visible ? true : false}
-            onLoadLayer={onLoadLayer}
+            onLoadLayer={!virtual ? onLoadLayer : undefined}
             tellSize={onExpandFrameFromImage}
           />
         );

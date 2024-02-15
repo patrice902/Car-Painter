@@ -54,7 +54,7 @@ export const PaintingGuideCarMask = React.memo(
         opacity={guideData?.carmask_opacity}
         listening={false}
         visible={visible}
-        onLoadLayer={onLoadLayer}
+        onLoadLayer={!virtual ? onLoadLayer : undefined}
       />
     );
   }

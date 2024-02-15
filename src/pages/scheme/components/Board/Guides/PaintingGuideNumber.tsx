@@ -48,7 +48,7 @@ export const PaintingGuideNumber = React.memo(
         visible={
           !specMode && paintingGuides.includes(PaintingGuides.NUMBERBLOCKS)
         }
-        onLoadLayer={onLoadLayer}
+        onLoadLayer={!virtual ? onLoadLayer : undefined}
       />
     );
   }

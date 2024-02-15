@@ -27,6 +27,7 @@ export const TitleBar = React.memo(({ editable, onBack }: TitleBarProps) => {
   const currentScheme = useSelector(
     (state: RootState) => state.schemeReducer.current
   );
+  const saving = useSelector((state: RootState) => state.schemeReducer.saving);
 
   const hideDialog = useCallback(() => {
     setDialog(null);
@@ -64,7 +65,7 @@ export const TitleBar = React.memo(({ editable, onBack }: TitleBarProps) => {
       <Box display="flex" alignItems="center" flexGrow={1}>
         <Box mr={1}>
           <LightTooltip title="Back" arrow>
-            <IconButton size="medium" onClick={onBack}>
+            <IconButton size="medium" disabled={saving} onClick={onBack}>
               <CustomIcon icon={faChevronLeft} size="xs" />
             </IconButton>
           </LightTooltip>

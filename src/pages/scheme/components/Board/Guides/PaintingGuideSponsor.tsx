@@ -48,7 +48,7 @@ export const PaintingGuideSponsor = React.memo(
         visible={
           !specMode && paintingGuides.includes(PaintingGuides.SPONSORBLOCKS)
         }
-        onLoadLayer={onLoadLayer}
+        onLoadLayer={!virtual ? onLoadLayer : undefined}
       />
     );
   }

@@ -25,7 +25,7 @@ type TextNodeProps = {
   fontFile?: string;
   layer: BuilderLayerJSON<TextObjLayerData>;
   cloningLayer: BuilderLayerJSON<TextObjLayerData>;
-  onLoadLayer: (id: string | number, flag: boolean) => void;
+  onLoadLayer?: (id: string | number, flag: boolean) => void;
   shadowBlur: number;
   shadowColor?: string;
   shadowOffsetX: number;
@@ -148,7 +148,8 @@ export const TextNode = React.memo(
           if (id) onLoadLayer?.(id, true);
         }
       }
-    }, [fontFamily, fontFile, id, loadFont, loadedFontList, onLoadLayer]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fontFamily, fontFile, id]);
 
     return (
       <Text

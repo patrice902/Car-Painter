@@ -42,8 +42,8 @@ export const DrawingShapeLayer = React.memo(
         type={layer.layer_data.type}
         x={numberGuard(layer.layer_data.left)}
         y={numberGuard(layer.layer_data.top)}
-        width={positiveNumGuard(layer.layer_data.width)}
-        height={positiveNumGuard(layer.layer_data.height)}
+        width={numberGuard(layer.layer_data.width)}
+        height={numberGuard(layer.layer_data.height)}
         radius={positiveNumGuard(
           (layer.layer_data as CircleObjLayerData).radius
         )}

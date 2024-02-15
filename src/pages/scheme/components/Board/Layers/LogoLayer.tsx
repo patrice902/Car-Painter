@@ -137,7 +137,7 @@ export const LogoLayer = React.memo(
         }
         onHover={(flag) => onHover?.(layer, flag)}
         visible={layer.layer_visible ? true : false}
-        onLoadLayer={onLoadLayer}
+        onLoadLayer={!virtual ? onLoadLayer : undefined}
         onDragStart={onLayerDragStart}
         onDragEnd={onLayerDragEnd}
         onCloneMove={onCloneMove}

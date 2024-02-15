@@ -32,7 +32,7 @@ type URLImageProps = Omit<Konva.NodeConfig, "id"> & {
   layer?: BuilderLayerJSON<MovableObjLayerData>;
   cloningLayer?: BuilderLayerJSON<MovableObjLayerData>;
   loadedStatus: boolean;
-  onLoadLayer: (id: string | number, flag: boolean) => void;
+  onLoadLayer?: (id: string | number, flag: boolean) => void;
   tellSize: (size: FrameSize) => void;
   stroke?: string;
   strokeWidth?: number;

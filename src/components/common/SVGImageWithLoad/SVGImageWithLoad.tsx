@@ -35,7 +35,8 @@ export const SVGImageWithLoad = React.memo(
 
     const loadImage = async () => {
       let svgString = await urlToString(
-        src + `?timestamp=${new Date().toISOString()}`
+        // src + `?timestamp=${new Date().toISOString()}`
+        src
       );
       if (options) {
         svgString = replaceColors(svgString, {
