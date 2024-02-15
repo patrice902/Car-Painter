@@ -241,7 +241,7 @@ export const ShapeLayer = React.memo(
         listening={!layer.layer_locked && mouseMode === MouseModes.DEFAULT}
         onChange={(values) => onChange(layer, values)}
         onHover={(flag) => onHover?.(layer, flag)}
-        onLoadLayer={onLoadLayer}
+        onLoadLayer={!virtual ? onLoadLayer : undefined}
         onDragStart={onLayerDragStart}
         onDragEnd={onLayerDragEnd}
         onCloneMove={onCloneMove}

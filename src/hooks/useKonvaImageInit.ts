@@ -132,7 +132,8 @@ export const useKonvaImageInit = ({
       setImgFromSVG(src);
     } else {
       loadImage(
-        src + `?timestamp=${new Date().toISOString()}`,
+        // src + `?timestamp=${new Date().toISOString()}`,
+        src,
         imageRef,
         handleLoad,
         handleError
@@ -297,7 +298,8 @@ export const useKonvaImageInit = ({
     async (src) => {
       try {
         let svgString = await urlToString(
-          src + `?timestamp=${new Date().toISOString()}`
+          // src + `?timestamp=${new Date().toISOString()}`
+          src
         );
         if (filterColor || stroke) {
           svgString = replaceColors(svgString, {

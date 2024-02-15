@@ -162,7 +162,7 @@ export const TextLayer = React.memo(
           onChange(layer, value, pushingToHistory)
         }
         onHover={(flag) => onHover?.(layer, flag)}
-        onLoadLayer={onLoadLayer}
+        onLoadLayer={!virtual ? onLoadLayer : undefined}
         onDragStart={onLayerDragStart}
         onDragEnd={onLayerDragEnd}
         onCloneMove={onCloneMove}
