@@ -8,14 +8,17 @@ import {
   CircularProgress,
   DialogActions,
   IconButton,
+  Link,
   TextField,
   Theme,
   useMediaQuery,
 } from "@material-ui/core";
 import {
+  Info,
   Save as SaveIcon,
   SettingsBackupRestore as BackUpIcon,
 } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
@@ -25,6 +28,7 @@ import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import { reorderLayersOnCombination } from "src/redux/reducers/layerReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
+import { ConfigCatFlags } from "src/types/enum";
 import { CarMake } from "src/types/model";
 import { BuilderSchemeJSON, UserWithoutPassword } from "src/types/query";
 
@@ -97,6 +101,10 @@ export const GeneralSetting = React.memo(
     const hasPrimaryRace = useMemo(() => cars.some((car) => car.primary), [
       cars,
     ]);
+    const { value: helpLinkSpecTga } = useFeatureFlag(
+      ConfigCatFlags.HELP_LINK_SPEC_TGA,
+      ""
+    );
 
     const handleUpdateHideSpec = useCallback(
       (flag) => {
@@ -267,7 +275,7 @@ export const GeneralSetting = React.memo(
             </CustomTypography>
           </Box>
 
-          <Box>
+          <Box display="flex" alignItems="center" gridGap="10px">
             <CustomFormControlLabel
               control={
                 <Checkbox
@@ -282,6 +290,14 @@ export const GeneralSetting = React.memo(
               label="Show Spec TGA/Finish"
               labelPlacement="start"
             />
+            <Link
+              href={helpLinkSpecTga}
+              color="textPrimary"
+              target="_blank"
+              style={{ display: "flex" }}
+            >
+              <Info />
+            </Link>
           </Box>
 
           <Box>

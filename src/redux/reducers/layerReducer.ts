@@ -7,9 +7,11 @@ import {
   decodeHtml,
   fitPoints,
   getAllowedLayerTypes,
+  getLayerTypesWithAttr,
   getNameFromUploadFileName,
   mergeTwoLayer,
   parseLayer,
+  removeDuplicatedPointFromEnd,
   rotatePoint,
   stringifyLayerData,
 } from "src/helper";
@@ -20,16 +22,12 @@ import {
   LineObjLayerData,
   MovableObjLayerData,
   Position,
+  RectObjLayerData,
   ShapeBaseObjLayerData,
   TextObjLayerData,
   UploadObjLayerData,
 } from "src/types/common";
-import {
-  DrawingStatus,
-  HistoryActions,
-  LayerTypes,
-  MouseModes,
-} from "src/types/enum";
+import { DrawingStatus, HistoryActions, LayerTypes } from "src/types/enum";
 import {
   BuilderBase,
   BuilderBaseDataItem,
@@ -783,6 +781,11 @@ export const cloneLayer = ({
             ? layerToClone.layer_data.top
             : (centerPosition?.y ?? 0) + offset.y,
           rotation: newRotation,
+          skewX:
+            (mirrorRotation ? -1 : 1) * (layerToClone.layer_data.skewX ?? 0),
+          shadowOffsetX:
+            (mirrorRotation ? -1 : 1) *
+            (layerToClone.layer_data.shadowOffsetX ?? 0),
         }),
       };
       dispatch(createLayer(layer, pushingToHistory, callback));
@@ -846,21 +849,40 @@ export const createShape = (
         item.includes("layer_data.")
       ).map((item) => item.replaceAll("layer_data.", ""))
     ) as ShapeBaseObjLayerData;
-    if (
-      [
-        MouseModes.PEN,
-        MouseModes.LINE,
-        MouseModes.POLYGON,
-        MouseModes.ARROW,
-      ].includes(layerData.type as MouseModes)
-    ) {
+
+    const lineLayerTypes = getLayerTypesWithAttr("layer_data.points");
+
+    if (lineLayerTypes.includes(layerData.type)) {
       const { leftTopOffset, newPoints } = fitPoints(
-        (layerData as LineObjLayerData).points
+        removeDuplicatedPointFromEnd((layerData as LineObjLayerData).points)
       );
       layerData.left = (layerData.left ?? 0) + leftTopOffset.x;
       layerData.top = (layerData.top ?? 0) + leftTopOffset.y;
       (layerData as LineObjLayerData).points = newPoints;
     }
+
+    const layerTypesWithWidth = getLayerTypesWithAttr("layer_data.width");
+
+    if (layerTypesWithWidth.includes(layerData.type)) {
+      // Adjusting Negative width
+      if ((layerData as RectObjLayerData).width < 0) {
+        (layerData as RectObjLayerData).left -= Math.abs(
+          (layerData as RectObjLayerData).width
+        );
+        (layerData as RectObjLayerData).width = -(layerData as RectObjLayerData)
+          .width;
+      }
+
+      // Adjusting Negative height
+      if ((layerData as RectObjLayerData).height < 0) {
+        (layerData as RectObjLayerData).top -= Math.abs(
+          (layerData as RectObjLayerData).height
+        );
+        (layerData as RectObjLayerData).height = -(layerData as RectObjLayerData)
+          .height;
+      }
+    }
+
     const layer = {
       ...DefaultLayer,
       ...newlayer,

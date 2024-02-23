@@ -28,7 +28,6 @@ import {
   DrawingLayerJSON,
   LineObjLayerData,
   Position,
-  RectObjLayerData,
   ShapeObjLayerData,
 } from "src/types/common";
 import {
@@ -91,29 +90,6 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
           const layer = {
             ...(drawingLayerRef.current ?? {}),
           };
-          if ((layer.layer_data as LineObjLayerData).points) {
-            (layer.layer_data as LineObjLayerData).points = removeDuplicatedPointFromEnd(
-              (layer.layer_data as LineObjLayerData).points
-            );
-          }
-
-          // Adjusting Negative width
-          if ((layer.layer_data as RectObjLayerData).width < 0) {
-            (layer.layer_data as RectObjLayerData).left -= Math.abs(
-              (layer.layer_data as RectObjLayerData).width
-            );
-            (layer.layer_data as RectObjLayerData).width = -(layer.layer_data as RectObjLayerData)
-              .width;
-          }
-
-          // Adjusting Negative height
-          if ((layer.layer_data as RectObjLayerData).height < 0) {
-            (layer.layer_data as RectObjLayerData).top -= Math.abs(
-              (layer.layer_data as RectObjLayerData).height
-            );
-            (layer.layer_data as RectObjLayerData).height = -(layer.layer_data as RectObjLayerData)
-              .height;
-          }
 
           if (currentScheme) {
             dispatch(createShape(currentScheme.id, layer));

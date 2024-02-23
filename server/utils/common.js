@@ -40,8 +40,13 @@ function getSchemeUpdatingInfo(originScheme, scheme) {
   return updatingInfo;
 }
 
+function removeNumbersFromString(text) {
+  return text.replace(/[0-9]/g, "");
+}
+
 module.exports = {
   generateRandomColor,
   getLayerUpdatingInfo,
   getSchemeUpdatingInfo,
+  removeNumbersFromString,
 };

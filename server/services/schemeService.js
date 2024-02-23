@@ -4,6 +4,7 @@ const Scheme = require("../models/scheme.model");
 const {
   generateRandomColor,
   getSchemeUpdatingInfo,
+  removeNumbersFromString,
 } = require("../utils/common");
 const LayerService = require("./layerService");
 const { LayerTypes } = require("../constants");
@@ -187,8 +188,8 @@ class SchemeService {
                   scheme_id: scheme.id,
                   upload_id: 0,
                   layer_data: JSON.stringify({
-                    name: user.drivername,
-                    text: user.drivername,
+                    name: removeNumbersFromString(user.drivername),
+                    text: removeNumbersFromString(user.drivername),
                     font: parseInt(layer.font),
                     size: parseInt(layer.size),
                     color: layer.color || guide_data.defaultColor,

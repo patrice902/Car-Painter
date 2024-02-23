@@ -1,9 +1,16 @@
 import Konva from "konva";
 import { KonvaEventObject } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Text } from "react-konva";
 import { useDispatch } from "react-redux";
+import { colorValidator } from "src/helper";
 import { useDrag, useTransform } from "src/hooks";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import {
@@ -139,6 +146,14 @@ export const TextNode = React.memo(
       setLoadedFontFamily,
     ]);
 
+    const validatedShadowColor = useMemo(() => {
+      if (colorValidator(shadowColor)) {
+        return shadowColor;
+      }
+      dispatch(setMessage({ message: `Invalid Color: ${shadowColor}` }));
+      return undefined;
+    }, [dispatch, shadowColor]);
+
     useEffect(() => {
       if (fontFamily && fontFile) {
         if (!loadedFontList.includes(fontFamily)) {
@@ -156,7 +171,7 @@ export const TextNode = React.memo(
         {...props}
         fontFamily={loadedFontFamily}
         ref={shapeRef}
-        shadowColor={shapeRef.current ? shadowColor : undefined}
+        shadowColor={shapeRef.current ? validatedShadowColor : undefined}
         shadowBlur={shapeRef.current ? shadowBlur : undefined}
         shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
         shadowOffsetX={shapeRef.current ? shadowOffsetX : 0}

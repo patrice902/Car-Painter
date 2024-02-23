@@ -9,15 +9,16 @@ import {
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import { useFeatureFlag } from "configcat-react";
 import React, { ReactNode, useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import PaintBuilderLogo from "src/assets/paint-builder-logo.svg";
 import TradingPaintsLogo from "src/assets/trading-paints-logo.svg";
-import config from "src/config";
 import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import { signOut } from "src/redux/reducers/authReducer";
+import { ConfigCatFlags } from "src/types/enum";
 import styled from "styled-components";
 
 type AppHeaderProps = {
@@ -28,6 +29,10 @@ type AppHeaderProps = {
 export const AppHeader = React.memo(({ isBoard, children }: AppHeaderProps) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
+  const { value: helpLinkMenu } = useFeatureFlag(
+    ConfigCatFlags.HELP_LINK_MENU,
+    ""
+  );
 
   const [
     profileAnchorEl,
@@ -140,7 +145,7 @@ export const AppHeader = React.memo(({ isBoard, children }: AppHeaderProps) => {
                 ) : (
                   <></>
                 )}
-                <StyledLink href={config.helpLink.menu} target="_blank">
+                <StyledLink href={helpLinkMenu} target="_blank">
                   Help
                 </StyledLink>
                 <StyledDivider />
