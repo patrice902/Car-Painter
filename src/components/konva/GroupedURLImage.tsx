@@ -5,7 +5,7 @@ import { Stage } from "konva/types/Stage";
 import React, { useMemo, useRef } from "react";
 import { Group, Image, Rect } from "react-konva";
 import { useDispatch } from "react-redux";
-import { positiveNumGuard } from "src/helper";
+import { colorValidator, positiveNumGuard } from "src/helper";
 import { useDrag, useKonvaImageInit, useTransform } from "src/hooks";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import {
@@ -188,6 +188,22 @@ export const GroupedURLImage = React.memo(
       }
     }, [dispatch, filterColor]);
 
+    const validatedBgColor = useMemo(() => {
+      if (colorValidator(bgColor)) {
+        return bgColor;
+      }
+      dispatch(setMessage({ message: `Invalid Color: ${bgColor}` }));
+      return undefined;
+    }, [dispatch, bgColor]);
+
+    const validatedShadowColor = useMemo(() => {
+      if (colorValidator(shadowColor)) {
+        return shadowColor;
+      }
+      dispatch(setMessage({ message: `Invalid Color: ${shadowColor}` }));
+      return undefined;
+    }, [dispatch, shadowColor]);
+
     return (
       <Group
         {...props}
@@ -207,13 +223,13 @@ export const GroupedURLImage = React.memo(
         onMouseOver={() => props.listening && onHover?.(true)}
         onMouseOut={() => props.listening && onHover?.(false)}
       >
-        {bgColor ? (
+        {validatedBgColor ? (
           <Rect
             x={-paddingX || 0}
             y={-paddingY || 0}
             width={props.width + 2 * (paddingX || 0)}
             height={props.height + 2 * (paddingY || 0)}
-            fill={bgColor}
+            fill={validatedBgColor}
             cornerRadius={[
               positiveNumGuard(
                 (layer.layer_data as LogoObjLayerData).bgCornerTopLeft ?? 0
@@ -239,7 +255,7 @@ export const GroupedURLImage = React.memo(
           width={props.width}
           height={props.height}
           shadowBlur={shadowBlur}
-          shadowColor={shadowColor}
+          shadowColor={validatedShadowColor}
           shadowOpacity={shadowOpacity}
           shadowOffsetX={shadowOffsetX || 0}
           shadowOffsetY={shadowOffsetY || 0}

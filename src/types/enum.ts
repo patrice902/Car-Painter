@@ -111,4 +111,8 @@ export enum ConfigCatFlags {
   SIM_PREVIEW = "simPreview",
   RACE_FUNCTIONALITY = "raceFunctionality",
   ENABLE_RECAPTCHA = "enableRecaptcha",
+  HELP_LINK_MENU = "helpLinkMenu",
+  HELP_LINK_LEGACY_PROJECTS = "helpLinkLegacyProjects",
+  HELP_LINK_RACING_NUMBERS = "helpLinkRacingNumbers",
+  HELP_LINK_SPEC_TGA = "helpLinkSpecTga",
 }

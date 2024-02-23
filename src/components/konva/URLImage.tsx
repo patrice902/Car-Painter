@@ -5,6 +5,7 @@ import { Stage } from "konva/types/Stage";
 import React, { useMemo, useRef } from "react";
 import { Image } from "react-konva";
 import { useDispatch } from "react-redux";
+import { colorValidator } from "src/helper";
 import { useDrag, useKonvaImageInit, useTransform } from "src/hooks";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import {
@@ -166,6 +167,14 @@ export const URLImage = React.memo(
       }
     }, [dispatch, filterColor]);
 
+    const validatedShadowColor = useMemo(() => {
+      if (colorValidator(shadowColor)) {
+        return shadowColor;
+      }
+      dispatch(setMessage({ message: `Invalid Color: ${shadowColor}` }));
+      return undefined;
+    }, [dispatch, shadowColor]);
+
     return (
       <Image
         {...props}
@@ -174,7 +183,7 @@ export const URLImage = React.memo(
         ref={shapeRef}
         draggable={!!onChange && dragEnabled}
         shadowBlur={shadowBlur}
-        shadowColor={shadowColor}
+        shadowColor={validatedShadowColor}
         shadowOffsetX={shadowOffsetX || 0}
         shadowOffsetY={shadowOffsetY || 0}
         red={allowFilter ? filterColorRGB?.red() : null}

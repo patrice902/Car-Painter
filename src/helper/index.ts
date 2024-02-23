@@ -812,3 +812,10 @@ export const numberGuard = (num?: string | number | typeof NaN) =>
   Number.isNaN(Number(num)) || num === undefined || num === null
     ? 0
     : Number(num);
+
+export const getLayerTypesWithAttr = (attr: string) =>
+  Object.keys(AllowedLayerProps[LayerTypes.SHAPE]).filter((item) =>
+    AllowedLayerProps[LayerTypes.SHAPE][
+      item as keyof typeof AllowedLayerProps[LayerTypes.SHAPE]
+    ].includes(attr)
+  );

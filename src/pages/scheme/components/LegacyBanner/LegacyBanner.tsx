@@ -6,9 +6,10 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { HighlightOff as CloseIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import React from "react";
 import { NavLink } from "react-router-dom";
-import config from "src/config";
+import { ConfigCatFlags } from "src/types/enum";
 
 import { useStyles } from "./LegacyBanner.style";
 
@@ -24,6 +25,10 @@ export const LegacyBanner = React.memo(
       theme.breakpoints.up("sm")
     );
     const classes = useStyles();
+    const { value: helpLinkLegacyProjects } = useFeatureFlag(
+      ConfigCatFlags.HELP_LINK_LEGACY_PROJECTS,
+      ""
+    );
 
     return (
       <Box
@@ -57,7 +62,7 @@ export const LegacyBanner = React.memo(
             </Typography>
             <Typography>
               <a
-                href={config.helpLink.legacyProjects}
+                href={helpLinkLegacyProjects}
                 className={classes.moreLink}
                 target="_blank"
                 rel="noreferrer"

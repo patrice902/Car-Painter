@@ -9,12 +9,13 @@ import {
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import { useFeatureFlag } from "configcat-react";
 import React, { useCallback, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { NavLink } from "react-router-dom";
 import { ImageWithLoad, Loader } from "src/components/common";
-import config from "src/config";
 import { basePaintAssetURL, legacyBasePaintAssetURL } from "src/helper";
+import { ConfigCatFlags } from "src/types/enum";
 import { BuilderBase, CarMake } from "src/types/model";
 
 import {
@@ -46,6 +47,10 @@ export const BasePaintDialog = React.memo(
     const [limit, setLimit] = useState(step);
     const isAboveMobile = useMediaQuery((theme: Theme) =>
       theme.breakpoints.up("sm")
+    );
+    const { value: helpLinkLegacyProjects } = useFeatureFlag(
+      ConfigCatFlags.HELP_LINK_LEGACY_PROJECTS,
+      ""
     );
 
     const bases = useMemo(
@@ -119,7 +124,7 @@ export const BasePaintDialog = React.memo(
 
               <Typography>
                 <a
-                  href={config.helpLink.legacyProjects}
+                  href={helpLinkLegacyProjects}
                   className={classes.moreLink}
                   target="_blank"
                   rel="noreferrer"

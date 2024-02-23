@@ -22,17 +22,6 @@ const config = {
   cryptoKey: process.env.REACT_APP_CRYPTO_HASHING_KEY || "SECRET_KEY",
   changeLogAssetPath:
     process.env.REACT_APP_CHANGELOG_PATH || "/data/changelog.md",
-  helpLink: {
-    menu:
-      process.env.REACT_APP_HELP_LINK_MENU ||
-      "https://help.tradingpaints.com/kb/en/paint-builder-337264",
-    legacyProjects:
-      process.env.REACT_APP_HELP_LINK_LEGACY_PROJECTS ||
-      "https://help.tradingpaints.com/kb/guide/en/about-legacy-projects-UNQoD95JTD/Steps/2522705",
-    racingNumbers:
-      process.env.REACT_APP_HELP_LINK_RACING_NUMBERS ||
-      "https://help.tradingpaints.com/kb/guide/en/what-is-a-custom-number-paint-and-how-do-they-work-wideJuBrE5/Steps/2458158",
-  },
 };
 
 export default config;

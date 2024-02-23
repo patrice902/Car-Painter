@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { KonvaEventObject } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
-import React, { RefObject, useEffect, useRef } from "react";
+import React, { RefObject, useEffect, useMemo, useRef } from "react";
 import {
   Arc,
   Arrow,
@@ -14,7 +14,10 @@ import {
   Star,
   Wedge,
 } from "react-konva";
+import { useDispatch } from "react-redux";
+import { colorValidator } from "src/helper";
 import { useDrag, useTransform } from "src/hooks";
+import { setMessage } from "src/redux/reducers/messageReducer";
 import {
   DefaultLayerData,
   FrameSize,
@@ -99,6 +102,7 @@ export const Shape = React.memo(
     onSetTransformingLayer,
     ...props
   }: ShapeProps) => {
+    const dispatch = useDispatch();
     const shapeRef = useRef<Konva.Shape>(null);
 
     const {
@@ -139,6 +143,14 @@ export const Shape = React.memo(
       onSetTransformingLayer,
     });
 
+    const validatedShadowColor = useMemo(() => {
+      if (colorValidator(shadowColor)) {
+        return shadowColor;
+      }
+      dispatch(setMessage({ message: `Invalid Color: ${shadowColor}` }));
+      return undefined;
+    }, [dispatch, shadowColor]);
+
     useEffect(() => {
       if (id) onLoadLayer?.(id, true);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,7 +163,7 @@ export const Shape = React.memo(
             {...props}
             id={id?.toString()}
             ref={shapeRef as RefObject<Konva.Rect>}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -185,7 +197,7 @@ export const Shape = React.memo(
             x={x}
             y={y}
             radius={radius}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -215,7 +227,7 @@ export const Shape = React.memo(
             y={y}
             radiusX={width}
             radiusY={height}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -246,7 +258,7 @@ export const Shape = React.memo(
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             numPoints={numPoints}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -276,7 +288,7 @@ export const Shape = React.memo(
             y={y}
             innerRadius={innerRadius}
             outerRadius={outerRadius}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -306,7 +318,7 @@ export const Shape = React.memo(
             y={y}
             radius={radius}
             sides={numPoints}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -336,7 +348,7 @@ export const Shape = React.memo(
             y={y}
             radius={radius}
             angle={angle}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -367,7 +379,7 @@ export const Shape = React.memo(
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             angle={angle}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -399,7 +411,7 @@ export const Shape = React.memo(
             points={points}
             lineCap={lineCap}
             lineJoin={lineJoin}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -430,7 +442,7 @@ export const Shape = React.memo(
             lineCap={lineCap}
             lineJoin={lineJoin}
             hitStrokeWidth={20}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}
@@ -464,7 +476,7 @@ export const Shape = React.memo(
             lineJoin={lineJoin}
             pointerLength={pointerLength}
             pointerWidth={pointerWidth}
-            shadowColor={shapeRef.current ? shadowColor : undefined}
+            shadowColor={shapeRef.current ? validatedShadowColor : undefined}
             shadowBlur={shapeRef.current ? shadowBlur : undefined}
             shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
             shadowOffsetX={shapeRef.current ? shadowOffsetX : undefined}

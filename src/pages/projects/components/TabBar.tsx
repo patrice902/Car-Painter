@@ -7,12 +7,13 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Add as AddIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { ChangelogDialog } from "src/components/dialogs/ChangelogDialog";
-import config from "src/config";
 import { RootState } from "src/redux";
+import { ConfigCatFlags } from "src/types/enum";
 import styled from "styled-components/macro";
 
 const tabURLs = ["mine", "shared", "favorite"];
@@ -38,6 +39,10 @@ export const TabBar = React.memo(
     const newInvitationCount = useMemo(
       () => sharedSchemeList.filter((item) => !item.accepted).length,
       [sharedSchemeList]
+    );
+    const { value: helpLinkMenu } = useFeatureFlag(
+      ConfigCatFlags.HELP_LINK_MENU,
+      ""
     );
 
     const handleClickTabItem = useCallback(
@@ -130,7 +135,7 @@ export const TabBar = React.memo(
               What&apos;s New
             </ClickableTypography>
             <Typography color="textSecondary" variant="subtitle1">
-              <Link href={config.helpLink.menu} color="inherit" target="_blank">
+              <Link href={helpLinkMenu} color="inherit" target="_blank">
                 Help
               </Link>
             </Typography>

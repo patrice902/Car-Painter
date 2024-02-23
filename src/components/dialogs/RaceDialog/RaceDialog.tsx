@@ -14,6 +14,7 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   Switch,
@@ -23,13 +24,14 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import { Form, Formik, FormikProps } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { NumberModSwitch } from "src/components/common";
-import config from "src/config";
 import { decodeHtml } from "src/helper";
 import { RootState } from "src/redux";
+import { ConfigCatFlags } from "src/types/enum";
 import { CarRaceLeague, CarRaceTeam } from "src/types/query";
 import styled from "styled-components";
 import * as Yup from "yup";
@@ -184,6 +186,17 @@ const RaceForm = React.memo(
       (state: RootState) => state.carMakeReducer.current
     );
     const cars = useSelector((state: RootState) => state.carReducer.cars);
+    const currentScheme = useSelector(
+      (state: RootState) => state.schemeReducer.current
+    );
+    const { value: helpLinkSpecTga } = useFeatureFlag(
+      ConfigCatFlags.HELP_LINK_SPEC_TGA,
+      ""
+    );
+    const { value: helpLinkRacingNumbers } = useFeatureFlag(
+      ConfigCatFlags.HELP_LINK_RACING_NUMBERS,
+      ""
+    );
 
     const leagueSeriesMap = useMemo(() => {
       const map: Record<number, string> = {};
@@ -213,6 +226,32 @@ const RaceForm = React.memo(
       <Form onSubmit={formProps.handleSubmit} noValidate>
         <DialogContent dividers id="insert-text-dialog-content">
           <Box display="flex" flexDirection="column">
+            {!currentScheme?.hide_spec ? (
+              <Box
+                bgcolor="#666"
+                p="10px 16px"
+                borderRadius={10}
+                border="2px solid navajowhite"
+                position="relative"
+                mb="10px"
+              >
+                <Typography>
+                  In order to race with or assign a Paint Builder-generated spec
+                  map that shows your selected Finish options, you&apos;ll need
+                  to obtain and upload a MIP file from iRacing.{" "}
+                  <Link
+                    href={helpLinkSpecTga}
+                    color="secondary"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Learn how
+                  </Link>
+                </Typography>
+              </Box>
+            ) : (
+              <></>
+            )}
             <Typography style={{ marginBottom: "12px" }}>
               Race this paint as your {decodeHtml(currentCarMake?.name)}?
             </Typography>
@@ -283,7 +322,7 @@ const RaceForm = React.memo(
                 </CustomGrid>
               </SelectionWrapper>
               <MoreInfo
-                href={config.helpLink.racingNumbers}
+                href={helpLinkRacingNumbers}
                 target="_blank"
                 rel="noreferrer"
               >
