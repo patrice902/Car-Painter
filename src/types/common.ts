@@ -231,6 +231,11 @@ export interface CarObjLayerData extends DefaultLayerData {
   color?: string;
   img: string;
   legacy?: boolean;
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  isFullUrl?: boolean;
 }
 
 export type PartialAllLayerData = Partial<

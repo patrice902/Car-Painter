@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router";
 import useInterval from "react-useinterval";
 import { ScreenLoader } from "src/components/common";
+import { AppBoundary } from "src/components/common/AppBoundary";
 import { decodeHtml, focusBoardQuickly, isWindows } from "src/helper";
 import { useBoardSocket, useCapture, useZoom, withKeyEvent } from "src/hooks";
 import { ComponentWithKeyEventProps } from "src/hooks/withKeyEvent";
@@ -399,28 +400,30 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
               ) : (
                 <></>
               )}
-              <VirtualBoard
-                stageRef={virtualStageRef}
-                baseLayerRef={virtualBaseLayerRef}
-                mainLayerRef={virtualMainLayerRef}
-                carMaskLayerRef={virtualCarMaskLayerRef}
-                carMakeLayerRef={virtualCarMakeLayerRef}
-              />
-              <Board
-                hoveredLayerJSON={hoveredJSON}
-                editable={editable}
-                onChangeHoverJSONItem={setHoveredJSONItem}
-                stageRef={stageRef}
-                baseLayerRef={baseLayerRef}
-                mainLayerRef={mainLayerRef}
-                carMaskLayerRef={carMaskLayerRef}
-                carMakeLayerRef={carMakeLayerRef}
-                activeTransformerRef={activeTransformerRef}
-                hoveredTransformerRef={hoveredTransformerRef}
-                setTransformingLayer={setTransformingLayer}
-                onDeleteLayer={onDeleteLayer}
-                onCloneLayer={onCloneLayer}
-              />
+              <AppBoundary>
+                <VirtualBoard
+                  stageRef={virtualStageRef}
+                  baseLayerRef={virtualBaseLayerRef}
+                  mainLayerRef={virtualMainLayerRef}
+                  carMaskLayerRef={virtualCarMaskLayerRef}
+                  carMakeLayerRef={virtualCarMakeLayerRef}
+                />
+                <Board
+                  hoveredLayerJSON={hoveredJSON}
+                  editable={editable}
+                  onChangeHoverJSONItem={setHoveredJSONItem}
+                  stageRef={stageRef}
+                  baseLayerRef={baseLayerRef}
+                  mainLayerRef={mainLayerRef}
+                  carMaskLayerRef={carMaskLayerRef}
+                  carMakeLayerRef={carMakeLayerRef}
+                  activeTransformerRef={activeTransformerRef}
+                  hoveredTransformerRef={hoveredTransformerRef}
+                  setTransformingLayer={setTransformingLayer}
+                  onDeleteLayer={onDeleteLayer}
+                  onCloneLayer={onCloneLayer}
+                />
+              </AppBoundary>
               <BoardGuide />
               <LegacyBanner
                 show={showLegacyBanner}

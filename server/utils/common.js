@@ -1,3 +1,5 @@
+const config = require("../config");
+
 function generateRandomColor() {
   return [...Array(6)]
     .map(() => Math.floor(Math.random() * 16).toString(16))
@@ -44,9 +46,14 @@ function removeNumbersFromString(text) {
   return text.replace(/[0-9]/g, "");
 }
 
+function getAvatarURL(userId) {
+  return `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
+}
+
 module.exports = {
   generateRandomColor,
   getLayerUpdatingInfo,
   getSchemeUpdatingInfo,
   removeNumbersFromString,
+  getAvatarURL,
 };

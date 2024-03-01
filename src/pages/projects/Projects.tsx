@@ -134,6 +134,7 @@ export const Projects = React.memo(() => {
 
   const handleCreateNew = useCallback(() => {
     setDialog("CreateProjectDialog");
+    throw new Error("Unexpected error occured!");
   }, []);
 
   const hideDialog = useCallback(() => setDialog(null), []);

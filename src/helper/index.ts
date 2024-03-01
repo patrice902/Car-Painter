@@ -31,6 +31,7 @@ import {
   UserWithoutPassword,
 } from "src/types/query";
 import TGA from "src/utils/tga";
+import urlJoin from "url-join";
 import { v4 as uuidv4 } from "uuid";
 
 export const getDifferenceFromToday = (past_date: Date | string | number) => {
@@ -332,7 +333,9 @@ export const generateCarMakeImageURL = (
   carMake?: CarMake | null,
   legacyMode?: boolean | null
 ) =>
-  layer_data.legacy
+  layer_data.isFullUrl
+    ? layer_data.img
+    : layer_data.legacy
     ? `${
         config.legacyAssetURL
       }/templates/${carMake?.folder_directory.replaceAll(" ", "_")}/`
@@ -638,7 +641,7 @@ export const loadImage = async (
 ) => {
   const img = new window.Image();
   img.src = imageSource;
-  img.crossOrigin = "anonymous";
+  // img.crossOrigin = "anonymous";
   imageRef.current = img;
   if (handleLoad) imageRef.current.addEventListener("load", handleLoad);
   if (handleError) imageRef.current.addEventListener("error", handleError);
@@ -818,4 +821,11 @@ export const getLayerTypesWithAttr = (attr: string) =>
     AllowedLayerProps[LayerTypes.SHAPE][
       item as keyof typeof AllowedLayerProps[LayerTypes.SHAPE]
     ].includes(attr)
+  );
+
+export const getAvatarURL = (userId: string | number) =>
+  urlJoin(
+    config.parentAppURL ?? "https://www.tradingpaints.com",
+    "scripts/image_driver.php",
+    `?driver=${userId}`
   );

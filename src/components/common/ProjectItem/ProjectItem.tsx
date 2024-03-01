@@ -20,6 +20,7 @@ import { ConfirmDialog } from "src/components/dialogs";
 import config from "src/config";
 import {
   decodeHtml,
+  getAvatarURL,
   getDifferenceFromToday,
   getUserName,
   reduceString,
@@ -284,7 +285,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
                   >
                     <Avatar
                       alt={getUserName(sharedUser.user)}
-                      src={`https://www.tradingpaints.com/scripts/image_driver.php?driver=${sharedUser.user_id}`}
+                      src={getAvatarURL(sharedUser.user_id)}
                     >
                       {sharedUser.user.drivername[0].toUpperCase()}
                     </Avatar>

@@ -5,6 +5,7 @@ const {
   generateRandomColor,
   getSchemeUpdatingInfo,
   removeNumbersFromString,
+  getAvatarURL,
 } = require("../utils/common");
 const LayerService = require("./layerService");
 const { LayerTypes } = require("../constants");
@@ -179,6 +180,7 @@ class SchemeService {
       const guide_data = JSON.parse(scheme.guide_data);
       for (let layer of builder_signature) {
         if (layer.font) {
+          // Creating Font Signature
           try {
             let font = await FontService.getById(layer.font);
             if (font) {
@@ -209,6 +211,34 @@ class SchemeService {
                 })
               );
             }
+          } catch (err) {
+            logger.log("error", err.stack);
+          }
+        } else {
+          // Creating Profile Signature
+          try {
+            builder_layers.push(
+              await LayerService.create({
+                layer_type: LayerTypes.CAR,
+                scheme_id: scheme.id,
+                upload_id: 0,
+                layer_data: JSON.stringify({
+                  img: getAvatarURL(user.id),
+                  isFullUrl: true,
+                  name: layer.name ? layer.name : "Profile Image",
+                  rotation: layer.rotation ? parseFloat(layer.rotation) : 0,
+                  left: layer.left ? parseFloat(layer.left) : 0,
+                  top: layer.top ? parseFloat(layer.top) : 0,
+                  width: layer.width ? parseFloat(layer.width) : 0,
+                  height: layer.height ? parseFloat(layer.height) : 0,
+                }),
+                layer_visible: 1,
+                layer_order: layer_index++,
+                layer_locked: 0,
+                time_modified: 0,
+                confirm: "",
+              })
+            );
           } catch (err) {
             logger.log("error", err.stack);
           }
