@@ -641,7 +641,7 @@ export const loadImage = async (
 ) => {
   const img = new window.Image();
   img.src = imageSource;
-  // img.crossOrigin = "anonymous";
+  img.crossOrigin = "Anonymous";
   imageRef.current = img;
   if (handleLoad) imageRef.current.addEventListener("load", handleLoad);
   if (handleError) imageRef.current.addEventListener("error", handleError);
