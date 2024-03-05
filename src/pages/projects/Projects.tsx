@@ -134,7 +134,6 @@ export const Projects = React.memo(() => {
 
   const handleCreateNew = useCallback(() => {
     setDialog("CreateProjectDialog");
-    throw new Error("Unexpected error occured!");
   }, []);
 
   const hideDialog = useCallback(() => setDialog(null), []);
@@ -418,6 +417,7 @@ const TabPanel = ({
       id={`projects-tabpanel-${index}`}
       aria-labelledby={`projects-tab-${index}`}
       width="100%"
+      pb={2}
       {...props}
     >
       {value === index && (
