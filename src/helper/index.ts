@@ -641,6 +641,7 @@ export const loadImage = async (
 ) => {
   const img = new window.Image();
   img.src = imageSource;
+  // Don't comment the below line. It'll prevent tainted canvas issue.
   img.crossOrigin = "Anonymous";
   imageRef.current = img;
   if (handleLoad) imageRef.current.addEventListener("load", handleLoad);

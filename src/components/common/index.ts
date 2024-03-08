@@ -1,4 +1,3 @@
-export { default as async } from "./Async";
 export { ImageWithLoad } from "./ImageWithLoad";
 export { SVGImageWithLoad } from "./SVGImageWithLoad";
 export { ColorPickerInput } from "./ColorPickerInput";

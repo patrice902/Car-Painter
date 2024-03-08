@@ -36,7 +36,7 @@ import {
 
 type HeaderProps = {
   editable: boolean;
-  onBack: () => void;
+  onBack: (goParent?: boolean) => void;
   onDownloadTGA: (isCustomNumberTGA?: boolean) => void;
   onDownloadSpecTGA: () => void;
   retrieveTGAPNGDataUrl: () => Promise<string | null | undefined>;
@@ -86,6 +86,11 @@ export const Header = React.memo(
       if (cars[1] && cars[1].primary) return 1;
       return -1;
     }, [cars]);
+
+    const showSowroomTab = useMemo(() => enableSubmitToShowroom && editable, [
+      enableSubmitToShowroom,
+      editable,
+    ]);
 
     const handleCloseDialog = useCallback(() => {
       setDialog(undefined);
@@ -300,11 +305,11 @@ export const Header = React.memo(
 
     return (
       <>
-        <AppHeader isBoard>
+        <AppHeader isBoard onBack={onBack}>
           {!isAboveMobile ? (
             <IconButton
               size={isAboveMobile ? "medium" : "small"}
-              onClick={onBack}
+              onClick={() => onBack()}
             >
               <CustomIcon icon={faChevronLeft} size="xs" />
             </IconButton>
@@ -333,9 +338,9 @@ export const Header = React.memo(
                 aria-controls="share-options-menu"
                 aria-haspopup="true"
                 startIcon={<ShareIcon />}
-                endIcon={enableSubmitToShowroom ? <DropDownIcon /> : undefined}
+                endIcon={showSowroomTab ? <DropDownIcon /> : undefined}
                 onClick={(event) =>
-                  enableSubmitToShowroom
+                  showSowroomTab
                     ? setShareAnchorEl(event.currentTarget)
                     : handleOpenShareDialog()
                 }
@@ -348,7 +353,7 @@ export const Header = React.memo(
                 aria-haspopup="true"
                 size="small"
                 onClick={(event) =>
-                  enableSubmitToShowroom
+                  showSowroomTab
                     ? setShareAnchorEl(event.currentTarget)
                     : handleOpenShareDialog()
                 }

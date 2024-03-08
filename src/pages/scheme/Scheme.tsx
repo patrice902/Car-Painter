@@ -40,6 +40,7 @@ import {
   getScheme,
   getSharedUsers,
   setLoaded,
+  setSaving,
 } from "src/redux/reducers/schemeReducer";
 import {
   getFavoriteUploadList,
@@ -106,11 +107,11 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     transformingLayer,
     setTransformingLayer,
   ] = useState<BuilderLayerJSON<MovableObjLayerData> | null>(null);
-
-  const activeTransformerRef = useRef(null);
-  const hoveredTransformerRef = useRef(null);
+  const [backSchedule, setBackSchedule] = useState<string>();
 
   const {
+    capturing,
+    capturingRef,
     handleUploadThumbnail,
     handleDownloadTGA,
     handleDownloadSpecTGA,
@@ -123,6 +124,9 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     virtualCarMaskLayerRef,
     virtualCarMakeLayerRef
   );
+
+  const activeTransformerRef = useRef(null);
+  const hoveredTransformerRef = useRef(null);
 
   const user = useSelector((state: RootState) => state.authReducer.user);
   const blockedBy = useSelector(
@@ -210,13 +214,31 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
     [dispatch]
   );
 
-  const handleGoBack = useCallback(async () => {
-    dispatch(setLoadedStatusAll({}));
-    if (isAboveMobile) {
-      await handleUploadThumbnail({ uploadLater: false, doSave: true });
+  const handleGoBack = useCallback(
+    async (goParent = false) => {
+      if (capturingRef.current) {
+        dispatch(setSaving(true));
+        setBackSchedule(goParent ? "/" : previousPath || "/");
+      } else {
+        dispatch(setLoadedStatusAll({}));
+        await handleUploadThumbnail({ uploadLater: false, doSave: true });
+        history.push(goParent ? "/" : previousPath || "/");
+      }
+    },
+    [history, dispatch, handleUploadThumbnail, previousPath, capturingRef]
+  );
+
+  // Handling Go Back after capturing
+  useEffect(() => {
+    if (!capturing && backSchedule) {
+      dispatch(setLoadedStatusAll({}));
+      dispatch(setSaving(false));
+      const pathToGo = backSchedule;
+      setBackSchedule(undefined);
+      history.push(pathToGo);
     }
-    history.push(previousPath || "/");
-  }, [history, dispatch, handleUploadThumbnail, previousPath, isAboveMobile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capturing]);
 
   const hideLegacyBanner = useCallback(() => {
     setShowLegacyBanner(false);

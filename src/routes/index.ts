@@ -1,4 +1,9 @@
-import { async } from "src/components/common";
+import Admin from "src/pages/admin";
+import SignIn from "src/pages/auth/SignIn";
+import Page404 from "src/pages/fallback/Page404";
+import Page500 from "src/pages/fallback/Page500";
+import Projects from "src/pages/projects";
+import Scheme from "src/pages/scheme";
 
 export type RouteItem = {
   id?: string;
@@ -10,16 +15,6 @@ export type RouteItem = {
   adminOnly?: boolean;
   children?: RouteItem[];
 };
-
-// Auth components
-const SignIn = async(() => import("src/pages/auth/SignIn"));
-const Page404 = async(() => import("src/pages/fallback/Page404"));
-const Page500 = async(() => import("src/pages/fallback/Page500"));
-
-// Main components
-const Scheme = async(() => import("src/pages/scheme"));
-const Projects = async(() => import("src/pages/projects"));
-const Admin = async(() => import("src/pages/admin"));
 
 const authRoutes: RouteItem = {
   id: "Auth",

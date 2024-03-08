@@ -12,7 +12,7 @@ import {
   imageDataFromSource,
   sleep,
 } from "src/helper";
-import { useReducerRef, useScheme } from "src/hooks";
+import { useReducerRef, useScheme, useStateRef } from "src/hooks";
 import { RootState } from "src/redux";
 import {
   setDownloadSpecTGA,
@@ -38,7 +38,7 @@ export const useCapture = (
   const dispatch = useDispatch();
   const { schemeFinishBase } = useScheme();
   const [pauseCapturing, setPauseCapturing] = useState(false);
-  const [capturing, setCapturing] = useState(false);
+  const [capturing, setCapturing, capturingRef] = useStateRef(false);
   const [, userRef] = useReducerRef(
     useSelector((state: RootState) => state.authReducer.user)
   );
@@ -236,9 +236,10 @@ export const useCapture = (
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
+    setCapturing,
     carMakeSize,
     frameSizeRef,
-    carMakeLayerRef,
     currentCarMakeRef,
     currentSchemeRef,
   ]);
@@ -497,6 +498,8 @@ export const useCapture = (
   }, [pauseCapturing, drawingStatus, capturing]);
 
   return {
+    capturing,
+    capturingRef,
     handleUploadThumbnail,
     handleDownloadTGA,
     handleDownloadSpecTGA,

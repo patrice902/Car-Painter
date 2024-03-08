@@ -448,15 +448,19 @@ export const InnerForm = React.memo(
                     />
                   </LightTooltip>
                 </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    onClick={() => setOpenCloneCarPartsDialog(true)}
-                  >
-                    Clone as new layers
-                  </Button>
-                </Grid>
+                {editable ? (
+                  <Grid item xs={12}>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => setOpenCloneCarPartsDialog(true)}
+                    >
+                      Clone as new layers
+                    </Button>
+                  </Grid>
+                ) : (
+                  <></>
+                )}
               </>
             }
           />
