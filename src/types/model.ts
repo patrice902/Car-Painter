@@ -107,6 +107,7 @@ export type BuilderScheme = {
   dismiss_race_confirm?: boolean;
   last_font?: number;
   last_number?: number;
+  public?: boolean;
 };
 
 export type BuilderOverlay = {

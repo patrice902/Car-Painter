@@ -10,17 +10,17 @@ router
   .post(isAuthenticated, FavoriteLogoController.create);
 
 router
-  .route("/:id")
-  .get(isAuthenticated, FavoriteLogoController.getByID)
-  .put(isAuthenticated, FavoriteLogoController.update)
-  .delete(isAuthenticated, FavoriteLogoController.delete);
-
-router
   .route("/byUser/:id")
   .get(isAuthenticated, FavoriteLogoController.getListByUserID);
 
 router
   .route("/byLogo/:id")
   .get(isAuthenticated, FavoriteLogoController.getListByLogoID);
+
+router
+  .route("/:id")
+  .get(isAuthenticated, FavoriteLogoController.getByID)
+  .put(isAuthenticated, FavoriteLogoController.update)
+  .delete(isAuthenticated, FavoriteLogoController.delete);
 
 module.exports = router;

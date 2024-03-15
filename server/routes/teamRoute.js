@@ -10,13 +10,13 @@ router
   .post(isAuthenticated, TeamController.create);
 
 router
+  .route("/byUser/:id")
+  .get(isAuthenticated, TeamController.getListByUserID);
+
+router
   .route("/:id")
   .get(isAuthenticated, TeamController.getByID)
   .put(isAuthenticated, TeamController.update)
   .delete(isAuthenticated, TeamController.delete);
-
-router
-  .route("/byUser/:id")
-  .get(isAuthenticated, TeamController.getListByUserID);
 
 module.exports = router;

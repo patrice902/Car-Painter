@@ -10,13 +10,13 @@ router
   .post(isAuthenticated, LeagueSeriesController.create);
 
 router
+  .route("/byUser/:id")
+  .get(isAuthenticated, LeagueSeriesController.getListByUserID);
+
+router
   .route("/:id")
   .get(isAuthenticated, LeagueSeriesController.getByID)
   .put(isAuthenticated, LeagueSeriesController.update)
   .delete(isAuthenticated, LeagueSeriesController.delete);
-
-router
-  .route("/byUser/:id")
-  .get(isAuthenticated, LeagueSeriesController.getListByUserID);
 
 module.exports = router;

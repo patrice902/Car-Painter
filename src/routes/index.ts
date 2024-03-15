@@ -83,6 +83,15 @@ const favoriteProjectRoute: RouteItem = {
   redirectToSignIn: true,
 };
 
+const galleryProjectRoute: RouteItem = {
+  id: "Gallery Project",
+  path: "/gallery",
+  name: "Gallery Project",
+  component: Projects,
+  guarded: true,
+  redirectToSignIn: true,
+};
+
 const projectRoute: RouteItem = {
   id: "Project",
   path: "/project/:id",
@@ -108,6 +117,7 @@ export const mainLayoutRoutes: RouteItem[] = [
   myProjectRoute,
   sharedProjectRoute,
   favoriteProjectRoute,
+  galleryProjectRoute,
   projectRoute,
   adminRoute,
 ];

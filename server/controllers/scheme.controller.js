@@ -25,6 +25,18 @@ class SchemeController {
     }
   }
 
+  static async getPublicList(req, res) {
+    try {
+      const schemes = await SchemeService.getPublicList();
+      res.json(schemes);
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
   static async getByID(req, res) {
     try {
       let scheme = await SchemeService.getById(req.params.id);
@@ -190,7 +202,7 @@ class SchemeController {
 
   static async clone(req, res) {
     try {
-      let scheme = await SchemeService.cloneById(req.params.id);
+      let scheme = await SchemeService.cloneById(req.params.id, req.user.id);
       scheme = scheme.toJSON();
       await FileService.cloneFileOnS3(
         `scheme_thumbnails/${req.params.id}.jpg`,

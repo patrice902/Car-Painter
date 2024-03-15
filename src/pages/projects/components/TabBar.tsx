@@ -16,7 +16,7 @@ import { RootState } from "src/redux";
 import { ConfigCatFlags } from "src/types/enum";
 import styled from "styled-components/macro";
 
-const tabURLs = ["mine", "shared", "favorite"];
+const tabURLs = ["mine", "shared", "favorite", "gallery"];
 
 type TabBarProps = {
   tabValue: number;
@@ -43,6 +43,10 @@ export const TabBar = React.memo(
     const { value: helpLinkMenu } = useFeatureFlag(
       ConfigCatFlags.HELP_LINK_MENU,
       ""
+    );
+    const { value: enableGallery } = useFeatureFlag(
+      ConfigCatFlags.ENABLE_GALLERY,
+      false
     );
 
     const handleClickTabItem = useCallback(
@@ -123,6 +127,16 @@ export const TabBar = React.memo(
             >
               <Typography>Favorite Projects</Typography>
             </Tab>
+            {enableGallery ? (
+              <Tab
+                state={tabValue === 3 ? "active" : null}
+                onClick={() => handleClickTabItem(3)}
+              >
+                <Typography>Gallery</Typography>
+              </Tab>
+            ) : (
+              <></>
+            )}
           </Box>
         </Box>
         {isAboveMobile && (

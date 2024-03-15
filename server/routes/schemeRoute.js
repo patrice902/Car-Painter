@@ -9,11 +9,7 @@ router
   .get(isAuthenticated, SchemeController.getList)
   .post(isAuthenticated, SchemeController.create);
 
-router
-  .route("/:id")
-  .get(isAuthenticated, SchemeController.getByID)
-  .put(isAuthenticated, SchemeController.update)
-  .delete(isAuthenticated, SchemeController.delete);
+router.route("/public").get(isAuthenticated, SchemeController.getPublicList);
 
 router
   .route("/byUpload/:id")
@@ -28,5 +24,11 @@ router
 router
   .route("/thumbnail")
   .post(isAuthenticated, SchemeController.uploadThumbnail);
+
+router
+  .route("/:id")
+  .get(isAuthenticated, SchemeController.getByID)
+  .put(isAuthenticated, SchemeController.update)
+  .delete(isAuthenticated, SchemeController.delete);
 
 module.exports = router;

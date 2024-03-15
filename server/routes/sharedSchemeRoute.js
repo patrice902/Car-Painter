@@ -10,17 +10,17 @@ router
   .post(isAuthenticated, SharedSchemeController.create);
 
 router
-  .route("/:id")
-  .get(isAuthenticated, SharedSchemeController.getByID)
-  .put(isAuthenticated, SharedSchemeController.update)
-  .delete(isAuthenticated, SharedSchemeController.delete);
-
-router
   .route("/byUser/:id")
   .get(isAuthenticated, SharedSchemeController.getListByUserID);
 
 router
   .route("/byScheme/:id")
   .get(isAuthenticated, SharedSchemeController.getListBySchemeID);
+
+router
+  .route("/:id")
+  .get(isAuthenticated, SharedSchemeController.getByID)
+  .put(isAuthenticated, SharedSchemeController.update)
+  .delete(isAuthenticated, SharedSchemeController.delete);
 
 module.exports = router;

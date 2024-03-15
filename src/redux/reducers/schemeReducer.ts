@@ -38,6 +38,7 @@ import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type SchemeReducerState = {
   list: BuilderSchemeJSONForGetListByUserId[];
+  publicList: BuilderSchemeJSONForGetListByUserId[];
   favoriteList: FavoriteSchemeForGetListByUserId[];
   sharedList: SharedSchemeForGetListByUserId[];
   sharedUsers: SharedSchemeWithUser[];
@@ -55,6 +56,7 @@ const initialState: SchemeReducerState = {
   list: [],
   favoriteList: [],
   sharedList: [],
+  publicList: [],
   sharedUsers: [],
   current: null,
   owner: null,
@@ -123,6 +125,17 @@ export const slice = createSlice({
     },
     deleteListItem: (state, action: PayloadAction<number>) => {
       state.list = state.list.filter((item) => item.id !== +action.payload);
+    },
+    setPublicList: (
+      state,
+      action: PayloadAction<BuilderScheme[] | BuilderSchemeJSON[]>
+    ) => {
+      state.publicList = action.payload.map(
+        (item) => parseScheme(item) as BuilderSchemeJSON
+      ) as BuilderSchemeJSONForGetListByUserId[];
+    },
+    clearPublicList: (state) => {
+      state.publicList = [];
     },
     setFavoriteList: (
       state,
@@ -240,6 +253,7 @@ const {
   insertToList,
   setSharedList,
   setFavoriteList,
+  setPublicList,
   deleteFavoriteListItem,
   updateSharedListItem,
   deleteSharedListItem,
@@ -276,6 +290,22 @@ export const getSchemeList = (userID: number) => async (
   try {
     const schemes = await SchemeService.getSchemeListByUserID(userID);
     dispatch(setList(schemes.filter((scheme) => !scheme.carMake.deleted)));
+  } catch (err) {
+    dispatch(catchErrorMessage(err));
+  }
+  dispatch(setLoading(false));
+};
+
+export const getPublicSchemeList = (callback?: () => void) => async (
+  dispatch: AppDispatch
+) => {
+  dispatch(setLoading(true));
+  try {
+    const schemes = await SchemeService.getPublicSchemeList();
+    dispatch(
+      setPublicList(schemes.filter((scheme) => !scheme.carMake.deleted))
+    );
+    callback?.();
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }
@@ -441,9 +471,10 @@ export const deleteScheme = (schemeID: number, callback?: () => void) => async (
   dispatch(setLoading(false));
 };
 
-export const cloneScheme = (schemeID: number) => async (
-  dispatch: AppDispatch
-) => {
+export const cloneScheme = (
+  schemeID: number,
+  callback?: (schemeID?: number) => void
+) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
 
   try {
@@ -452,6 +483,7 @@ export const cloneScheme = (schemeID: number) => async (
     dispatch(
       setMessage({ message: "Cloned Project successfully!", type: "success" })
     );
+    callback?.(scheme.id);
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }

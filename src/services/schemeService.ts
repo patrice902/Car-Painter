@@ -14,6 +14,9 @@ export default class SchemeService extends BaseAPIService {
   static getSchemeList = async (): Promise<BuilderSchemeForGetList[]> =>
     this.requestWithAuth(`/scheme`, "GET");
 
+  static getPublicSchemeList = async (): Promise<BuilderSchemeForGetList[]> =>
+    this.requestWithAuth(`/scheme/public`, "GET");
+
   static getSchemeListByUserID = async (
     userID: number
   ): Promise<BuilderSchemeForGetListByUserId[]> =>

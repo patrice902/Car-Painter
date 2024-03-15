@@ -10,12 +10,6 @@ router
   .post(isAuthenticated, SharedUploadController.create);
 
 router
-  .route("/:id")
-  .get(isAuthenticated, SharedUploadController.getByID)
-  .put(isAuthenticated, SharedUploadController.update)
-  .delete(isAuthenticated, SharedUploadController.delete);
-
-router
   .route("/byUser/:id")
   .get(isAuthenticated, SharedUploadController.getListByUserID);
 
@@ -26,5 +20,11 @@ router
 router
   .route("/byCode")
   .post(isAuthenticated, SharedUploadController.createByCode);
+
+router
+  .route("/:id")
+  .get(isAuthenticated, SharedUploadController.getByID)
+  .put(isAuthenticated, SharedUploadController.update)
+  .delete(isAuthenticated, SharedUploadController.delete);
 
 module.exports = router;

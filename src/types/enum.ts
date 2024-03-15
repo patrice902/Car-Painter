@@ -115,4 +115,5 @@ export enum ConfigCatFlags {
   HELP_LINK_LEGACY_PROJECTS = "helpLinkLegacyProjects",
   HELP_LINK_RACING_NUMBERS = "helpLinkRacingNumbers",
   HELP_LINK_SPEC_TGA = "helpLinkSpecTga",
+  ENABLE_GALLERY = "enableGallery",
 }

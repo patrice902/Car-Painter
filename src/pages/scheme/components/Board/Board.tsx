@@ -73,7 +73,7 @@ export const Board = React.memo(
       onTouchEnd,
       onTap,
       onDbltap,
-    } = useDrawHelper(stageRef);
+    } = useDrawHelper(stageRef, editable);
     const { zoom, onWheel } = useZoom(stageRef);
     const mainGroupRef = useRef<Konva.Group>(null);
 

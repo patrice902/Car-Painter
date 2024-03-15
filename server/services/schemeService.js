@@ -33,6 +33,16 @@ class SchemeService {
     return schemes;
   }
 
+  static async getPublicList() {
+    const schemes = await Scheme.where({
+      public: 1,
+      avail: 1,
+    }).fetchAll({
+      withRelated: ["carMake", "user", "sharedUsers", "sharedUsers.user"],
+    });
+    return schemes;
+  }
+
   static async getById(id) {
     if (!id) {
       console.log("Trying to get scheme with ID of null");
@@ -273,7 +283,7 @@ class SchemeService {
     return true;
   }
 
-  static async cloneById(id) {
+  static async cloneById(id, user_id) {
     if (!id) {
       return null;
     }
@@ -285,9 +295,11 @@ class SchemeService {
 
     let scheme = await Scheme.forge({
       ..._.omit(originalScheme, ["id", "layers"]),
+      user_id,
       name: originalScheme.name.slice(0, 45) + " copy",
       date_created: Math.round(new Date().getTime() / 1000),
       date_modified: Math.round(new Date().getTime() / 1000),
+      public: false,
     }).save();
     let schemeData = scheme.toJSON();
     for (let layer of originalScheme.layers) {

@@ -260,7 +260,8 @@ const Scheme = React.memo((props: ComponentWithKeyEventProps) => {
             +params.id,
             (scheme, tempsharedUsers) => {
               if (
-                (user.id !== scheme.user_id &&
+                (!scheme.public &&
+                  user.id !== scheme.user_id &&
                   !tempsharedUsers.find(
                     (shared) => shared.user_id === user.id
                   )) ||

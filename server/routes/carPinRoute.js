@@ -10,13 +10,13 @@ router
   .post(isAuthenticated, CarPinController.create);
 
 router
+  .route("/byUser/:id")
+  .get(isAuthenticated, CarPinController.getListByUserID);
+
+router
   .route("/:id")
   .get(isAuthenticated, CarPinController.getByID)
   .put(isAuthenticated, CarPinController.update)
   .delete(isAuthenticated, CarPinController.delete);
-
-router
-  .route("/byUser/:id")
-  .get(isAuthenticated, CarPinController.getListByUserID);
 
 module.exports = router;

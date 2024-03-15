@@ -10,17 +10,17 @@ router
   .post(isAuthenticated, FavoriteOverlayController.create);
 
 router
-  .route("/:id")
-  .get(isAuthenticated, FavoriteOverlayController.getByID)
-  .put(isAuthenticated, FavoriteOverlayController.update)
-  .delete(isAuthenticated, FavoriteOverlayController.delete);
-
-router
   .route("/byUser/:id")
   .get(isAuthenticated, FavoriteOverlayController.getListByUserID);
 
 router
   .route("/byOverlay/:id")
   .get(isAuthenticated, FavoriteOverlayController.getListByOverlayID);
+
+router
+  .route("/:id")
+  .get(isAuthenticated, FavoriteOverlayController.getByID)
+  .put(isAuthenticated, FavoriteOverlayController.update)
+  .delete(isAuthenticated, FavoriteOverlayController.delete);
 
 module.exports = router;
