@@ -294,17 +294,22 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
     const handleKeyEvent = useCallback(
       (key: string, event: KeyboardEvent) => {
         event.preventDefault();
-        // console.log("key, event: ", key, event);
         // Delete Selected Layer
-        if (
-          (event.target as HTMLElement)?.tagName !== "INPUT" &&
-          event.type === "keydown"
-        ) {
+        if ((event.target as HTMLElement)?.tagName === "INPUT") {
+          return;
+        }
+
+        if (event.type === "keyup") {
+          dispatch(setPressedKey(null));
+          dispatch(setPressedEventKey(null));
+        }
+
+        if (event.type === "keydown") {
           if (
-            pressedKey === key &&
-            pressedEventKey === event.key &&
-            !ArrowKeys.includes(event.key) &&
-            !BracketKeys.includes(event.key)
+            pressedKey?.toString() === key.toString() &&
+            pressedEventKey?.toString() === event.key.toString() &&
+            !ArrowKeys.includes(event.key.toString()) &&
+            !BracketKeys.includes(event.key.toString())
           ) {
             return;
           }
@@ -448,15 +453,15 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             handleChangeBoardRotation(false);
           } else if (event.key === "ArrowRight" && event.altKey) {
             handleChangeBoardRotation(true);
-          } else if (key === "1") {
+          } else if (key === "1" && editable) {
             togglePaintingGuides(PaintingGuides.CARMASK);
-          } else if (key === "2") {
+          } else if (key === "2" && editable) {
             togglePaintingGuides(PaintingGuides.WIREFRAME);
-          } else if (key === "3") {
+          } else if (key === "3" && editable) {
             togglePaintingGuides(PaintingGuides.SPONSORBLOCKS);
-          } else if (key === "4") {
+          } else if (key === "4" && editable) {
             togglePaintingGuides(PaintingGuides.NUMBERBLOCKS);
-          } else if (key === "5") {
+          } else if (key === "5" && editable) {
             togglePaintingGuides(PaintingGuides.GRID);
           } else if (key === "enter" && editable) {
             if (
@@ -472,11 +477,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
         }
 
         // Arrow Keys
-        if ((event.target as HTMLElement).tagName !== "INPUT" && editable) {
-          if (event.type === "keyup") {
-            dispatch(setPressedKey(null));
-            dispatch(setPressedEventKey(null));
-          }
+        if (editable) {
           if (
             ArrowKeys.includes(event.key) &&
             currentLayer &&

@@ -690,3 +690,8 @@ export const AllowedLayerProps = {
     "layer_data.finishBase",
   ],
 };
+
+export const TemplateVariables = {
+  PROFILE_NAME: "%NAME%",
+  PROFILE_AVATAR: "%AVATAR%",
+};

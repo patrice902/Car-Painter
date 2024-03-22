@@ -379,6 +379,10 @@ export const useDrawHelper = (
 
   useEffect(() => {
     // Show/hide Guide on pressing arrow keys
+    if (!editable) {
+      return;
+    }
+
     if (
       currentLayer &&
       ![LayerTypes.CAR, LayerTypes.BASE].includes(currentLayer.layer_type)

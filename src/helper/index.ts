@@ -4,7 +4,7 @@ import { Stage } from "konva/types/Stage";
 import _ from "lodash";
 import { MutableRefObject, RefObject } from "react";
 import config from "src/config";
-import { AllowedLayerProps } from "src/constant";
+import { AllowedLayerProps, TemplateVariables } from "src/constant";
 import {
   BoundBox,
   BuilderLayerJSONParitalAll,
@@ -830,3 +830,14 @@ export const getAvatarURL = (userId: string | number) =>
     "scripts/image_driver.php",
     `?driver=${userId}`
   );
+
+export const replaceByTemplateVariables = (
+  str: string,
+  user?: UserWithoutPassword | null
+) => {
+  const replacedStr = str
+    .replaceAll(TemplateVariables.PROFILE_NAME, user?.drivername ?? "")
+    .replaceAll(TemplateVariables.PROFILE_AVATAR, getAvatarURL(user?.id ?? ""));
+
+  return replacedStr;
+};

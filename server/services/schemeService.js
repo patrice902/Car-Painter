@@ -8,7 +8,7 @@ const {
   getAvatarURL,
 } = require("../utils/common");
 const LayerService = require("./layerService");
-const { LayerTypes } = require("../constants");
+const { LayerTypes, TemplateVariables } = require("../constants");
 const logger = require("../config/winston");
 const LogoService = require("./logoService");
 const FontService = require("./fontService");
@@ -200,8 +200,8 @@ class SchemeService {
                   scheme_id: scheme.id,
                   upload_id: 0,
                   layer_data: JSON.stringify({
-                    name: removeNumbersFromString(user.drivername),
-                    text: removeNumbersFromString(user.drivername),
+                    name: "Driver Name",
+                    text: TemplateVariables.PROFILE_NAME,
                     font: parseInt(layer.font),
                     size: parseInt(layer.size),
                     color: layer.color || guide_data.defaultColor,
@@ -233,7 +233,7 @@ class SchemeService {
                 scheme_id: scheme.id,
                 upload_id: 0,
                 layer_data: JSON.stringify({
-                  img: getAvatarURL(user.id),
+                  img: TemplateVariables.PROFILE_AVATAR,
                   isFullUrl: true,
                   name: layer.name ? layer.name : "Profile Image",
                   rotation: layer.rotation ? parseFloat(layer.rotation) : 0,
@@ -300,6 +300,7 @@ class SchemeService {
       date_created: Math.round(new Date().getTime() / 1000),
       date_modified: Math.round(new Date().getTime() / 1000),
       public: false,
+      thumbnail_updated: 0,
     }).save();
     let schemeData = scheme.toJSON();
     for (let layer of originalScheme.layers) {

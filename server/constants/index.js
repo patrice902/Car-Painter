@@ -19,8 +19,14 @@ const ConfigCatFlags = {
   DISABLE_APP_LOGIN: "disableAppLogin",
 };
 
+const TemplateVariables = {
+  PROFILE_NAME: "%NAME%",
+  PROFILE_AVATAR: "%AVATAR%",
+};
+
 module.exports = {
   StorageType,
   LayerTypes,
   ConfigCatFlags,
+  TemplateVariables,
 };

@@ -9,6 +9,7 @@ import {
   getRelativeShadowOffset,
   numberGuard,
   positiveNumGuard,
+  replaceByTemplateVariables,
 } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
@@ -61,6 +62,7 @@ export const TextLayer = React.memo(
       (state: RootState) => state.fontReducer.loadedList
     );
     const fonts = useSelector((state: RootState) => state.fontReducer.list);
+    const owner = useSelector((state: RootState) => state.schemeReducer.owner);
 
     const shadowOffset = useMemo(
       () =>
@@ -97,7 +99,7 @@ export const TextLayer = React.memo(
         editable={editable}
         stageRef={stageRef}
         frameSize={frameSize}
-        text={decodeHtml(textLayerData.text)}
+        text={decodeHtml(replaceByTemplateVariables(textLayerData.text, owner))}
         fontFamily={enhanceFontFamily(font?.font_name)}
         fontFile={
           font?.font_file
