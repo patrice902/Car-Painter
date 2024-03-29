@@ -59,10 +59,10 @@ export const FavoriteProjects = React.memo(
               !item.scheme.carMake.deleted
           ),
           sortBy === 1
-            ? ["name"]
+            ? ["scheme.name"]
             : sortBy === 2
-            ? ["carMake.name"]
-            : ["date_modified"],
+            ? ["scheme.carMake.name"]
+            : ["scheme.date_modified"],
           sortBy === 1 ? ["asc"] : sortBy === 2 ? ["asc"] : ["desc"]
         ),
       [favoriteSchemeList, search, selectedVehicle, sortBy, hideLegacy]
