@@ -1,3 +1,4 @@
+import { Box, Typography } from "@material-ui/core";
 import { Form, FormikProps } from "formik";
 import Konva from "konva";
 import React, { RefObject, useCallback } from "react";
@@ -8,6 +9,7 @@ import {
 } from "src/redux/reducers/layerReducer";
 import {
   BuilderLayerJSONParitalAll,
+  MovableObjLayerData,
   PartialAllLayerData,
 } from "src/types/common";
 import { BuilderFont } from "src/types/model";
@@ -22,6 +24,7 @@ import {
   GeneralProperty,
   NameProperty,
   PositionProperty,
+  PublicSharingProperty,
   RotationProperty,
   ShadowProperty,
   SizeProperty,
@@ -39,6 +42,19 @@ type InnerFormProps = {
   onClone: (mirrorRotation?: boolean) => void;
   onDelete: () => void;
 } & FormikProps<BuilderLayerJSONParitalAll>;
+
+const EditLockAlert = (
+  <Box
+    bgcolor="#666"
+    p="10px 16px"
+    borderRadius={10}
+    border="2px solid navajowhite"
+    position="relative"
+    mb="10px"
+  >
+    <Typography>This layer is locked by owner and cannot modify.</Typography>
+  </Box>
+);
 
 export const InnerForm = React.memo(
   ({
@@ -144,15 +160,23 @@ export const InnerForm = React.memo(
       <Form onSubmit={formProps.handleSubmit} noValidate>
         <NameProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           user={user}
           layerType={currentLayer?.layer_type}
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
+        {(currentLayer?.layer_data as MovableObjLayerData).editLock &&
+          EditLockAlert}
         <GeneralProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
           onLayerUpdate={handleLayerUpdate}
@@ -160,32 +184,47 @@ export const InnerForm = React.memo(
         />
         <FontProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           fontList={fontList}
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <ColorProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <BackgroundProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <StrokeProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <SizeProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           currentLayer={currentLayer}
           pressedKey={pressedKey}
           onLayerDataUpdate={handleLayerDataUpdate}
@@ -193,13 +232,19 @@ export const InnerForm = React.memo(
         />
         <PositionProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <RotationProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           stageRef={stageRef}
           currentLayer={currentLayer}
           onLayerDataUpdate={handleLayerDataUpdate}
@@ -207,17 +252,32 @@ export const InnerForm = React.memo(
         />
         <SkewProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <ShadowProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
         <CornerProperty
+          {...formProps}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
+          onLayerDataUpdate={handleLayerDataUpdate}
+          onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
+        />
+        <PublicSharingProperty
           {...formProps}
           editable={editable}
           onLayerDataUpdate={handleLayerDataUpdate}
@@ -225,7 +285,10 @@ export const InnerForm = React.memo(
         />
         <ExtraProperty
           {...formProps}
-          editable={editable}
+          editable={
+            editable &&
+            !(currentLayer?.layer_data as MovableObjLayerData).editLock
+          }
           onClone={onClone}
           onDelete={onDelete}
         />

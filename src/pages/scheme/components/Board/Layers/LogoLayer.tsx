@@ -131,7 +131,11 @@ export const LogoLayer = React.memo(
         guideData={guideData}
         onSelect={() => onSelect(layer)}
         onDblClick={onDblClick}
-        listening={!layer.layer_locked && mouseMode === MouseModes.DEFAULT}
+        listening={
+          !layer.layer_locked &&
+          mouseMode === MouseModes.DEFAULT &&
+          !layer.layer_data.editLock
+        }
         onChange={(values, pushingToHistory) =>
           onChange(layer, values, pushingToHistory)
         }

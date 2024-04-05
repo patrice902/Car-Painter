@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactSortable } from "react-sortablejs";
 import { LightTooltip } from "src/components/common";
-import { decodeHtml, focusBoardQuickly } from "src/helper";
+import { decodeHtml, focusBoardQuickly, sortLayers } from "src/helper";
 import { RootState } from "src/redux";
 import { setMouseMode } from "src/redux/reducers/boardReducer";
 import {
@@ -12,6 +12,7 @@ import {
   setCurrent as setCurrentLayer,
   updateLayer,
 } from "src/redux/reducers/layerReducer";
+import { MovableObjLayerData } from "src/types/common";
 import { LayerTypes, MouseModes } from "src/types/enum";
 import { BuilderLayerJSON } from "src/types/query";
 
@@ -56,10 +57,14 @@ export const PartGroup = ({
     (state: RootState) => state.layerReducer.current
   );
   const user = useSelector((state: RootState) => state.authReducer.user);
+  const owner = useSelector((state: RootState) => state.schemeReducer.owner);
+  const currentScheme = useSelector(
+    (state: RootState) => state.schemeReducer.current
+  );
 
   const sortedList = useMemo(
-    () => _.orderBy(layerList, ["layer_order"], ["asc"]),
-    [layerList]
+    () => sortLayers(layerList, owner?.id, false, currentScheme?.merge_layers),
+    [currentScheme, layerList, owner]
   );
 
   // useEffect(() => {
@@ -184,7 +189,13 @@ export const PartGroup = ({
                   onDoubleClick={onDoubleClickItem}
                   onHover={hoverLayer}
                   disableLock={Boolean(disableLock)}
-                  disabled={Boolean(disabled)}
+                  disabled={Boolean(
+                    disabled ||
+                      (item.layer_data as MovableObjLayerData)?.editLock
+                  )}
+                  notAllowed={
+                    (item.layer_data as MovableObjLayerData)?.editLock
+                  }
                 />
               ))}
             </ReactSortable>

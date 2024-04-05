@@ -20,6 +20,7 @@ type PartItemProps = {
   selected: boolean;
   disabled: boolean;
   disableLock: boolean;
+  notAllowed?: boolean;
   onSelect: (item: BuilderLayerJSON) => void;
   onDoubleClick?: () => void;
   hovered: boolean;
@@ -36,6 +37,7 @@ export const PartItem = React.memo(
     selected,
     disabled,
     disableLock,
+    notAllowed,
     onSelect,
     onDoubleClick,
     hovered,
@@ -43,6 +45,12 @@ export const PartItem = React.memo(
     toggleField,
   }: PartItemProps) => {
     const wrapperRef = useRef(null);
+
+    const showIcons = selected || hovered || layer_locked || !layer_visible;
+    const showLockIcon =
+      !disableLock && !disabled && (selected || hovered || layer_locked);
+    const showInvisibleIcon =
+      !disabled && (selected || hovered || !layer_visible);
 
     const handleToggleVisible = useCallback(
       (e) => {
@@ -84,7 +92,11 @@ export const PartItem = React.memo(
         onDoubleClick={onDoubleClick}
         onMouseEnter={() => onHover(item, true)}
         onMouseLeave={() => onHover(item, false)}
-        className={clsx(selected && "activeItem", hovered && "hoveredItem")}
+        className={clsx(
+          selected && "activeItem",
+          hovered && "hoveredItem",
+          notAllowed && "notAllowed"
+        )}
       >
         <Box
           display="flex"
@@ -100,11 +112,9 @@ export const PartItem = React.memo(
           >
             {decodeHtml(text)}
           </CustomTypography>
-          {selected || hovered || layer_locked || !layer_visible ? (
+          {showIcons ? (
             <Box display="flex" justifyContent="flex-end" alignItems="center">
-              {!disableLock &&
-              !disabled &&
-              (selected || hovered || layer_locked) ? (
+              {showLockIcon ? (
                 <Box mr={1}>
                   <SmallIconButton onClick={handleToggleLock} size="small">
                     {layer_locked ? <LockIcon /> : <LockOpenIcon />}
@@ -113,7 +123,7 @@ export const PartItem = React.memo(
               ) : (
                 <></>
               )}
-              {!disabled && (selected || hovered || !layer_visible) ? (
+              {showInvisibleIcon ? (
                 <SmallIconButton onClick={handleToggleVisible} size="small">
                   {layer_visible ? <VisibilityIcon /> : <VisibilityOffIcon />}
                 </SmallIconButton>

@@ -12,6 +12,9 @@ export const Wrapper = styled(Box)`
   &.hoveredItem {
     background: rgba(0, 0, 0, 0.2);
   }
+  &.notAllowed {
+    cursor: not-allowed;
+  }
 `;
 
 export const CustomTypography = styled(Typography)<{ active: string }>`

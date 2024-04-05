@@ -11,6 +11,7 @@ import {
   CarObjLayerData,
   FrameSize,
   LogoObjLayerData,
+  MovableObjLayerData,
   Position,
   ScrollPosition,
   ShapeObjLayerData,
@@ -841,3 +842,37 @@ export const replaceByTemplateVariables = (
 
   return replacedStr;
 };
+
+export const sortLayers = (
+  layers: BuilderLayerJSON[],
+  ownerId?: number,
+  isDesc?: boolean,
+  isMerged?: boolean
+) =>
+  _.orderBy(
+    layers,
+    [
+      (item) => {
+        const showOnTop = (item.layer_data as MovableObjLayerData)?.showOnTop;
+        if (showOnTop) {
+          if (
+            (item.layer_data as MovableObjLayerData)?.ownerForGallery &&
+            ownerId !== (item.layer_data as MovableObjLayerData).ownerForGallery
+          )
+            return -2;
+
+          return -1;
+        }
+
+        return 0;
+      },
+      (item) => {
+        if (isMerged) return 0;
+        if (item.layer_type === LayerTypes.OVERLAY) return 0;
+        if (item.layer_type === LayerTypes.SHAPE) return -1;
+        return -2;
+      },
+      "layer_order",
+    ],
+    isDesc ? ["desc", "desc", "desc"] : ["asc", "asc", "asc"]
+  );

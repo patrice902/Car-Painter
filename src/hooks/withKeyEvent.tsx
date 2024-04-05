@@ -325,6 +325,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             (key === "del" || key === "backspace") &&
             currentLayer &&
             currentLayer.layer_type !== LayerTypes.CAR &&
+            !(currentLayer.layer_data as MovableObjLayerData)?.editLock &&
             editable
           ) {
             handleDeleteLayer(currentLayer);
@@ -395,6 +396,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             event.key === "c" &&
             (event.ctrlKey || event.metaKey) &&
             currentLayer &&
+            !(currentLayer.layer_data as MovableObjLayerData)?.editLock &&
             editable
           ) {
             dispatch(setLayerClipboard(currentLayer));

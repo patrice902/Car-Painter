@@ -80,6 +80,9 @@ export interface MovableObjLayerData extends DefaultLayerData {
   shadowOffsetY: number;
   width?: number;
   height?: number;
+  editLock?: boolean;
+  showOnTop?: boolean;
+  ownerForGallery?: number;
 }
 
 export interface TextObjLayerData extends MovableObjLayerData {

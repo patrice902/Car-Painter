@@ -1,7 +1,10 @@
 import { Stage } from "konva/types/Stage";
 import _ from "lodash";
 import React, { RefObject, useMemo } from "react";
+import { useSelector } from "react-redux";
+import { sortLayers } from "src/helper";
 import { useLayer } from "src/hooks";
+import { RootState } from "src/redux";
 import {
   LogoObjLayerData,
   MovableObjLayerData,
@@ -18,6 +21,12 @@ import { OverlayLayer } from "./OverlayLayer";
 import { ShapeLayer } from "./ShapeLayer";
 import { TextLayer } from "./TextLayer";
 
+export enum AdditionalFilter {
+  ALL = "ALL",
+  INCLUDE_SHOW_ON_TOP_ONLY = "INCLUDE_SHOW_ON_TOP_ONLY",
+  EXCLUDE_SHOW_ON_TOP = "EXCLUDE_SHOW_ON_TOP",
+}
+
 type MovableLayersGroupProps = {
   stageRef: RefObject<Stage>;
   allowedLayerTypes: LayerTypes[];
@@ -25,6 +34,8 @@ type MovableLayersGroupProps = {
   virtual?: boolean;
   specMode?: boolean;
   drawingLayer?: BuilderLayerJSON<ShapeBaseObjLayerData> | null;
+  additionalFilterOption?: AdditionalFilter;
+  isMerged?: boolean;
   onSetTransformingLayer?: (
     layer: BuilderLayerJSON<MovableObjLayerData> | null
   ) => void;
@@ -36,20 +47,62 @@ type MovableLayersGroupProps = {
   onLayerDragEnd?: () => void;
 };
 
+const filterByAdditional = (
+  item: BuilderLayerJSON<MovableObjLayerData>,
+  option?: AdditionalFilter
+) => {
+  if (option === AdditionalFilter.INCLUDE_SHOW_ON_TOP_ONLY) {
+    if (item.layer_data?.showOnTop) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  if (option === AdditionalFilter.EXCLUDE_SHOW_ON_TOP) {
+    if (item.layer_data?.showOnTop) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  return true;
+};
+
 export const MovableLayersGroup = React.memo(
-  ({ drawingLayer, allowedLayerTypes, ...props }: MovableLayersGroupProps) => {
+  ({
+    drawingLayer,
+    allowedLayerTypes,
+    additionalFilterOption,
+    isMerged,
+    ...props
+  }: MovableLayersGroupProps) => {
     const { layerList, cloningLayer, cloningQueue } = useLayer();
+    const owner = useSelector((state: RootState) => state.schemeReducer.owner);
 
     const filteredLayers = useMemo(
       () =>
-        _.orderBy(
-          layerList.filter((item) =>
-            allowedLayerTypes.includes(item.layer_type)
+        sortLayers(
+          layerList.filter(
+            (item) =>
+              allowedLayerTypes.includes(item.layer_type) &&
+              filterByAdditional(
+                item as BuilderLayerJSON<MovableObjLayerData>,
+                additionalFilterOption
+              )
           ),
-          ["layer_order"],
-          ["desc"]
+          owner?.id,
+          true,
+          isMerged
         ),
-      [layerList, allowedLayerTypes]
+      [
+        layerList,
+        owner?.id,
+        isMerged,
+        allowedLayerTypes,
+        additionalFilterOption,
+      ]
     );
 
     const resultLayers = useMemo(() => {

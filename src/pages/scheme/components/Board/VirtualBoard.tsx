@@ -10,6 +10,7 @@ import { LayerTypes, ViewModes } from "src/types/enum";
 import { BoardWrapper } from "./Board.style";
 import { PaintingGuideCarMask, SpecPaintingGuideCarMask } from "./Guides";
 import { BasePaints, CarParts, MovableLayersGroup } from "./Layers";
+import { AdditionalFilter } from "./Layers/MovableLayersGroup";
 
 type BoardProps = {
   stageRef: RefObject<Konva.Stage>;
@@ -104,11 +105,15 @@ export const VirtualBoard = React.memo(
                             stageRef={stageRef}
                             specMode={specMode}
                             virtual
+                            isMerged
                           />
                         ) : (
                           <>
                             <MovableLayersGroup
                               allowedLayerTypes={[LayerTypes.OVERLAY]}
+                              additionalFilterOption={
+                                AdditionalFilter.EXCLUDE_SHOW_ON_TOP
+                              }
                               stageRef={stageRef}
                               specMode={specMode}
                               virtual
@@ -116,6 +121,9 @@ export const VirtualBoard = React.memo(
 
                             <MovableLayersGroup
                               allowedLayerTypes={[LayerTypes.SHAPE]}
+                              additionalFilterOption={
+                                AdditionalFilter.EXCLUDE_SHOW_ON_TOP
+                              }
                               stageRef={stageRef}
                               specMode={specMode}
                               virtual
@@ -127,6 +135,24 @@ export const VirtualBoard = React.memo(
                                 LayerTypes.UPLOAD,
                                 LayerTypes.TEXT,
                               ]}
+                              additionalFilterOption={
+                                AdditionalFilter.EXCLUDE_SHOW_ON_TOP
+                              }
+                              stageRef={stageRef}
+                              specMode={specMode}
+                              virtual
+                            />
+                            <MovableLayersGroup
+                              allowedLayerTypes={[
+                                LayerTypes.OVERLAY,
+                                LayerTypes.LOGO,
+                                LayerTypes.UPLOAD,
+                                LayerTypes.SHAPE,
+                                LayerTypes.TEXT,
+                              ]}
+                              additionalFilterOption={
+                                AdditionalFilter.INCLUDE_SHOW_ON_TOP_ONLY
+                              }
                               stageRef={stageRef}
                               specMode={specMode}
                               virtual
