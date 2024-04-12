@@ -14,6 +14,7 @@ import {
 import { AvatarGroup } from "@material-ui/lab";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import ShowroomNoCar from "src/assets/showroom_no_car.svg";
 import { ImageWithLoad, LightTooltip } from "src/components/common";
 import { ConfirmDialog } from "src/components/dialogs";
@@ -180,16 +181,21 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
     handleActionMenuClose();
   }, [accepted, scheme, shared]);
 
-  const handleOpenScheme = useCallback(() => {
-    const scrollPosition = document.getElementById("scheme-list-content")
-      ?.scrollTop;
+  const handleOpenScheme = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
 
-    dispatch(setPreviousPath(window.location.pathname));
-    if (scrollPosition)
-      setScrollPostion(window.location.pathname, scrollPosition);
-    onOpenScheme?.(scheme.id, sharedID);
-    return false;
-  }, [dispatch, onOpenScheme, scheme, sharedID]);
+      const scrollPosition = document.getElementById("scheme-list-content")
+        ?.scrollTop;
+
+      dispatch(setPreviousPath(window.location.pathname));
+      if (scrollPosition)
+        setScrollPostion(window.location.pathname, scrollPosition);
+      onOpenScheme?.(scheme.id, sharedID);
+      return false;
+    },
+    [dispatch, onOpenScheme, scheme, sharedID]
+  );
 
   const schemeThumbnailURL = useCallback(
     (id) => `${config.assetsURL}/scheme_thumbnails/${id}.jpg`,
@@ -211,7 +217,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <a href={`/project/${scheme.id}`} onClick={handleOpenScheme}>
+      <Link to={`/project/${scheme.id}`} onClick={handleOpenScheme}>
         <ImageWithLoad
           src={schemeThumbnailURL(scheme.id) + "?date=" + scheme.date_modified}
           altSrc={legacySchemeThumbnailURL(scheme.id)}
@@ -220,7 +226,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
           alt={scheme.name}
           cursorPointer
         />
-      </a>
+      </Link>
       <Box display="flex" justifyContent="space-between">
         <Box
           display="flex"

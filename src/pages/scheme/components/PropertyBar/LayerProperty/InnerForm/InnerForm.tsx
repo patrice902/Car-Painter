@@ -1,8 +1,9 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, Button, Typography } from "@material-ui/core";
 import { Form, FormikProps } from "formik";
 import Konva from "konva";
 import React, { RefObject, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "src/redux";
 import {
   mergeListItemOnly as mergeLayerListItemOnly,
   updateLayer,
@@ -43,18 +44,48 @@ type InnerFormProps = {
   onDelete: () => void;
 } & FormikProps<BuilderLayerJSONParitalAll>;
 
-const EditLockAlert = (
-  <Box
-    bgcolor="#666"
-    p="10px 16px"
-    borderRadius={10}
-    border="2px solid navajowhite"
-    position="relative"
-    mb="10px"
-  >
-    <Typography>This layer is locked by owner and cannot modify.</Typography>
-  </Box>
-);
+const EditLockAlert = ({
+  editable,
+  layerData,
+  onUpdate,
+}: {
+  editable: boolean;
+  layerData?: MovableObjLayerData;
+  onUpdate: (valueMap: PartialAllLayerData) => void;
+}) => {
+  const owner = useSelector((state: RootState) => state.schemeReducer.owner);
+  const isOriginOwner =
+    editable &&
+    layerData?.ownerForGallery &&
+    owner?.id === layerData.ownerForGallery;
+
+  const handleUnlock = useCallback(() => {
+    onUpdate({ editLock: false });
+  }, [onUpdate]);
+
+  return (
+    <Box
+      bgcolor="#666"
+      p="10px 16px"
+      borderRadius={10}
+      border="2px solid navajowhite"
+      position="relative"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      gridGap="8px"
+      mb="10px"
+    >
+      <Typography>Locked by project owner</Typography>
+      {isOriginOwner && (
+        <Button variant="outlined" color="secondary" onClick={handleUnlock}>
+          Unlock
+        </Button>
+      )}
+    </Box>
+  );
+};
 
 export const InnerForm = React.memo(
   ({
@@ -169,8 +200,13 @@ export const InnerForm = React.memo(
           onLayerDataUpdate={handleLayerDataUpdate}
           onLayerDataUpdateOnly={handleLayerDataUpdateOnly}
         />
-        {(currentLayer?.layer_data as MovableObjLayerData).editLock &&
-          EditLockAlert}
+        {(currentLayer?.layer_data as MovableObjLayerData).editLock && (
+          <EditLockAlert
+            editable={editable}
+            layerData={currentLayer?.layer_data as MovableObjLayerData}
+            onUpdate={handleLayerDataUpdate}
+          />
+        )}
         <GeneralProperty
           {...formProps}
           editable={

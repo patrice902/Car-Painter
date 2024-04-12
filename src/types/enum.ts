@@ -116,4 +116,5 @@ export enum ConfigCatFlags {
   HELP_LINK_RACING_NUMBERS = "helpLinkRacingNumbers",
   HELP_LINK_SPEC_TGA = "helpLinkSpecTga",
   ENABLE_GALLERY = "enableGallery",
+  PUBLIC_SHARING = "publicSharing",
 }

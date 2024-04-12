@@ -826,21 +826,36 @@ export const getLayerTypesWithAttr = (attr: string) =>
   );
 
 export const getAvatarURL = (userId: string | number) =>
-  urlJoin(
-    config.parentAppURL ?? "https://www.tradingpaints.com",
-    "scripts/image_driver.php",
-    `?driver=${userId}`
-  );
+  config.imageDriverURL?.length
+    ? urlJoin(config.imageDriverURL, `?driver=${userId}`)
+    : urlJoin(
+        config.parentAppURL ?? "https://www.tradingpaints.com",
+        "scripts/image_driver.php",
+        `?driver=${userId}`
+      );
 
 export const replaceByTemplateVariables = (
   str: string,
+  layerType?: LayerTypes,
   user?: UserWithoutPassword | null
 ) => {
-  const replacedStr = str
-    .replaceAll(TemplateVariables.PROFILE_NAME, user?.drivername ?? "")
-    .replaceAll(TemplateVariables.PROFILE_AVATAR, getAvatarURL(user?.id ?? ""));
+  if (layerType === LayerTypes.TEXT) {
+    return str
+      .replaceAll(TemplateVariables.PROFILE_NAME, user?.drivername ?? "")
+      .replaceAll(TemplateVariables.FACEBOOK_NAME, user?.facebook_name ?? "")
+      .replaceAll(TemplateVariables.TWITTER_NAME, user?.twitter_name ?? "")
+      .replaceAll(TemplateVariables.INSTAGRAM_NAME, user?.instagram_name ?? "")
+      .replaceAll(TemplateVariables.TWITCH_NAME, user?.twitch_name ?? "")
+      .replaceAll(TemplateVariables.YOUTUBE_NAME, user?.youtube_name ?? "")
+      .replaceAll(TemplateVariables.WEBSITE_URL, user?.website_url ?? "")
+      .replaceAll(TemplateVariables.EMAIL, user?.email ?? "");
+  }
 
-  return replacedStr;
+  // It's image layer types then.
+  return str.replaceAll(
+    TemplateVariables.PROFILE_AVATAR,
+    getAvatarURL(user?.id ?? "")
+  );
 };
 
 export const sortLayers = (

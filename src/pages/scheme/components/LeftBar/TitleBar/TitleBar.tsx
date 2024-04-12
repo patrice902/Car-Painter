@@ -65,7 +65,11 @@ export const TitleBar = React.memo(({ editable, onBack }: TitleBarProps) => {
       <Box display="flex" alignItems="center" flexGrow={1}>
         <Box mr={1}>
           <LightTooltip title="Back" arrow>
-            <IconButton size="medium" disabled={saving} onClick={onBack}>
+            <IconButton
+              size="medium"
+              disabled={saving}
+              onClick={() => onBack()}
+            >
               <CustomIcon icon={faChevronLeft} size="xs" />
             </IconButton>
           </LightTooltip>

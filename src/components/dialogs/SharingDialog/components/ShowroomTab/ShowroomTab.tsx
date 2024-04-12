@@ -49,6 +49,10 @@ export const ShowroomTab = React.memo(
       ConfigCatFlags.HELP_LINK_SPEC_TGA,
       ""
     );
+    const { value: enablePublicSharing } = useFeatureFlag(
+      ConfigCatFlags.PUBLIC_SHARING,
+      false
+    );
 
     const showroomURL = useMemo(
       () => `${config.parentAppURL}/showroom/upload/${schemeID}`,
@@ -95,7 +99,7 @@ export const ShowroomTab = React.memo(
             Submit this project to the Showroom in its current state so that
             other people can race with this paint.
           </Typography>
-          {isOwner ? (
+          {isOwner && enablePublicSharing ? (
             <Box my={2}>
               <FormControlLabel
                 control={

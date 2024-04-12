@@ -104,7 +104,7 @@ export const URLImage = React.memo(
     const { image, applyCaching } = useKonvaImageInit({
       imageshapeRef: shapeRef,
       id,
-      src: replaceByTemplateVariables(src, owner),
+      src: replaceByTemplateVariables(src, layer?.layer_type, owner),
       stroke,
       strokeWidth,
       filterColor,

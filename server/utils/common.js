@@ -47,7 +47,9 @@ function removeNumbersFromString(text) {
 }
 
 function getAvatarURL(userId) {
-  return `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
+  return config.imageDriverURL.length
+    ? `${config.imageDriverURL}?driver=${userId}`
+    : `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
 }
 
 module.exports = {

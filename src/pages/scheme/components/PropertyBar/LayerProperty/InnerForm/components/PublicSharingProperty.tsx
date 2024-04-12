@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import { FormikProps } from "formik";
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
@@ -17,6 +18,7 @@ import {
   BuilderLayerJSONParitalAll,
   PartialAllLayerData,
 } from "src/types/common";
+import { ConfigCatFlags } from "src/types/enum";
 import styled from "styled-components/macro";
 
 import { FormCheckbox } from "../../../components";
@@ -36,12 +38,17 @@ export const PublicSharingProperty = React.memo(
   }: PublicSharingPropertyProps) => {
     const layerDataProperties = ["editLock", "showOnTop"];
     const [expanded, setExpanded] = useState(true);
+    const { value: enablePublicSharing } = useFeatureFlag(
+      ConfigCatFlags.PUBLIC_SHARING,
+      false
+    );
     const AllowedLayerTypes = useMemo(() => getAllowedLayerTypes(values), [
       values,
     ]);
     const owner = useSelector((state: RootState) => state.schemeReducer.owner);
 
     if (
+      !enablePublicSharing ||
       !AllowedLayerTypes ||
       layerDataProperties.every(
         (value) => !AllowedLayerTypes.includes("layer_data." + value)

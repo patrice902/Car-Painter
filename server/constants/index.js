@@ -22,6 +22,13 @@ const ConfigCatFlags = {
 const TemplateVariables = {
   PROFILE_NAME: "%NAME%",
   PROFILE_AVATAR: "%AVATAR%",
+  TWITTER_NAME: "%TWITTER_NAME%",
+  FACEBOOK_NAME: "%FACEBOOK_NAME%",
+  INSTAGRAM_NAME: "%INSTAGRAM_NAME%",
+  TWITCH_NAME: "%TWITCH_NAME%",
+  YOUTUBE_NAME: "%YOUTUBE_NAME%",
+  WEBSITE_URL: "%WEBSITE_URL%",
+  EMAIL: "%EMAIL%",
 };
 
 module.exports = {

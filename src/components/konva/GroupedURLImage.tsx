@@ -125,7 +125,7 @@ export const GroupedURLImage = React.memo(
     const { image, applyCaching } = useKonvaImageInit({
       imageshapeRef,
       id,
-      src: replaceByTemplateVariables(src, owner),
+      src: replaceByTemplateVariables(src, layer.layer_type, owner),
       stroke,
       strokeWidth,
       filterColor,

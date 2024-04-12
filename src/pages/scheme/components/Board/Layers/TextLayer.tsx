@@ -99,7 +99,13 @@ export const TextLayer = React.memo(
         editable={editable}
         stageRef={stageRef}
         frameSize={frameSize}
-        text={decodeHtml(replaceByTemplateVariables(textLayerData.text, owner))}
+        text={decodeHtml(
+          replaceByTemplateVariables(
+            textLayerData.text,
+            layer.layer_type,
+            owner
+          )
+        )}
         fontFamily={enhanceFontFamily(font?.font_name)}
         fontFile={
           font?.font_file

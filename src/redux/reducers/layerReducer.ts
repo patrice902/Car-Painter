@@ -3,7 +3,6 @@ import _ from "lodash";
 import config from "src/config";
 import { AllowedLayerProps, DefaultLayer } from "src/constant";
 import {
-  clearScrollPosition,
   decodeHtml,
   fitPoints,
   getAllowedLayerTypes,
@@ -418,8 +417,6 @@ export const createLayer = (
 
   dispatch(shiftSimilarLayerOrders(layer.layer_type));
 
-  clearScrollPosition();
-
   dispatch(insertToList(layer));
   if (layer.layer_type !== LayerTypes.BASE) {
     dispatch(setCurrent(layer));
@@ -457,8 +454,6 @@ export const createLayerList = (
   });
 
   dispatch(shiftSimilarLayerOrders(layers[0].layer_type, layers.length));
-
-  clearScrollPosition();
 
   dispatch(concatList(layers));
   if (pushingToHistory) {
@@ -963,7 +958,6 @@ export const updateLayer = (
         })
       );
     }
-    clearScrollPosition();
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }

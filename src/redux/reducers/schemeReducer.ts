@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { DefaultSettingsFormValues } from "src/components/dialogs/DefaultSettingsDialog/DefaultSettingsDialog.model";
 import {
-  clearScrollPosition,
   mergeTwoScheme,
   parseScheme,
   stringifySchemeGuideData,
@@ -446,7 +445,6 @@ export const updateScheme = (
           next_data: parseScheme(updatedScheme),
         })
       );
-    clearScrollPosition();
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }
