@@ -30,6 +30,7 @@ import {
 } from "src/redux/reducers/boardReducer";
 import { setCurrent as setCurrentLayer } from "src/redux/reducers/layerReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
+import { MovableObjLayerData } from "src/types/common";
 import { DialogTypes, LayerTypes, MouseModes } from "src/types/enum";
 
 import { drawModes } from "../MobileDrawerBar/MobileDrawerBar";
@@ -83,6 +84,14 @@ export const LayersBar = React.memo(
     const pickerValue = useMemo(
       () => (colorValidatorWithoutAlpha(colorInput) ? colorInput : baseColor),
       [colorInput, baseColor]
+    );
+
+    const hasWatermark = useMemo(
+      () =>
+        layerList.some(
+          (item) => (item.layer_data as MovableObjLayerData).showOnTop
+        ),
+      [layerList]
     );
 
     useEffect(() => {
@@ -212,13 +221,27 @@ export const LayersBar = React.memo(
           />
         ) : (
           <>
+            {hasWatermark && (
+              <PartGroup
+                title="Watermark"
+                layerList={layerList.filter(
+                  (item) => (item.layer_data as MovableObjLayerData).showOnTop
+                )}
+                disabled={!editable}
+                hoveredLayerJSON={hoveredLayerJSON}
+                onChangeHoverJSONItem={onChangeHoverJSONItem}
+                onDoubleClickItem={handleDoubleClickItem}
+              />
+            )}
+
             <PartGroup
               title="Logos & Text"
               layerList={layerList.filter(
                 (item) =>
-                  item.layer_type === LayerTypes.LOGO ||
-                  item.layer_type === LayerTypes.TEXT ||
-                  item.layer_type === LayerTypes.UPLOAD
+                  (item.layer_type === LayerTypes.LOGO ||
+                    item.layer_type === LayerTypes.TEXT ||
+                    item.layer_type === LayerTypes.UPLOAD) &&
+                  !(item.layer_data as MovableObjLayerData).showOnTop
               )}
               disabled={!editable}
               hoveredLayerJSON={hoveredLayerJSON}
@@ -256,7 +279,9 @@ export const LayersBar = React.memo(
             <PartGroup
               title="Shapes"
               layerList={layerList.filter(
-                (item) => item.layer_type === LayerTypes.SHAPE
+                (item) =>
+                  item.layer_type === LayerTypes.SHAPE &&
+                  !(item.layer_data as MovableObjLayerData).showOnTop
               )}
               disabled={!editable}
               hoveredLayerJSON={hoveredLayerJSON}
@@ -276,7 +301,9 @@ export const LayersBar = React.memo(
             <PartGroup
               title="Graphics"
               layerList={layerList.filter(
-                (item) => item.layer_type === LayerTypes.OVERLAY
+                (item) =>
+                  item.layer_type === LayerTypes.OVERLAY &&
+                  !(item.layer_data as MovableObjLayerData).showOnTop
               )}
               disabled={!editable}
               hoveredLayerJSON={hoveredLayerJSON}

@@ -118,6 +118,7 @@ export const MyProjects = React.memo(
                       isFavorite={!!favroiteScheme}
                       scheme={scheme}
                       favoriteID={favroiteScheme?.id}
+                      markAsPublic
                       onDelete={onDeleteProject}
                       onOpenScheme={openScheme}
                       onCloneProject={onCloneProject}

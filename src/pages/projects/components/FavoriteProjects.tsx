@@ -19,6 +19,8 @@ type FavoriteProjectsProps = {
   search: string;
   selectedVehicle?: CarMake | null;
   hideLegacy: boolean;
+  onDeleteProject: (schemeID: number) => void;
+  onCloneProject: (schemeID: number) => void;
   onRemoveFavorite: (favoriteID: number, callback?: () => void) => void;
   onAddFavorite: (
     userID: number,
@@ -35,6 +37,8 @@ export const FavoriteProjects = React.memo(
     search,
     selectedVehicle,
     hideLegacy,
+    onCloneProject,
+    onDeleteProject,
     onRemoveFavorite,
     onAddFavorite,
   }: FavoriteProjectsProps) => {
@@ -91,31 +95,41 @@ export const FavoriteProjects = React.memo(
             scrollableTarget="scheme-list-content"
           >
             <Grid container spacing={4}>
-              {filteredSchemeList.slice(0, limit).map((favorite) => (
-                <Grid
-                  key={favorite.id}
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                  xl={3}
-                >
-                  <ProjectItem
-                    user={user}
-                    scheme={
-                      parseScheme(
-                        favorite.scheme
-                      ) as BuilderSchemeJSONForGetListByUserId
-                    }
-                    isFavorite={true}
-                    favoriteID={favorite.id}
-                    onRemoveFavorite={onRemoveFavorite}
-                    onAddFavorite={onAddFavorite}
-                    onOpenScheme={openScheme}
-                  />
-                </Grid>
-              ))}
+              {filteredSchemeList.slice(0, limit).map((favorite) => {
+                const isOwner = favorite.scheme.user_id === user.id;
+                const isPublic = favorite.scheme.public;
+
+                return (
+                  <Grid
+                    key={favorite.id}
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    xl={3}
+                  >
+                    <ProjectItem
+                      user={user}
+                      scheme={
+                        parseScheme(
+                          favorite.scheme
+                        ) as BuilderSchemeJSONForGetListByUserId
+                      }
+                      isFavorite
+                      markAsPublic
+                      favoriteID={favorite.id}
+                      onRemoveFavorite={onRemoveFavorite}
+                      onAddFavorite={onAddFavorite}
+                      onOpenScheme={openScheme}
+                      onCloneProject={
+                        isOwner || isPublic ? onCloneProject : undefined
+                      }
+                      onDelete={isOwner ? onDeleteProject : undefined}
+                    />
+                  </Grid>
+                );
+              })}
             </Grid>
           </InfiniteScroll>
         ) : (

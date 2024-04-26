@@ -116,6 +116,7 @@ export const GalleryProjects = React.memo(
                       isFavorite={!!favroiteScheme}
                       scheme={scheme}
                       favoriteID={favroiteScheme?.id}
+                      markAsOwned
                       onOpenScheme={openScheme}
                       onCloneProject={onCloneProject}
                       onRemoveFavorite={onRemoveFavorite}

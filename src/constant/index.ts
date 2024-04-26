@@ -45,6 +45,8 @@ export const DefaultLayer = {
   layer_order: 1,
   time_modified: 0,
   confirm: "",
+  on_do: 0,
+  file_missing: 0,
   layer_data: {
     name: "",
     text: "",
@@ -728,6 +730,8 @@ export const AllowedLayerProps = {
     "layer_data.color",
     "layer_data.finish",
     "layer_data.finishBase",
+    "layer_data.editLock",
+    "layer_data.ownerForGallery",
   ],
   [LayerTypes.CAR]: [
     "layer_visible",

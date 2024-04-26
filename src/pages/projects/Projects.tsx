@@ -388,6 +388,8 @@ export const Projects = React.memo(() => {
                     hideLegacy={hideLegacy}
                     onRemoveFavorite={handleRemoveFavorite}
                     onAddFavorite={handleCreateFavorite}
+                    onDeleteProject={handleDeleteProject}
+                    onCloneProject={handleCloneProject}
                   />
                 </TabPanel>
                 {enableGallery ? (

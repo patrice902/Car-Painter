@@ -51,6 +51,7 @@ import {
   CustomDrawingItem,
   CustomFontAwesomeIcon,
   MainItem,
+  MainItemWrapper,
   ShapeItem,
   ShapeWrapper,
   ToolWrapper,
@@ -363,28 +364,51 @@ export const DrawerBar = React.memo(
       >
         <ToolWrapper>
           {dialog_modes.map((item) => (
-            <MainItem
-              value={item.value}
-              disabled={!editable}
+            <LightTooltip
               key={item.value}
-              onClick={() => handleOpenDialog(item.value)}
+              title={
+                editable ? "" : "You don't have permission to edit this project"
+              }
+              arrow
             >
-              {item.icon}
-              <Typography style={{ fontSize: "10px" }}>{item.label}</Typography>
-            </MainItem>
+              <MainItemWrapper>
+                <MainItem
+                  value={item.value}
+                  disabled={!editable}
+                  onClick={() => handleOpenDialog(item.value)}
+                >
+                  {item.icon}
+                  <Typography style={{ fontSize: "10px" }}>
+                    {item.label}
+                  </Typography>
+                </MainItem>
+              </MainItemWrapper>
+            </LightTooltip>
           ))}
-          <ShapeItem
-            value={"Draw Shapes"}
-            disabled={!editable}
-            active={showShapes}
-            onClick={handleToggleDrawShapes}
+          <LightTooltip
+            title={
+              editable ? "" : "You don't have permission to edit this project"
+            }
+            arrow
           >
-            <CustomFontAwesomeIcon
-              icon={faDrawPolygon}
-              style={{ fontSize: "30px" }}
-            />
-            <Typography style={{ fontSize: "10px" }}>Draw Shapes</Typography>
-          </ShapeItem>
+            <MainItemWrapper>
+              <ShapeItem
+                value={"Draw Shapes"}
+                disabled={!editable}
+                active={showShapes}
+                onClick={handleToggleDrawShapes}
+              >
+                <CustomFontAwesomeIcon
+                  icon={faDrawPolygon}
+                  style={{ fontSize: "30px" }}
+                />
+                <Typography style={{ fontSize: "10px" }}>
+                  Draw Shapes
+                </Typography>
+              </ShapeItem>
+            </MainItemWrapper>
+          </LightTooltip>
+
           {showShapes ? (
             <ShapeWrapper>
               {drawModes.map((mode) => (

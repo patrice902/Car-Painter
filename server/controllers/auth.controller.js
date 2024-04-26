@@ -73,7 +73,7 @@ class AuthController {
         let user = await UserService.create({
           id,
           email,
-          password: md5(password),
+          password: md5(md5(password) + config.md5Salt),
         });
         user = user.toJSON();
         res.json({

@@ -59,6 +59,8 @@ type ProjectItemProps = {
   accepted?: boolean;
   sharedID?: number;
   favoriteID?: number;
+  markAsOwned?: boolean;
+  markAsPublic?: boolean;
 };
 
 export const ProjectItem = React.memo((props: ProjectItemProps) => {
@@ -76,6 +78,8 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
     accepted,
     sharedID,
     favoriteID,
+    markAsOwned,
+    markAsPublic,
   } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -265,6 +269,16 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
               {reduceString(decodeHtml(scheme.name), 50)}
             </Typography>
           </Box>
+          <Typography variant="body2" noWrap>
+            {decodeHtml(scheme.carMake.name)}
+          </Typography>
+          {markAsOwned && scheme.user.id === user.id ? (
+            <Typography color="secondary" variant="body2" noWrap>
+              You are the owner of this project
+            </Typography>
+          ) : (
+            <></>
+          )}
           {scheme.user && scheme.user.id !== user.id ? (
             <Typography variant="body2" noWrap>
               Owner: {decodeHtml(getUserName(scheme.user))}
@@ -272,9 +286,13 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
           ) : (
             <></>
           )}
-          <Typography variant="body2" noWrap>
-            {decodeHtml(scheme.carMake.name)}
-          </Typography>
+          {markAsPublic && scheme.user.id === user.id && scheme.public ? (
+            <Typography color="secondary" variant="body2" noWrap>
+              Shared in the public gallery
+            </Typography>
+          ) : (
+            <></>
+          )}
           <Typography variant="body2" noWrap>
             Edited {getDifferenceFromToday(scheme.date_modified)}
           </Typography>
