@@ -279,6 +279,16 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
           ) : (
             <></>
           )}
+          {scheme.original_scheme_id ? (
+            <Typography variant="body2" noWrap>
+              Based on {scheme.originalScheme?.name ?? ""}{" "}
+              {scheme.originalAuthor
+                ? "by " + decodeHtml(getUserName(scheme.originalAuthor))
+                : ""}
+            </Typography>
+          ) : (
+            <></>
+          )}
           {scheme.user && scheme.user.id !== user.id ? (
             <Typography variant="body2" noWrap>
               Owner: {decodeHtml(getUserName(scheme.user))}

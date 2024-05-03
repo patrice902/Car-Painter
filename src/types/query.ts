@@ -77,12 +77,16 @@ export type BuilderSchemeForGetListByUserId = BuilderScheme & {
   carMake: CarMake;
   user: User;
   sharedUsers: SharedSchemeWithUser[];
+  originalAuthor?: User;
+  originalScheme?: BuilderScheme;
 };
 
 export type BuilderSchemeJSONForGetListByUserId = BuilderSchemeJSON & {
   carMake: CarMake;
   user: User;
   sharedUsers: SharedSchemeWithUser[];
+  originalAuthor?: User;
+  originalScheme?: BuilderScheme;
 };
 
 export type BuilderSchemeForGetById = BuilderScheme & {

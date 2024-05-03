@@ -27,8 +27,31 @@ class SchemeController {
 
   static async getPublicList(req, res) {
     try {
-      const schemes = await SchemeService.getPublicList();
+      const { userID } = req.query;
+      let schemes;
+
+      if (userID) {
+        schemes = await SchemeService.getPublicListByUserID(userID);
+      } else {
+        schemes = await SchemeService.getPublicList();
+      }
+
       res.json(schemes);
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
+  static async checkIfPublic(req, res) {
+    try {
+      let scheme = await SchemeService.getById(req.params.id);
+      scheme = scheme.toJSON();
+      res.json({
+        is_public: scheme.public,
+      });
     } catch (err) {
       logger.log("error", err.stack);
       res.status(500).json({

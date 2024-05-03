@@ -18,7 +18,13 @@ class SchemeService {
     const schemes = await Scheme.where({
       avail: 1,
     }).fetchAll({
-      withRelated: ["carMake", "carMake.bases", "layers"],
+      withRelated: [
+        "carMake",
+        "carMake.bases",
+        "layers",
+        "originalAuthor",
+        "originalScheme",
+      ],
     });
     return schemes;
   }
@@ -28,7 +34,14 @@ class SchemeService {
       user_id,
       avail: 1,
     }).fetchAll({
-      withRelated: ["carMake", "user", "sharedUsers", "sharedUsers.user"],
+      withRelated: [
+        "carMake",
+        "user",
+        "sharedUsers",
+        "sharedUsers.user",
+        "originalAuthor",
+        "originalScheme",
+      ],
     });
     return schemes;
   }
@@ -39,6 +52,17 @@ class SchemeService {
       avail: 1,
     }).fetchAll({
       withRelated: ["carMake", "user", "sharedUsers", "sharedUsers.user"],
+    });
+    return schemes;
+  }
+
+  static async getPublicListByUserID(user_id) {
+    const schemes = await Scheme.where({
+      user_id,
+      public: 1,
+      avail: 1,
+    }).fetchAll({
+      withRelated: ["carMake", "user"],
     });
     return schemes;
   }
@@ -301,6 +325,8 @@ class SchemeService {
       date_modified: Math.round(new Date().getTime() / 1000),
       public: false,
       thumbnail_updated: 0,
+      original_scheme_id: id,
+      original_author_id: originalScheme.user_id,
     }).save();
     let schemeData = scheme.toJSON();
     for (let layer of originalScheme.layers) {

@@ -24,6 +24,12 @@ const Scheme = bookshelf.model("Scheme", {
   uploads() {
     return this.hasMany("Upload", "scheme_id");
   },
+  originalAuthor() {
+    return this.belongsTo("User", "original_author_id");
+  },
+  originalScheme() {
+    return this.belongsTo("Scheme", "original_scheme_id");
+  },
   dependents: ["layers"],
 });
 

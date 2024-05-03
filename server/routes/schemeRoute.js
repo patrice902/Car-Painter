@@ -12,6 +12,10 @@ router
 router.route("/public").get(isAuthenticated, SchemeController.getPublicList);
 
 router
+  .route("/check-public/:id")
+  .get(isAuthenticated, SchemeController.checkIfPublic);
+
+router
   .route("/byUpload/:id")
   .get(isAuthenticated, SchemeController.getListByUploadID);
 

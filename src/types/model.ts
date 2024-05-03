@@ -108,6 +108,8 @@ export type BuilderScheme = {
   last_font?: number;
   last_number?: number;
   public?: boolean;
+  original_scheme_id?: number;
+  original_author_id?: number;
 };
 
 export type BuilderOverlay = {
