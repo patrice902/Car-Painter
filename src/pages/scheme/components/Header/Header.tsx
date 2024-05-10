@@ -9,7 +9,10 @@ import {
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import { Settings as SettingsIcon } from "@material-ui/icons";
+import {
+  FileCopyOutlined as CloneIcon,
+  Settings as SettingsIcon,
+} from "@material-ui/icons";
 import { useFeatureFlag } from "configcat-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { FaDownload } from "react-icons/fa";
@@ -23,7 +26,7 @@ import { dataURItoBlob, focusBoardQuickly } from "src/helper";
 import { RootState } from "src/redux";
 import { getCarRaces, setCarRace } from "src/redux/reducers/carReducer";
 import { setMessage } from "src/redux/reducers/messageReducer";
-import { updateScheme } from "src/redux/reducers/schemeReducer";
+import { cloneScheme, updateScheme } from "src/redux/reducers/schemeReducer";
 import { ConfigCatFlags, DialogTypes } from "src/types/enum";
 
 import {
@@ -73,6 +76,9 @@ export const Header = React.memo(
     const currentCarMake = useSelector(
       (state: RootState) => state.carMakeReducer.current
     );
+    const currentUser = useSelector(
+      (state: RootState) => state.authReducer.user
+    );
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
     );
@@ -91,6 +97,21 @@ export const Header = React.memo(
       enableSubmitToShowroom,
       editable,
     ]);
+
+    const showCloneBtn = useMemo(
+      () => currentUser?.id !== currentScheme?.user_id && currentScheme?.public,
+      [currentUser, currentScheme]
+    );
+
+    const handleCloneProject = () => {
+      if (!currentScheme) return;
+
+      dispatch(
+        cloneScheme(currentScheme.id, (id) => {
+          window.open(`/project/${id}`, "_blank");
+        })
+      );
+    };
 
     const handleCloseDialog = useCallback(() => {
       setDialog(undefined);
@@ -457,6 +478,37 @@ export const Header = React.memo(
                     </IconButton>
                   )}
                 </>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
+
+          {showCloneBtn ? (
+            <>
+              {isAboveMobile ? (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  style={{
+                    marginRight: isAboveMobile ? "16px" : 0,
+                    height: "30px",
+                  }}
+                  startIcon={<CloneIcon />}
+                  onClick={handleCloneProject}
+                >
+                  <Typography variant="subtitle2">Clone</Typography>
+                </Button>
+              ) : (
+                <IconButton
+                  size="small"
+                  style={{
+                    marginRight: isAboveMobile ? "16px" : 0,
+                  }}
+                  onClick={handleCloneProject}
+                >
+                  <CloneIcon />
+                </IconButton>
               )}
             </>
           ) : (

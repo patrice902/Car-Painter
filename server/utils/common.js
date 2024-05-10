@@ -52,10 +52,21 @@ function getAvatarURL(userId) {
     : `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
 }
 
+function checkSQLWhereInputValid(input) {
+  const allowedTypes = ["number", "string", "boolean"];
+
+  if (!allowedTypes.includes(typeof input)) {
+    return false;
+  }
+
+  return true;
+}
+
 module.exports = {
   generateRandomColor,
   getLayerUpdatingInfo,
   getSchemeUpdatingInfo,
   removeNumbersFromString,
   getAvatarURL,
+  checkSQLWhereInputValid,
 };

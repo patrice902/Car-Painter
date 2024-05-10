@@ -1,4 +1,5 @@
 const CarMake = require("../models/carMake.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class CarMakeService {
   static async getList() {
@@ -9,6 +10,10 @@ class CarMakeService {
   }
 
   static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const carMake = await CarMake.where({ id }).fetch({
       withRelated: ["bases"],
     });

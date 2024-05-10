@@ -1,6 +1,9 @@
 const { LayerTypes } = require("../constants");
 const Layer = require("../models/layer.model");
-const { getLayerUpdatingInfo } = require("../utils/common");
+const {
+  getLayerUpdatingInfo,
+  checkSQLWhereInputValid,
+} = require("../utils/common");
 
 class LayerService {
   static async getList() {
@@ -9,11 +12,19 @@ class LayerService {
   }
 
   static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const layer = await Layer.where({ id }).fetch();
     return layer;
   }
 
   static async getListByUploadID(uploadID) {
+    if (!checkSQLWhereInputValid(uploadID)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const layers = await Layer.where({
       layer_type: LayerTypes.UPLOAD,
       upload_id: uploadID,
@@ -24,6 +35,16 @@ class LayerService {
   }
 
   static async getListByMultiUploadIDs(uploadIDs) {
+    if (!uploadIDs || !Array.isArray(uploadIDs) || !uploadIDs.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of uploadIDs) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
     const layers = await Layer.query((qb) =>
       qb
         .where({
@@ -37,6 +58,10 @@ class LayerService {
   }
 
   static async create(payload) {
+    if (!checkSQLWhereInputValid(payload.scheme_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     let scheme_layers = await Layer.where({
       scheme_id: payload.scheme_id,
     }).fetchAll();
@@ -103,16 +128,34 @@ class LayerService {
   }
 
   static async deleteById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await Layer.where({ id }).destroy({ require: false });
     return true;
   }
 
   static async deleteByMultiId(ids) {
+    if (!ids || !Array.isArray(ids) || !ids.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of ids) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
     await Layer.where("id", "IN", ids).destroy({ require: false });
     return true;
   }
 
   static async deleteByUploadID(uploadID) {
+    if (!checkSQLWhereInputValid(uploadID)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await Layer.where({
       layer_type: LayerTypes.UPLOAD,
       upload_id: uploadID,
@@ -121,6 +164,20 @@ class LayerService {
   }
 
   static async deleteByUploadIDAndScheme(uploadID, schemeIDs) {
+    if (!checkSQLWhereInputValid(uploadID)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    if (!schemeIDs || !Array.isArray(schemeIDs) || !schemeIDs.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of schemeIDs) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
     await Layer.query((qb) =>
       qb
         .where({
@@ -133,6 +190,16 @@ class LayerService {
   }
 
   static async deleteByMultiUploadIDs(uploadIDs) {
+    if (!uploadIDs || !Array.isArray(uploadIDs) || !uploadIDs.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of uploadIDs) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
     await Layer.query((qb) =>
       qb
         .where({
@@ -144,6 +211,10 @@ class LayerService {
   }
 
   static async deleteAllBySchemeId(scheme_id) {
+    if (!checkSQLWhereInputValid(scheme_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await Layer.where({
       scheme_id,
     }).destroy({ require: false });

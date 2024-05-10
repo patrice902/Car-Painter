@@ -80,7 +80,7 @@ export const PublicSharingProperty = React.memo(
                     control={
                       <FormCheckbox
                         color="primary"
-                        name="editLock"
+                        name="layer_data.editLock"
                         fieldKey="editLock"
                         checked={!values.layer_data.editLock}
                         disabled={!editable}
@@ -112,9 +112,9 @@ export const PublicSharingProperty = React.memo(
                     control={
                       <FormCheckbox
                         color="primary"
-                        name="showOnTop"
+                        name="layer_data.showOnTop"
                         fieldKey="showOnTop"
-                        checked={values.layer_data.showOnTop}
+                        checked={Boolean(values.layer_data.showOnTop)}
                         disabled={!editable}
                         onUpdateField={onLayerDataUpdateOnly}
                         onUpdateDB={onLayerDataUpdate}

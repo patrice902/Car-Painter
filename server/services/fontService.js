@@ -1,4 +1,5 @@
 const Font = require("../models/font.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FontService {
   static async getList() {
@@ -7,6 +8,10 @@ class FontService {
   }
 
   static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const font = await Font.where({ id }).fetch();
     return font;
   }

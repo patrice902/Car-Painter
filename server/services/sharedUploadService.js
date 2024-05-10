@@ -1,4 +1,5 @@
 const SharedUpload = require("../models/sharedUpload.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SharedUploadService {
   static async getList() {
@@ -9,6 +10,10 @@ class SharedUploadService {
   }
 
   static async getListByUserId(user_id) {
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const list = await SharedUpload.where({ user_id }).fetchAll({
       withRelated: ["upload", "upload.user", "user"],
     });
@@ -16,11 +21,19 @@ class SharedUploadService {
   }
 
   static async getListByUploadId(upload_id) {
+    if (!checkSQLWhereInputValid(upload_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const list = await SharedUpload.where({ upload_id }).fetchAll();
     return list;
   }
 
   static async getByID(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const favorite = await SharedUpload.where({ id }).fetch({
       withRelated: ["upload", "upload.user", "user"],
     });
@@ -42,6 +55,10 @@ class SharedUploadService {
   }
 
   static async updateById(id, payload) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     let favorite = await SharedUpload.where({ id }).fetch();
     await favorite.save(payload);
     favorite = this.getByID(id);
@@ -49,6 +66,10 @@ class SharedUploadService {
   }
 
   static async deleteById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await SharedUpload.where({ id }).destroy({
       require: false,
     });
@@ -56,6 +77,16 @@ class SharedUploadService {
   }
 
   static async deleteByMultiId(ids) {
+    if (!ids || !Array.isArray(ids) || !ids.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of ids) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
     await SharedUpload.where("id", "IN", ids).destroy({ require: false });
     return true;
   }

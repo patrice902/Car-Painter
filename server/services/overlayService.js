@@ -3,6 +3,7 @@ const multer = require("multer");
 const multerS3 = require("multer-s3");
 const s3 = require("../utils/s3");
 const config = require("../config");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class OverlayService {
   static async getList() {
@@ -11,6 +12,10 @@ class OverlayService {
   }
 
   static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const overlay = await Overlay.where({ id }).fetch();
     return overlay;
   }
@@ -27,6 +32,10 @@ class OverlayService {
   }
 
   static async deleteById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await Overlay.where({ id }).destroy({ require: false });
     return true;
   }

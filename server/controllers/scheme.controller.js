@@ -5,6 +5,7 @@ const FileService = require("../services/fileService");
 const CarMakeService = require("../services/carMakeService");
 const logger = require("../config/winston");
 const { LayerTypes } = require("../constants");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SchemeController {
   static async getList(req, res) {
@@ -119,6 +120,11 @@ class SchemeController {
     try {
       const schemeID = req.params.id;
       let scheme = await SchemeService.getById(schemeID);
+
+      if (!checkSQLWhereInputValid(schemeID)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+
       await LayerService.deleteByQuery({
         scheme_id: schemeID,
         layer_type: LayerTypes.CAR,

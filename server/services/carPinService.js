@@ -1,4 +1,5 @@
 const CarPin = require("../models/carPin.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class CarPinService {
   static async getList() {
@@ -7,11 +8,19 @@ class CarPinService {
   }
 
   static async getListByUserId(userid) {
+    if (!checkSQLWhereInputValid(userid)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const list = await CarPin.where({ userid }).fetchAll();
     return list;
   }
 
   static async getByID(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const carPin = await CarPin.where({ id }).fetch();
     return carPin;
   }
@@ -24,6 +33,10 @@ class CarPinService {
   }
 
   static async updateById(id, payload) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     let carPin = await CarPin.where({ id }).fetch();
     await carPin.save(payload);
     carPin = this.getByID(id);
@@ -31,6 +44,10 @@ class CarPinService {
   }
 
   static async deleteById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await CarPin.where({ id }).destroy({ require: false });
     return true;
   }

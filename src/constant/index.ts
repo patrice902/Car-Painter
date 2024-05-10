@@ -95,6 +95,9 @@ export const DefaultLayer = {
     finish: FinishOptions[0].value,
     finishBase: FinishOptions[0].base,
     type: "",
+    editLock: undefined,
+    showOnTop: undefined,
+    ownerForGallery: undefined,
   },
 };
 

@@ -6,6 +6,7 @@ const {
   getSchemeUpdatingInfo,
   removeNumbersFromString,
   getAvatarURL,
+  checkSQLWhereInputValid,
 } = require("../utils/common");
 const LayerService = require("./layerService");
 const { LayerTypes, TemplateVariables } = require("../constants");
@@ -30,6 +31,10 @@ class SchemeService {
   }
 
   static async getListByUserID(user_id) {
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const schemes = await Scheme.where({
       user_id,
       avail: 1,
@@ -57,6 +62,10 @@ class SchemeService {
   }
 
   static async getPublicListByUserID(user_id) {
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const schemes = await Scheme.where({
       user_id,
       public: 1,
@@ -71,6 +80,10 @@ class SchemeService {
     if (!id) {
       console.log("Trying to get scheme with ID of null");
       return null;
+    }
+
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
     }
 
     const scheme = await Scheme.where({ id }).fetch({
@@ -303,6 +316,10 @@ class SchemeService {
       return null;
     }
 
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await Scheme.where({ id }).destroy({ require: false });
     return true;
   }
@@ -310,6 +327,10 @@ class SchemeService {
   static async cloneById(id, user_id) {
     if (!id) {
       return null;
+    }
+
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
     }
 
     let originalScheme = await Scheme.where({ id }).fetch({

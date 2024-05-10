@@ -1,4 +1,5 @@
 const Base = require("../models/base.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class BasePaintService {
   static async getList() {
@@ -7,6 +8,10 @@ class BasePaintService {
   }
 
   static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const base = await Base.where({ id }).fetch();
     return base;
   }

@@ -3,6 +3,7 @@ const multer = require("multer");
 const multerS3 = require("multer-s3");
 const s3 = require("../utils/s3");
 const config = require("../config");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class LogoService {
   static async getList() {
@@ -11,6 +12,10 @@ class LogoService {
   }
 
   static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     const logo = await Logo.where({ id }).fetch();
     return logo;
   }
@@ -27,6 +32,10 @@ class LogoService {
   }
 
   static async deleteById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
     await Logo.where({ id }).destroy({ require: false });
     return true;
   }
