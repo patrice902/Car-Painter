@@ -90,7 +90,7 @@ class SharedUploadController {
 
     let upload;
     try {
-      upload = (await UploadService.getById(uploadId)).toJSON();
+      upload = await UploadService.getById(uploadId);
     } catch (err) {
       if (err.message === "EmptyResponse") {
         return res.status(400).json({
@@ -115,10 +115,10 @@ class SharedUploadController {
         throw new Error("SQL Injection attack detected.");
       }
 
-      let existingSharedUpload = await SharedUploadService.getByInfo({
-        upload_id: uploadId,
-        user_id: userID,
-      });
+      let existingSharedUpload = await SharedUploadService.getListByUploadIdAndUserID(
+        uploadId,
+        userID
+      );
 
       if (existingSharedUpload) {
         return res.status(400).json({

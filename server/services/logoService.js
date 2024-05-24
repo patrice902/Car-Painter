@@ -7,7 +7,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class LogoService {
   static async getList() {
-    const logos = await Logo.forge().fetchAll();
+    const logos = await Logo.query();
     return logos;
   }
 
@@ -16,18 +16,17 @@ class LogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const logo = await Logo.where({ id }).fetch();
+    const logo = await Logo.query().findById(id);
     return logo;
   }
 
   static async create(payload) {
-    const logo = await Logo.forge(payload).save();
+    const logo = await Logo.query().insert(payload);
     return logo;
   }
 
   static async updateById(id, payload) {
-    const logo = await this.getById(id);
-    await logo.save(payload);
+    const logo = await Logo.query().patchAndFetchById(id, payload);
     return logo;
   }
 
@@ -36,7 +35,7 @@ class LogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Logo.where({ id }).destroy({ require: false });
+    await Logo.query().deleteById(id);
     return true;
   }
 

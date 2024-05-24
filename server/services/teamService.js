@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class TeamService {
   static async getList() {
-    const list = await Team.forge().fetchAll();
+    const list = await Team.query();
     return list;
   }
 
@@ -12,7 +12,7 @@ class TeamService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await Team.where({ userid }).fetchAll();
+    const list = await Team.query().where("userid", userid);
     return list;
   }
 
@@ -21,14 +21,12 @@ class TeamService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const team = await Team.where({ id }).fetch();
+    const team = await Team.query().findById(id);
     return team;
   }
 
   static async create(payload) {
-    let team = await Team.forge(payload).save();
-    team = team.toJSON();
-    team = this.getByID(team.id);
+    const team = await Team.query().insert(payload);
     return team;
   }
 
@@ -37,9 +35,7 @@ class TeamService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let team = await Team.where({ id }).fetch();
-    await team.save(payload);
-    team = this.getByID(id);
+    const team = await Team.query().patchAndFetchById(id, payload);
     return team;
   }
 
@@ -48,7 +44,7 @@ class TeamService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Team.where({ id }).destroy({ require: false });
+    await Team.query().deleteById(id);
     return true;
   }
 }

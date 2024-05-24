@@ -7,7 +7,7 @@ const {
 
 class LayerService {
   static async getList() {
-    const layers = await Layer.forge().fetchAll();
+    const layers = await Layer.query();
     return layers;
   }
 
@@ -16,21 +16,19 @@ class LayerService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const layer = await Layer.where({ id }).fetch();
+    const layer = await Layer.query().findById(id);
     return layer;
   }
 
-  static async getListByUploadID(uploadID) {
-    if (!checkSQLWhereInputValid(uploadID)) {
+  static async getListByUploadID(upload_id) {
+    if (!checkSQLWhereInputValid(upload_id)) {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const layers = await Layer.where({
-      layer_type: LayerTypes.UPLOAD,
-      upload_id: uploadID,
-    }).fetchAll({
-      withRelated: ["scheme"],
-    });
+    const layers = await Layer.query()
+      .where("layer_type", LayerTypes.UPLOAD)
+      .where("upload_id", upload_id)
+      .patchAndFetchById("scheme");
     return layers;
   }
 
@@ -45,15 +43,10 @@ class LayerService {
       }
     }
 
-    const layers = await Layer.query((qb) =>
-      qb
-        .where({
-          layer_type: LayerTypes.UPLOAD,
-        })
-        .andWhere("upload_id", "IN", uploadIDs)
-    ).fetchAll({
-      withRelated: ["scheme"],
-    });
+    const layers = await Layer.query()
+      .where("layer_type", LayerTypes.UPLOAD)
+      .where("upload_id", "IN", uploadIDs)
+      .patchAndFetchById("scheme");
     return layers;
   }
 
@@ -62,10 +55,10 @@ class LayerService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let scheme_layers = await Layer.where({
-      scheme_id: payload.scheme_id,
-    }).fetchAll();
-    scheme_layers = scheme_layers.toJSON();
+    let scheme_layers = await Layer.query().where(
+      "scheme_id",
+      payload.scheme_id
+    );
     let layer_data = JSON.parse(payload.layer_data);
     let layerName = layer_data.name;
     let number = 0;
@@ -83,19 +76,20 @@ class LayerService {
     }
     if (number) layerName = `${layerName} ${number}`;
     layer_data.name = layerName;
-    const layer = await Layer.forge({
+    const layer = await Layer.query().insert({
       ...payload,
       layer_data: JSON.stringify(layer_data),
-    }).save(null, { method: "insert" });
+    });
     return layer;
   }
 
   static async updateById(id, payload) {
-    const layer = await this.getById(id);
-    const layerInfo = layer.toJSON();
+    const layer = await Layer.query().findById(id);
 
-    await layer.save(getLayerUpdatingInfo(layerInfo, payload), { patch: true });
-    return layer;
+    return await Layer.query().patchAndFetchById(
+      id,
+      getLayerUpdatingInfo(layer, payload)
+    );
   }
 
   static async bulkUpdate(payload) {
@@ -107,13 +101,14 @@ class LayerService {
         // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve) => {
           try {
-            const layer = await this.getById(item.id);
-            const layerInfo = layer.toJSON();
+            const layer = await Layer.query().findById(item.id);
 
-            await layer.save(getLayerUpdatingInfo(layerInfo, item), {
-              patch: true,
-            });
-            list.push(layer);
+            list.push(
+              await Layer.query().patchAndFetchById(
+                item.id,
+                getLayerUpdatingInfo(layer, item)
+              )
+            );
           } catch (error) {
             console.log(error);
           }
@@ -132,7 +127,8 @@ class LayerService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Layer.where({ id }).destroy({ require: false });
+    await Layer.query().deleteById(id);
+
     return true;
   }
 
@@ -147,19 +143,21 @@ class LayerService {
       }
     }
 
-    await Layer.where("id", "IN", ids).destroy({ require: false });
+    await Layer.query().delete().where("id", "IN", ids);
+
     return true;
   }
 
-  static async deleteByUploadID(uploadID) {
-    if (!checkSQLWhereInputValid(uploadID)) {
+  static async deleteByUploadID(upload_id) {
+    if (!checkSQLWhereInputValid(upload_id)) {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Layer.where({
-      layer_type: LayerTypes.UPLOAD,
-      upload_id: uploadID,
-    }).destroy({ require: false });
+    await Layer.query()
+      .delete()
+      .where("layer_type", LayerTypes.UPLOAD)
+      .where("upload_id", upload_id);
+
     return true;
   }
 
@@ -178,14 +176,12 @@ class LayerService {
       }
     }
 
-    await Layer.query((qb) =>
-      qb
-        .where({
-          layer_type: LayerTypes.UPLOAD,
-          upload_id: uploadID,
-        })
-        .andWhere("scheme_id", "IN", schemeIDs)
-    ).destroy({ require: false });
+    await Layer.query()
+      .where("layer_type", LayerTypes.UPLOAD)
+      .where("upload_id", uploadID)
+      .where("scheme_id", "IN", schemeIDs)
+      .delete();
+
     return true;
   }
 
@@ -200,13 +196,11 @@ class LayerService {
       }
     }
 
-    await Layer.query((qb) =>
-      qb
-        .where({
-          layer_type: LayerTypes.UPLOAD,
-        })
-        .andWhere("upload_id", "IN", uploadIDs)
-    ).destroy({ require: false });
+    await Layer.query()
+      .where("layer_type", LayerTypes.UPLOAD)
+      .where("upload_id", "IN", uploadIDs)
+      .delete();
+
     return true;
   }
 
@@ -215,14 +209,21 @@ class LayerService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Layer.where({
-      scheme_id,
-    }).destroy({ require: false });
+    await Layer.query().where("scheme_id", scheme_id).delete();
+
     return true;
   }
 
-  static async deleteByQuery(query) {
-    await Layer.where(query).destroy({ require: false });
+  static async deleteCarLayersInScheme(scheme_id) {
+    if (!checkSQLWhereInputValid(scheme_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await Layer.query()
+      .where("scheme_id", scheme_id)
+      .where("layer_type", LayerTypes.CAR)
+      .delete();
+
     return true;
   }
 }

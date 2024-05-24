@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FavoriteLogoService {
   static async getList() {
-    const list = await FavoriteLogo.forge().fetchAll();
+    const list = await FavoriteLogo.query();
     return list;
   }
 
@@ -12,7 +12,7 @@ class FavoriteLogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await FavoriteLogo.where({ user_id }).fetchAll();
+    const list = await FavoriteLogo.query().where("user_id", user_id);
     return list;
   }
 
@@ -21,7 +21,7 @@ class FavoriteLogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await FavoriteLogo.where({ logo_id }).fetchAll();
+    const list = await FavoriteLogo.query().where("logo_id", logo_id);
     return list;
   }
 
@@ -30,14 +30,12 @@ class FavoriteLogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const favorite = await FavoriteLogo.where({ id }).fetch();
+    const favorite = await FavoriteLogo.query().findById(id);
     return favorite;
   }
 
   static async create(payload) {
-    let favorite = await FavoriteLogo.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
+    const favorite = await FavoriteLogo.query().insert(payload);
     return favorite;
   }
 
@@ -46,9 +44,7 @@ class FavoriteLogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let favorite = await FavoriteLogo.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
+    const favorite = await FavoriteLogo.query().patchAndFetchById(id, payload);
     return favorite;
   }
 
@@ -57,9 +53,7 @@ class FavoriteLogoService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await FavoriteLogo.where({ id }).destroy({
-      require: false,
-    });
+    await FavoriteLogo.query().deleteById(id);
     return true;
   }
 }

@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FavoriteOverlayService {
   static async getList() {
-    const list = await FavoriteOverlay.forge().fetchAll();
+    const list = await FavoriteOverlay.query();
     return list;
   }
 
@@ -12,7 +12,7 @@ class FavoriteOverlayService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await FavoriteOverlay.where({ user_id }).fetchAll();
+    const list = await FavoriteOverlay.query().where("user_id", user_id);
     return list;
   }
 
@@ -21,7 +21,7 @@ class FavoriteOverlayService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await FavoriteOverlay.where({ overlay_id }).fetchAll();
+    const list = await FavoriteOverlay.query().where("overlay_id", overlay_id);
     return list;
   }
 
@@ -30,14 +30,12 @@ class FavoriteOverlayService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const favorite = await FavoriteOverlay.where({ id }).fetch();
+    const favorite = await FavoriteOverlay.query().findById(id);
     return favorite;
   }
 
   static async create(payload) {
-    let favorite = await FavoriteOverlay.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
+    const favorite = await FavoriteOverlay.query().insert(payload);
     return favorite;
   }
 
@@ -46,9 +44,10 @@ class FavoriteOverlayService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let favorite = await FavoriteOverlay.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
+    const favorite = await FavoriteOverlay.query().patchAndFetchById(
+      id,
+      payload
+    );
     return favorite;
   }
 
@@ -57,9 +56,7 @@ class FavoriteOverlayService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await FavoriteOverlay.where({ id }).destroy({
-      require: false,
-    });
+    await FavoriteOverlay.query().deleteById(id);
     return true;
   }
 }

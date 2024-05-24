@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FontService {
   static async getList() {
-    const fonts = await Font.forge().fetchAll();
+    const fonts = await Font.query();
     return fonts;
   }
 
@@ -12,18 +12,17 @@ class FontService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const font = await Font.where({ id }).fetch();
+    const font = await Font.query.findById(id);
     return font;
   }
 
   static async create(payload) {
-    const font = await Font.forge(payload).save();
+    const font = await Font.query().insert(payload);
     return font;
   }
 
   static async updateById(id, payload) {
-    const font = await this.getById(id);
-    await font.save(payload);
+    const font = await Font.query().patchAndFetchById(id, payload);
     return font;
   }
 }
