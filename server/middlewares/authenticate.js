@@ -12,7 +12,6 @@ const isAuthenticated = async (req, res, next) => {
   if (token && token.usr && token.hash) {
     try {
       let user = await UserService.getById(parseInt(token.usr));
-      user = user.toJSON();
       if (user.password === token.hash) {
         req.user = user;
         next();

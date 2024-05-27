@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class UserService {
   static async getList() {
-    const users = await User.forge().fetchAll();
+    const users = await User.query();
     return users;
   }
 
@@ -12,9 +12,10 @@ class UserService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const user = await User.where({ id }).fetch({
-      withRelated: ["blockedUsers", "blockedByUsers"],
-    });
+    const user = await User.query()
+      .findById(id)
+      .withGraphFetched("[blockedUsers, blockedByUsers]");
+
     return user;
   }
 
@@ -23,7 +24,8 @@ class UserService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const user = await User.where({ id, pro_user: 1 }).fetch();
+    const user = await User.query().where("id", id).where("pro_user", 1);
+
     return user;
   }
 
@@ -32,21 +34,21 @@ class UserService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const user = await User.where({ email }).fetch({
-      withRelated: ["blockedUsers", "blockedByUsers"],
-    });
+    const user = await User.query()
+      .where("email", email)
+      .withGraphFetched("[blockedUsers, blockedByUsers]");
+
     return user;
   }
 
   static async create(payload) {
-    const user = await User.forge(payload).save();
+    const user = await User.query().insert(payload);
     return user;
   }
 
   static async updateById(id, payload) {
-    const user = await this.getById(id);
-    await user.save(payload);
-    return user;
+    await User.query().patchAndFetchById(id, payload);
+    return await this.getById(id);
   }
 }
 

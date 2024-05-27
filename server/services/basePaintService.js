@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class BasePaintService {
   static async getList() {
-    const bases = await Base.forge().fetchAll();
+    const bases = await Base.query();
     return bases;
   }
 
@@ -12,18 +12,21 @@ class BasePaintService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const base = await Base.where({ id }).fetch();
+    const base = await Base.query().findById(id);
     return base;
   }
 
   static async create(payload) {
-    const base = await Base.forge(payload).save();
+    const base = await Base.query().insert(payload);
     return base;
   }
 
   static async updateById(id, payload) {
-    const base = await this.getById(id);
-    await base.save(payload);
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const base = await Base.query().patchAndFetchById(id, payload);
     return base;
   }
 }

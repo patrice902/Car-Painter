@@ -3,9 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class CarMakeService {
   static async getList() {
-    const carMakes = await CarMake.forge().fetchAll({
-      withRelated: ["bases"],
-    });
+    const carMakes = await CarMake.query().withGraphFetched("bases");
     return carMakes;
   }
 
@@ -14,21 +12,18 @@ class CarMakeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const carMake = await CarMake.where({ id }).fetch({
-      withRelated: ["bases"],
-    });
+    const carMake = await CarMake.findById(id).withGraphFetched("bases");
     return carMake;
   }
 
   static async create(payload) {
-    const carMake = await CarMake.forge(payload).save();
+    const carMake = await CarMake.query().insert(payload);
     return carMake;
   }
 
   static async updateById(id, payload) {
-    const carMake = await this.getById(id);
-    await carMake.save(payload);
-    return carMake;
+    await CarMake.query().patchAndFetchById(id, payload);
+    return await this.getById(id);
   }
 }
 

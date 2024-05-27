@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class BlockedUserSchemeService {
   static async getList() {
-    const list = await BlockedUserScheme.forge().fetchAll();
+    const list = await BlockedUserScheme.query();
     return list;
   }
 
@@ -12,7 +12,10 @@ class BlockedUserSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await BlockedUserScheme.where({ blocker_id }).fetchAll();
+    const list = await BlockedUserScheme.query().where(
+      "blocker_id",
+      blocker_id
+    );
     return list;
   }
 
@@ -21,7 +24,7 @@ class BlockedUserSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await BlockedUserScheme.where({ userid }).fetchAll();
+    const list = await BlockedUserScheme.query().where("userid", userid);
     return list;
   }
 
@@ -30,14 +33,12 @@ class BlockedUserSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const blockRow = await BlockedUserScheme.where({ id }).fetch();
+    const blockRow = await BlockedUserScheme.query().findById(id);
     return blockRow;
   }
 
   static async create(payload) {
-    let blockRow = await BlockedUserScheme.forge(payload).save();
-    blockRow = blockRow.toJSON();
-    blockRow = this.getByID(blockRow.id);
+    const blockRow = await BlockedUserScheme.query().insert(payload);
     return blockRow;
   }
 
@@ -46,9 +47,10 @@ class BlockedUserSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let blockRow = await BlockedUserScheme.where({ id }).fetch();
-    await blockRow.save(payload);
-    blockRow = this.getByID(id);
+    const blockRow = await BlockedUserScheme.query().patchAndFetchById(
+      id,
+      payload
+    );
     return blockRow;
   }
 
@@ -57,9 +59,7 @@ class BlockedUserSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await BlockedUserScheme.where({ id }).destroy({
-      require: false,
-    });
+    await BlockedUserScheme.query().deleteById(id);
     return true;
   }
 }

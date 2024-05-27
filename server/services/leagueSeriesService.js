@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class LeagueSeriesService {
   static async getList() {
-    const list = await LeagueSeries.forge().fetchAll();
+    const list = await LeagueSeries.query();
     return list;
   }
 
@@ -12,10 +12,10 @@ class LeagueSeriesService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await LeagueSeries.query((qb) => {
-      qb.join("leagues", "league_series.league_id", "=", "leagues.id");
-      qb.where("leagues.userid", userid);
-    }).fetchAll();
+    const list = await LeagueSeries.query()
+      .innerJoin("leagues", "league_series.league_id", "leagues.id")
+      .where("leagues.userid", userid);
+
     return list;
   }
 
@@ -24,12 +24,12 @@ class LeagueSeriesService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const leagueSeries = await LeagueSeries.where({ id }).fetch();
+    const leagueSeries = await LeagueSeries.query().findById(id);
     return leagueSeries;
   }
 
   static async create(payload) {
-    const leagueSeries = await LeagueSeries.forge(payload).save();
+    const leagueSeries = await LeagueSeries.query().insert(payload);
     return leagueSeries;
   }
 
@@ -38,8 +38,10 @@ class LeagueSeriesService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const leagueSeries = await LeagueSeries.where({ id }).fetch();
-    await leagueSeries.save(payload);
+    const leagueSeries = await LeagueSeries.query().patchAndFetchById(
+      id,
+      payload
+    );
     return leagueSeries;
   }
 
@@ -48,9 +50,7 @@ class LeagueSeriesService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await LeagueSeries.where({ id }).destroy({
-      require: false,
-    });
+    await LeagueSeries.query().deleteById(id);
     return true;
   }
 }

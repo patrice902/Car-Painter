@@ -1,18 +1,35 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * FavoriteUpload model.
  */
 
-const FavoriteUpload = bookshelf.model("FavoriteUpload", {
-  tableName: "favorite_uploads",
-  user() {
-    return this.belongsTo("User", "user_id");
-  },
-  upload() {
-    return this.belongsTo("Upload", "upload_id");
-  },
-  dependents: ["user", "upload"],
-});
+class FavoriteUpload extends Model {
+  static get tableName() {
+    return "favorite_uploads";
+  }
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "favorite_uploads.user_id",
+          to: "users.id",
+        },
+      },
+      upload: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "upload.model"),
+        join: {
+          from: "favorite_uploads.upload_id",
+          to: "builder_uploads.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = FavoriteUpload;

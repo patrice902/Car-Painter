@@ -49,7 +49,7 @@ class SchemeController {
   static async checkIfPublic(req, res) {
     try {
       let scheme = await SchemeService.getById(req.params.id);
-      scheme = scheme.toJSON();
+
       res.json({
         is_public: scheme.public,
       });
@@ -64,7 +64,7 @@ class SchemeController {
   static async getByID(req, res) {
     try {
       let scheme = await SchemeService.getById(req.params.id);
-      scheme = scheme.toJSON();
+
       res.json({
         scheme,
         carMake: scheme.carMake,
@@ -84,7 +84,7 @@ class SchemeController {
     try {
       const { carMakeID, userID, name, legacy_mode } = req.body;
       let carMake = await CarMakeService.getById(carMakeID);
-      carMake = carMake.toJSON();
+
       let legacyMode =
         legacy_mode ||
         !carMake.total_bases ||
@@ -98,7 +98,7 @@ class SchemeController {
         name,
         legacyMode
       );
-      scheme = scheme.toJSON();
+
       await SchemeService.createCarmakeLayers(
         scheme,
         carMake,
@@ -125,11 +125,7 @@ class SchemeController {
         throw new Error("SQL Injection attack detected.");
       }
 
-      await LayerService.deleteByQuery({
-        scheme_id: schemeID,
-        layer_type: LayerTypes.CAR,
-      });
-      scheme = scheme.toJSON();
+      await LayerService.deleteCarLayersInScheme(schemeID);
       await SchemeService.createCarmakeLayers(scheme, scheme.carMake, req.user);
       const schemeUpdatePayload = {
         date_modified: Math.round(new Date().getTime() / 1000),
@@ -163,7 +159,6 @@ class SchemeController {
   static async getListByUploadID(req, res) {
     try {
       let layers = await LayerService.getListByUploadID(req.params.id);
-      layers = layers.toJSON();
       let schemes = [];
       for (let layer of layers) {
         if (!schemes.find((scheme) => scheme.id === layer.scheme.id)) {
@@ -232,7 +227,6 @@ class SchemeController {
   static async clone(req, res) {
     try {
       let scheme = await SchemeService.cloneById(req.params.id, req.user.id);
-      scheme = scheme.toJSON();
       await FileService.cloneFileOnS3(
         `scheme_thumbnails/${req.params.id}.jpg`,
         `scheme_thumbnails/${scheme.id}.jpg`

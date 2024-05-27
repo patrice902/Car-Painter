@@ -21,7 +21,6 @@ class SocketServer {
         if (token && token.usr && token.hash) {
           try {
             let user = await UserService.getById(parseInt(token.usr));
-            user = user.toJSON();
             if (user.password === token.hash) {
               next();
             } else {

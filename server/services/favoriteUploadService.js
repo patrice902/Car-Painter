@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FavoriteUploadService {
   static async getList() {
-    const list = await FavoriteUpload.forge().fetchAll();
+    const list = await FavoriteUpload.query();
     return list;
   }
 
@@ -12,7 +12,7 @@ class FavoriteUploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await FavoriteUpload.where({ user_id }).fetchAll();
+    const list = await FavoriteUpload.query().where("user_id", user_id);
     return list;
   }
 
@@ -21,7 +21,7 @@ class FavoriteUploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await FavoriteUpload.where({ upload_id }).fetchAll();
+    const list = await FavoriteUpload.query().where("upload_id", upload_id);
     return list;
   }
 
@@ -30,14 +30,12 @@ class FavoriteUploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const favorite = await FavoriteUpload.where({ id }).fetch();
+    const favorite = await FavoriteUpload.query().findById(id);
     return favorite;
   }
 
   static async create(payload) {
-    let favorite = await FavoriteUpload.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
+    const favorite = await FavoriteUpload.query().insert(payload);
     return favorite;
   }
 
@@ -46,9 +44,10 @@ class FavoriteUploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let favorite = await FavoriteUpload.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
+    const favorite = await FavoriteUpload.query().patchAndFetchById(
+      id,
+      payload
+    );
     return favorite;
   }
 
@@ -57,9 +56,7 @@ class FavoriteUploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await FavoriteUpload.where({ id }).destroy({
-      require: false,
-    });
+    await FavoriteUpload.query().deleteById(id);
     return true;
   }
 }

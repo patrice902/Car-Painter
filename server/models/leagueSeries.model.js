@@ -1,15 +1,27 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * LeagueSeries model.
  */
 
-const LeagueSeries = bookshelf.model("LeagueSeries", {
-  tableName: "league_series",
-  league() {
-    return this.belongsTo("League", "league_id");
-  },
-  dependents: ["league"],
-});
+class LeagueSeries extends Model {
+  static get tableName() {
+    return "league_series";
+  }
+
+  static get relationMappings() {
+    return {
+      league: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "league.model"),
+        join: {
+          from: "league_series.league_id",
+          to: "leagues.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = LeagueSeries;

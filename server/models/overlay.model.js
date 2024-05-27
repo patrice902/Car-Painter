@@ -1,15 +1,27 @@
-const bookshelf = require("../config/bookshelf");
-require("./user.model");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * Overlay model.
  */
 
-const Overlay = bookshelf.model("Overlay", {
-  tableName: "builder_overlays",
-  user() {
-    return this.belongsTo("User", "userid");
-  },
-});
+class Overlay extends Model {
+  static get tableName() {
+    return "builder_overlays";
+  }
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "builder_overlays.userid",
+          to: "users.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = Overlay;

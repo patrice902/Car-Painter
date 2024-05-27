@@ -4,8 +4,6 @@ const Scheme = require("../models/scheme.model");
 const {
   generateRandomColor,
   getSchemeUpdatingInfo,
-  removeNumbersFromString,
-  getAvatarURL,
   checkSQLWhereInputValid,
 } = require("../utils/common");
 const LayerService = require("./layerService");
@@ -16,17 +14,12 @@ const FontService = require("./fontService");
 
 class SchemeService {
   static async getList() {
-    const schemes = await Scheme.where({
-      avail: 1,
-    }).fetchAll({
-      withRelated: [
-        "carMake",
-        "carMake.bases",
-        "layers",
-        "originalAuthor",
-        "originalScheme",
-      ],
-    });
+    const schemes = await Scheme.query()
+      .where("avail", 1)
+      .withGraphFetched(
+        "[carMake.[bases], layers, originalAuthor, originalScheme]"
+      );
+
     return schemes;
   }
 
@@ -35,29 +28,22 @@ class SchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const schemes = await Scheme.where({
-      user_id,
-      avail: 1,
-    }).fetchAll({
-      withRelated: [
-        "carMake",
-        "user",
-        "sharedUsers",
-        "sharedUsers.user",
-        "originalAuthor",
-        "originalScheme",
-      ],
-    });
+    const schemes = await Scheme.query()
+      .where("avail", 1)
+      .where("user_id", user_id)
+      .withGraphFetched(
+        "[carMake, user, originalAuthor, originalScheme, sharedUsers.[user]]"
+      );
+
     return schemes;
   }
 
   static async getPublicList() {
-    const schemes = await Scheme.where({
-      public: 1,
-      avail: 1,
-    }).fetchAll({
-      withRelated: ["carMake", "user", "sharedUsers", "sharedUsers.user"],
-    });
+    const schemes = await Scheme.query()
+      .where("avail", 1)
+      .where("public", 1)
+      .withGraphFetched("[carMake, user, sharedUsers.[user]]");
+
     return schemes;
   }
 
@@ -66,13 +52,12 @@ class SchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const schemes = await Scheme.where({
-      user_id,
-      public: 1,
-      avail: 1,
-    }).fetchAll({
-      withRelated: ["carMake", "user"],
-    });
+    const schemes = await Scheme.query()
+      .where("avail", 1)
+      .where("public", 1)
+      .where("user_id", user_id)
+      .withGraphFetched("[carMake, user]");
+
     return schemes;
   }
 
@@ -86,16 +71,12 @@ class SchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const scheme = await Scheme.where({ id }).fetch({
-      withRelated: [
-        "carMake",
-        "carMake.bases",
-        "layers",
-        "sharedUsers",
-        "user",
-        "lastModifier",
-      ],
-    });
+    const scheme = await Scheme.query()
+      .findById(id)
+      .withGraphFetched(
+        "[carMake.[bases], layers, sharedUsers, user, lastModifier]"
+      );
+
     return scheme;
   }
 
@@ -103,7 +84,6 @@ class SchemeService {
     let schemeName = name && name.length ? name : "Untitled Scheme";
 
     let schemeList = await this.getListByUserID(userID);
-    schemeList = schemeList.toJSON();
     let number = 0;
 
     const defaultGuideData = {
@@ -127,7 +107,7 @@ class SchemeService {
     }
     if (number) schemeName = `${schemeName} ${number}`;
 
-    const scheme = await Scheme.forge({
+    const scheme = await Scheme.query().insert({
       name: schemeName,
       base_color: generateRandomColor(),
       car_make: carMakeID,
@@ -143,7 +123,7 @@ class SchemeService {
       legacy_mode,
       guide_data: JSON.stringify(defaultGuideData),
       hide_spec: 1,
-    }).save();
+    });
     return scheme;
   }
 
@@ -188,7 +168,6 @@ class SchemeService {
           try {
             let logo = await LogoService.getById(layer.id);
             if (logo) {
-              logo = logo.toJSON();
               builder_layers.push(
                 await LayerService.create({
                   layer_type: LayerTypes.LOGO,
@@ -303,12 +282,13 @@ class SchemeService {
     }
 
     const scheme = await this.getById(id);
-    const schemeInfo = scheme.toJSON();
 
-    await scheme.save(getSchemeUpdatingInfo(schemeInfo, payload), {
-      patch: true,
-    });
-    return scheme;
+    await Scheme.query().patchAndFetchById(
+      id,
+      getSchemeUpdatingInfo(scheme, payload)
+    );
+
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
@@ -320,7 +300,8 @@ class SchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Scheme.where({ id }).destroy({ require: false });
+    await Scheme.query().deleteById(id);
+
     return true;
   }
 
@@ -333,12 +314,11 @@ class SchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let originalScheme = await Scheme.where({ id }).fetch({
-      withRelated: ["layers"],
-    });
-    originalScheme = originalScheme.toJSON();
+    let originalScheme = await Scheme.query()
+      .findById(id)
+      .withGraphFetched("layers");
 
-    let scheme = await Scheme.forge({
+    const scheme = await Scheme.query().insert({
       ..._.omit(originalScheme, ["id", "layers"]),
       user_id,
       name: originalScheme.name.slice(0, 45) + " copy",
@@ -348,16 +328,16 @@ class SchemeService {
       thumbnail_updated: 0,
       original_scheme_id: id,
       original_author_id: originalScheme.user_id,
-    }).save();
-    let schemeData = scheme.toJSON();
+    });
+
     for (let layer of originalScheme.layers) {
-      Layer.forge({
+      await LayerService.create({
         ..._.omit(layer, ["id"]),
-        scheme_id: schemeData.id,
-      }).save();
+        scheme_id: scheme.id,
+      });
     }
-    scheme = await this.getById(schemeData.id);
-    return scheme;
+
+    return await this.getById(scheme.id);
   }
 }
 

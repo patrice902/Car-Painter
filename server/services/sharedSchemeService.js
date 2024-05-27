@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SharedSchemeService {
   static async getList() {
-    const list = await SharedScheme.forge().fetchAll();
+    const list = await SharedScheme.query();
     return list;
   }
 
@@ -12,15 +12,9 @@ class SharedSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await SharedScheme.where({ user_id }).fetchAll({
-      withRelated: [
-        "scheme",
-        "scheme.carMake",
-        "scheme.user",
-        "scheme.sharedUsers",
-        "scheme.sharedUsers.user",
-      ],
-    });
+    const list = await SharedScheme.query()
+      .where("user_id", user_id)
+      .withGraphFetched("scheme.[carMake, user, sharedUsers.[user]]");
     return list;
   }
 
@@ -29,9 +23,9 @@ class SharedSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const list = await SharedScheme.where({ scheme_id }).fetchAll({
-      withRelated: ["user"],
-    });
+    const list = await SharedScheme.query()
+      .where("scheme_id", scheme_id)
+      .withGraphFetched("user");
     return list;
   }
 
@@ -40,24 +34,15 @@ class SharedSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const shared = await SharedScheme.where({ id }).fetch({
-      withRelated: [
-        "user",
-        "scheme",
-        "scheme.carMake",
-        "scheme.user",
-        "scheme.sharedUsers",
-        "scheme.sharedUsers.user",
-      ],
-    });
+    const shared = await SharedScheme.query()
+      .findById(id)
+      .withGraphFetched("[user, scheme.[carMake, user, sharedUsers.[user]]]");
     return shared;
   }
 
   static async create(payload) {
-    let shared = await SharedScheme.forge(payload).save();
-    shared = shared.toJSON();
-    shared = this.getByID(shared.id);
-    return shared;
+    const shared = await SharedScheme.query().insert(payload);
+    return await this.getByID(shared.id);
   }
 
   static async updateById(id, payload) {
@@ -65,10 +50,8 @@ class SharedSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    let shared = await SharedScheme.where({ id }).fetch();
-    await shared.save(payload);
-    shared = this.getByID(id);
-    return shared;
+    await SharedScheme.query().patchAndFetchById(id, payload);
+    return await this.getByID(id);
   }
 
   static async deleteById(id) {
@@ -76,7 +59,7 @@ class SharedSchemeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await SharedScheme.where({ id }).destroy({ require: false });
+    await SharedScheme.query().deleteById(id);
     return true;
   }
 }

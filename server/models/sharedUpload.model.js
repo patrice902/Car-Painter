@@ -1,18 +1,35 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * SharedUpload model.
  */
 
-const SharedUpload = bookshelf.model("SharedUpload", {
-  tableName: "shared_uploads",
-  user() {
-    return this.belongsTo("User", "user_id");
-  },
-  upload() {
-    return this.belongsTo("Upload", "upload_id");
-  },
-  dependents: ["user", "upload"],
-});
+class SharedUpload extends Model {
+  static get tableName() {
+    return "shared_uploads";
+  }
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "shared_uploads.user_id",
+          to: "users.id",
+        },
+      },
+      upload: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "upload.model"),
+        join: {
+          from: "shared_uploads.upload_id",
+          to: "builder_uploads.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = SharedUpload;

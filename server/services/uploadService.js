@@ -3,9 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class UploadService {
   static async getList() {
-    const uploads = await Upload.forge().fetchAll({
-      withRelated: ["user"],
-    });
+    const uploads = await Upload.query().withGraphFetched("user");
     return uploads;
   }
 
@@ -14,11 +12,10 @@ class UploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const uploads = await Upload.where({
-      user_id,
-    }).fetchAll({
-      withRelated: ["user"],
-    });
+    const uploads = await Upload.query()
+      .where("user_id", user_id)
+      .withGraphFetched("user");
+
     return uploads;
   }
 
@@ -27,12 +24,11 @@ class UploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const uploads = await Upload.where({
-      user_id,
-      legacy_mode: 1,
-    }).fetchAll({
-      withRelated: ["user"],
-    });
+    const uploads = await Upload.query()
+      .where("user_id", user_id)
+      .where("legacy_mode", 1)
+      .withGraphFetched("user");
+
     return uploads;
   }
 
@@ -41,21 +37,19 @@ class UploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const upload = await Upload.where({ id }).fetch({
-      withRelated: ["user"],
-    });
+    const upload = await Upload.query().findById(id).withGraphFetched("user");
+
     return upload;
   }
 
   static async create(payload) {
-    const upload = await Upload.forge(payload).save();
+    const upload = await Upload.query().insert(payload);
     return upload;
   }
 
   static async updateById(id, payload) {
-    const upload = await this.getById(id);
-    await upload.save(payload);
-    return upload;
+    await Upload.query().patchAndFetchById(id, payload);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
@@ -63,7 +57,8 @@ class UploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    await Upload.where({ id }).destroy({ require: false });
+    await Upload.query().deleteById(id);
+
     return true;
   }
 
@@ -78,7 +73,8 @@ class UploadService {
       }
     }
 
-    await Upload.where("id", "IN", ids).destroy({ require: false });
+    await Upload.query().delete().where("id", "IN", ids);
+
     return true;
   }
 }
