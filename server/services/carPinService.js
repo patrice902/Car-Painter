@@ -21,7 +21,7 @@ class CarPinService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const carPin = await CarPin.findById(id);
+    const carPin = await CarPin.query().findById(id);
     return carPin;
   }
 

@@ -12,7 +12,7 @@ class FontService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const font = await Font.query.findById(id);
+    const font = await Font.query().findById(id);
     return font;
   }
 

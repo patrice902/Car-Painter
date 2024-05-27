@@ -12,7 +12,9 @@ class CarMakeService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const carMake = await CarMake.findById(id).withGraphFetched("bases");
+    const carMake = await CarMake.query()
+      .findById(id)
+      .withGraphFetched("bases");
     return carMake;
   }
 

@@ -26,7 +26,7 @@ class OverlayService {
   }
 
   static async updateById(id, payload) {
-    const overlay = await Overlay.patchAndFetchById(id, payload);
+    const overlay = await Overlay.query().patchAndFetchById(id, payload);
     return overlay;
   }
 
