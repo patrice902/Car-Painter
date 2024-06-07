@@ -29,7 +29,7 @@ class SharedSchemeService {
     return list;
   }
 
-  static async getByID(id) {
+  static async getById(id) {
     if (!checkSQLWhereInputValid(id)) {
       throw new Error("SQL Injection attack detected.");
     }
@@ -42,7 +42,7 @@ class SharedSchemeService {
 
   static async create(payload) {
     const shared = await SharedScheme.query().insert(payload);
-    return await this.getByID(shared.id);
+    return await this.getById(shared.id);
   }
 
   static async updateById(id, payload) {
@@ -51,7 +51,7 @@ class SharedSchemeService {
     }
 
     await SharedScheme.query().patchAndFetchById(id, payload);
-    return await this.getByID(id);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {

@@ -1,6 +1,7 @@
 const express = require("express");
 const SchemeController = require("../controllers/scheme.controller");
 const { isAuthenticated } = require("../middlewares/authenticate");
+const { isEditableScheme } = require("../middlewares/permissions");
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.route("/clone/:id").post(isAuthenticated, SchemeController.clone);
 
 router
   .route("/renewCarMakeLayers/:id")
-  .post(isAuthenticated, SchemeController.renewCarMakeLayers);
+  .post(isAuthenticated, isEditableScheme, SchemeController.renewCarMakeLayers);
 
 router
   .route("/thumbnail")
@@ -31,8 +32,8 @@ router
 
 router
   .route("/:id")
-  .get(isAuthenticated, SchemeController.getByID)
-  .put(isAuthenticated, SchemeController.update)
-  .delete(isAuthenticated, SchemeController.delete);
+  .get(isAuthenticated, SchemeController.getById)
+  .put(isAuthenticated, isEditableScheme, SchemeController.update)
+  .delete(isAuthenticated, isEditableScheme, SchemeController.delete);
 
 module.exports = router;

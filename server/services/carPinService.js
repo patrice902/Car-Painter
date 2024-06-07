@@ -16,7 +16,7 @@ class CarPinService {
     return list;
   }
 
-  static async getByID(id) {
+  static async getById(id) {
     if (!checkSQLWhereInputValid(id)) {
       throw new Error("SQL Injection attack detected.");
     }

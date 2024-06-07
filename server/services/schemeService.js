@@ -123,6 +123,10 @@ class SchemeService {
       legacy_mode,
       guide_data: JSON.stringify(defaultGuideData),
       hide_spec: 1,
+      on_do: 0,
+      file_missing: 0,
+      original_scheme_id: 0,
+      original_author_id: 0,
     });
     return scheme;
   }
@@ -154,6 +158,8 @@ class SchemeService {
           layer_locked: 0,
           time_modified: 0,
           confirm: "",
+          on_do: 0,
+          file_missing: 0,
         })
       );
     }
@@ -188,6 +194,8 @@ class SchemeService {
                   layer_order: layer_index++,
                   layer_locked: 0,
                   time_modified: 0,
+                  on_do: 0,
+                  file_missing: 0,
                   confirm: "",
                 })
               );
@@ -233,6 +241,8 @@ class SchemeService {
                   layer_order: layer_index++,
                   layer_locked: 0,
                   time_modified: 0,
+                  on_do: 0,
+                  file_missing: 0,
                   confirm: "",
                 })
               );
@@ -262,6 +272,8 @@ class SchemeService {
                 layer_order: layer_index++,
                 layer_locked: 0,
                 time_modified: 0,
+                on_do: 0,
+                file_missing: 0,
                 confirm: "",
               })
             );

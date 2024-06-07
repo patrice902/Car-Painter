@@ -14,7 +14,7 @@ class OverlayController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let overlay = await OverlayService.getById(req.params.id);
       res.json(overlay);

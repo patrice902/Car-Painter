@@ -30,7 +30,7 @@ class UploadController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let upload = await UploadService.getById(req.params.id);
       res.json(upload);

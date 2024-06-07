@@ -26,9 +26,9 @@ class TeamController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
-      let carPin = await CarPinService.getById(req.params.id);
+      const carPin = await CarPinService.getById(req.params.id);
       res.json(carPin);
     } catch (err) {
       logger.log("error", err.stack);
@@ -40,6 +40,12 @@ class TeamController {
 
   static async create(req, res) {
     try {
+      if (req.user.id !== req.body.userid) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
       let carPin = await CarPinService.create(req.body);
       res.json(carPin);
     } catch (err) {
@@ -52,7 +58,14 @@ class TeamController {
 
   static async update(req, res) {
     try {
-      let carPin = await CarPinService.updateById(req.params.id, req.body);
+      let carPin = await CarPinService.getById(req.params.id);
+      if (req.user.id !== carPin.userid) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
+      carPin = await CarPinService.updateById(req.params.id, req.body);
       res.json(carPin);
     } catch (err) {
       logger.log("error", err.stack);
@@ -64,6 +77,13 @@ class TeamController {
 
   static async delete(req, res) {
     try {
+      let carPin = await CarPinService.getById(req.params.id);
+      if (req.user.id !== carPin.userid) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
       await CarPinService.deleteById(req.params.id);
       res.json({});
     } catch (err) {

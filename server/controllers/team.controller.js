@@ -26,7 +26,7 @@ class TeamController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let team = await TeamService.getById(req.params.id);
       res.json(team);

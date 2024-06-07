@@ -45,7 +45,7 @@ class SharedUploadService {
     return list;
   }
 
-  static async getByID(id) {
+  static async getById(id) {
     if (!checkSQLWhereInputValid(id)) {
       throw new Error("SQL Injection attack detected.");
     }
@@ -59,7 +59,7 @@ class SharedUploadService {
 
   static async create(payload) {
     const item = await SharedUpload.query().insert(payload);
-    return await this.getByID(item.id);
+    return await this.getById(item.id);
   }
 
   static async updateById(id, payload) {
@@ -68,7 +68,7 @@ class SharedUploadService {
     }
 
     await SharedUpload.query().patchAndFetchById(id, payload);
-    return await this.getByID(id);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {

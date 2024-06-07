@@ -14,7 +14,7 @@ class LayerController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let layer = await LayerService.getById(req.params.id);
       res.json(layer);

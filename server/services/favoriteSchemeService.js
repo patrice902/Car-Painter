@@ -29,7 +29,7 @@ class FavoriteSchemeService {
     return list;
   }
 
-  static async getByID(id) {
+  static async getById(id) {
     if (!checkSQLWhereInputValid(id)) {
       throw new Error("SQL Injection attack detected.");
     }
@@ -42,7 +42,7 @@ class FavoriteSchemeService {
 
   static async create(payload) {
     const favorite = await FavoriteScheme.query().insert(payload);
-    return await this.getByID(favorite.id);
+    return await this.getById(favorite.id);
   }
 
   static async updateById(id, payload) {
@@ -52,7 +52,7 @@ class FavoriteSchemeService {
 
     await FavoriteScheme.query().patchAndFetchById(id, payload);
 
-    return await this.getByID(id);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
