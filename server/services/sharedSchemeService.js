@@ -14,7 +14,9 @@ class SharedSchemeService {
 
     const list = await SharedScheme.query()
       .where("user_id", user_id)
-      .withGraphFetched("scheme.[carMake, user, sharedUsers.[user]]");
+      .withGraphFetched(
+        "scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]"
+      );
     return list;
   }
 
@@ -25,7 +27,7 @@ class SharedSchemeService {
 
     const list = await SharedScheme.query()
       .where("scheme_id", scheme_id)
-      .withGraphFetched("user");
+      .withGraphFetched("user(minSelects)");
     return list;
   }
 
@@ -36,7 +38,9 @@ class SharedSchemeService {
 
     const shared = await SharedScheme.query()
       .findById(id)
-      .withGraphFetched("[user, scheme.[carMake, user, sharedUsers.[user]]]");
+      .withGraphFetched(
+        "[user(minSelects), scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]]"
+      );
     return shared;
   }
 

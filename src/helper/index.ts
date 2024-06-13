@@ -24,12 +24,12 @@ import {
   BuilderScheme,
   BuilderUpload,
   CarMake,
+  UserMin,
 } from "src/types/model";
 import {
   BuilderLayerJSON,
   BuilderLayerPayload,
   BuilderSchemeJSON,
-  UserWithoutPassword,
 } from "src/types/query";
 import TGA from "src/utils/tga";
 import urlJoin from "url-join";
@@ -659,7 +659,7 @@ export const isInSameSideBar = (type1: LayerTypes, type2: LayerTypes) => {
   return false;
 };
 
-export const getUserName = (user?: UserWithoutPassword | null) => {
+export const getUserName = (user?: UserMin | null) => {
   if (!user) {
     return "";
   }
@@ -837,7 +837,7 @@ export const getAvatarURL = (userId: string | number) =>
 export const replaceByTemplateVariables = (
   str: string,
   layerType?: LayerTypes,
-  user?: UserWithoutPassword | null
+  user?: UserMin | null
 ) => {
   if (layerType === LayerTypes.TEXT) {
     return str

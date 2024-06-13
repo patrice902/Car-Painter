@@ -5,7 +5,8 @@ import AuthService from "src/services/authService";
 import BlockedUserService from "src/services/blockedUserService";
 import CookieService from "src/services/cookieService";
 import UserService from "src/services/userService";
-import { AuthPayload, UserWithoutPassword } from "src/types/query";
+import { UserMin } from "src/types/model";
+import { AuthPayload } from "src/types/query";
 
 import { AppDispatch } from "..";
 import { catchErrorMessage } from "./messageReducer";
@@ -18,7 +19,7 @@ import {
 import { setIntialized } from "./uploadReducer";
 
 export type AuthReducerState = {
-  user: UserWithoutPassword | undefined;
+  user: UserMin | undefined;
   loading: boolean;
   previousPath: string | null;
   blockedUsers: number[];
@@ -37,10 +38,7 @@ export const slice = createSlice({
   name: "authReducer",
   initialState,
   reducers: {
-    setUser: (
-      state,
-      action: PayloadAction<UserWithoutPassword | undefined>
-    ) => {
+    setUser: (state, action: PayloadAction<UserMin | undefined>) => {
       state.user = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -89,7 +87,7 @@ export const signInWithCookie = (
 
 export const signIn = (
   payload: AuthPayload,
-  callback?: (user: UserWithoutPassword) => void
+  callback?: (user: UserMin) => void
 ) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
 
@@ -145,9 +143,7 @@ export const getBlockedBy = (userID: number) => async (
   dispatch(setLoading(false));
 };
 
-export const updateUser = (user: UserWithoutPassword) => async (
-  dispatch: AppDispatch
-) => {
+export const updateUser = (user: UserMin) => async (dispatch: AppDispatch) => {
   dispatch(setUser(user));
   await UserService.updateUser(user.id, user);
 };

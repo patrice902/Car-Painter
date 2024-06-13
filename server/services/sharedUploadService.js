@@ -4,7 +4,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 class SharedUploadService {
   static async getList() {
     const list = await SharedUpload.query().withGraphFetched(
-      "[user, upload.[user]]"
+      "[user(minSelects), upload.[user(minSelects)]]"
     );
     return list;
   }
@@ -16,7 +16,7 @@ class SharedUploadService {
 
     const list = await SharedUpload.query()
       .where("user_id", user_id)
-      .withGraphFetched("[user, upload.[user]]");
+      .withGraphFetched("[user(minSelects), upload.[user(minSelects)]]");
 
     return list;
   }
@@ -52,7 +52,7 @@ class SharedUploadService {
 
     const item = await SharedUpload.query()
       .findById(id)
-      .withGraphFetched("[user, upload.[user]]");
+      .withGraphFetched("[user(minSelects), upload.[user(minSelects)]]");
 
     return item;
   }

@@ -1,6 +1,6 @@
 const express = require("express");
-// const CarController = require("../controllers/car.controller");
-// const { isAuthenticated } = require("../middlewares/authenticate");
+const CarController = require("../controllers/car.controller");
+const { isAuthenticated } = require("../middlewares/authenticate");
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
 //   .get(isAuthenticated, CarController.getList)
 //   .post(isAuthenticated, CarController.create);
 
-// router.route("/active").get(isAuthenticated, CarController.getActiveCar);
+router.route("/active").get(isAuthenticated, CarController.getActiveCar);
 
 // router
 //   .route("/:id")

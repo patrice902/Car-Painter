@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const socket = require("socket.io");
 const LayerService = require("../services/layerService");
 const SchemeService = require("../services/schemeService");
@@ -20,7 +21,7 @@ class SocketServer {
         const token = JSON.parse(tokenString);
         if (token && token.usr && token.hash) {
           try {
-            let user = await UserService.getById(parseInt(token.usr));
+            let user = await UserService.getMe(token.usr);
             if (user.password === token.hash) {
               next();
             } else {

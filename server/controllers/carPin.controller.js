@@ -1,7 +1,7 @@
 const CarPinService = require("../services/carPinService");
 const logger = require("../config/winston");
 
-class TeamController {
+class CarPinController {
   static async getList(req, res) {
     try {
       let list = await CarPinService.getList();
@@ -95,4 +95,4 @@ class TeamController {
   }
 }
 
-module.exports = TeamController;
+module.exports = CarPinController;

@@ -14,7 +14,9 @@ class FavoriteSchemeService {
 
     const list = await FavoriteScheme.query()
       .where("user_id", user_id)
-      .withGraphFetched("scheme.[carMake, user, sharedUsers.[user]]");
+      .withGraphFetched(
+        "scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]"
+      );
     return list;
   }
 
@@ -25,7 +27,7 @@ class FavoriteSchemeService {
 
     const list = await FavoriteScheme.query()
       .where("scheme_id", scheme_id)
-      .withGraphFetched("user");
+      .withGraphFetched("user(minSelects)");
     return list;
   }
 
@@ -36,7 +38,9 @@ class FavoriteSchemeService {
 
     const favorite = await FavoriteScheme.query()
       .findById(id)
-      .withGraphFetched("[user, scheme.[carMake, user, sharedUsers.[user]]]");
+      .withGraphFetched(
+        "[user(minSelects), scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]]"
+      );
     return favorite;
   }
 

@@ -23,13 +23,7 @@ class AuthController {
 
       const { usr, password } = req.body;
       if (usr && password) {
-        let user;
-
-        if (usr.includes("@")) {
-          user = await UserService.getByEmail(usr);
-        } else {
-          user = await UserService.getById(parseInt(usr));
-        }
+        const user = await UserService.getMe(usr);
 
         if (user.password === md5(md5(password) + config.md5Salt)) {
           res.json({

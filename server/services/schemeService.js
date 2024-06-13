@@ -1,5 +1,4 @@
 const _ = require("lodash");
-const Layer = require("../models/layer.model");
 const Scheme = require("../models/scheme.model");
 const {
   generateRandomColor,
@@ -17,7 +16,7 @@ class SchemeService {
     const schemes = await Scheme.query()
       .where("avail", 1)
       .withGraphFetched(
-        "[carMake.[bases], layers, originalAuthor, originalScheme]"
+        "[carMake.[bases], layers, originalAuthor(minSelects), originalScheme]"
       );
 
     return schemes;
@@ -32,7 +31,7 @@ class SchemeService {
       .where("avail", 1)
       .where("user_id", user_id)
       .withGraphFetched(
-        "[carMake, user, originalAuthor, originalScheme, sharedUsers.[user]]"
+        "[carMake, user(minSelects), originalAuthor(minSelects), originalScheme, sharedUsers.[user(minSelects)]]"
       );
 
     return schemes;
@@ -42,7 +41,9 @@ class SchemeService {
     const schemes = await Scheme.query()
       .where("avail", 1)
       .where("public", 1)
-      .withGraphFetched("[carMake, user, sharedUsers.[user]]");
+      .withGraphFetched(
+        "[carMake, user(minSelects), sharedUsers.[user(minSelects)]]"
+      );
 
     return schemes;
   }
@@ -56,7 +57,7 @@ class SchemeService {
       .where("avail", 1)
       .where("public", 1)
       .where("user_id", user_id)
-      .withGraphFetched("[carMake, user]");
+      .withGraphFetched("[carMake, user(minSelects)]");
 
     return schemes;
   }
@@ -74,7 +75,7 @@ class SchemeService {
     const scheme = await Scheme.query()
       .findById(id)
       .withGraphFetched(
-        "[carMake.[bases], layers, sharedUsers, user, lastModifier]"
+        "[carMake.[bases], layers, sharedUsers, user(minSelects), lastModifier(minSelects)]"
       );
 
     return scheme;

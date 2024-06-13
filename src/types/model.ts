@@ -14,7 +14,7 @@ export type BuilderUploadWithUser = {
   scheme_id: string;
   file_name: string;
   legacy_mode: boolean;
-  user: User;
+  user: UserMin;
 };
 
 export type Team = {
@@ -200,7 +200,7 @@ export type SharedUploadWithInfo = {
   upload_id: number;
   user_id: number;
   upload: BuilderUploadWithUser;
-  user: User;
+  user: UserMin;
 };
 
 export type FavoriteOverlay = {
@@ -351,5 +351,24 @@ export type User = {
   site_ban: boolean;
   follow_award: number;
   fav_award: number;
+  saved_colors: string;
+};
+
+export type UserMin = {
+  drivername: string;
+  clubname: string;
+  email: string;
+  id: number;
+  is_admin: boolean;
+  shorten_name: boolean;
+  website_url: string;
+  twitter_name: string;
+  facebook_name: string;
+  instagram_name: string;
+  twitch_name: string;
+  youtube_name: string;
+  staff_member: boolean;
+  active: boolean;
+  pro_user: boolean;
   saved_colors: string;
 };

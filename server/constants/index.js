@@ -31,9 +31,29 @@ const TemplateVariables = {
   EMAIL: "%EMAIL%",
 };
 
+const UserMinimumFields = [
+  "drivername",
+  "clubname",
+  "email",
+  "id",
+  "is_admin",
+  "shorten_name",
+  "website_url",
+  "twitter_name",
+  "facebook_name",
+  "instagram_name",
+  "twitch_name",
+  "youtube_name",
+  "staff_member",
+  "active",
+  "pro_user",
+  "saved_colors",
+];
+
 module.exports = {
   StorageType,
   LayerTypes,
   ConfigCatFlags,
   TemplateVariables,
+  UserMinimumFields,
 };

@@ -13,8 +13,8 @@ import {
   MovableObjLayerData,
   PartialAllLayerData,
 } from "src/types/common";
-import { BuilderFont } from "src/types/model";
-import { BuilderLayerJSON, UserWithoutPassword } from "src/types/query";
+import { BuilderFont, UserMin } from "src/types/model";
+import { BuilderLayerJSON } from "src/types/query";
 
 import {
   BackgroundProperty,
@@ -34,7 +34,7 @@ import {
 } from "./components";
 
 type InnerFormProps = {
-  user?: UserWithoutPassword;
+  user?: UserMin;
   editable: boolean;
   stageRef: RefObject<Konva.Stage>;
   fontList: BuilderFont[];

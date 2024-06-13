@@ -7,7 +7,7 @@ import {
   PartialAllLayerData,
 } from "src/types/common";
 import { LayerTypes } from "src/types/enum";
-import { UserWithoutPassword } from "src/types/query";
+import { UserMin } from "src/types/model";
 import styled from "styled-components/macro";
 
 import { FormTextField } from "../../../components";
@@ -25,7 +25,7 @@ const CustomeTextField = styled(FormTextField)`
 
 type NamePropertyProps = {
   editable: boolean;
-  user?: UserWithoutPassword;
+  user?: UserMin;
   layerType?: LayerTypes;
   onLayerDataUpdateOnly: (valueMap: PartialAllLayerData) => void;
   onLayerDataUpdate: (valueMap: PartialAllLayerData) => void;
