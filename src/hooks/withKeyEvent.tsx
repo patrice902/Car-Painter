@@ -189,10 +189,15 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             (item) => item.id === (layer.layer_data as UploadObjLayerData).id
           )
         ) {
-          const schemes = await SchemeService.getSchemeListByUploadID(
-            (layer.layer_data as UploadObjLayerData).id
-          );
-          if (schemes.length <= 1) {
+          try {
+            const schemes = await SchemeService.getSchemeListByUploadID(
+              (layer.layer_data as UploadObjLayerData).id
+            );
+            if (schemes.length <= 1) {
+              deleteUpload = true;
+            }
+          } catch (e) {
+            console.error(e);
             deleteUpload = true;
           }
         }

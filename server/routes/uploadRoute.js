@@ -1,21 +1,26 @@
 const express = require("express");
 const UploadController = require("../controllers/upload.controller");
 const { isAuthenticated } = require("../middlewares/authenticate");
+const { isAllowedUser } = require("../middlewares/permissions");
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(isAuthenticated, UploadController.getList)
-  .post(isAuthenticated, UploadController.create);
+// router
+//   .route("/")
+//   .get(isAuthenticated, UploadController.getList)
+//   .post(isAuthenticated, UploadController.create);
 
 router
   .route("/byUserID/:id")
-  .get(isAuthenticated, UploadController.getListByUserID);
+  .get(isAuthenticated, isAllowedUser, UploadController.getListByUserID);
 
 router
   .route("/byUserID/:id/removeLegacy")
-  .delete(isAuthenticated, UploadController.deleteLegacyByUserID);
+  .delete(
+    isAuthenticated,
+    isAllowedUser,
+    UploadController.deleteLegacyByUserID
+  );
 
 router
   .route("/uploadFiles")
@@ -23,8 +28,8 @@ router
 
 router
   .route("/:id")
-  .get(isAuthenticated, UploadController.getByID)
-  .put(isAuthenticated, UploadController.update)
+  .get(isAuthenticated, UploadController.getById)
+  // .put(isAuthenticated, UploadController.update)
   .delete(isAuthenticated, UploadController.delete);
 
 module.exports = router;

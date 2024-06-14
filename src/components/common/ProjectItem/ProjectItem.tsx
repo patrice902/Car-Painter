@@ -29,10 +29,8 @@ import {
 } from "src/helper";
 import { setPreviousPath } from "src/redux/reducers/authReducer";
 import CarService from "src/services/carService";
-import {
-  BuilderSchemeJSONForGetListByUserId,
-  UserWithoutPassword,
-} from "src/types/query";
+import { UserMin } from "src/types/model";
+import { BuilderSchemeJSONForGetListByUserId } from "src/types/query";
 
 import {
   ActionIcon,
@@ -42,7 +40,7 @@ import {
 } from "./ProjectItem.style";
 
 type ProjectItemProps = {
-  user: UserWithoutPassword;
+  user: UserMin;
   scheme: BuilderSchemeJSONForGetListByUserId;
   onDelete?: (schemeID: number) => void;
   onCloneProject?: (schemeID: number) => void;

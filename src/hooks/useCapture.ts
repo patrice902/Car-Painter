@@ -45,7 +45,7 @@ export const useCapture = (
   const [, currentSchemeRef] = useReducerRef(
     useSelector((state: RootState) => state.schemeReducer.current)
   );
-  const [, currentCarMakeRef] = useReducerRef(
+  const [currentCarMake, currentCarMakeRef] = useReducerRef(
     useSelector((state: RootState) => state.carMakeReducer.current)
   );
   const loadedStatuses = useSelector(
@@ -67,11 +67,8 @@ export const useCapture = (
   );
 
   const carMakeSize = useMemo(
-    () =>
-      currentCarMakeRef.current && currentCarMakeRef.current.car_type === "Misc"
-        ? 1024
-        : 2048,
-    [currentCarMakeRef]
+    () => (currentCarMake?.car_type === "Misc" ? 1024 : 2048),
+    [currentCarMake]
   );
 
   const takeScreenshot = useCallback(async () => {

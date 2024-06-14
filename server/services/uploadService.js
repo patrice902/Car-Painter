@@ -3,7 +3,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 
 class UploadService {
   static async getList() {
-    const uploads = await Upload.query().withGraphFetched("user");
+    const uploads = await Upload.query().withGraphFetched("user(minSelects)");
     return uploads;
   }
 
@@ -14,7 +14,7 @@ class UploadService {
 
     const uploads = await Upload.query()
       .where("user_id", user_id)
-      .withGraphFetched("user");
+      .withGraphFetched("user(minSelects)");
 
     return uploads;
   }
@@ -27,7 +27,7 @@ class UploadService {
     const uploads = await Upload.query()
       .where("user_id", user_id)
       .where("legacy_mode", 1)
-      .withGraphFetched("user");
+      .withGraphFetched("user(minSelects)");
 
     return uploads;
   }
@@ -37,7 +37,9 @@ class UploadService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const upload = await Upload.query().findById(id).withGraphFetched("user");
+    const upload = await Upload.query()
+      .findById(id)
+      .withGraphFetched("user(minSelects)");
 
     return upload;
   }

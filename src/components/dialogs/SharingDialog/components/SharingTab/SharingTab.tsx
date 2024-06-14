@@ -1,16 +1,16 @@
 import { Formik } from "formik";
 import React, { useMemo } from "react";
-import { User } from "src/types/model";
-import { SharedSchemeWithUser, UserWithoutPassword } from "src/types/query";
+import { UserMin } from "src/types/model";
+import { SharedSchemeWithUser } from "src/types/query";
 
 import { InnerForm } from "./InnerForm";
 import { SharingTabFormValues } from "./InnerForm/model";
 
 type SharingTabProps = {
   editable: boolean;
-  owner?: User | null;
+  owner?: UserMin | null;
   schemeID: number;
-  currentUser: UserWithoutPassword;
+  currentUser: UserMin;
   sharedUsers: SharedSchemeWithUser[];
   onCancel: () => void;
   onApply: (values: SharingTabFormValues) => void;

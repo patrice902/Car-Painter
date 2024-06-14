@@ -26,7 +26,7 @@ class LeagueSeriesController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       const league_series = await LeagueSeriesService.getById(req.params.id);
       res.json(league_series);

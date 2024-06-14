@@ -1,9 +1,10 @@
-import { SharedSchemeWithUser, UserWithoutPassword } from "src/types/query";
+import { UserMin } from "src/types/model";
+import { SharedSchemeWithUser } from "src/types/query";
 
 export type SharingTabFormValues = {
   newUser: {
     user_id: number;
-    user: UserWithoutPassword;
+    user: UserMin;
     pro_user: boolean;
     scheme_id: number;
     accepted: boolean;

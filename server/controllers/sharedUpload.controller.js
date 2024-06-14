@@ -42,7 +42,7 @@ class SharedUploadController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let Shared = await SharedUploadService.getById(req.params.id);
       res.json(Shared);

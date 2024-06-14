@@ -1,5 +1,4 @@
 const _ = require("lodash");
-const Layer = require("../models/layer.model");
 const Scheme = require("../models/scheme.model");
 const {
   generateRandomColor,
@@ -17,7 +16,7 @@ class SchemeService {
     const schemes = await Scheme.query()
       .where("avail", 1)
       .withGraphFetched(
-        "[carMake.[bases], layers, originalAuthor, originalScheme]"
+        "[carMake.[bases], layers, originalAuthor(minSelects), originalScheme]"
       );
 
     return schemes;
@@ -32,7 +31,7 @@ class SchemeService {
       .where("avail", 1)
       .where("user_id", user_id)
       .withGraphFetched(
-        "[carMake, user, originalAuthor, originalScheme, sharedUsers.[user]]"
+        "[carMake, user(minSelects), originalAuthor(minSelects), originalScheme, sharedUsers.[user(minSelects)]]"
       );
 
     return schemes;
@@ -42,7 +41,9 @@ class SchemeService {
     const schemes = await Scheme.query()
       .where("avail", 1)
       .where("public", 1)
-      .withGraphFetched("[carMake, user, sharedUsers.[user]]");
+      .withGraphFetched(
+        "[carMake, user(minSelects), sharedUsers.[user(minSelects)]]"
+      );
 
     return schemes;
   }
@@ -56,7 +57,7 @@ class SchemeService {
       .where("avail", 1)
       .where("public", 1)
       .where("user_id", user_id)
-      .withGraphFetched("[carMake, user]");
+      .withGraphFetched("[carMake, user(minSelects)]");
 
     return schemes;
   }
@@ -74,7 +75,7 @@ class SchemeService {
     const scheme = await Scheme.query()
       .findById(id)
       .withGraphFetched(
-        "[carMake.[bases], layers, sharedUsers, user, lastModifier]"
+        "[carMake.[bases], layers, sharedUsers, user(minSelects), lastModifier(minSelects)]"
       );
 
     return scheme;
@@ -123,6 +124,10 @@ class SchemeService {
       legacy_mode,
       guide_data: JSON.stringify(defaultGuideData),
       hide_spec: 1,
+      on_do: 0,
+      file_missing: 0,
+      original_scheme_id: 0,
+      original_author_id: 0,
     });
     return scheme;
   }
@@ -154,6 +159,8 @@ class SchemeService {
           layer_locked: 0,
           time_modified: 0,
           confirm: "",
+          on_do: 0,
+          file_missing: 0,
         })
       );
     }
@@ -188,6 +195,8 @@ class SchemeService {
                   layer_order: layer_index++,
                   layer_locked: 0,
                   time_modified: 0,
+                  on_do: 0,
+                  file_missing: 0,
                   confirm: "",
                 })
               );
@@ -233,6 +242,8 @@ class SchemeService {
                   layer_order: layer_index++,
                   layer_locked: 0,
                   time_modified: 0,
+                  on_do: 0,
+                  file_missing: 0,
                   confirm: "",
                 })
               );
@@ -262,6 +273,8 @@ class SchemeService {
                 layer_order: layer_index++,
                 layer_locked: 0,
                 time_modified: 0,
+                on_do: 0,
+                file_missing: 0,
                 confirm: "",
               })
             );

@@ -1,9 +1,10 @@
+const { UserMinimumFields } = require("../constants");
 const User = require("../models/user.model");
 const { checkSQLWhereInputValid } = require("../utils/common");
 
 class UserService {
   static async getList() {
-    const users = await User.query();
+    const users = await User.query().select(...UserMinimumFields);
     return users;
   }
 
@@ -13,6 +14,7 @@ class UserService {
     }
 
     const user = await User.query()
+      .select(...UserMinimumFields)
       .findById(id)
       .withGraphFetched("[blockedUsers, blockedByUsers]");
 
@@ -24,21 +26,26 @@ class UserService {
       throw new Error("SQL Injection attack detected.");
     }
 
-    const user = await User.query().where("id", id).where("pro_user", 1);
+    const list = await User.query()
+      .select(...UserMinimumFields)
+      .where("id", id)
+      .where("pro_user", 1);
 
-    return user;
+    return list.length ? list[0] : null;
   }
 
-  static async getByEmail(email) {
-    if (!checkSQLWhereInputValid(email)) {
+  static async getMe(usr) {
+    if (!checkSQLWhereInputValid(usr)) {
       throw new Error("SQL Injection attack detected.");
     }
+    const isEmail = usr.includes("@");
 
-    const user = await User.query()
-      .where("email", email)
+    const list = await User.query()
+      .select(...UserMinimumFields, "password")
+      .where(isEmail ? "email" : "id", isEmail ? usr : parseInt(usr))
       .withGraphFetched("[blockedUsers, blockedByUsers]");
 
-    return user;
+    return list.length ? list[0] : null;
   }
 
   static async create(payload) {

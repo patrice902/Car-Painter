@@ -14,7 +14,9 @@ class SharedSchemeService {
 
     const list = await SharedScheme.query()
       .where("user_id", user_id)
-      .withGraphFetched("scheme.[carMake, user, sharedUsers.[user]]");
+      .withGraphFetched(
+        "scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]"
+      );
     return list;
   }
 
@@ -25,24 +27,26 @@ class SharedSchemeService {
 
     const list = await SharedScheme.query()
       .where("scheme_id", scheme_id)
-      .withGraphFetched("user");
+      .withGraphFetched("user(minSelects)");
     return list;
   }
 
-  static async getByID(id) {
+  static async getById(id) {
     if (!checkSQLWhereInputValid(id)) {
       throw new Error("SQL Injection attack detected.");
     }
 
     const shared = await SharedScheme.query()
       .findById(id)
-      .withGraphFetched("[user, scheme.[carMake, user, sharedUsers.[user]]]");
+      .withGraphFetched(
+        "[user(minSelects), scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]]"
+      );
     return shared;
   }
 
   static async create(payload) {
     const shared = await SharedScheme.query().insert(payload);
-    return await this.getByID(shared.id);
+    return await this.getById(shared.id);
   }
 
   static async updateById(id, payload) {
@@ -51,7 +55,7 @@ class SharedSchemeService {
     }
 
     await SharedScheme.query().patchAndFetchById(id, payload);
-    return await this.getByID(id);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {

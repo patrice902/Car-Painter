@@ -10,8 +10,7 @@ import {
 import _ from "lodash";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { SearchBox } from "src/components/common";
-import { BuilderLogo, BuilderUploadWithUser } from "src/types/model";
-import { UserWithoutPassword } from "src/types/query";
+import { BuilderLogo, BuilderUploadWithUser, UserMin } from "src/types/model";
 
 import EnterCodeBtn from "../UploadDialog/EnterCodeBtn";
 import { FlagContent, LogoContent, UploadContent } from "./components";
@@ -27,7 +26,7 @@ import {
 type LogoDialogProps = {
   logos: BuilderLogo[];
   uploads: BuilderUploadWithUser[];
-  user: UserWithoutPassword;
+  user: UserMin;
   open: boolean;
   onOpenLogo: (logo: BuilderLogo) => void;
   onOpenUpload: (upload: BuilderUploadWithUser) => void;

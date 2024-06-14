@@ -1,5 +1,6 @@
 const Model = require("../config/objection");
 const path = require("path");
+const { UserMinimumFields } = require("../constants");
 
 /**
  * User model.
@@ -67,6 +68,14 @@ class User extends Model {
           from: "users.id",
           to: "blocked_users.blocker_id",
         },
+      },
+    };
+  }
+
+  static get modifiers() {
+    return {
+      minSelects(builder) {
+        builder.select(...UserMinimumFields);
       },
     };
   }

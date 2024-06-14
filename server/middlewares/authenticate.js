@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const UserService = require("../services/userService");
 
 const isAuthenticated = async (req, res, next) => {
@@ -11,9 +12,9 @@ const isAuthenticated = async (req, res, next) => {
 
   if (token && token.usr && token.hash) {
     try {
-      let user = await UserService.getById(parseInt(token.usr));
+      const user = await UserService.getMe(token.usr);
       if (user.password === token.hash) {
-        req.user = user;
+        req.user = _.omit(user, ["password"]);
         next();
       } else {
         res.status(401).json({

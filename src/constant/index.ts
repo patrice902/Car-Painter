@@ -755,5 +755,4 @@ export const TemplateVariables = {
   TWITCH_NAME: "%TWITCH_NAME%",
   YOUTUBE_NAME: "%YOUTUBE_NAME%",
   WEBSITE_URL: "%WEBSITE_URL%",
-  EMAIL: "%EMAIL%",
 };

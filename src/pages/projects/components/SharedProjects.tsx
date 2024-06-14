@@ -5,16 +5,15 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useHistory } from "react-router";
 import { ProjectItem, ScreenLoader } from "src/components/common";
 import { decodeHtml, parseScheme, scrollBackOnProjectList } from "src/helper";
-import { CarMake } from "src/types/model";
+import { CarMake, UserMin } from "src/types/model";
 import {
   BuilderSchemeJSONForGetListByUserId,
   FavoriteSchemeForGetListByUserId,
   SharedSchemeForGetListByUserId,
-  UserWithoutPassword,
 } from "src/types/query";
 
 type SharedProjectsProps = {
-  user: UserWithoutPassword;
+  user: UserMin;
   blockedBy: number[];
   sharedSchemeList: SharedSchemeForGetListByUserId[];
   favoriteSchemeList: FavoriteSchemeForGetListByUserId[];

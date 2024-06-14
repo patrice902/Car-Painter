@@ -11,7 +11,7 @@ import SchemeService from "src/services/schemeService";
 import SharedSchemeService from "src/services/sharedSchemeService";
 import { DefaultLayerData } from "src/types/common";
 import { HistoryActions } from "src/types/enum";
-import { BuilderScheme, CarMake, SharedScheme, User } from "src/types/model";
+import { BuilderScheme, CarMake, SharedScheme, UserMin } from "src/types/model";
 import {
   BuilderSchemeJSON,
   BuilderSchemeJSONForGetListByUserId,
@@ -42,8 +42,8 @@ export type SchemeReducerState = {
   sharedList: SharedSchemeForGetListByUserId[];
   sharedUsers: SharedSchemeWithUser[];
   current?: BuilderSchemeJSON | null;
-  owner?: User | null;
-  lastModifier?: User | null;
+  owner?: UserMin | null;
+  lastModifier?: UserMin | null;
   loading: boolean;
   loaded: boolean;
   saving: boolean;
@@ -218,10 +218,10 @@ export const slice = createSlice({
     ) => {
       state.current = mergeTwoScheme(state.current, action.payload);
     },
-    setOwner: (state, action: PayloadAction<User | null>) => {
+    setOwner: (state, action: PayloadAction<UserMin | null>) => {
       state.owner = action.payload;
     },
-    setLastModifier: (state, action: PayloadAction<User | null>) => {
+    setLastModifier: (state, action: PayloadAction<UserMin | null>) => {
       state.lastModifier = action.payload;
     },
     clearCurrent: (state) => {

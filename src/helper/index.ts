@@ -24,12 +24,12 @@ import {
   BuilderScheme,
   BuilderUpload,
   CarMake,
+  UserMin,
 } from "src/types/model";
 import {
   BuilderLayerJSON,
   BuilderLayerPayload,
   BuilderSchemeJSON,
-  UserWithoutPassword,
 } from "src/types/query";
 import TGA from "src/utils/tga";
 import urlJoin from "url-join";
@@ -659,7 +659,7 @@ export const isInSameSideBar = (type1: LayerTypes, type2: LayerTypes) => {
   return false;
 };
 
-export const getUserName = (user?: UserWithoutPassword | null) => {
+export const getUserName = (user?: UserMin | null) => {
   if (!user) {
     return "";
   }
@@ -837,7 +837,7 @@ export const getAvatarURL = (userId: string | number) =>
 export const replaceByTemplateVariables = (
   str: string,
   layerType?: LayerTypes,
-  user?: UserWithoutPassword | null
+  user?: UserMin | null
 ) => {
   if (layerType === LayerTypes.TEXT) {
     return str
@@ -847,8 +847,7 @@ export const replaceByTemplateVariables = (
       .replaceAll(TemplateVariables.INSTAGRAM_NAME, user?.instagram_name ?? "")
       .replaceAll(TemplateVariables.TWITCH_NAME, user?.twitch_name ?? "")
       .replaceAll(TemplateVariables.YOUTUBE_NAME, user?.youtube_name ?? "")
-      .replaceAll(TemplateVariables.WEBSITE_URL, user?.website_url ?? "")
-      .replaceAll(TemplateVariables.EMAIL, user?.email ?? "");
+      .replaceAll(TemplateVariables.WEBSITE_URL, user?.website_url ?? "");
   }
 
   // It's image layer types then.

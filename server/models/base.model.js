@@ -20,7 +20,7 @@ class Base extends Model {
           to: "car_makes.id",
         },
       },
-      User: {
+      user: {
         relation: Model.BelongsToOneRelation,
         modelClass: path.join(__dirname, "user.model"),
         join: {

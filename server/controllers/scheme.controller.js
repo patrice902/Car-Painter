@@ -4,7 +4,6 @@ const LayerService = require("../services/layerService");
 const FileService = require("../services/fileService");
 const CarMakeService = require("../services/carMakeService");
 const logger = require("../config/winston");
-const { LayerTypes } = require("../constants");
 const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SchemeController {
@@ -61,7 +60,7 @@ class SchemeController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let scheme = await SchemeService.getById(req.params.id);
 
@@ -83,6 +82,12 @@ class SchemeController {
   static async create(req, res) {
     try {
       const { carMakeID, userID, name, legacy_mode } = req.body;
+      if (req.user.id !== userID) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
       let carMake = await CarMakeService.getById(carMakeID);
 
       let legacyMode =
@@ -146,7 +151,7 @@ class SchemeController {
 
   static async update(req, res) {
     try {
-      let scheme = await SchemeService.updateById(req.params.id, req.body);
+      const scheme = await SchemeService.updateById(req.params.id, req.body);
       res.json(scheme);
     } catch (err) {
       logger.log("error", err.stack);
@@ -226,7 +231,16 @@ class SchemeController {
 
   static async clone(req, res) {
     try {
-      let scheme = await SchemeService.cloneById(req.params.id, req.user.id);
+      let scheme = await SchemeService.getById(req.params.id);
+      const clonable = req.user.id === scheme.user_id || scheme.public;
+
+      if (!clonable) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
+      scheme = await SchemeService.cloneById(req.params.id, req.user.id);
       await FileService.cloneFileOnS3(
         `scheme_thumbnails/${req.params.id}.jpg`,
         `scheme_thumbnails/${scheme.id}.jpg`

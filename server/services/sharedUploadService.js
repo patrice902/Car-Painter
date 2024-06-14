@@ -4,7 +4,7 @@ const { checkSQLWhereInputValid } = require("../utils/common");
 class SharedUploadService {
   static async getList() {
     const list = await SharedUpload.query().withGraphFetched(
-      "[user, upload.[user]]"
+      "[user(minSelects), upload.[user(minSelects)]]"
     );
     return list;
   }
@@ -16,7 +16,7 @@ class SharedUploadService {
 
     const list = await SharedUpload.query()
       .where("user_id", user_id)
-      .withGraphFetched("[user, upload.[user]]");
+      .withGraphFetched("[user(minSelects), upload.[user(minSelects)]]");
 
     return list;
   }
@@ -45,21 +45,21 @@ class SharedUploadService {
     return list;
   }
 
-  static async getByID(id) {
+  static async getById(id) {
     if (!checkSQLWhereInputValid(id)) {
       throw new Error("SQL Injection attack detected.");
     }
 
     const item = await SharedUpload.query()
       .findById(id)
-      .withGraphFetched("[user, upload.[user]]");
+      .withGraphFetched("[user(minSelects), upload.[user(minSelects)]]");
 
     return item;
   }
 
   static async create(payload) {
     const item = await SharedUpload.query().insert(payload);
-    return await this.getByID(item.id);
+    return await this.getById(item.id);
   }
 
   static async updateById(id, payload) {
@@ -68,7 +68,7 @@ class SharedUploadService {
     }
 
     await SharedUpload.query().patchAndFetchById(id, payload);
-    return await this.getByID(id);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
