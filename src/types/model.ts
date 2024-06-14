@@ -357,7 +357,6 @@ export type User = {
 export type UserMin = {
   drivername: string;
   clubname: string;
-  email: string;
   id: number;
   is_admin: boolean;
   shorten_name: boolean;
