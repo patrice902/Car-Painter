@@ -440,45 +440,38 @@ export const useCapture = (
   }, [dispatch, currentSchemeRef, stageRef, capturing]);
 
   const handleDownloadSpecPNG = useCallback(async () => {
-    if (
-      viewMode === ViewModes.SPEC_VIEW &&
-      loadedStatuses[`virtual-guide-mask-${schemeFinishBase}`]
-    ) {
-      try {
-        await sleep(200);
-        const { tgaCtx, canvas } = await takeScreenshot();
+    try {
+      await sleep(200);
+      const { tgaCtx, canvas } = await takeScreenshot();
 
-        dispatch(setViewMode(ViewModes.NORMAL_VIEW));
-        dispatch(
-          setLoadedStatus({
-            key: `virtual-guide-mask-${schemeFinishBase}`,
-            value: false,
-          })
+      dispatch(setViewMode(ViewModes.NORMAL_VIEW));
+      dispatch(
+        setLoadedStatus({
+          key: `virtual-guide-mask-${schemeFinishBase}`,
+          value: false,
+        })
+      );
+
+      if (!tgaCtx) return;
+
+      if (downloadSpecTGA) {
+        downloadTGA(
+          tgaCtx,
+          carMakeSize,
+          carMakeSize,
+          `car_spec_${userRef.current?.id ?? ""}.tga`
         );
-
-        if (!tgaCtx) return;
-
-        if (downloadSpecTGA) {
-          downloadTGA(
-            tgaCtx,
-            carMakeSize,
-            carMakeSize,
-            `car_spec_${userRef.current?.id ?? ""}.tga`
-          );
-        } else {
-          const dataURL = canvas.toDataURL("image/png", 1);
-          dispatch(setSpecTGADataURL(dataURL));
-        }
-      } catch (err) {
-        console.log(err);
-        dispatch(catchErrorMessage(err));
+      } else {
+        const dataURL = canvas.toDataURL("image/png", 1);
+        dispatch(setSpecTGADataURL(dataURL));
       }
+    } catch (err) {
+      console.log(err);
+      dispatch(catchErrorMessage(err));
     }
   }, [
     dispatch,
-    viewMode,
     schemeFinishBase,
-    loadedStatuses,
     userRef,
     takeScreenshot,
     carMakeSize,
@@ -486,8 +479,14 @@ export const useCapture = (
   ]);
 
   useEffect(() => {
-    handleDownloadSpecPNG();
-  }, [handleDownloadSpecPNG]);
+    if (
+      viewMode === ViewModes.SPEC_VIEW &&
+      loadedStatuses[`virtual-guide-mask-${schemeFinishBase}`]
+    ) {
+      handleDownloadSpecPNG();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode, loadedStatuses, schemeFinishBase]);
 
   useEffect(() => {
     if (pauseCapturing && !drawingStatus && !capturing) {

@@ -28,7 +28,7 @@ class LayerService {
     const layers = await Layer.query()
       .where("layer_type", LayerTypes.UPLOAD)
       .where("upload_id", upload_id)
-      .patchAndFetchById("scheme");
+      .withGraphFetched("scheme");
     return layers;
   }
 
@@ -46,7 +46,7 @@ class LayerService {
     const layers = await Layer.query()
       .where("layer_type", LayerTypes.UPLOAD)
       .where("upload_id", "IN", uploadIDs)
-      .patchAndFetchById("scheme");
+      .withGraphFetched("scheme");
     return layers;
   }
 
