@@ -847,8 +847,7 @@ export const replaceByTemplateVariables = (
       .replaceAll(TemplateVariables.INSTAGRAM_NAME, user?.instagram_name ?? "")
       .replaceAll(TemplateVariables.TWITCH_NAME, user?.twitch_name ?? "")
       .replaceAll(TemplateVariables.YOUTUBE_NAME, user?.youtube_name ?? "")
-      .replaceAll(TemplateVariables.WEBSITE_URL, user?.website_url ?? "")
-      .replaceAll(TemplateVariables.EMAIL, user?.email ?? "");
+      .replaceAll(TemplateVariables.WEBSITE_URL, user?.website_url ?? "");
   }
 
   // It's image layer types then.

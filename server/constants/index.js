@@ -28,13 +28,11 @@ const TemplateVariables = {
   TWITCH_NAME: "%TWITCH_NAME%",
   YOUTUBE_NAME: "%YOUTUBE_NAME%",
   WEBSITE_URL: "%WEBSITE_URL%",
-  EMAIL: "%EMAIL%",
 };
 
 const UserMinimumFields = [
   "drivername",
   "clubname",
-  "email",
   "id",
   "is_admin",
   "shorten_name",
