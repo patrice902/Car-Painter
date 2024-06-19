@@ -825,14 +825,21 @@ export const getLayerTypesWithAttr = (attr: string) =>
     ].includes(attr)
   );
 
-export const getAvatarURL = (userId: string | number) =>
-  config.imageDriverURL?.length
-    ? urlJoin(config.imageDriverURL, `?driver=${userId}`)
-    : urlJoin(
-        config.parentAppURL ?? "https://www.tradingpaints.com",
-        "scripts/image_driver.php",
-        `?driver=${userId}`
-      );
+export const getAvatarURL = (userId: string | number) => {
+  if (!config.imageDriverURL?.length) {
+    return urlJoin(
+      config.parentAppURL ?? "https://www.tradingpaints.com",
+      "scripts/image_driver.php",
+      `?driver=${userId}`
+    );
+  }
+
+  if (config.imageDriverURL.includes("scripts")) {
+    return urlJoin(config.imageDriverURL, `?driver=${userId}`);
+  }
+
+  return urlJoin(config.imageDriverURL, `${userId}.jpg`);
+};
 
 export const replaceByTemplateVariables = (
   str: string,

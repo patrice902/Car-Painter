@@ -47,9 +47,15 @@ function removeNumbersFromString(text) {
 }
 
 function getAvatarURL(userId) {
-  return config.imageDriverURL.length
-    ? `${config.imageDriverURL}?driver=${userId}`
-    : `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
+  if (!config.imageDriverURL.length) {
+    return `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
+  }
+
+  if (config.imageDriverURL.includes("scripts")) {
+    return `${config.imageDriverURL}?driver=${userId}`;
+  }
+
+  return `${config.imageDriverURL}/${userId}.jpg`;
 }
 
 function checkSQLWhereInputValid(input) {

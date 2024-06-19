@@ -438,7 +438,7 @@ export const useCapture = (
 
   const handleDownloadSpecPNG = useCallback(async () => {
     try {
-      await sleep(200);
+      await sleep(1000);
       const { tgaCtx, canvas } = await takeScreenshot();
 
       dispatch(setViewMode(ViewModes.NORMAL_VIEW));
