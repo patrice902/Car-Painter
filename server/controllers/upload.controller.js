@@ -30,7 +30,7 @@ class UploadController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let upload = await UploadService.getById(req.params.id);
       res.json(upload);
@@ -111,13 +111,11 @@ class UploadController {
     try {
       let { deleteFromAll, userID } = req.body;
       let upload = await UploadService.getById(req.params.id);
-      upload = upload.toJSON();
       if (deleteFromAll && !userID) {
         await FileService.deleteFileFromS3(upload.file_name);
         await LayerService.deleteByUploadID(req.params.id);
       } else if (userID) {
         let layers = await LayerService.getListByUploadID(req.params.id);
-        layers = layers.toJSON();
         let schemes = [];
         for (let layer of layers) {
           if (
@@ -149,13 +147,11 @@ class UploadController {
       const userID = req.params.id;
 
       let uploads = await UploadService.getLegacyListByUserID(userID);
-      uploads = uploads.toJSON();
       const upload_ids = uploads.map((upload) => upload.id);
 
       if (deleteFromAll) {
         for (let upload of uploads) {
           let layers = await LayerService.getListByUploadID(upload.id);
-          layers = layers.toJSON();
 
           let schemes = [];
           for (let layer of layers) {
@@ -184,7 +180,6 @@ class UploadController {
       let sharedUploads = await SharedUploadService.getListByUserId(
         req.params.id
       );
-      sharedUploads = sharedUploads.toJSON();
       const legacySharedsUploadIds = sharedUploads
         .filter((item) => item.upload.legacy_mode)
         .map((item) => item.id);

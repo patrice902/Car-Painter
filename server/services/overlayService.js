@@ -3,31 +3,39 @@ const multer = require("multer");
 const multerS3 = require("multer-s3");
 const s3 = require("../utils/s3");
 const config = require("../config");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class OverlayService {
   static async getList() {
-    const overlays = await Overlay.forge().fetchAll();
+    const overlays = await Overlay.query();
     return overlays;
   }
 
   static async getById(id) {
-    const overlay = await Overlay.where({ id }).fetch();
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const overlay = await Overlay.query().findById(id);
     return overlay;
   }
 
   static async create(payload) {
-    const overlay = await Overlay.forge(payload).save();
+    const overlay = await Overlay.query().insert(payload);
     return overlay;
   }
 
   static async updateById(id, payload) {
-    const overlay = await this.getById(id);
-    await overlay.save(payload);
+    const overlay = await Overlay.query().patchAndFetchById(id, payload);
     return overlay;
   }
 
   static async deleteById(id) {
-    await Overlay.where({ id }).destroy({ require: false });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await Overlay.query().deleteById(id);
     return true;
   }
 

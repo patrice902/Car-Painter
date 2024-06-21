@@ -14,7 +14,7 @@ class LogoController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let logo = await LogoService.getById(req.params.id);
       res.json(logo);

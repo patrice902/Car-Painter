@@ -38,7 +38,7 @@ class FavoriteOverlayController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let favorite = await FavoriteOverlayService.getById(req.params.id);
       res.json(favorite);
@@ -52,6 +52,12 @@ class FavoriteOverlayController {
 
   static async create(req, res) {
     try {
+      if (req.user.id !== req.body.user_id) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
       let favorite = await FavoriteOverlayService.create(req.body);
       res.json(favorite);
     } catch (err) {
@@ -64,7 +70,14 @@ class FavoriteOverlayController {
 
   static async update(req, res) {
     try {
-      let favorite = await FavoriteOverlayService.updateById(
+      let favorite = await FavoriteOverlayService.getById(req.params.id);
+      if (req.user.id !== favorite.user_id) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
+      favorite = await FavoriteOverlayService.updateById(
         req.params.id,
         req.body
       );
@@ -79,6 +92,13 @@ class FavoriteOverlayController {
 
   static async delete(req, res) {
     try {
+      const favorite = await FavoriteOverlayService.getById(req.params.id);
+      if (req.user.id !== favorite.user_id) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
       await FavoriteOverlayService.deleteById(req.params.id);
       res.json({});
     } catch (err) {

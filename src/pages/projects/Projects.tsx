@@ -6,6 +6,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Add as AddIcon } from "@material-ui/icons";
+import { useFeatureFlag } from "configcat-react";
 import _ from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,18 +30,21 @@ import {
   deleteScheme,
   deleteSharedItem,
   getFavoriteList,
+  getPublicSchemeList,
   getSchemeList,
   getSharedList,
   setLoaded as setSchemeLoaded,
   updateSharedItem,
 } from "src/redux/reducers/schemeReducer";
 import { CustomTabPanelProps } from "src/types/common";
+import { ConfigCatFlags } from "src/types/enum";
 import { CarMake } from "src/types/model";
 import styled from "styled-components";
 
 import {
   FavoriteProjects,
   FilterBar,
+  GalleryProjects,
   MyProjects,
   SharedProjects,
   TabBar,
@@ -52,6 +56,10 @@ export const Projects = React.memo(() => {
   const isAboveMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up("sm")
   );
+  const { value: enableGallery } = useFeatureFlag(
+    ConfigCatFlags.ENABLE_GALLERY,
+    true
+  );
 
   const user = useSelector((state: RootState) => state.authReducer.user);
   const blockedBy = useSelector(
@@ -62,6 +70,9 @@ export const Projects = React.memo(() => {
   );
   const schemeList = useSelector(
     (state: RootState) => state.schemeReducer.list
+  );
+  const schemePublicList = useSelector(
+    (state: RootState) => state.schemeReducer.publicList
   );
   const sharedSchemeList = useSelector(
     (state: RootState) => state.schemeReducer.sharedList
@@ -91,6 +102,7 @@ export const Projects = React.memo(() => {
 
   const [loadingSharedList, setLoadingSharedList] = useState(false);
   const [loadingFavoriteList, setLoadingFavoriteList] = useState(false);
+  const [loadingPublicList, setLoadingPublicList] = useState(false);
   const legacyFilter = useMemo(() => {
     for (const scheme of schemeList) {
       if (scheme.legacy_mode) return true;
@@ -156,6 +168,10 @@ export const Projects = React.memo(() => {
   useEffect(() => {
     if (user) {
       if (!schemeList.length) dispatch(getSchemeList(user.id));
+      if (!schemePublicList.length && enableGallery) {
+        setLoadingPublicList(true);
+        dispatch(getPublicSchemeList(() => setLoadingPublicList(false)));
+      }
       if (!carMakeList.length) dispatch(getCarMakeList());
       if (!sharedSchemeList.length) {
         setLoadingSharedList(true);
@@ -202,7 +218,7 @@ export const Projects = React.memo(() => {
     dispatch(deleteScheme(schemeID));
   };
   const handleCloneProject = (schemeID: number) => {
-    dispatch(cloneScheme(schemeID));
+    dispatch(cloneScheme(schemeID, openScheme));
   };
   const handleAcceptInvitation = (sharedID: number, callback?: () => void) => {
     dispatch(
@@ -311,7 +327,8 @@ export const Projects = React.memo(() => {
             {schemeLoading ||
             carMakeLoading ||
             loadingSharedList ||
-            loadingFavoriteList ? (
+            loadingFavoriteList ||
+            loadingPublicList ? (
               <ScreenLoader />
             ) : (
               <>
@@ -371,8 +388,33 @@ export const Projects = React.memo(() => {
                     hideLegacy={hideLegacy}
                     onRemoveFavorite={handleRemoveFavorite}
                     onAddFavorite={handleCreateFavorite}
+                    onDeleteProject={handleDeleteProject}
+                    onCloneProject={handleCloneProject}
                   />
                 </TabPanel>
+                {enableGallery ? (
+                  <TabPanel
+                    value={tabValue}
+                    index={3}
+                    title="Gallery"
+                    onCreateNew={handleCreateNew}
+                  >
+                    <GalleryProjects
+                      user={user}
+                      favoriteSchemeList={favoriteSchemeList}
+                      schemeList={schemePublicList}
+                      sortBy={sortBy}
+                      search={search}
+                      hideLegacy={hideLegacy}
+                      selectedVehicle={selectedVehicle}
+                      onCloneProject={handleCloneProject}
+                      onRemoveFavorite={handleRemoveFavorite}
+                      onAddFavorite={handleCreateFavorite}
+                    />
+                  </TabPanel>
+                ) : (
+                  <></>
+                )}
               </>
             )}
           </Box>
@@ -417,6 +459,7 @@ const TabPanel = ({
       id={`projects-tabpanel-${index}`}
       aria-labelledby={`projects-tab-${index}`}
       width="100%"
+      pb={2}
       {...props}
     >
       {value === index && (

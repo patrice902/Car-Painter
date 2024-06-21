@@ -1,11 +1,13 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
 
 /**
  * Font model.
  */
 
-const Font = bookshelf.model("Font", {
-  tableName: "builder_fonts",
-});
+class Font extends Model {
+  static get tableName() {
+    return "builder_fonts";
+  }
+}
 
 module.exports = Font;

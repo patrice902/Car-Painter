@@ -1,63 +1,70 @@
 const FavoriteScheme = require("../models/favoriteScheme.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FavoriteSchemeService {
   static async getList() {
-    const list = await FavoriteScheme.forge().fetchAll();
+    const list = await FavoriteScheme.query();
     return list;
   }
 
   static async getListByUserId(user_id) {
-    const list = await FavoriteScheme.where({ user_id }).fetchAll({
-      withRelated: [
-        "scheme",
-        "scheme.carMake",
-        "scheme.user",
-        "scheme.sharedUsers",
-        "scheme.sharedUsers.user",
-      ],
-    });
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await FavoriteScheme.query()
+      .where("user_id", user_id)
+      .withGraphFetched(
+        "scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]"
+      );
     return list;
   }
 
   static async getListBySchemeId(scheme_id) {
-    const list = await FavoriteScheme.where({ scheme_id }).fetchAll({
-      withRelated: ["user"],
-    });
+    if (!checkSQLWhereInputValid(scheme_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await FavoriteScheme.query()
+      .where("scheme_id", scheme_id)
+      .withGraphFetched("user(minSelects)");
     return list;
   }
 
-  static async getByID(id) {
-    const favorite = await FavoriteScheme.where({ id }).fetch({
-      withRelated: [
-        "user",
-        "scheme",
-        "scheme.carMake",
-        "scheme.user",
-        "scheme.sharedUsers",
-        "scheme.sharedUsers.user",
-      ],
-    });
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const favorite = await FavoriteScheme.query()
+      .findById(id)
+      .withGraphFetched(
+        "[user(minSelects), scheme.[carMake, user(minSelects), sharedUsers.[user(minSelects)]]]"
+      );
     return favorite;
   }
 
   static async create(payload) {
-    let favorite = await FavoriteScheme.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
-    return favorite;
+    const favorite = await FavoriteScheme.query().insert(payload);
+    return await this.getById(favorite.id);
   }
 
   static async updateById(id, payload) {
-    let favorite = await FavoriteScheme.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
-    return favorite;
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await FavoriteScheme.query().patchAndFetchById(id, payload);
+
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
-    await FavoriteScheme.where({ id }).destroy({
-      require: false,
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await FavoriteScheme.query().deleteById(id);
     return true;
   }
 }

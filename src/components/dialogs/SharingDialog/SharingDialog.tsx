@@ -1,6 +1,12 @@
 import { Box, Dialog, DialogTitle } from "@material-ui/core";
 import { useFeatureFlag } from "configcat-react";
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/redux";
 import { setMessage } from "src/redux/reducers/messageReducer";
@@ -52,6 +58,11 @@ export const SharingDialog = React.memo(
     const currentUser = useSelector(
       (state: RootState) => state.authReducer.user
     );
+
+    const showSowroomTab = useMemo(() => enableSubmitToShowroom && editable, [
+      enableSubmitToShowroom,
+      editable,
+    ]);
 
     const handleTabChange = useCallback(
       (event: ChangeEvent<unknown>, newValue?: number) => {
@@ -152,7 +163,7 @@ export const SharingDialog = React.memo(
           aria-label="Project Settings Tab"
         >
           <StyledTab label="Sharing" {...a11yProps(0)} />
-          {enableSubmitToShowroom ? (
+          {showSowroomTab ? (
             <StyledTab label="Showroom" {...a11yProps(1)} />
           ) : (
             <></>
@@ -170,7 +181,7 @@ export const SharingDialog = React.memo(
               onCancel={onCancel}
             />
           </TabPanel>
-          {enableSubmitToShowroom ? (
+          {showSowroomTab ? (
             <TabPanel value={tabValue} index={1}>
               <ShowroomTab
                 retrieveTGAPNGDataUrl={retrieveTGAPNGDataUrl}

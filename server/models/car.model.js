@@ -1,12 +1,13 @@
-const bookshelf = require("../config/bookshelf");
-require("./base.model");
-require("./scheme.model");
+const Model = require("../config/objection");
+
 /**
  * Car model.
  */
 
-const Car = bookshelf.model("Car", {
-  tableName: "cars",
-});
+class Car extends Model {
+  static get tableName() {
+    return "cars";
+  }
+}
 
 module.exports = Car;

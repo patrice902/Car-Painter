@@ -4,7 +4,7 @@ const LayerService = require("../services/layerService");
 const FileService = require("../services/fileService");
 const CarMakeService = require("../services/carMakeService");
 const logger = require("../config/winston");
-const { LayerTypes } = require("../constants");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SchemeController {
   static async getList(req, res) {
@@ -25,10 +25,45 @@ class SchemeController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getPublicList(req, res) {
+    try {
+      const { userID } = req.query;
+      let schemes;
+
+      if (userID) {
+        schemes = await SchemeService.getPublicListByUserID(userID);
+      } else {
+        schemes = await SchemeService.getPublicList();
+      }
+
+      res.json(schemes);
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
+  static async checkIfPublic(req, res) {
     try {
       let scheme = await SchemeService.getById(req.params.id);
-      scheme = scheme.toJSON();
+
+      res.json({
+        is_public: scheme.public,
+      });
+    } catch (err) {
+      logger.log("error", err.stack);
+      res.status(500).json({
+        message: err.message,
+      });
+    }
+  }
+
+  static async getById(req, res) {
+    try {
+      let scheme = await SchemeService.getById(req.params.id);
+
       res.json({
         scheme,
         carMake: scheme.carMake,
@@ -47,8 +82,14 @@ class SchemeController {
   static async create(req, res) {
     try {
       const { carMakeID, userID, name, legacy_mode } = req.body;
+      if (req.user.id !== userID) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
       let carMake = await CarMakeService.getById(carMakeID);
-      carMake = carMake.toJSON();
+
       let legacyMode =
         legacy_mode ||
         !carMake.total_bases ||
@@ -62,7 +103,7 @@ class SchemeController {
         name,
         legacyMode
       );
-      scheme = scheme.toJSON();
+
       await SchemeService.createCarmakeLayers(
         scheme,
         carMake,
@@ -84,11 +125,12 @@ class SchemeController {
     try {
       const schemeID = req.params.id;
       let scheme = await SchemeService.getById(schemeID);
-      await LayerService.deleteByQuery({
-        scheme_id: schemeID,
-        layer_type: LayerTypes.CAR,
-      });
-      scheme = scheme.toJSON();
+
+      if (!checkSQLWhereInputValid(schemeID)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+
+      await LayerService.deleteCarLayersInScheme(schemeID);
       await SchemeService.createCarmakeLayers(scheme, scheme.carMake, req.user);
       const schemeUpdatePayload = {
         date_modified: Math.round(new Date().getTime() / 1000),
@@ -109,7 +151,7 @@ class SchemeController {
 
   static async update(req, res) {
     try {
-      let scheme = await SchemeService.updateById(req.params.id, req.body);
+      const scheme = await SchemeService.updateById(req.params.id, req.body);
       res.json(scheme);
     } catch (err) {
       logger.log("error", err.stack);
@@ -122,7 +164,6 @@ class SchemeController {
   static async getListByUploadID(req, res) {
     try {
       let layers = await LayerService.getListByUploadID(req.params.id);
-      layers = layers.toJSON();
       let schemes = [];
       for (let layer of layers) {
         if (!schemes.find((scheme) => scheme.id === layer.scheme.id)) {
@@ -190,8 +231,16 @@ class SchemeController {
 
   static async clone(req, res) {
     try {
-      let scheme = await SchemeService.cloneById(req.params.id);
-      scheme = scheme.toJSON();
+      let scheme = await SchemeService.getById(req.params.id);
+      const clonable = req.user.id === scheme.user_id || scheme.public;
+
+      if (!clonable) {
+        return res.status(403).json({
+          message: "You are not authorized to access this resource.",
+        });
+      }
+
+      scheme = await SchemeService.cloneById(req.params.id, req.user.id);
       await FileService.cloneFileOnS3(
         `scheme_thumbnails/${req.params.id}.jpg`,
         `scheme_thumbnails/${scheme.id}.jpg`

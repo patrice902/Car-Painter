@@ -14,12 +14,14 @@ import {
 import { AvatarGroup } from "@material-ui/lab";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import ShowroomNoCar from "src/assets/showroom_no_car.svg";
 import { ImageWithLoad, LightTooltip } from "src/components/common";
 import { ConfirmDialog } from "src/components/dialogs";
 import config from "src/config";
 import {
   decodeHtml,
+  getAvatarURL,
   getDifferenceFromToday,
   getUserName,
   reduceString,
@@ -27,10 +29,8 @@ import {
 } from "src/helper";
 import { setPreviousPath } from "src/redux/reducers/authReducer";
 import CarService from "src/services/carService";
-import {
-  BuilderSchemeJSONForGetListByUserId,
-  UserWithoutPassword,
-} from "src/types/query";
+import { UserMin } from "src/types/model";
+import { BuilderSchemeJSONForGetListByUserId } from "src/types/query";
 
 import {
   ActionIcon,
@@ -40,7 +40,7 @@ import {
 } from "./ProjectItem.style";
 
 type ProjectItemProps = {
-  user: UserWithoutPassword;
+  user: UserMin;
   scheme: BuilderSchemeJSONForGetListByUserId;
   onDelete?: (schemeID: number) => void;
   onCloneProject?: (schemeID: number) => void;
@@ -57,6 +57,8 @@ type ProjectItemProps = {
   accepted?: boolean;
   sharedID?: number;
   favoriteID?: number;
+  markAsOwned?: boolean;
+  markAsPublic?: boolean;
 };
 
 export const ProjectItem = React.memo((props: ProjectItemProps) => {
@@ -74,6 +76,8 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
     accepted,
     sharedID,
     favoriteID,
+    markAsOwned,
+    markAsPublic,
   } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -179,16 +183,21 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
     handleActionMenuClose();
   }, [accepted, scheme, shared]);
 
-  const handleOpenScheme = useCallback(() => {
-    const scrollPosition = document.getElementById("scheme-list-content")
-      ?.scrollTop;
+  const handleOpenScheme = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
 
-    dispatch(setPreviousPath(window.location.pathname));
-    if (scrollPosition)
-      setScrollPostion(window.location.pathname, scrollPosition);
-    onOpenScheme?.(scheme.id, sharedID);
-    return false;
-  }, [dispatch, onOpenScheme, scheme, sharedID]);
+      const scrollPosition = document.getElementById("scheme-list-content")
+        ?.scrollTop;
+
+      dispatch(setPreviousPath(window.location.pathname));
+      if (scrollPosition)
+        setScrollPostion(window.location.pathname, scrollPosition);
+      onOpenScheme?.(scheme.id, sharedID);
+      return false;
+    },
+    [dispatch, onOpenScheme, scheme, sharedID]
+  );
 
   const schemeThumbnailURL = useCallback(
     (id) => `${config.assetsURL}/scheme_thumbnails/${id}.jpg`,
@@ -210,7 +219,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <a href={`/project/${scheme.id}`} onClick={handleOpenScheme}>
+      <Link to={`/project/${scheme.id}`} onClick={handleOpenScheme}>
         <ImageWithLoad
           src={schemeThumbnailURL(scheme.id) + "?date=" + scheme.date_modified}
           altSrc={legacySchemeThumbnailURL(scheme.id)}
@@ -219,7 +228,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
           alt={scheme.name}
           cursorPointer
         />
-      </a>
+      </Link>
       <Box display="flex" justifyContent="space-between">
         <Box
           display="flex"
@@ -258,6 +267,26 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
               {reduceString(decodeHtml(scheme.name), 50)}
             </Typography>
           </Box>
+          <Typography variant="body2" noWrap>
+            {decodeHtml(scheme.carMake.name)}
+          </Typography>
+          {markAsOwned && scheme.user.id === user.id ? (
+            <Typography color="secondary" variant="body2" noWrap>
+              You are the owner of this project
+            </Typography>
+          ) : (
+            <></>
+          )}
+          {scheme.original_scheme_id ? (
+            <Typography variant="body2" noWrap>
+              Based on {scheme.originalScheme?.name ?? ""}{" "}
+              {scheme.originalAuthor
+                ? "by " + decodeHtml(getUserName(scheme.originalAuthor))
+                : ""}
+            </Typography>
+          ) : (
+            <></>
+          )}
           {scheme.user && scheme.user.id !== user.id ? (
             <Typography variant="body2" noWrap>
               Owner: {decodeHtml(getUserName(scheme.user))}
@@ -265,9 +294,13 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
           ) : (
             <></>
           )}
-          <Typography variant="body2" noWrap>
-            {decodeHtml(scheme.carMake.name)}
-          </Typography>
+          {markAsPublic && scheme.user.id === user.id && scheme.public ? (
+            <Typography color="secondary" variant="body2" noWrap>
+              Shared in the public gallery
+            </Typography>
+          ) : (
+            <></>
+          )}
           <Typography variant="body2" noWrap>
             Edited {getDifferenceFromToday(scheme.date_modified)}
           </Typography>
@@ -284,7 +317,7 @@ export const ProjectItem = React.memo((props: ProjectItemProps) => {
                   >
                     <Avatar
                       alt={getUserName(sharedUser.user)}
-                      src={`https://www.tradingpaints.com/scripts/image_driver.php?driver=${sharedUser.user_id}`}
+                      src={getAvatarURL(sharedUser.user_id)}
                     >
                       {sharedUser.user.drivername[0].toUpperCase()}
                     </Avatar>

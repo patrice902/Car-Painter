@@ -3,6 +3,7 @@ const CryptoJS = require("crypto-js");
 const config = require("../config");
 const UploadService = require("../services/uploadService");
 const SharedUploadService = require("../services/sharedUploadService");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SharedUploadController {
   static async getList(req, res) {
@@ -41,7 +42,7 @@ class SharedUploadController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let Shared = await SharedUploadService.getById(req.params.id);
       res.json(Shared);
@@ -89,7 +90,7 @@ class SharedUploadController {
 
     let upload;
     try {
-      upload = (await UploadService.getById(uploadId)).toJSON();
+      upload = await UploadService.getById(uploadId);
     } catch (err) {
       if (err.message === "EmptyResponse") {
         return res.status(400).json({
@@ -110,10 +111,14 @@ class SharedUploadController {
     }
 
     try {
-      let existingSharedUpload = await SharedUploadService.getByInfo({
-        upload_id: uploadId,
-        user_id: userID,
-      });
+      if (!checkSQLWhereInputValid(userID)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+
+      let existingSharedUpload = await SharedUploadService.getListByUploadIdAndUserID(
+        uploadId,
+        userID
+      );
 
       if (existingSharedUpload) {
         return res.status(400).json({

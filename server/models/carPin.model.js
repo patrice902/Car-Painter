@@ -1,18 +1,35 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * CarPin model.
  */
 
-const CarPin = bookshelf.model("CarPin", {
-  tableName: "car_pins",
-  carMake() {
-    return this.belongsTo("CarMake", "car_make");
-  },
-  user() {
-    return this.belongsTo("User", "userid");
-  },
-  dependents: ["user"],
-});
+class CarPin extends Model {
+  static get tableName() {
+    return "car_pins";
+  }
+
+  static get relationMappings() {
+    return {
+      carMake: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "carMake.model"),
+        join: {
+          from: "car_pins.car_make",
+          to: "car_makes.id",
+        },
+      },
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "car_pins.userid",
+          to: "users.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = CarPin;

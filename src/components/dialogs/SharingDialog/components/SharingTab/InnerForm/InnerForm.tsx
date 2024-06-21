@@ -15,14 +15,14 @@ import { useSelector } from "react-redux";
 import { decodeHtml, getUserName } from "src/helper";
 import { RootState } from "src/redux";
 import UserService from "src/services/userService";
-import { User } from "src/types/model";
+import { UserMin } from "src/types/model";
 import { useDebouncedCallback } from "use-debounce";
 
 import { SharingTabFormValues } from "./model";
 import { CustomDialogContent } from "./styles";
 
 type InnerFormProps = {
-  owner?: User | null;
+  owner?: UserMin | null;
   editable: boolean;
   currentUserID: number;
   schemeID: number;

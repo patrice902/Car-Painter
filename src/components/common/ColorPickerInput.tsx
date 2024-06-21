@@ -12,11 +12,49 @@ import { useDebouncedCallback } from "use-debounce";
 
 import LightTooltip from "./LightTooltip";
 
-const CustomColorPicker = styled(ColorPicker)`
-  &.ColorPicker-MuiButton-contained {
-    margin-left: 0;
+const DisabledTransparentColorPicker = styled(Box)`
+  background-image: linear-gradient(
+      45deg,
+      rgb(204, 204, 204) 25%,
+      transparent 25%
+    ),
+    linear-gradient(135deg, rgb(204, 204, 204) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgb(204, 204, 204) 75%),
+    linear-gradient(135deg, transparent 75%, rgb(204, 204, 204) 75%);
+  background-color: white;
+  border-color: rgb(118, 118, 118);
+  border-width: 0px;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-style: solid;
+  border-radius: 4px;
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 0, 4px -4px, 0px 4px;
+  margin: 6px 6px 6px 0;
+  position: relative;
+
+  :after {
+    content: "";
+    position: absolute;
+    background: repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 14px,
+        rgb(244, 67, 54) 14px,
+        rgb(244, 67, 54) 16px
+      )
+      transparent;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    border: 2px solid rgb(244, 67, 54);
+    border-radius: 4px;
   }
 `;
+
 const CustomTextField = styled(TextField)`
   .MuiInputBase-input {
     padding: 0;
@@ -183,15 +221,22 @@ export const ColorPickerInput = React.memo((props: ColorPickerInputProps) => {
         width={fullWidth ? "100%" : "auto"}
       >
         {disabled ? (
-          <Box
-            width="24px"
-            height="24px"
-            bgcolor={innerValue || "white"}
-            borderRadius="5px"
-            m="4px"
-          />
+          <>
+            {!innerValue ? (
+              <DisabledTransparentColorPicker />
+            ) : (
+              <Box
+                width="24px"
+                minWidth="24px"
+                height="24px"
+                bgcolor={innerValue}
+                borderRadius="5px"
+                m="6px 6px 6px 0"
+              />
+            )}
+          </>
         ) : (
-          <CustomColorPicker
+          <ColorPicker
             value={separateValues ? valuePicker : innerValue || "#"}
             onChange={handleColorChange}
             onOpen={handleColorPickerOpen}

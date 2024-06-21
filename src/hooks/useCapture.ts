@@ -12,7 +12,7 @@ import {
   imageDataFromSource,
   sleep,
 } from "src/helper";
-import { useReducerRef, useScheme } from "src/hooks";
+import { useReducerRef, useScheme, useStateRef } from "src/hooks";
 import { RootState } from "src/redux";
 import {
   setDownloadSpecTGA,
@@ -38,14 +38,14 @@ export const useCapture = (
   const dispatch = useDispatch();
   const { schemeFinishBase } = useScheme();
   const [pauseCapturing, setPauseCapturing] = useState(false);
-  const [capturing, setCapturing] = useState(false);
+  const [capturing, setCapturing, capturingRef] = useStateRef(false);
   const [, userRef] = useReducerRef(
     useSelector((state: RootState) => state.authReducer.user)
   );
   const [, currentSchemeRef] = useReducerRef(
     useSelector((state: RootState) => state.schemeReducer.current)
   );
-  const [, currentCarMakeRef] = useReducerRef(
+  const [currentCarMake, currentCarMakeRef] = useReducerRef(
     useSelector((state: RootState) => state.carMakeReducer.current)
   );
   const loadedStatuses = useSelector(
@@ -67,11 +67,8 @@ export const useCapture = (
   );
 
   const carMakeSize = useMemo(
-    () =>
-      currentCarMakeRef.current && currentCarMakeRef.current.car_type === "Misc"
-        ? 1024
-        : 2048,
-    [currentCarMakeRef]
+    () => (currentCarMake?.car_type === "Misc" ? 1024 : 2048),
+    [currentCarMake]
   );
 
   const takeScreenshot = useCallback(async () => {
@@ -236,9 +233,10 @@ export const useCapture = (
     baseLayerRef,
     mainLayerRef,
     carMaskLayerRef,
+    carMakeLayerRef,
+    setCapturing,
     carMakeSize,
     frameSizeRef,
-    carMakeLayerRef,
     currentCarMakeRef,
     currentSchemeRef,
   ]);
@@ -439,45 +437,38 @@ export const useCapture = (
   }, [dispatch, currentSchemeRef, stageRef, capturing]);
 
   const handleDownloadSpecPNG = useCallback(async () => {
-    if (
-      viewMode === ViewModes.SPEC_VIEW &&
-      loadedStatuses[`virtual-guide-mask-${schemeFinishBase}`]
-    ) {
-      try {
-        await sleep(200);
-        const { tgaCtx, canvas } = await takeScreenshot();
+    try {
+      await sleep(1000);
+      const { tgaCtx, canvas } = await takeScreenshot();
 
-        dispatch(setViewMode(ViewModes.NORMAL_VIEW));
-        dispatch(
-          setLoadedStatus({
-            key: `virtual-guide-mask-${schemeFinishBase}`,
-            value: false,
-          })
+      dispatch(setViewMode(ViewModes.NORMAL_VIEW));
+      dispatch(
+        setLoadedStatus({
+          key: `virtual-guide-mask-${schemeFinishBase}`,
+          value: false,
+        })
+      );
+
+      if (!tgaCtx) return;
+
+      if (downloadSpecTGA) {
+        downloadTGA(
+          tgaCtx,
+          carMakeSize,
+          carMakeSize,
+          `car_spec_${userRef.current?.id ?? ""}.tga`
         );
-
-        if (!tgaCtx) return;
-
-        if (downloadSpecTGA) {
-          downloadTGA(
-            tgaCtx,
-            carMakeSize,
-            carMakeSize,
-            `car_spec_${userRef.current?.id ?? ""}.tga`
-          );
-        } else {
-          const dataURL = canvas.toDataURL("image/png", 1);
-          dispatch(setSpecTGADataURL(dataURL));
-        }
-      } catch (err) {
-        console.log(err);
-        dispatch(catchErrorMessage(err));
+      } else {
+        const dataURL = canvas.toDataURL("image/png", 1);
+        dispatch(setSpecTGADataURL(dataURL));
       }
+    } catch (err) {
+      console.log(err);
+      dispatch(catchErrorMessage(err));
     }
   }, [
     dispatch,
-    viewMode,
     schemeFinishBase,
-    loadedStatuses,
     userRef,
     takeScreenshot,
     carMakeSize,
@@ -485,8 +476,14 @@ export const useCapture = (
   ]);
 
   useEffect(() => {
-    handleDownloadSpecPNG();
-  }, [handleDownloadSpecPNG]);
+    if (
+      viewMode === ViewModes.SPEC_VIEW &&
+      loadedStatuses[`virtual-guide-mask-${schemeFinishBase}`]
+    ) {
+      handleDownloadSpecPNG();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode, loadedStatuses, schemeFinishBase]);
 
   useEffect(() => {
     if (pauseCapturing && !drawingStatus && !capturing) {
@@ -497,6 +494,8 @@ export const useCapture = (
   }, [pauseCapturing, drawingStatus, capturing]);
 
   return {
+    capturing,
+    capturingRef,
     handleUploadThumbnail,
     handleDownloadTGA,
     handleDownloadSpecTGA,

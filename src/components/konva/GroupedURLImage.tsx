@@ -4,9 +4,14 @@ import { KonvaEventObject } from "konva/types/Node";
 import { Stage } from "konva/types/Stage";
 import React, { useMemo, useRef } from "react";
 import { Group, Image, Rect } from "react-konva";
-import { useDispatch } from "react-redux";
-import { colorValidator, positiveNumGuard } from "src/helper";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  colorValidator,
+  positiveNumGuard,
+  replaceByTemplateVariables,
+} from "src/helper";
 import { useDrag, useKonvaImageInit, useTransform } from "src/hooks";
+import { RootState } from "src/redux";
 import { setMessage } from "src/redux/reducers/messageReducer";
 import {
   DefaultLayerData,
@@ -106,6 +111,7 @@ export const GroupedURLImage = React.memo(
     const dispatch = useDispatch();
     const shapeRef = useRef<Konva.Group>(null);
     const imageshapeRef = useRef<Konva.Image>(null);
+    const owner = useSelector((state: RootState) => state.schemeReducer.owner);
 
     const isSVG = useMemo(() => src.toLowerCase().includes(".svg"), [src]);
     const allowFilter = useMemo(
@@ -119,7 +125,8 @@ export const GroupedURLImage = React.memo(
     const { image, applyCaching } = useKonvaImageInit({
       imageshapeRef,
       id,
-      src,
+      layer,
+      src: replaceByTemplateVariables(src, layer.layer_type, owner),
       stroke,
       strokeWidth,
       filterColor,

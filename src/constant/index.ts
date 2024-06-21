@@ -45,6 +45,8 @@ export const DefaultLayer = {
   layer_order: 1,
   time_modified: 0,
   confirm: "",
+  on_do: 0,
+  file_missing: 0,
   layer_data: {
     name: "",
     text: "",
@@ -93,6 +95,9 @@ export const DefaultLayer = {
     finish: FinishOptions[0].value,
     finishBase: FinishOptions[0].base,
     type: "",
+    editLock: undefined,
+    showOnTop: undefined,
+    ownerForGallery: undefined,
   },
 };
 
@@ -178,6 +183,9 @@ export const AllowedLayerProps = {
     "layer_data.finish",
     "layer_data.finishBase",
     "layer_data.legacy",
+    "layer_data.editLock",
+    "layer_data.showOnTop",
+    "layer_data.ownerForGallery",
   ],
   [LayerTypes.LOGO]: [
     "layer_visible",
@@ -215,6 +223,9 @@ export const AllowedLayerProps = {
     "layer_data.finish",
     "layer_data.finishBase",
     "layer_data.legacy",
+    "layer_data.editLock",
+    "layer_data.showOnTop",
+    "layer_data.ownerForGallery",
   ],
   [LayerTypes.OVERLAY]: [
     "layer_visible",
@@ -246,6 +257,9 @@ export const AllowedLayerProps = {
     "layer_data.finish",
     "layer_data.finishBase",
     "layer_data.legacy",
+    "layer_data.editLock",
+    "layer_data.showOnTop",
+    "layer_data.ownerForGallery",
   ],
   [LayerTypes.SHAPE]: {
     [MouseModes.RECT]: [
@@ -283,6 +297,9 @@ export const AllowedLayerProps = {
       "layer_data.cornerBottomRight",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.CIRCLE]: [
       "layer_visible",
@@ -314,6 +331,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.ELLIPSE]: [
       "layer_visible",
@@ -346,6 +366,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.STAR]: [
       "layer_visible",
@@ -378,6 +401,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.RING]: [
       "layer_visible",
@@ -410,6 +436,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.REGULARPOLYGON]: [
       "layer_visible",
@@ -442,6 +471,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.WEDGE]: [
       "layer_visible",
@@ -474,6 +506,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.ARC]: [
       "layer_visible",
@@ -507,6 +542,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.LINE]: [
       "layer_visible",
@@ -537,6 +575,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.POLYGON]: [
       "layer_visible",
@@ -568,6 +609,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.ARROW]: [
       "layer_visible",
@@ -602,6 +646,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
     [MouseModes.PEN]: [
       "layer_visible",
@@ -632,6 +679,9 @@ export const AllowedLayerProps = {
       "layer_data.shadowOffsetY",
       "layer_data.finish",
       "layer_data.finishBase",
+      "layer_data.editLock",
+      "layer_data.showOnTop",
+      "layer_data.ownerForGallery",
     ],
   },
   [LayerTypes.UPLOAD]: [
@@ -670,6 +720,9 @@ export const AllowedLayerProps = {
     "layer_data.finishBase",
     "layer_data.legacy",
     "layer_data.fromOldSource",
+    "layer_data.editLock",
+    "layer_data.showOnTop",
+    "layer_data.ownerForGallery",
   ],
   [LayerTypes.BASE]: [
     "layer_visible",
@@ -680,6 +733,8 @@ export const AllowedLayerProps = {
     "layer_data.color",
     "layer_data.finish",
     "layer_data.finishBase",
+    "layer_data.editLock",
+    "layer_data.ownerForGallery",
   ],
   [LayerTypes.CAR]: [
     "layer_visible",
@@ -689,4 +744,15 @@ export const AllowedLayerProps = {
     "layer_data.finish",
     "layer_data.finishBase",
   ],
+};
+
+export const TemplateVariables = {
+  PROFILE_NAME: "%NAME%",
+  PROFILE_AVATAR: "%AVATAR%",
+  TWITTER_NAME: "%TWITTER_NAME%",
+  FACEBOOK_NAME: "%FACEBOOK_NAME%",
+  INSTAGRAM_NAME: "%INSTAGRAM_NAME%",
+  TWITCH_NAME: "%TWITCH_NAME%",
+  YOUTUBE_NAME: "%YOUTUBE_NAME%",
+  WEBSITE_URL: "%WEBSITE_URL%",
 };

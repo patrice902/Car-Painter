@@ -38,7 +38,7 @@ class SharedSchemeController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let favorite = await SharedSchemeService.getById(req.params.id);
       res.json(favorite);

@@ -40,7 +40,10 @@ import { BuilderLayerJSON } from "src/types/query";
 
 import { ArrowKeys } from "./withKeyEvent";
 
-export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
+export const useDrawHelper = (
+  stageRef: RefObject<Stage | undefined>,
+  editable: boolean
+) => {
   const [prevPosition, setPrevPosition] = useState<Position>();
   const [previousGuide, setPreviousGuide] = useState<PaintingGuides[]>([]);
   const [previousPressedEventKey, setPreviousPressedEventKey] = useState<
@@ -376,6 +379,10 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
 
   useEffect(() => {
     // Show/hide Guide on pressing arrow keys
+    if (!editable) {
+      return;
+    }
+
     if (
       currentLayer &&
       ![LayerTypes.CAR, LayerTypes.BASE].includes(currentLayer.layer_type)
@@ -425,7 +432,7 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
     (e: KonvaEventObject<Event>) => {
       e.evt.preventDefault();
       const stage = e.target.getStage();
-      if (e.target !== stage && stage) {
+      if (e.target !== stage && stage && editable) {
         const position = stage.getPointerPosition();
         if (position) {
           dispatch(
@@ -437,7 +444,7 @@ export const useDrawHelper = (stageRef: RefObject<Stage | undefined>) => {
         }
       }
     },
-    [dispatch]
+    [dispatch, editable]
   );
 
   const onTap = useCallback(

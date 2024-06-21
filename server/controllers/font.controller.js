@@ -14,7 +14,7 @@ class FontController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let font = await FontService.getById(req.params.id);
       res.json(font);

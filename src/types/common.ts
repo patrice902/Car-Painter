@@ -80,6 +80,9 @@ export interface MovableObjLayerData extends DefaultLayerData {
   shadowOffsetY: number;
   width?: number;
   height?: number;
+  editLock?: boolean;
+  showOnTop?: boolean;
+  ownerForGallery?: number;
 }
 
 export interface TextObjLayerData extends MovableObjLayerData {
@@ -123,6 +126,8 @@ export interface OverlayObjLayerData extends MovableObjLayerData {
   stroke: number;
   stroke_scale: number;
   legacy: boolean;
+  source_file: string;
+  preview_file: string;
 }
 
 export interface ShapeBaseObjLayerData extends MovableObjLayerData {
@@ -231,6 +236,11 @@ export interface CarObjLayerData extends DefaultLayerData {
   color?: string;
   img: string;
   legacy?: boolean;
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  isFullUrl?: boolean;
 }
 
 export type PartialAllLayerData = Partial<

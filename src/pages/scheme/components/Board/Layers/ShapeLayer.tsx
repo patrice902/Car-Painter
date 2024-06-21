@@ -238,7 +238,11 @@ export const ShapeLayer = React.memo(
         guideData={guideData}
         onSelect={() => onSelect(layer)}
         onDblClick={onDblClick}
-        listening={!layer.layer_locked && mouseMode === MouseModes.DEFAULT}
+        listening={
+          !layer.layer_locked &&
+          mouseMode === MouseModes.DEFAULT &&
+          !layer.layer_data.editLock
+        }
         onChange={(values) => onChange(layer, values)}
         onHover={(flag) => onHover?.(layer, flag)}
         onLoadLayer={!virtual ? onLoadLayer : undefined}

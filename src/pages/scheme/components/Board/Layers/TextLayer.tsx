@@ -9,6 +9,7 @@ import {
   getRelativeShadowOffset,
   numberGuard,
   positiveNumGuard,
+  replaceByTemplateVariables,
 } from "src/helper";
 import { useLayer, useScheme } from "src/hooks";
 import { RootState } from "src/redux";
@@ -61,6 +62,7 @@ export const TextLayer = React.memo(
       (state: RootState) => state.fontReducer.loadedList
     );
     const fonts = useSelector((state: RootState) => state.fontReducer.list);
+    const owner = useSelector((state: RootState) => state.schemeReducer.owner);
 
     const shadowOffset = useMemo(
       () =>
@@ -97,7 +99,13 @@ export const TextLayer = React.memo(
         editable={editable}
         stageRef={stageRef}
         frameSize={frameSize}
-        text={decodeHtml(textLayerData.text)}
+        text={decodeHtml(
+          replaceByTemplateVariables(
+            textLayerData.text,
+            layer.layer_type,
+            owner
+          )
+        )}
         fontFamily={enhanceFontFamily(font?.font_name)}
         fontFile={
           font?.font_file
@@ -157,7 +165,11 @@ export const TextLayer = React.memo(
         guideData={guideData}
         onSelect={() => onSelect(layer)}
         onDblClick={onDblClick}
-        listening={!layer.layer_locked && mouseMode === MouseModes.DEFAULT}
+        listening={
+          !layer.layer_locked &&
+          mouseMode === MouseModes.DEFAULT &&
+          !layer.layer_data.editLock
+        }
         onChange={(value, pushingToHistory) =>
           onChange(layer, value, pushingToHistory)
         }

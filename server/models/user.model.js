@@ -1,38 +1,84 @@
-const bookshelf = require("../config/bookshelf");
-require("./scheme.model");
-require("./sharedScheme.model");
-require("./base.model");
-require("./overlay.model");
-require("./upload.model");
-require("./blockedUser.model");
+const Model = require("../config/objection");
+const path = require("path");
+const { UserMinimumFields } = require("../constants");
 
 /**
  * User model.
  */
 
-const User = bookshelf.model("User", {
-  tableName: "users",
-  schemes() {
-    return this.hasMany("Scheme", "user_id");
-  },
-  sharedSchemes() {
-    return this.hasMany("SharedScheme", "user_id");
-  },
-  bases() {
-    return this.hasMany("Base", "userid");
-  },
-  overlays() {
-    return this.hasMany("Overlay", "userid");
-  },
-  uploads() {
-    return this.hasMany("Upload", "user_id");
-  },
-  blockedByUsers() {
-    return this.hasMany("BlockedUser", "userid");
-  },
-  blockedUsers() {
-    return this.hasMany("BlockedUser", "blocker_id");
-  },
-});
+class User extends Model {
+  static get tableName() {
+    return "users";
+  }
+
+  static get relationMappings() {
+    return {
+      schemes: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "scheme.model"),
+        join: {
+          from: "users.id",
+          to: "builder_schemes.user_id",
+        },
+      },
+      sharedSchemes: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "sharedScheme.model"),
+        join: {
+          from: "users.id",
+          to: "shared_schemes.user_id",
+        },
+      },
+      bases: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "base.model"),
+        join: {
+          from: "users.id",
+          to: "builder_bases.userid",
+        },
+      },
+      overlays: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "overlay.model"),
+        join: {
+          from: "users.id",
+          to: "builder_overlays.userid",
+        },
+      },
+      uploads: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "upload.model"),
+        join: {
+          from: "users.id",
+          to: "builder_uploads.user_id",
+        },
+      },
+      blockedByUsers: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "blockedUser.model"),
+        join: {
+          from: "users.id",
+          to: "blocked_users.userid",
+        },
+      },
+      blockedUsers: {
+        relation: Model.HasManyRelation,
+        modelClass: path.join(__dirname, "blockedUser.model"),
+        join: {
+          from: "users.id",
+          to: "blocked_users.blocker_id",
+        },
+      },
+    };
+  }
+
+  static get modifiers() {
+    return {
+      minSelects(builder) {
+        builder.select(...UserMinimumFields);
+      },
+    };
+  }
+}
 
 module.exports = User;

@@ -4,13 +4,14 @@ import { Stage } from "konva/types/Stage";
 import _ from "lodash";
 import { MutableRefObject, RefObject } from "react";
 import config from "src/config";
-import { AllowedLayerProps } from "src/constant";
+import { AllowedLayerProps, TemplateVariables } from "src/constant";
 import {
   BoundBox,
   BuilderLayerJSONParitalAll,
   CarObjLayerData,
   FrameSize,
   LogoObjLayerData,
+  MovableObjLayerData,
   Position,
   ScrollPosition,
   ShapeObjLayerData,
@@ -23,14 +24,15 @@ import {
   BuilderScheme,
   BuilderUpload,
   CarMake,
+  UserMin,
 } from "src/types/model";
 import {
   BuilderLayerJSON,
   BuilderLayerPayload,
   BuilderSchemeJSON,
-  UserWithoutPassword,
 } from "src/types/query";
 import TGA from "src/utils/tga";
+import urlJoin from "url-join";
 import { v4 as uuidv4 } from "uuid";
 
 export const getDifferenceFromToday = (past_date: Date | string | number) => {
@@ -332,7 +334,9 @@ export const generateCarMakeImageURL = (
   carMake?: CarMake | null,
   legacyMode?: boolean | null
 ) =>
-  layer_data.legacy
+  layer_data.isFullUrl
+    ? layer_data.img
+    : layer_data.legacy
     ? `${
         config.legacyAssetURL
       }/templates/${carMake?.folder_directory.replaceAll(" ", "_")}/`
@@ -638,7 +642,8 @@ export const loadImage = async (
 ) => {
   const img = new window.Image();
   img.src = imageSource;
-  img.crossOrigin = "anonymous";
+  // Don't comment the below line. It'll prevent tainted canvas issue.
+  img.crossOrigin = "Anonymous";
   imageRef.current = img;
   if (handleLoad) imageRef.current.addEventListener("load", handleLoad);
   if (handleError) imageRef.current.addEventListener("error", handleError);
@@ -654,7 +659,7 @@ export const isInSameSideBar = (type1: LayerTypes, type2: LayerTypes) => {
   return false;
 };
 
-export const getUserName = (user?: UserWithoutPassword | null) => {
+export const getUserName = (user?: UserMin | null) => {
   if (!user) {
     return "";
   }
@@ -818,4 +823,77 @@ export const getLayerTypesWithAttr = (attr: string) =>
     AllowedLayerProps[LayerTypes.SHAPE][
       item as keyof typeof AllowedLayerProps[LayerTypes.SHAPE]
     ].includes(attr)
+  );
+
+export const getAvatarURL = (userId: string | number) => {
+  if (!config.imageDriverURL?.length) {
+    return urlJoin(
+      config.parentAppURL ?? "https://www.tradingpaints.com",
+      "scripts/image_driver.php",
+      `?driver=${userId}`
+    );
+  }
+
+  if (config.imageDriverURL.includes("scripts")) {
+    return urlJoin(config.imageDriverURL, `?driver=${userId}`);
+  }
+
+  return urlJoin(config.imageDriverURL, `${userId}.jpg`);
+};
+
+export const replaceByTemplateVariables = (
+  str: string,
+  layerType?: LayerTypes,
+  user?: UserMin | null
+) => {
+  if (layerType === LayerTypes.TEXT) {
+    return str
+      .replaceAll(TemplateVariables.PROFILE_NAME, user?.drivername ?? "")
+      .replaceAll(TemplateVariables.FACEBOOK_NAME, user?.facebook_name ?? "")
+      .replaceAll(TemplateVariables.TWITTER_NAME, user?.twitter_name ?? "")
+      .replaceAll(TemplateVariables.INSTAGRAM_NAME, user?.instagram_name ?? "")
+      .replaceAll(TemplateVariables.TWITCH_NAME, user?.twitch_name ?? "")
+      .replaceAll(TemplateVariables.YOUTUBE_NAME, user?.youtube_name ?? "")
+      .replaceAll(TemplateVariables.WEBSITE_URL, user?.website_url ?? "");
+  }
+
+  // It's image layer types then.
+  return str.replaceAll(
+    TemplateVariables.PROFILE_AVATAR,
+    getAvatarURL(user?.id ?? "")
+  );
+};
+
+export const sortLayers = (
+  layers: BuilderLayerJSON[],
+  ownerId?: number,
+  isDesc?: boolean,
+  isMerged?: boolean
+) =>
+  _.orderBy(
+    layers,
+    [
+      (item) => {
+        const showOnTop = (item.layer_data as MovableObjLayerData)?.showOnTop;
+        if (showOnTop) {
+          if (
+            (item.layer_data as MovableObjLayerData)?.ownerForGallery &&
+            ownerId !== (item.layer_data as MovableObjLayerData).ownerForGallery
+          )
+            return -2;
+
+          return -1;
+        }
+
+        return 0;
+      },
+      (item) => {
+        if (isMerged) return 0;
+        if (item.layer_type === LayerTypes.OVERLAY) return 0;
+        if (item.layer_type === LayerTypes.SHAPE) return -1;
+        return -2;
+      },
+      "layer_order",
+    ],
+    isDesc ? ["desc", "desc", "desc"] : ["asc", "asc", "asc"]
   );

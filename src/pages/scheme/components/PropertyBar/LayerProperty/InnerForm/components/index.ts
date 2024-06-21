@@ -11,3 +11,4 @@ export { ShadowProperty } from "./ShadowProperty";
 export { CornerProperty } from "./CornerProperty";
 export { ExtraProperty } from "./ExtraProperty";
 export { SkewProperty } from "./SkewProperty";
+export { PublicSharingProperty } from "./PublicSharingProperty";

@@ -20,7 +20,7 @@ import {
   SharedScheme,
   SharedUpload,
   Team,
-  User,
+  UserMin,
 } from "./model";
 
 export type AuthPayload = {
@@ -43,7 +43,7 @@ export type CarMakeWithBases = CarMake & { bases: BuilderBase[] };
 export type CarPinPayload = Omit<CarPin, "id">;
 
 export type SharedSchemeWithUser = SharedScheme & {
-  user: User;
+  user: UserMin;
 };
 
 export type SharedSchemePayload = Omit<SharedScheme, "id">;
@@ -52,7 +52,7 @@ export type SharedSchemeForGetListByUserId = SharedScheme & {
   scheme: BuilderScheme & {
     sharedUsers: SharedSchemeWithUser[];
     carMake: CarMake;
-    user: User;
+    user: UserMin;
   };
 };
 
@@ -75,22 +75,26 @@ export type BuilderSchemeForGetList = BuilderSchemeWithLayers & {
 
 export type BuilderSchemeForGetListByUserId = BuilderScheme & {
   carMake: CarMake;
-  user: User;
+  user: UserMin;
   sharedUsers: SharedSchemeWithUser[];
+  originalAuthor?: UserMin;
+  originalScheme?: BuilderScheme;
 };
 
 export type BuilderSchemeJSONForGetListByUserId = BuilderSchemeJSON & {
   carMake: CarMake;
-  user: User;
+  user: UserMin;
   sharedUsers: SharedSchemeWithUser[];
+  originalAuthor?: UserMin;
+  originalScheme?: BuilderScheme;
 };
 
 export type BuilderSchemeForGetById = BuilderScheme & {
   carMake: CarMakeWithBases;
   layers: BuilderLayer[];
   sharedUsers: SharedScheme[];
-  user: User;
-  lastModifier: User;
+  user: UserMin;
+  lastModifier: UserMin;
 };
 
 export type BuilderSchemeForGetByIdWithBasepaints = {
@@ -126,12 +130,12 @@ export type BuilderFontPayload = Omit<BuilderFont, "id">;
 export type FavoriteSchemePayload = Omit<FavoriteScheme, "id">;
 
 export type FavoriteSchemeWithUser = FavoriteScheme & {
-  user: User;
+  user: UserMin;
 };
 
 export type FavoriteSchemeForGetByID = FavoriteSchemeWithUser & {
   scheme: BuilderScheme & {
-    user: User;
+    user: UserMin;
     carMake: CarMake;
     sharedUsers: SharedSchemeWithUser[];
   };
@@ -139,7 +143,7 @@ export type FavoriteSchemeForGetByID = FavoriteSchemeWithUser & {
 
 export type FavoriteSchemeForGetListByUserId = FavoriteScheme & {
   scheme: BuilderScheme & {
-    user: User;
+    user: UserMin;
     carMake: CarMake;
     sharedUsers: SharedSchemeWithUser[];
   };
@@ -154,15 +158,13 @@ export type FavoriteOverlayPayload = Omit<FavoriteOverlay, "id">;
 
 export type CarPayload = Omit<Car, "id">;
 
-export type UserWithoutPassword = Omit<User, "password">;
-
-export type UserWithBlockedList = User & {
+export type UserWithBlockedList = UserMin & {
   blockedByUsers: BlockedUser[];
   blockedUsers: BlockedUser[];
 };
 
 export type LoginResponse = {
-  user: UserWithoutPassword;
+  user: UserMin;
   token: string;
 };
 
@@ -201,4 +203,9 @@ export type DownloaderStatusResponse = {
   iracing: string;
 };
 
-export type UserPayload = Omit<UserWithoutPassword, "id">;
+export type UserPayload = Omit<UserMin, "id">;
+
+export type UserMinWithBlockedList = UserMin & {
+  blockedByUsers: BlockedUser[];
+  blockedUsers: BlockedUser[];
+};

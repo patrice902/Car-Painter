@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const socket = require("socket.io");
 const LayerService = require("../services/layerService");
 const SchemeService = require("../services/schemeService");
@@ -20,8 +21,7 @@ class SocketServer {
         const token = JSON.parse(tokenString);
         if (token && token.usr && token.hash) {
           try {
-            let user = await UserService.getById(parseInt(token.usr));
-            user = user.toJSON();
+            let user = await UserService.getMe(token.usr);
             if (user.password === token.hash) {
               next();
             } else {
@@ -88,9 +88,24 @@ class SocketServer {
     console.log("-----------------------------");
   }
 
+  async checkEditableScheme(userID, schemeID) {
+    const scheme = await SchemeService.getById(schemeID);
+
+    const editable =
+      userID === scheme.user_id ||
+      scheme.sharedUsers.find(
+        (shared) => shared.user_id === userID && shared.editable
+      );
+
+    if (!editable) {
+      throw new Error("You are not authorized to access this resource.");
+    }
+  }
+
   async onClientUpdateLayer(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, socket.room);
         socket.to(socket.room).emit("client-update-layer", requestData);
         const schemeUpdatePayload = {
           date_modified: Math.round(new Date().getTime() / 1000),
@@ -115,6 +130,7 @@ class SocketServer {
   async onClientBulkUpdateLayer(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, socket.room);
         socket.broadcast
           .to(socket.room)
           .emit("client-bulk-update-layer", requestData);
@@ -143,6 +159,7 @@ class SocketServer {
   async onClientCreateLayer(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, socket.room);
         socket.to(socket.room).emit("client-create-layer", requestData);
         const schemeUpdatePayload = {
           date_modified: Math.round(new Date().getTime() / 1000),
@@ -167,6 +184,7 @@ class SocketServer {
   async onClientCreateLayerList(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, socket.room);
         socket.broadcast
           .to(socket.room)
           .emit("client-create-layer-list", requestData);
@@ -193,6 +211,7 @@ class SocketServer {
   async onClientDeleteLayer(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, socket.room);
         socket.to(socket.room).emit("client-delete-layer", requestData);
 
         const schemeUpdatePayload = {
@@ -219,6 +238,7 @@ class SocketServer {
   async onClientDeleteLayerList(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, socket.room);
         socket.broadcast
           .to(socket.room)
           .emit("client-delete-layer-list", requestData);
@@ -249,6 +269,7 @@ class SocketServer {
   async onClientUpdateScheme(socket, requestData) {
     try {
       if (socket.room) {
+        await this.checkEditableScheme(requestData.userID, requestData.data.id);
         socket.broadcast
           .to(socket.room)
           .emit("client-update-scheme", requestData);
@@ -271,6 +292,7 @@ class SocketServer {
   async onClientDeleteScheme(socket, requestData) {
     if (socket.room) {
       try {
+        await this.checkEditableScheme(requestData.userID, requestData.data.id);
         socket.to(socket.room).emit("client-delete-scheme");
         socket.broadcast
           .to("general")

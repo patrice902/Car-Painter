@@ -1,18 +1,35 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * BlockedUser model.
  */
 
-const BlockedUser = bookshelf.model("BlockedUser", {
-  tableName: "blocked_users",
-  blockerUser() {
-    return this.belongsTo("User", "blocker_id");
-  },
-  blockedUser() {
-    return this.belongsTo("User", "userid");
-  },
-  dependents: ["user"],
-});
+class BlockedUser extends Model {
+  static get tableName() {
+    return "blocked_users";
+  }
+
+  static get relationMappings() {
+    return {
+      blockerUser: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "blocked_users.blocker_id",
+          to: "users.id",
+        },
+      },
+      blockedUser: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "blocked_users.userid",
+          to: "users.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = BlockedUser;

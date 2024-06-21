@@ -1,44 +1,59 @@
 const FavoriteLogo = require("../models/favoriteLogo.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FavoriteLogoService {
   static async getList() {
-    const list = await FavoriteLogo.forge().fetchAll();
+    const list = await FavoriteLogo.query();
     return list;
   }
 
   static async getListByUserId(user_id) {
-    const list = await FavoriteLogo.where({ user_id }).fetchAll();
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await FavoriteLogo.query().where("user_id", user_id);
     return list;
   }
 
   static async getListByLogoId(logo_id) {
-    const list = await FavoriteLogo.where({ logo_id }).fetchAll();
+    if (!checkSQLWhereInputValid(logo_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await FavoriteLogo.query().where("logo_id", logo_id);
     return list;
   }
 
-  static async getByID(id) {
-    const favorite = await FavoriteLogo.where({ id }).fetch();
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const favorite = await FavoriteLogo.query().findById(id);
     return favorite;
   }
 
   static async create(payload) {
-    let favorite = await FavoriteLogo.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
+    const favorite = await FavoriteLogo.query().insert(payload);
     return favorite;
   }
 
   static async updateById(id, payload) {
-    let favorite = await FavoriteLogo.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const favorite = await FavoriteLogo.query().patchAndFetchById(id, payload);
     return favorite;
   }
 
   static async deleteById(id) {
-    await FavoriteLogo.where({ id }).destroy({
-      require: false,
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await FavoriteLogo.query().deleteById(id);
     return true;
   }
 }

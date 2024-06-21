@@ -22,6 +22,7 @@ import {
   PaintingGuideTop,
 } from "./Guides";
 import { BasePaints, CarParts, MovableLayersGroup } from "./Layers";
+import { AdditionalFilter } from "./Layers/MovableLayersGroup";
 
 type BoardProps = {
   hoveredLayerJSON: Record<string | number, boolean>;
@@ -73,7 +74,7 @@ export const Board = React.memo(
       onTouchEnd,
       onTap,
       onDbltap,
-    } = useDrawHelper(stageRef);
+    } = useDrawHelper(stageRef, editable);
     const { zoom, onWheel } = useZoom(stageRef);
     const mainGroupRef = useRef<Konva.Group>(null);
 
@@ -116,6 +117,9 @@ export const Board = React.memo(
         setWrapperPosition({ x: boundingRect.x, y: boundingRect.y });
       },
     });
+    const showHoveredTransformer =
+      hoveredLayerJSON &&
+      (!currentLayer || !hoveredLayerJSON[currentLayer.id] || !editable);
 
     const handleHoverLayer = useCallback(
       (layer: BuilderLayerJSON, flag: boolean) => {
@@ -219,6 +223,7 @@ export const Board = React.memo(
                               LayerTypes.SHAPE,
                               LayerTypes.TEXT,
                             ]}
+                            isMerged
                             drawingLayer={drawingLayerRef.current}
                             stageRef={stageRef}
                             editable={editable}
@@ -231,6 +236,9 @@ export const Board = React.memo(
                           <>
                             <MovableLayersGroup
                               allowedLayerTypes={[LayerTypes.OVERLAY]}
+                              additionalFilterOption={
+                                AdditionalFilter.EXCLUDE_SHOW_ON_TOP
+                              }
                               stageRef={stageRef}
                               editable={editable}
                               onHover={handleHoverLayer}
@@ -241,6 +249,9 @@ export const Board = React.memo(
 
                             <MovableLayersGroup
                               allowedLayerTypes={[LayerTypes.SHAPE]}
+                              additionalFilterOption={
+                                AdditionalFilter.EXCLUDE_SHOW_ON_TOP
+                              }
                               drawingLayer={drawingLayerRef.current}
                               stageRef={stageRef}
                               editable={editable}
@@ -256,6 +267,28 @@ export const Board = React.memo(
                                 LayerTypes.UPLOAD,
                                 LayerTypes.TEXT,
                               ]}
+                              additionalFilterOption={
+                                AdditionalFilter.EXCLUDE_SHOW_ON_TOP
+                              }
+                              stageRef={stageRef}
+                              editable={editable}
+                              onHover={handleHoverLayer}
+                              onLayerDragStart={onLayerDragStart}
+                              onLayerDragEnd={onLayerDragEnd}
+                              onSetTransformingLayer={setTransformingLayer}
+                            />
+
+                            <MovableLayersGroup
+                              allowedLayerTypes={[
+                                LayerTypes.OVERLAY,
+                                LayerTypes.LOGO,
+                                LayerTypes.UPLOAD,
+                                LayerTypes.SHAPE,
+                                LayerTypes.TEXT,
+                              ]}
+                              additionalFilterOption={
+                                AdditionalFilter.INCLUDE_SHOW_ON_TOP_ONLY
+                              }
                               stageRef={stageRef}
                               editable={editable}
                               onHover={handleHoverLayer}
@@ -337,15 +370,16 @@ export const Board = React.memo(
                         selectedLayer={
                           currentLayer as BuilderLayerJSON<MovableObjLayerData>
                         }
+                        hoveredTransform={
+                          (currentLayer?.layer_data as MovableObjLayerData)
+                            ?.editLock
+                        }
                       />
                     ) : (
                       <></>
                     )}
 
-                    {hoveredLayerJSON &&
-                    (!currentLayer ||
-                      !hoveredLayerJSON[currentLayer.id] ||
-                      !editable) ? (
+                    {showHoveredTransformer ? (
                       <TransformerComponent
                         trRef={hoveredTransformerRef}
                         selectedLayer={

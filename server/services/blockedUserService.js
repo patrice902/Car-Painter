@@ -1,44 +1,65 @@
 const BlockedUserScheme = require("../models/blockedUser.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class BlockedUserSchemeService {
   static async getList() {
-    const list = await BlockedUserScheme.forge().fetchAll();
+    const list = await BlockedUserScheme.query();
     return list;
   }
 
   static async getListByBlockerId(blocker_id) {
-    const list = await BlockedUserScheme.where({ blocker_id }).fetchAll();
+    if (!checkSQLWhereInputValid(blocker_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await BlockedUserScheme.query().where(
+      "blocker_id",
+      blocker_id
+    );
     return list;
   }
 
   static async getListByBlockedUserId(userid) {
-    const list = await BlockedUserScheme.where({ userid }).fetchAll();
+    if (!checkSQLWhereInputValid(userid)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await BlockedUserScheme.query().where("userid", userid);
     return list;
   }
 
-  static async getByID(id) {
-    const blockRow = await BlockedUserScheme.where({ id }).fetch();
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const blockRow = await BlockedUserScheme.query().findById(id);
     return blockRow;
   }
 
   static async create(payload) {
-    let blockRow = await BlockedUserScheme.forge(payload).save();
-    blockRow = blockRow.toJSON();
-    blockRow = this.getByID(blockRow.id);
+    const blockRow = await BlockedUserScheme.query().insert(payload);
     return blockRow;
   }
 
   static async updateById(id, payload) {
-    let blockRow = await BlockedUserScheme.where({ id }).fetch();
-    await blockRow.save(payload);
-    blockRow = this.getByID(id);
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const blockRow = await BlockedUserScheme.query().patchAndFetchById(
+      id,
+      payload
+    );
     return blockRow;
   }
 
   static async deleteById(id) {
-    await BlockedUserScheme.where({ id }).destroy({
-      require: false,
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await BlockedUserScheme.query().deleteById(id);
     return true;
   }
 }

@@ -1,15 +1,27 @@
-const bookshelf = require("../config/bookshelf");
-require("./scheme.model");
+const Model = require("../config/objection");
+const path = require("path");
+
 /**
  * Layer model.
  */
 
-const Layer = bookshelf.model("Layer", {
-  tableName: "builder_layers",
-  scheme() {
-    return this.belongsTo("Scheme", "scheme_id");
-  },
-  dependents: ["scheme"],
-});
+class Layer extends Model {
+  static get tableName() {
+    return "builder_layers";
+  }
+
+  static get relationMappings() {
+    return {
+      scheme: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "scheme.model"),
+        join: {
+          from: "builder_layers.scheme_id",
+          to: "builder_schemes.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = Layer;

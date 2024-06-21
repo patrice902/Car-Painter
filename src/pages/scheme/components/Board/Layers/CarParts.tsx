@@ -54,10 +54,10 @@ export const CarParts = React.memo(({ virtual, specMode }: CarPartsProps) => {
             name={id}
             loadedStatus={loadedStatuses[id]}
             layer={(layer as unknown) as BuilderLayerJSON<MovableObjLayerData>}
-            x={0}
-            y={0}
-            width={legacyMode ? 1024 : 2048}
-            height={legacyMode ? 1024 : 2048}
+            x={layer.layer_data.left ?? 0}
+            y={layer.layer_data.top ?? 0}
+            width={layer.layer_data.width ?? (legacyMode ? 1024 : 2048)}
+            height={layer.layer_data.height ?? (legacyMode ? 1024 : 2048)}
             src={getCarMakeImage(layer.layer_data)}
             filterColor={
               specMode

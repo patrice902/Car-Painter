@@ -189,10 +189,15 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             (item) => item.id === (layer.layer_data as UploadObjLayerData).id
           )
         ) {
-          const schemes = await SchemeService.getSchemeListByUploadID(
-            (layer.layer_data as UploadObjLayerData).id
-          );
-          if (schemes.length <= 1) {
+          try {
+            const schemes = await SchemeService.getSchemeListByUploadID(
+              (layer.layer_data as UploadObjLayerData).id
+            );
+            if (schemes.length <= 1) {
+              deleteUpload = true;
+            }
+          } catch (e) {
+            console.error(e);
             deleteUpload = true;
           }
         }
@@ -294,17 +299,22 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
     const handleKeyEvent = useCallback(
       (key: string, event: KeyboardEvent) => {
         event.preventDefault();
-        // console.log("key, event: ", key, event);
         // Delete Selected Layer
-        if (
-          (event.target as HTMLElement)?.tagName !== "INPUT" &&
-          event.type === "keydown"
-        ) {
+        if ((event.target as HTMLElement)?.tagName === "INPUT") {
+          return;
+        }
+
+        if (event.type === "keyup") {
+          dispatch(setPressedKey(null));
+          dispatch(setPressedEventKey(null));
+        }
+
+        if (event.type === "keydown") {
           if (
-            pressedKey === key &&
-            pressedEventKey === event.key &&
-            !ArrowKeys.includes(event.key) &&
-            !BracketKeys.includes(event.key)
+            pressedKey?.toString() === key.toString() &&
+            pressedEventKey?.toString() === event.key.toString() &&
+            !ArrowKeys.includes(event.key.toString()) &&
+            !BracketKeys.includes(event.key.toString())
           ) {
             return;
           }
@@ -320,6 +330,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             (key === "del" || key === "backspace") &&
             currentLayer &&
             currentLayer.layer_type !== LayerTypes.CAR &&
+            !(currentLayer.layer_data as MovableObjLayerData)?.editLock &&
             editable
           ) {
             handleDeleteLayer(currentLayer);
@@ -390,6 +401,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             event.key === "c" &&
             (event.ctrlKey || event.metaKey) &&
             currentLayer &&
+            !(currentLayer.layer_data as MovableObjLayerData)?.editLock &&
             editable
           ) {
             dispatch(setLayerClipboard(currentLayer));
@@ -448,15 +460,15 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
             handleChangeBoardRotation(false);
           } else if (event.key === "ArrowRight" && event.altKey) {
             handleChangeBoardRotation(true);
-          } else if (key === "1") {
+          } else if (key === "1" && editable) {
             togglePaintingGuides(PaintingGuides.CARMASK);
-          } else if (key === "2") {
+          } else if (key === "2" && editable) {
             togglePaintingGuides(PaintingGuides.WIREFRAME);
-          } else if (key === "3") {
+          } else if (key === "3" && editable) {
             togglePaintingGuides(PaintingGuides.SPONSORBLOCKS);
-          } else if (key === "4") {
+          } else if (key === "4" && editable) {
             togglePaintingGuides(PaintingGuides.NUMBERBLOCKS);
-          } else if (key === "5") {
+          } else if (key === "5" && editable) {
             togglePaintingGuides(PaintingGuides.GRID);
           } else if (key === "enter" && editable) {
             if (
@@ -472,11 +484,7 @@ export const withKeyEvent = (Component: React.FC<ComponentWithKeyEventProps>) =>
         }
 
         // Arrow Keys
-        if ((event.target as HTMLElement).tagName !== "INPUT" && editable) {
-          if (event.type === "keyup") {
-            dispatch(setPressedKey(null));
-            dispatch(setPressedEventKey(null));
-          }
+        if (editable) {
           if (
             ArrowKeys.includes(event.key) &&
             currentLayer &&

@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { DefaultSettingsFormValues } from "src/components/dialogs/DefaultSettingsDialog/DefaultSettingsDialog.model";
 import {
-  clearScrollPosition,
   mergeTwoScheme,
   parseScheme,
   stringifySchemeGuideData,
@@ -12,7 +11,7 @@ import SchemeService from "src/services/schemeService";
 import SharedSchemeService from "src/services/sharedSchemeService";
 import { DefaultLayerData } from "src/types/common";
 import { HistoryActions } from "src/types/enum";
-import { BuilderScheme, CarMake, SharedScheme, User } from "src/types/model";
+import { BuilderScheme, CarMake, SharedScheme, UserMin } from "src/types/model";
 import {
   BuilderSchemeJSON,
   BuilderSchemeJSONForGetListByUserId,
@@ -38,12 +37,13 @@ import { catchErrorMessage, setMessage } from "./messageReducer";
 
 export type SchemeReducerState = {
   list: BuilderSchemeJSONForGetListByUserId[];
+  publicList: BuilderSchemeJSONForGetListByUserId[];
   favoriteList: FavoriteSchemeForGetListByUserId[];
   sharedList: SharedSchemeForGetListByUserId[];
   sharedUsers: SharedSchemeWithUser[];
   current?: BuilderSchemeJSON | null;
-  owner?: User | null;
-  lastModifier?: User | null;
+  owner?: UserMin | null;
+  lastModifier?: UserMin | null;
   loading: boolean;
   loaded: boolean;
   saving: boolean;
@@ -55,6 +55,7 @@ const initialState: SchemeReducerState = {
   list: [],
   favoriteList: [],
   sharedList: [],
+  publicList: [],
   sharedUsers: [],
   current: null,
   owner: null,
@@ -123,6 +124,17 @@ export const slice = createSlice({
     },
     deleteListItem: (state, action: PayloadAction<number>) => {
       state.list = state.list.filter((item) => item.id !== +action.payload);
+    },
+    setPublicList: (
+      state,
+      action: PayloadAction<BuilderScheme[] | BuilderSchemeJSON[]>
+    ) => {
+      state.publicList = action.payload.map(
+        (item) => parseScheme(item) as BuilderSchemeJSON
+      ) as BuilderSchemeJSONForGetListByUserId[];
+    },
+    clearPublicList: (state) => {
+      state.publicList = [];
     },
     setFavoriteList: (
       state,
@@ -206,10 +218,10 @@ export const slice = createSlice({
     ) => {
       state.current = mergeTwoScheme(state.current, action.payload);
     },
-    setOwner: (state, action: PayloadAction<User | null>) => {
+    setOwner: (state, action: PayloadAction<UserMin | null>) => {
       state.owner = action.payload;
     },
-    setLastModifier: (state, action: PayloadAction<User | null>) => {
+    setLastModifier: (state, action: PayloadAction<UserMin | null>) => {
       state.lastModifier = action.payload;
     },
     clearCurrent: (state) => {
@@ -240,6 +252,7 @@ const {
   insertToList,
   setSharedList,
   setFavoriteList,
+  setPublicList,
   deleteFavoriteListItem,
   updateSharedListItem,
   deleteSharedListItem,
@@ -276,6 +289,22 @@ export const getSchemeList = (userID: number) => async (
   try {
     const schemes = await SchemeService.getSchemeListByUserID(userID);
     dispatch(setList(schemes.filter((scheme) => !scheme.carMake.deleted)));
+  } catch (err) {
+    dispatch(catchErrorMessage(err));
+  }
+  dispatch(setLoading(false));
+};
+
+export const getPublicSchemeList = (callback?: () => void) => async (
+  dispatch: AppDispatch
+) => {
+  dispatch(setLoading(true));
+  try {
+    const schemes = await SchemeService.getPublicSchemeList();
+    dispatch(
+      setPublicList(schemes.filter((scheme) => !scheme.carMake.deleted))
+    );
+    callback?.();
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }
@@ -416,7 +445,6 @@ export const updateScheme = (
           next_data: parseScheme(updatedScheme),
         })
       );
-    clearScrollPosition();
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }
@@ -441,9 +469,10 @@ export const deleteScheme = (schemeID: number, callback?: () => void) => async (
   dispatch(setLoading(false));
 };
 
-export const cloneScheme = (schemeID: number) => async (
-  dispatch: AppDispatch
-) => {
+export const cloneScheme = (
+  schemeID: number,
+  callback?: (schemeID?: number) => void
+) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
 
   try {
@@ -452,6 +481,7 @@ export const cloneScheme = (schemeID: number) => async (
     dispatch(
       setMessage({ message: "Cloned Project successfully!", type: "success" })
     );
+    callback?.(scheme.id);
   } catch (err) {
     dispatch(catchErrorMessage(err));
   }

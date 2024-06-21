@@ -167,9 +167,7 @@ export const FilterBar = React.memo(
                       label="Hide Legacy"
                     />
                   </MenuItem>
-                ) : (
-                  <></>
-                )}
+                ) : null}
               </Menu>
             </Wrapper>
           </>

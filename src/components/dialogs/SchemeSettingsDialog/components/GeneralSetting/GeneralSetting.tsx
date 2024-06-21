@@ -29,8 +29,8 @@ import { RootState } from "src/redux";
 import { reorderLayersOnCombination } from "src/redux/reducers/layerReducer";
 import { updateScheme } from "src/redux/reducers/schemeReducer";
 import { ConfigCatFlags } from "src/types/enum";
-import { CarMake } from "src/types/model";
-import { BuilderSchemeJSON, UserWithoutPassword } from "src/types/query";
+import { CarMake, UserMin } from "src/types/model";
+import { BuilderSchemeJSON } from "src/types/query";
 
 import {
   CustomButton,
@@ -43,10 +43,10 @@ type GeneralSettingProps = {
   editable: boolean;
   favoriteID?: number;
   scheme: BuilderSchemeJSON;
-  currentUser: UserWithoutPassword;
+  currentUser: UserMin;
   currentCarMake: CarMake;
-  owner?: UserWithoutPassword | null;
-  modifier?: UserWithoutPassword | null;
+  owner?: UserMin | null;
+  modifier?: UserMin | null;
   onRemoveFavorite: (id: number, callback: () => void) => void;
   onAddFavorite: (
     user_id: number,

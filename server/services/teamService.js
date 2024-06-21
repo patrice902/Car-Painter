@@ -1,37 +1,50 @@
 const Team = require("../models/team.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class TeamService {
   static async getList() {
-    const list = await Team.forge().fetchAll();
+    const list = await Team.query();
     return list;
   }
 
   static async getListByUserId(userid) {
-    const list = await Team.where({ userid }).fetchAll();
+    if (!checkSQLWhereInputValid(userid)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await Team.query().where("userid", userid);
     return list;
   }
 
-  static async getByID(id) {
-    const team = await Team.where({ id }).fetch();
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const team = await Team.query().findById(id);
     return team;
   }
 
   static async create(payload) {
-    let team = await Team.forge(payload).save();
-    team = team.toJSON();
-    team = this.getByID(team.id);
+    const team = await Team.query().insert(payload);
     return team;
   }
 
   static async updateById(id, payload) {
-    let team = await Team.where({ id }).fetch();
-    await team.save(payload);
-    team = this.getByID(id);
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const team = await Team.query().patchAndFetchById(id, payload);
     return team;
   }
 
   static async deleteById(id) {
-    await Team.where({ id }).destroy({ require: false });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await Team.query().deleteById(id);
     return true;
   }
 }

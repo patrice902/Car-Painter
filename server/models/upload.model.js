@@ -1,19 +1,35 @@
-const bookshelf = require("../config/bookshelf");
-require("./user.model");
-require("./scheme.model");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * Upload model.
  */
 
-const Upload = bookshelf.model("Upload", {
-  tableName: "builder_uploads",
-  user() {
-    return this.belongsTo("User", "user_id");
-  },
-  scheme() {
-    return this.belongsTo("Scheme", "scheme_id");
-  },
-});
+class Upload extends Model {
+  static get tableName() {
+    return "builder_uploads";
+  }
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "builder_uploads.user_id",
+          to: "users.id",
+        },
+      },
+      scheme: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "scheme.model"),
+        join: {
+          from: "builder_uploads.scheme_id",
+          to: "builder_schemes.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = Upload;

@@ -1,18 +1,35 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
+const path = require("path");
 
 /**
  * FavoriteOverlay model.
  */
 
-const FavoriteOverlay = bookshelf.model("FavoriteOverlay", {
-  tableName: "favorite_overlays",
-  user() {
-    return this.belongsTo("User", "user_id");
-  },
-  overlay() {
-    return this.belongsTo("Overlay", "overlay_id");
-  },
-  dependents: ["user", "overlay"],
-});
+class FavoriteOverlay extends Model {
+  static get tableName() {
+    return "favorite_overlays";
+  }
+
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "user.model"),
+        join: {
+          from: "favorite_overlays.user_id",
+          to: "users.id",
+        },
+      },
+      overlay: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: path.join(__dirname, "overlay.model"),
+        join: {
+          from: "favorite_overlays.overlay_id",
+          to: "builder_overlays.id",
+        },
+      },
+    };
+  }
+}
 
 module.exports = FavoriteOverlay;

@@ -27,7 +27,7 @@ export const Page404 = React.memo(() => (
         marginTop: "8px",
       }}
     >
-      Return to website
+      Return to homepage
     </Button>
   </Wrapper>
 ));

@@ -1,11 +1,13 @@
-const bookshelf = require("../config/bookshelf");
+const Model = require("../config/objection");
 
 /**
  * Logo model.
  */
 
-const Logo = bookshelf.model("Logo", {
-  tableName: "builder_logos",
-});
+class Logo extends Model {
+  static get tableName() {
+    return "builder_logos";
+  }
+}
 
 module.exports = Logo;

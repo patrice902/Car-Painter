@@ -42,7 +42,7 @@ class BlockedUserController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let row = await BlockedUserSchemeService.getById(req.params.id);
       res.json(row);

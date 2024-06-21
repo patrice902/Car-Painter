@@ -14,7 +14,7 @@ class CarController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let car = await CarService.getById(req.params.id);
       res.json(car);

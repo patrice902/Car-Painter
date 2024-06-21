@@ -4,7 +4,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = {
-  baseURL: process.env.BASE_URL,
+  parentAppURL:
+    process.env.REACT_APP_PARENT_APP_URL || "https://www.tradingpaints.com",
+  imageDriverURL: process.env.REACT_APP_IMAGE_DRIVER_URL || "",
   port: process.env.PORT || 3000,
   configCatKey: process.env.REACT_APP_CONFIGCAT_KEY,
   md5Salt: process.env.MD5_SALT,

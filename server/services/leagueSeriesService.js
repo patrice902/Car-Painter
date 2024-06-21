@@ -1,39 +1,56 @@
 const LeagueSeries = require("../models/leagueSeries.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class LeagueSeriesService {
   static async getList() {
-    const list = await LeagueSeries.forge().fetchAll();
+    const list = await LeagueSeries.query();
     return list;
   }
 
   static async getListByUserId(userid) {
-    const list = await LeagueSeries.query((qb) => {
-      qb.join("leagues", "league_series.league_id", "=", "leagues.id");
-      qb.where("leagues.userid", userid);
-    }).fetchAll();
+    if (!checkSQLWhereInputValid(userid)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await LeagueSeries.query()
+      .innerJoin("leagues", "league_series.league_id", "leagues.id")
+      .where("leagues.userid", userid);
+
     return list;
   }
 
-  static async getByID(id) {
-    const leagueSeries = await LeagueSeries.where({ id }).fetch();
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const leagueSeries = await LeagueSeries.query().findById(id);
     return leagueSeries;
   }
 
   static async create(payload) {
-    const leagueSeries = await LeagueSeries.forge(payload).save();
+    const leagueSeries = await LeagueSeries.query().insert(payload);
     return leagueSeries;
   }
 
   static async updateById(id, payload) {
-    const leagueSeries = await LeagueSeries.where({ id }).fetch();
-    await leagueSeries.save(payload);
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const leagueSeries = await LeagueSeries.query().patchAndFetchById(
+      id,
+      payload
+    );
     return leagueSeries;
   }
 
   static async deleteById(id) {
-    await LeagueSeries.where({ id }).destroy({
-      require: false,
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await LeagueSeries.query().deleteById(id);
     return true;
   }
 }

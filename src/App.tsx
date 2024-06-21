@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "src/redux";
 import { ThemeProvider } from "styled-components";
 
+import { AppBoundary } from "./components/common/AppBoundary";
 import config from "./config";
 import Routes from "./routes/Routes";
 import createTheme from "./theme";
@@ -39,7 +40,9 @@ function App() {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
               <ThemeProvider theme={createTheme(theme.currentTheme)}>
-                <Routes />
+                <AppBoundary>
+                  <Routes />
+                </AppBoundary>
               </ThemeProvider>
             </MuiThemeProvider>
           </MuiPickersUtilsProvider>

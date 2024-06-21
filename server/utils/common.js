@@ -1,3 +1,5 @@
+const config = require("../config");
+
 function generateRandomColor() {
   return [...Array(6)]
     .map(() => Math.floor(Math.random() * 16).toString(16))
@@ -44,9 +46,33 @@ function removeNumbersFromString(text) {
   return text.replace(/[0-9]/g, "");
 }
 
+function getAvatarURL(userId) {
+  if (!config.imageDriverURL.length) {
+    return `${config.parentAppURL}/scripts/image_driver.php?driver=${userId}`;
+  }
+
+  if (config.imageDriverURL.includes("scripts")) {
+    return `${config.imageDriverURL}?driver=${userId}`;
+  }
+
+  return `${config.imageDriverURL}/${userId}.jpg`;
+}
+
+function checkSQLWhereInputValid(input) {
+  const allowedTypes = ["number", "string", "boolean"];
+
+  if (!allowedTypes.includes(typeof input)) {
+    return false;
+  }
+
+  return true;
+}
+
 module.exports = {
   generateRandomColor,
   getLayerUpdatingInfo,
   getSchemeUpdatingInfo,
   removeNumbersFromString,
+  getAvatarURL,
+  checkSQLWhereInputValid,
 };

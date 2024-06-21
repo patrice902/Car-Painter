@@ -12,6 +12,7 @@ export const ToolWrapper = styled(Box)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
 `;
 export const CustomDrawingItem = styled(MenuItem)<{ active: string }>`
   display: flex;
@@ -24,6 +25,10 @@ export const CustomDrawingItem = styled(MenuItem)<{ active: string }>`
     props.active === "true" ? "rgba(255, 255, 255, 0.08)" : "none"};
 `;
 
+export const MainItemWrapper = styled(Box)`
+  width: 100%;
+`;
+
 export const MainItem = styled(MenuItem)`
   display: flex;
   justify-content: center;
@@ -33,7 +38,6 @@ export const MainItem = styled(MenuItem)`
   width: 100%;
   border-radius: 8px;
   border: 1px solid transparent;
-  margin-bottom: 10px;
   &:hover {
     background: #444;
     border: 1px solid gray;

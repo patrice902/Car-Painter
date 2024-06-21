@@ -1,57 +1,82 @@
 const Upload = require("../models/upload.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class UploadService {
   static async getList() {
-    const uploads = await Upload.forge().fetchAll({
-      withRelated: ["user"],
-    });
+    const uploads = await Upload.query().withGraphFetched("user(minSelects)");
     return uploads;
   }
 
   static async getListByUserID(user_id) {
-    const uploads = await Upload.where({
-      user_id,
-    }).fetchAll({
-      withRelated: ["user"],
-    });
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const uploads = await Upload.query()
+      .where("user_id", user_id)
+      .withGraphFetched("user(minSelects)");
+
     return uploads;
   }
 
   static async getLegacyListByUserID(user_id) {
-    const uploads = await Upload.where({
-      user_id,
-      legacy_mode: 1,
-    }).fetchAll({
-      withRelated: ["user"],
-    });
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const uploads = await Upload.query()
+      .where("user_id", user_id)
+      .where("legacy_mode", 1)
+      .withGraphFetched("user(minSelects)");
+
     return uploads;
   }
 
   static async getById(id) {
-    const upload = await Upload.where({ id }).fetch({
-      withRelated: ["user"],
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const upload = await Upload.query()
+      .findById(id)
+      .withGraphFetched("user(minSelects)");
+
     return upload;
   }
 
   static async create(payload) {
-    const upload = await Upload.forge(payload).save();
+    const upload = await Upload.query().insert(payload);
     return upload;
   }
 
   static async updateById(id, payload) {
-    const upload = await this.getById(id);
-    await upload.save(payload);
-    return upload;
+    await Upload.query().patchAndFetchById(id, payload);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
-    await Upload.where({ id }).destroy({ require: false });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await Upload.query().deleteById(id);
+
     return true;
   }
 
   static async deleteByMultiId(ids) {
-    await Upload.where("id", "IN", ids).destroy({ require: false });
+    if (!ids || !Array.isArray(ids) || !ids.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of ids) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
+    await Upload.query().delete().where("id", "IN", ids);
+
     return true;
   }
 }

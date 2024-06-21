@@ -9,7 +9,10 @@ import {
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import { Settings as SettingsIcon } from "@material-ui/icons";
+import {
+  FileCopyOutlined as CloneIcon,
+  Settings as SettingsIcon,
+} from "@material-ui/icons";
 import { useFeatureFlag } from "configcat-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { FaDownload } from "react-icons/fa";
@@ -23,7 +26,7 @@ import { dataURItoBlob, focusBoardQuickly } from "src/helper";
 import { RootState } from "src/redux";
 import { getCarRaces, setCarRace } from "src/redux/reducers/carReducer";
 import { setMessage } from "src/redux/reducers/messageReducer";
-import { updateScheme } from "src/redux/reducers/schemeReducer";
+import { cloneScheme, updateScheme } from "src/redux/reducers/schemeReducer";
 import { ConfigCatFlags, DialogTypes } from "src/types/enum";
 
 import {
@@ -36,7 +39,7 @@ import {
 
 type HeaderProps = {
   editable: boolean;
-  onBack: () => void;
+  onBack: (goParent?: boolean) => void;
   onDownloadTGA: (isCustomNumberTGA?: boolean) => void;
   onDownloadSpecTGA: () => void;
   retrieveTGAPNGDataUrl: () => Promise<string | null | undefined>;
@@ -73,6 +76,9 @@ export const Header = React.memo(
     const currentCarMake = useSelector(
       (state: RootState) => state.carMakeReducer.current
     );
+    const currentUser = useSelector(
+      (state: RootState) => state.authReducer.user
+    );
     const currentScheme = useSelector(
       (state: RootState) => state.schemeReducer.current
     );
@@ -86,6 +92,26 @@ export const Header = React.memo(
       if (cars[1] && cars[1].primary) return 1;
       return -1;
     }, [cars]);
+
+    const showSowroomTab = useMemo(() => enableSubmitToShowroom && editable, [
+      enableSubmitToShowroom,
+      editable,
+    ]);
+
+    const showCloneBtn = useMemo(
+      () => currentUser?.id !== currentScheme?.user_id && currentScheme?.public,
+      [currentUser, currentScheme]
+    );
+
+    const handleCloneProject = () => {
+      if (!currentScheme) return;
+
+      dispatch(
+        cloneScheme(currentScheme.id, (id) => {
+          window.open(`/project/${id}`, "_blank");
+        })
+      );
+    };
 
     const handleCloseDialog = useCallback(() => {
       setDialog(undefined);
@@ -300,11 +326,11 @@ export const Header = React.memo(
 
     return (
       <>
-        <AppHeader isBoard>
+        <AppHeader isBoard onBack={onBack}>
           {!isAboveMobile ? (
             <IconButton
               size={isAboveMobile ? "medium" : "small"}
-              onClick={onBack}
+              onClick={() => onBack()}
             >
               <CustomIcon icon={faChevronLeft} size="xs" />
             </IconButton>
@@ -333,9 +359,9 @@ export const Header = React.memo(
                 aria-controls="share-options-menu"
                 aria-haspopup="true"
                 startIcon={<ShareIcon />}
-                endIcon={enableSubmitToShowroom ? <DropDownIcon /> : undefined}
+                endIcon={showSowroomTab ? <DropDownIcon /> : undefined}
                 onClick={(event) =>
-                  enableSubmitToShowroom
+                  showSowroomTab
                     ? setShareAnchorEl(event.currentTarget)
                     : handleOpenShareDialog()
                 }
@@ -348,7 +374,7 @@ export const Header = React.memo(
                 aria-haspopup="true"
                 size="small"
                 onClick={(event) =>
-                  enableSubmitToShowroom
+                  showSowroomTab
                     ? setShareAnchorEl(event.currentTarget)
                     : handleOpenShareDialog()
                 }
@@ -452,6 +478,37 @@ export const Header = React.memo(
                     </IconButton>
                   )}
                 </>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
+
+          {showCloneBtn ? (
+            <>
+              {isAboveMobile ? (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  style={{
+                    marginRight: isAboveMobile ? "16px" : 0,
+                    height: "30px",
+                  }}
+                  startIcon={<CloneIcon />}
+                  onClick={handleCloneProject}
+                >
+                  <Typography variant="subtitle2">Clone</Typography>
+                </Button>
+              ) : (
+                <IconButton
+                  size="small"
+                  style={{
+                    marginRight: isAboveMobile ? "16px" : 0,
+                  }}
+                  onClick={handleCloneProject}
+                >
+                  <CloneIcon />
+                </IconButton>
               )}
             </>
           ) : (

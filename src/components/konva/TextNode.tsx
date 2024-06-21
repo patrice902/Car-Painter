@@ -67,6 +67,7 @@ export const TextNode = React.memo(
     shadowOffsetY,
     paintingGuides,
     guideData,
+    editable,
     onLoadLayer,
     onSelect,
     onDblClick,
@@ -176,7 +177,7 @@ export const TextNode = React.memo(
         shadowOpacity={shapeRef.current ? shadowOpacity : undefined}
         shadowOffsetX={shapeRef.current ? shadowOffsetX : 0}
         shadowOffsetY={shapeRef.current ? shadowOffsetY : 0}
-        draggable={!!onChange && dragEnabled}
+        draggable={!!onChange && editable && dragEnabled}
         perfectDrawEnabled={false}
         shadowForStrokeEnabled={false}
         onClick={onSelect}

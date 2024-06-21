@@ -14,7 +14,7 @@ class UserController {
     }
   }
 
-  static async getByID(req, res) {
+  static async getById(req, res) {
     try {
       let user = await UserService.getById(req.params.id);
       res.json(user);

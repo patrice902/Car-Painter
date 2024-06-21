@@ -1,62 +1,97 @@
 const SharedUpload = require("../models/sharedUpload.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class SharedUploadService {
   static async getList() {
-    const list = await SharedUpload.forge().fetchAll({
-      withRelated: ["upload", "upload.user", "user"],
-    });
+    const list = await SharedUpload.query().withGraphFetched(
+      "[user(minSelects), upload.[user(minSelects)]]"
+    );
     return list;
   }
 
   static async getListByUserId(user_id) {
-    const list = await SharedUpload.where({ user_id }).fetchAll({
-      withRelated: ["upload", "upload.user", "user"],
-    });
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await SharedUpload.query()
+      .where("user_id", user_id)
+      .withGraphFetched("[user(minSelects), upload.[user(minSelects)]]");
+
     return list;
   }
 
   static async getListByUploadId(upload_id) {
-    const list = await SharedUpload.where({ upload_id }).fetchAll();
+    if (!checkSQLWhereInputValid(upload_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await SharedUpload.query().where("upload_id", upload_id);
     return list;
   }
 
-  static async getByID(id) {
-    const favorite = await SharedUpload.where({ id }).fetch({
-      withRelated: ["upload", "upload.user", "user"],
-    });
-    return favorite;
+  static async getListByUploadIdAndUserID(upload_id, user_id) {
+    if (
+      !checkSQLWhereInputValid(upload_id) ||
+      !checkSQLWhereInputValid(user_id)
+    ) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await SharedUpload.query()
+      .where("upload_id", upload_id)
+      .where("user_id", user_id);
+
+    return list;
   }
 
-  static async getByInfo(payload) {
-    const favorite = await SharedUpload.where(payload).fetch({
-      withRelated: ["upload", "upload.user", "user"],
-    });
-    return favorite;
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const item = await SharedUpload.query()
+      .findById(id)
+      .withGraphFetched("[user(minSelects), upload.[user(minSelects)]]");
+
+    return item;
   }
 
   static async create(payload) {
-    let favorite = await SharedUpload.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
-    return favorite;
+    const item = await SharedUpload.query().insert(payload);
+    return await this.getById(item.id);
   }
 
   static async updateById(id, payload) {
-    let favorite = await SharedUpload.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
-    return favorite;
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await SharedUpload.query().patchAndFetchById(id, payload);
+    return await this.getById(id);
   }
 
   static async deleteById(id) {
-    await SharedUpload.where({ id }).destroy({
-      require: false,
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await SharedUpload.query().deleteById(id);
     return true;
   }
 
   static async deleteByMultiId(ids) {
-    await SharedUpload.where("id", "IN", ids).destroy({ require: false });
+    if (!ids || !Array.isArray(ids) || !ids.length) {
+      throw new Error("Invalid input.");
+    }
+
+    for (let id of ids) {
+      if (!checkSQLWhereInputValid(id)) {
+        throw new Error("SQL Injection attack detected.");
+      }
+    }
+
+    await SharedUpload.query().delete().where("id", "IN", ids);
     return true;
   }
 }

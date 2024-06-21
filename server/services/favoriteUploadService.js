@@ -1,44 +1,62 @@
 const FavoriteUpload = require("../models/favoriteUpload.model");
+const { checkSQLWhereInputValid } = require("../utils/common");
 
 class FavoriteUploadService {
   static async getList() {
-    const list = await FavoriteUpload.forge().fetchAll();
+    const list = await FavoriteUpload.query();
     return list;
   }
 
   static async getListByUserId(user_id) {
-    const list = await FavoriteUpload.where({ user_id }).fetchAll();
+    if (!checkSQLWhereInputValid(user_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await FavoriteUpload.query().where("user_id", user_id);
     return list;
   }
 
   static async getListByUploadId(upload_id) {
-    const list = await FavoriteUpload.where({ upload_id }).fetchAll();
+    if (!checkSQLWhereInputValid(upload_id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const list = await FavoriteUpload.query().where("upload_id", upload_id);
     return list;
   }
 
-  static async getByID(id) {
-    const favorite = await FavoriteUpload.where({ id }).fetch();
+  static async getById(id) {
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const favorite = await FavoriteUpload.query().findById(id);
     return favorite;
   }
 
   static async create(payload) {
-    let favorite = await FavoriteUpload.forge(payload).save();
-    favorite = favorite.toJSON();
-    favorite = this.getByID(favorite.id);
+    const favorite = await FavoriteUpload.query().insert(payload);
     return favorite;
   }
 
   static async updateById(id, payload) {
-    let favorite = await FavoriteUpload.where({ id }).fetch();
-    await favorite.save(payload);
-    favorite = this.getByID(id);
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    const favorite = await FavoriteUpload.query().patchAndFetchById(
+      id,
+      payload
+    );
     return favorite;
   }
 
   static async deleteById(id) {
-    await FavoriteUpload.where({ id }).destroy({
-      require: false,
-    });
+    if (!checkSQLWhereInputValid(id)) {
+      throw new Error("SQL Injection attack detected.");
+    }
+
+    await FavoriteUpload.query().deleteById(id);
     return true;
   }
 }
