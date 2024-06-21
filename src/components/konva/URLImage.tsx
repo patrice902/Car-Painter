@@ -105,6 +105,7 @@ export const URLImage = React.memo(
       imageshapeRef: shapeRef,
       id,
       src: replaceByTemplateVariables(src, layer?.layer_type, owner),
+      layer,
       stroke,
       strokeWidth,
       filterColor,

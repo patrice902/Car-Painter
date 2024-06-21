@@ -126,6 +126,8 @@ export interface OverlayObjLayerData extends MovableObjLayerData {
   stroke: number;
   stroke_scale: number;
   legacy: boolean;
+  source_file: string;
+  preview_file: string;
 }
 
 export interface ShapeBaseObjLayerData extends MovableObjLayerData {

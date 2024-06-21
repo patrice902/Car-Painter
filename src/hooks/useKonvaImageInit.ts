@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { TemplateVariables } from "src/constant";
 import {
   detectBrowser,
   getPixelRatio,
@@ -26,8 +27,14 @@ import {
 } from "src/helper/svg";
 import { RootState } from "src/redux";
 import { setMessage } from "src/redux/reducers/messageReducer";
-import { FrameSize, PartialAllLayerData } from "src/types/common";
+import {
+  FrameSize,
+  LogoObjLayerData,
+  MovableObjLayerData,
+  PartialAllLayerData,
+} from "src/types/common";
 import { Browser } from "src/types/enum";
+import { BuilderLayerJSON } from "src/types/query";
 
 const clearCache = (node: Node) => {
   const canvasCache = node._cache.get("canvas");
@@ -46,6 +53,7 @@ interface UseKonvaImageInit {
   imageshapeRef: RefObject<Node>;
   id: string | number;
   src: string;
+  layer?: BuilderLayerJSON<MovableObjLayerData>;
   stroke?: string;
   strokeWidth?: number;
   filterColor?: string;
@@ -72,6 +80,7 @@ export const useKonvaImageInit = ({
   imageshapeRef,
   id,
   src,
+  layer,
   stroke,
   strokeWidth,
   filterColor,
@@ -288,10 +297,22 @@ export const useKonvaImageInit = ({
 
   const handleError = useCallback(
     (_error) => {
-      dispatch(setMessage({ message: `Failed to load image: ${id}` }));
+      if (
+        (layer?.layer_data as LogoObjLayerData).img !==
+        TemplateVariables.PROFILE_AVATAR
+      ) {
+        // If the image is not an avatar image, show an error message
+        // Because some users haven't uploaded their avatar, so we don't want to show avtar image on the board.
+        dispatch(
+          setMessage({
+            message: `Failed to load image: ${layer?.layer_data?.name ?? id}`,
+          })
+        );
+      }
+
       if (id) onLoadLayer?.(id, true);
     },
-    [onLoadLayer, id, dispatch]
+    [onLoadLayer, id, layer, dispatch]
   );
 
   const setImgFromSVG = useCallback(
