@@ -2,8 +2,10 @@
 
 ## Summary
 You can create a scheme with a specific car model, and paint it with various logos, shapes and texts.
+
 And, you can export it and use it in games.
-Also, it supports multi-user/real-time collaboration for fun!
+
+Also, it supports multi-user/real-time collaboration for team work and fun!
 
 ## Screenshot
 
