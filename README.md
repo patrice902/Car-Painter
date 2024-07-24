@@ -1,4 +1,4 @@
-# Car Model Painter
+# Car Model Builder
 
 ## Summary
 You can create a scheme with a specific car model, and paint it with various logos, shapes and texts.
